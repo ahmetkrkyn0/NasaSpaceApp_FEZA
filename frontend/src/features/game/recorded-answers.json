@@ -1,0 +1,735 @@
+{
+  "_about": "Server answers of /api/events for every date of every game level, recorded by record-answers.mjs. Used in example mode only; live mode asks the server.",
+  "recorded_utc": "2026-11-14T21:52:00Z",
+  "server_commit": "b170b78",
+  "mission_days": 14,
+  "mast_height_m": 2,
+  "answers": {
+    "equator": {
+      "2026-12-01": {
+        "metrics": {
+          "sunlit_fraction": 0.0252,
+          "longest_dark_hours": 327.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-02": {
+        "metrics": {
+          "sunlit_fraction": 0.0967,
+          "longest_dark_hours": 303.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-03": {
+        "metrics": {
+          "sunlit_fraction": 0.1681,
+          "longest_dark_hours": 279.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-04": {
+        "metrics": {
+          "sunlit_fraction": 0.2395,
+          "longest_dark_hours": 255.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-05": {
+        "metrics": {
+          "sunlit_fraction": 0.311,
+          "longest_dark_hours": 231.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-06": {
+        "metrics": {
+          "sunlit_fraction": 0.3824,
+          "longest_dark_hours": 207.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-07": {
+        "metrics": {
+          "sunlit_fraction": 0.4538,
+          "longest_dark_hours": 183.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-08": {
+        "metrics": {
+          "sunlit_fraction": 0.5252,
+          "longest_dark_hours": 159.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-09": {
+        "metrics": {
+          "sunlit_fraction": 0.5967,
+          "longest_dark_hours": 135.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-10": {
+        "metrics": {
+          "sunlit_fraction": 0.6681,
+          "longest_dark_hours": 111.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-11": {
+        "metrics": {
+          "sunlit_fraction": 0.7395,
+          "longest_dark_hours": 87.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-12": {
+        "metrics": {
+          "sunlit_fraction": 0.811,
+          "longest_dark_hours": 63.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-13": {
+        "metrics": {
+          "sunlit_fraction": 0.8824,
+          "longest_dark_hours": 39.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-14": {
+        "metrics": {
+          "sunlit_fraction": 0.9538,
+          "longest_dark_hours": 15.52,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-15": {
+        "metrics": {
+          "sunlit_fraction": 1,
+          "longest_dark_hours": 0,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-16": {
+        "metrics": {
+          "sunlit_fraction": 0.9665,
+          "longest_dark_hours": 11.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-17": {
+        "metrics": {
+          "sunlit_fraction": 0.8951,
+          "longest_dark_hours": 35.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-18": {
+        "metrics": {
+          "sunlit_fraction": 0.8236,
+          "longest_dark_hours": 59.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-19": {
+        "metrics": {
+          "sunlit_fraction": 0.7522,
+          "longest_dark_hours": 83.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-20": {
+        "metrics": {
+          "sunlit_fraction": 0.6808,
+          "longest_dark_hours": 107.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-21": {
+        "metrics": {
+          "sunlit_fraction": 0.6093,
+          "longest_dark_hours": 131.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-22": {
+        "metrics": {
+          "sunlit_fraction": 0.5379,
+          "longest_dark_hours": 155.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-23": {
+        "metrics": {
+          "sunlit_fraction": 0.4665,
+          "longest_dark_hours": 179.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-24": {
+        "metrics": {
+          "sunlit_fraction": 0.3951,
+          "longest_dark_hours": 203.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-25": {
+        "metrics": {
+          "sunlit_fraction": 0.3236,
+          "longest_dark_hours": 227.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-26": {
+        "metrics": {
+          "sunlit_fraction": 0.2522,
+          "longest_dark_hours": 251.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-27": {
+        "metrics": {
+          "sunlit_fraction": 0.1808,
+          "longest_dark_hours": 275.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-28": {
+        "metrics": {
+          "sunlit_fraction": 0.1093,
+          "longest_dark_hours": 299.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-29": {
+        "metrics": {
+          "sunlit_fraction": 0.0379,
+          "longest_dark_hours": 323.26,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      },
+      "2026-12-30": {
+        "metrics": {
+          "sunlit_fraction": 0,
+          "longest_dark_hours": 336,
+          "earth_visible_fraction": 1
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "not_required"
+      }
+    },
+    "polar-december": {
+      "2026-12-01": {
+        "metrics": {
+          "sunlit_fraction": 0.0165,
+          "longest_dark_hours": 330.46,
+          "earth_visible_fraction": 0.6337
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-02": {
+        "metrics": {
+          "sunlit_fraction": 0.0865,
+          "longest_dark_hours": 306.93,
+          "earth_visible_fraction": 0.6337
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-03": {
+        "metrics": {
+          "sunlit_fraction": 0.158,
+          "longest_dark_hours": 282.93,
+          "earth_visible_fraction": 0.6337
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-04": {
+        "metrics": {
+          "sunlit_fraction": 0.2294,
+          "longest_dark_hours": 258.93,
+          "earth_visible_fraction": 0.6337
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-05": {
+        "metrics": {
+          "sunlit_fraction": 0.3008,
+          "longest_dark_hours": 234.93,
+          "earth_visible_fraction": 0.6768
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-06": {
+        "metrics": {
+          "sunlit_fraction": 0.3722,
+          "longest_dark_hours": 210.93,
+          "earth_visible_fraction": 0.7483
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-07": {
+        "metrics": {
+          "sunlit_fraction": 0.4437,
+          "longest_dark_hours": 186.93,
+          "earth_visible_fraction": 0.8197
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-08": {
+        "metrics": {
+          "sunlit_fraction": 0.5151,
+          "longest_dark_hours": 162.93,
+          "earth_visible_fraction": 0.8911
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-09": {
+        "metrics": {
+          "sunlit_fraction": 0.5865,
+          "longest_dark_hours": 138.93,
+          "earth_visible_fraction": 0.9625
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-10": {
+        "metrics": {
+          "sunlit_fraction": 0.658,
+          "longest_dark_hours": 114.93,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-11": {
+        "metrics": {
+          "sunlit_fraction": 0.7294,
+          "longest_dark_hours": 90.93,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-12": {
+        "metrics": {
+          "sunlit_fraction": 0.8008,
+          "longest_dark_hours": 66.93,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-13": {
+        "metrics": {
+          "sunlit_fraction": 0.8722,
+          "longest_dark_hours": 42.93,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-14": {
+        "metrics": {
+          "sunlit_fraction": 0.9437,
+          "longest_dark_hours": 18.93,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-15": {
+        "metrics": {
+          "sunlit_fraction": 1,
+          "longest_dark_hours": 0,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-16": {
+        "metrics": {
+          "sunlit_fraction": 1,
+          "longest_dark_hours": 0,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-17": {
+        "metrics": {
+          "sunlit_fraction": 0.946,
+          "longest_dark_hours": 18.15,
+          "earth_visible_fraction": 1
+        },
+        "validity": "DERIVED",
+        "relay_status": "not_required"
+      },
+      "2026-12-18": {
+        "metrics": {
+          "sunlit_fraction": 0.8745,
+          "longest_dark_hours": 42.15,
+          "earth_visible_fraction": 0.9503
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-19": {
+        "metrics": {
+          "sunlit_fraction": 0.8031,
+          "longest_dark_hours": 66.15,
+          "earth_visible_fraction": 0.8788
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      },
+      "2026-12-20": {
+        "metrics": {
+          "sunlit_fraction": 0.7317,
+          "longest_dark_hours": 90.15,
+          "earth_visible_fraction": 0.8074
+        },
+        "validity": "DERIVED",
+        "relay_status": "intermittent"
+      }
+    },
+    "far-side": {
+      "2026-12-01": {
+        "metrics": {
+          "sunlit_fraction": 0.9385,
+          "longest_dark_hours": 20.67,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-02": {
+        "metrics": {
+          "sunlit_fraction": 1,
+          "longest_dark_hours": 0,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-03": {
+        "metrics": {
+          "sunlit_fraction": 0.9969,
+          "longest_dark_hours": 1.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-04": {
+        "metrics": {
+          "sunlit_fraction": 0.9254,
+          "longest_dark_hours": 25.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-05": {
+        "metrics": {
+          "sunlit_fraction": 0.854,
+          "longest_dark_hours": 49.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-06": {
+        "metrics": {
+          "sunlit_fraction": 0.7826,
+          "longest_dark_hours": 73.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-07": {
+        "metrics": {
+          "sunlit_fraction": 0.7111,
+          "longest_dark_hours": 97.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-08": {
+        "metrics": {
+          "sunlit_fraction": 0.6397,
+          "longest_dark_hours": 121.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-09": {
+        "metrics": {
+          "sunlit_fraction": 0.5683,
+          "longest_dark_hours": 145.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-10": {
+        "metrics": {
+          "sunlit_fraction": 0.4969,
+          "longest_dark_hours": 169.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-11": {
+        "metrics": {
+          "sunlit_fraction": 0.4254,
+          "longest_dark_hours": 193.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-12": {
+        "metrics": {
+          "sunlit_fraction": 0.354,
+          "longest_dark_hours": 217.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-13": {
+        "metrics": {
+          "sunlit_fraction": 0.2826,
+          "longest_dark_hours": 241.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-14": {
+        "metrics": {
+          "sunlit_fraction": 0.2111,
+          "longest_dark_hours": 265.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-15": {
+        "metrics": {
+          "sunlit_fraction": 0.1397,
+          "longest_dark_hours": 289.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-16": {
+        "metrics": {
+          "sunlit_fraction": 0.0683,
+          "longest_dark_hours": 313.05,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-17": {
+        "metrics": {
+          "sunlit_fraction": 0,
+          "longest_dark_hours": 336,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-18": {
+        "metrics": {
+          "sunlit_fraction": 0.0354,
+          "longest_dark_hours": 324.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-19": {
+        "metrics": {
+          "sunlit_fraction": 0.1068,
+          "longest_dark_hours": 300.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-20": {
+        "metrics": {
+          "sunlit_fraction": 0.1782,
+          "longest_dark_hours": 276.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-21": {
+        "metrics": {
+          "sunlit_fraction": 0.2497,
+          "longest_dark_hours": 252.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-22": {
+        "metrics": {
+          "sunlit_fraction": 0.3211,
+          "longest_dark_hours": 228.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-23": {
+        "metrics": {
+          "sunlit_fraction": 0.3925,
+          "longest_dark_hours": 204.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-24": {
+        "metrics": {
+          "sunlit_fraction": 0.4639,
+          "longest_dark_hours": 180.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-25": {
+        "metrics": {
+          "sunlit_fraction": 0.5354,
+          "longest_dark_hours": 156.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-26": {
+        "metrics": {
+          "sunlit_fraction": 0.6068,
+          "longest_dark_hours": 132.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-27": {
+        "metrics": {
+          "sunlit_fraction": 0.6782,
+          "longest_dark_hours": 108.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-28": {
+        "metrics": {
+          "sunlit_fraction": 0.7497,
+          "longest_dark_hours": 84.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-29": {
+        "metrics": {
+          "sunlit_fraction": 0.8211,
+          "longest_dark_hours": 60.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      },
+      "2026-12-30": {
+        "metrics": {
+          "sunlit_fraction": 0.8925,
+          "longest_dark_hours": 36.12,
+          "earth_visible_fraction": 0
+        },
+        "validity": "SYNTHETIC",
+        "relay_status": "unknown"
+      }
+    }
+  }
+}
