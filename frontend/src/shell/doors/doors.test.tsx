@@ -4,14 +4,14 @@ import { eventsEclipseExample, eventsExample, sitesExample } from '../../api/exa
 import type { EventMetrics, Scenario } from '../../api/types';
 import { selectPanels } from '../../features/registry';
 import { currentOnly, windowOf } from '../../features/timeline/data';
-import { scenarioStore } from '../../state/scenario-store';
+import { createScenarioStore, scenarioStore } from '../../state/scenario-store';
 import { createUiStore, type Door } from '../ui-state';
 import { STAGE_PANEL_IDS, arrangeDoor } from './arrange';
 import { DoorLayout } from './DoorLayout';
 import { SummaryView } from './DoorSummary';
 import { percentText, placeName, summarySentence } from './summary';
 import { SitePickerView } from './SitePicker';
-import { scenarioForPick } from './site-pick';
+import { applyPick, scenarioForPick } from './site-pick';
 import { DEFAULT_DURATION_DAYS, DEFAULT_MAST_HEIGHT_M, DEFAULT_PANEL_PROFILE_ID, addDaysUtc } from '../../state/scenario-tools';
 
 const ids = (list: { id: string }[]) => list.map((p) => p.id);
@@ -215,5 +215,25 @@ describe('site picker of the Explore and Classroom doors', () => {
     for (const door of ['explore', 'classroom'] as const) {
       expect(renderToStaticMarkup(<DoorLayout door={door} mode="plan" />)).toContain('door-site-select');
     }
+  });
+});
+
+describe('applying a site pick to the scenario store', () => {
+  const NOW = Date.parse('2026-12-03T15:42:10Z');
+  const mons = sitesExample.find((s) => s.id === 'mons-mouton-im2-target')!;
+  const other = sitesExample.find((s) => s.id !== mons.id)!;
+
+  it('moves a moment left from an earlier link to the start of a new scenario', () => {
+    const store = createScenarioStore({ active: null, selected_utc: '2031-05-01T00:00:00Z', compare: [] });
+    const next = applyPick(store, mons, sitesExample, NOW);
+    expect(store.getState().active).toEqual(next);
+    expect(store.getState().selected_utc).toBe(next.start_utc);
+  });
+
+  it('keeps the selected moment when the active scenario only changes site', () => {
+    const store = createScenarioStore({ active: scenario, selected_utc: '2026-12-05T00:00:00Z', compare: [] });
+    applyPick(store, other, sitesExample, NOW);
+    expect(store.getState().active?.site_id).toBe(other.id);
+    expect(store.getState().selected_utc).toBe('2026-12-05T00:00:00Z');
   });
 });

@@ -6,6 +6,7 @@
  */
 
 import type { Scenario, Site, UtcString } from '../../api/types';
+import type { ScenarioStore } from '../../state/scenario-store';
 import {
   DEFAULT_DURATION_DAYS,
   DEFAULT_MAST_HEIGHT_M,
@@ -34,6 +35,19 @@ export function scenarioForPick(active: Scenario | null, site: Site, sites: read
     mast_height_m: DEFAULT_MAST_HEIGHT_M,
     panel_profile_id: DEFAULT_PANEL_PROFILE_ID,
   });
+}
+
+/**
+ * Applies a pick to the store. A new scenario starts with the selected moment at its start, so
+ * a moment left in the address bar from an earlier link cannot fall outside the new range; a
+ * moved scenario keeps its moment, since its dates do not change.
+ */
+export function applyPick(store: Pick<ScenarioStore, 'getState' | 'setScenario' | 'setSelectedUtc'>, site: Site, sites: readonly Site[], nowMs: number): Scenario {
+  const active = store.getState().active;
+  const next = scenarioForPick(active, site, sites, nowMs);
+  store.setScenario(next);
+  if (!active) store.setSelectedUtc(next.start_utc);
+  return next;
 }
 
 /** Select value for the active scenario: its site id, or a marker for a custom point. */
