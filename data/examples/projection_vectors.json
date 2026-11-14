@@ -1,0 +1,70 @@
+{
+  "description": "South polar stereographic projection of the PGDA 90 height maps: sphere R = 1737400 m, latitude of origin -90, central meridian 0, true scale at the pole, metres. x grows towards 90 E, y towards 0 E. Values computed by backend/app/terrain/projection.py and checked against PROJ with the WKT read from LDEM_80S_20MPP_ADJ.TIF.",
+  "crs_wkt": "PROJCS[\"Moon (2015) - Sphere / Ocentric / South Polar\",GEOGCS[\"Moon (2015) - Sphere / Ocentric\",DATUM[\"Moon (2015) - Sphere\",SPHEROID[\"Moon (2015) - Sphere\",1737400,0]],PRIMEM[\"Reference Meridian\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1]]",
+  "tolerance_m": 0.001,
+  "points": [
+    {
+      "id": "south-pole",
+      "lat_deg": -90.0,
+      "lon_deg": 0.0,
+      "x_m": 0.0,
+      "y_m": 0.0
+    },
+    {
+      "id": "mons-mouton-im2-target",
+      "lat_deg": -84.78,
+      "lon_deg": 29.13,
+      "x_m": 77106.7496,
+      "y_m": 138362.9529
+    },
+    {
+      "id": "im2-athena",
+      "lat_deg": -84.7906,
+      "lon_deg": 29.1957,
+      "x_m": 77108.2415,
+      "y_m": 137993.2703
+    },
+    {
+      "id": "im1-odysseus",
+      "lat_deg": -80.13,
+      "lon_deg": 1.44,
+      "x_m": 7539.8778,
+      "y_m": 299939.0377
+    },
+    {
+      "id": "lat-85-lon-90e",
+      "lat_deg": -85.0,
+      "lon_deg": 90.0,
+      "x_m": 151713.0444,
+      "y_m": 0.0
+    },
+    {
+      "id": "lat-85-lon-180",
+      "lat_deg": -85.0,
+      "lon_deg": -180.0,
+      "x_m": 0.0,
+      "y_m": -151713.0444
+    },
+    {
+      "id": "lat-85-lon-90w",
+      "lat_deg": -85.0,
+      "lon_deg": -90.0,
+      "x_m": -151713.0444,
+      "y_m": 0.0
+    },
+    {
+      "id": "lat-80-lon-45w",
+      "lat_deg": -80.0,
+      "lon_deg": -45.0,
+      "x_m": -214964.4269,
+      "y_m": 214964.4269
+    },
+    {
+      "id": "lat-60-lon-135e",
+      "lat_deg": -60.0,
+      "lon_deg": 135.0,
+      "x_m": 658365.8074,
+      "y_m": -658365.8074
+    }
+  ]
+}
