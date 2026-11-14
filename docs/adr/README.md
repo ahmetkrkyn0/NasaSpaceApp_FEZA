@@ -9,7 +9,10 @@ If a decision changes, do not delete the old record: set its status to "Supersed
 
 | No | Decision | Status |
 |---|---|---|
-| – | – | – |
+| 0001 | [Uygulama mimarisi ve stack](0001-uygulama-mimarisi-ve-stack.md) | Accepted |
+| 0002 | [Koordinat sistemi, zaman ve açı kuralları](0002-koordinat-sistemi-ve-zaman.md) | Proposed |
+| 0003 | [Veri sözleşmesi](0003-veri-sozlesmesi.md) | Proposed |
+| 0004 | [API uç noktaları](0004-api-uc-noktalari.md) | Proposed |
 
 ## Template
 
