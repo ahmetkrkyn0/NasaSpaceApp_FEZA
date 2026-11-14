@@ -1,0 +1,182 @@
+/* Horizon strip (F2-C). Colour never carries meaning alone: visible disks are filled,
+   hidden disks are outlined and dashed, and every disk has a text readout. */
+
+.sky-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sky-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.sky-strip-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sky-strip-legend {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.sky-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sky-key::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius);
+  border: 1px solid currentColor;
+  background: currentColor;
+}
+
+.sky-key-sun {
+  color: var(--risk-med);
+}
+
+.sky-key-earth {
+  color: var(--cyan);
+}
+
+.sky-key-text {
+  color: var(--text-dim);
+}
+
+.sky-strip-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+}
+
+.sky-grid line {
+  stroke: var(--line-inner);
+  stroke-width: 1;
+}
+
+.sky-axis-text {
+  fill: var(--text-dim);
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+}
+
+.sky-axis-text-el {
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+.sky-axis-text-az {
+  text-anchor: middle;
+}
+
+.sky-ground {
+  fill: var(--surface-high);
+}
+
+.sky-horizon-line {
+  fill: none;
+  stroke: var(--line-button);
+  stroke-width: 1.5;
+}
+
+.sky-path {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.sky-path-sun {
+  stroke: var(--risk-med);
+}
+
+.sky-path-earth {
+  stroke: var(--cyan);
+  stroke-dasharray: 6 3;
+}
+
+.sky-disk {
+  cursor: default;
+  outline: none;
+}
+
+.sky-disk-outline {
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.sky-disk-sun .sky-disk-outline,
+.sky-disk-sun .sky-disk-fill {
+  stroke: var(--risk-med);
+  fill-opacity: 1;
+}
+
+.sky-disk-sun .sky-disk-fill {
+  fill: var(--risk-med);
+}
+
+.sky-disk-earth .sky-disk-outline {
+  stroke: var(--cyan);
+}
+
+.sky-disk-earth .sky-disk-fill {
+  fill: var(--cyan);
+  stroke: var(--cyan);
+}
+
+.sky-disk-hidden {
+  opacity: 0.45;
+}
+
+.sky-disk-hidden .sky-disk-outline {
+  stroke-dasharray: 2 2;
+}
+
+.sky-disk:focus-visible .sky-disk-outline,
+.sky-disk:hover .sky-disk-outline {
+  stroke: var(--lavender-bright);
+  stroke-width: 2.5;
+}
+
+.sky-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.sky-readout-row {
+  font-family: var(--font-data);
+}
+
+.sky-readout-row.is-hover {
+  color: var(--lavender-bright);
+}
+
+.sky-data {
+  font-family: var(--font-data);
+}
+
+.sky-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
