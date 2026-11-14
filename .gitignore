@@ -39,5 +39,4 @@ venv/
 coverage/
 
 # --- Local agent tooling (kept per machine, not shared) ---
-CLAUDE.md
 agent_chat.py
