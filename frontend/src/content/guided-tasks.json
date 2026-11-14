@@ -23,6 +23,7 @@
       "days": 30,
       "metrics": ["sunlit_fraction", "longest_dark_hours"],
       "explanation": "Some crater floors near the poles never get direct sunlight. NASA maps these permanently shadowed regions from elevation data, and the map in the Plan door can show them around Mons Mouton. Recent orbiter images found no sign of widespread surface ice in them, only small patches.",
+      "table_note": "These values are for the ridge site, Mons Mouton. The server does not compute a crater floor, so they show how much sunlight even the ridge gets, not the crater.",
       "sources": [
         { "label": "NASA PGDA permanently shadowed region map", "file": "docs/research/dogrulama/veri-kaynaklari.md", "row": "23" },
         { "label": "ShadowCam results in Science Advances", "file": "docs/research/dogrulama/csa-ve-diger-ulkeler.md", "row": "72" }

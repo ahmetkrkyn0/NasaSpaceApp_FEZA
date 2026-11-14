@@ -6,7 +6,7 @@ import { useAsync } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { placeLabel } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
-import { AsyncBlock, ExampleNote, PanelHeader } from '../setup/shared';
+import { AsyncBlock, ErrorNote, ExampleNote, PanelHeader } from '../setup/shared';
 import { metricDef } from '../why/explain';
 import { GUIDED_TASKS, fetchTaskAnswers, taskScenarios, taskState, type GuidedTask, type TaskAnswer } from './tasks';
 
@@ -46,6 +46,7 @@ export function AnswerTable({ task, answers, sites }: { task: GuidedTask; answer
           ))}
         </tbody>
       </table>
+      {task.table_note ? <p className="d-note" role="note">{task.table_note}</p> : null}
       {answers.some((a) => a.events === null) ? (
         <p className="d-muted">— : the example files have no answer for this site. Add ?data=live to the address to compute it.</p>
       ) : null}
@@ -101,6 +102,8 @@ export default function TasksPanel() {
   const [openId, setOpenId] = useState<string | null>(null);
   const sitesResult = useAsync((signal) => getSites({}, { signal }), []);
   const sites = sitesResult.state.data ?? [];
+  // Tasks open only with the site list, so scenario labels carry site names, not ids (PR #66 review).
+  const ready = sitesResult.state.status === 'success';
   const task = GUIDED_TASKS.find((t) => t.id === openId) ?? null;
 
   const open = (t: GuidedTask) => {
@@ -112,10 +115,18 @@ export default function TasksPanel() {
     <section className="d-panel" aria-label="Guided tasks">
       <PanelHeader title="Guided tasks" />
       <ExampleNote />
+      {sitesResult.state.status === 'error' ? <ErrorNote error={sitesResult.state.error} /> : null}
       <ul className="d-list" aria-label="Tasks">
         {GUIDED_TASKS.map((t) => (
           <li key={t.id} className="d-list-item">
-            <button type="button" className="d-button" aria-pressed={t.id === openId} onClick={() => open(t)}>
+            <button
+              type="button"
+              className="d-button"
+              aria-pressed={t.id === openId}
+              disabled={!ready}
+              title={ready ? undefined : 'Loading the site list…'}
+              onClick={() => open(t)}
+            >
               {t.title}
             </button>
           </li>
