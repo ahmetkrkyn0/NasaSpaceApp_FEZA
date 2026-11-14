@@ -13,7 +13,7 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null,
+    "notes": "Lunar Module descent stage, landed 20 July 1969.",
     "cards": [
       {
         "agency": "CSA",
@@ -39,7 +39,7 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Landed 3 January 2019. Coordinate taken from the NASA table only."
   },
   {
     "id": "chandrayaan-3",
@@ -51,11 +51,11 @@
     "landing_utc": null,
     "status": "landed",
     "coordinate_source": {
-      "label": "LROC image 1314",
+      "label": "LROC, Chandrayaan-3 landing site",
       "url": "https://www.lroc.asu.edu/images/1314"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "The NASA NSSDC table gives the same coordinate."
   },
   {
     "id": "slim",
@@ -64,14 +64,14 @@
     "lat_deg": -13.316,
     "lon_deg": 25.251,
     "elevation_m": null,
-    "landing_utc": null,
+    "landing_utc": "2024-01-19T15:19:52Z",
     "status": "landed_tipped",
     "coordinate_source": {
       "label": "NASA NSSDC lunar artifact table",
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Came to rest with the main engine facing up and the solar panels facing west (JAXA)."
   },
   {
     "id": "im1-odysseus",
@@ -87,7 +87,7 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Landed 22 February 2024. Reports that it tipped over are not yet verified, so the status stays landed."
   },
   {
     "id": "change-6",
@@ -103,7 +103,7 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Landed 1 June 2024. The source also gives the longitude as 206.0148 E; stored here as -153.9852."
   },
   {
     "id": "blue-ghost-1",
@@ -112,14 +112,14 @@
     "lat_deg": 18.562,
     "lon_deg": 61.81,
     "elevation_m": null,
-    "landing_utc": null,
+    "landing_utc": "2025-03-02T08:34:00Z",
     "status": "landed",
     "coordinate_source": {
       "label": "NASA NSSDC lunar artifact table",
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Landed upright near Mons Latreille in Mare Crisium."
   },
   {
     "id": "im2-athena",
@@ -131,11 +131,11 @@
     "landing_utc": null,
     "status": "landed_tipped",
     "coordinate_source": {
-      "label": "NASA NSSDC lunar artifact table",
-      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+      "label": "LROC, IM-2 Athena landing site",
+      "url": "https://www.lroc.asu.edu/images/1408"
     },
     "validity": "MEASURED",
-    "notes": "About 370 m from the planned target point."
+    "notes": "Came to rest on its side inside a 20 m crater, about 370 m from the planned target point."
   },
   {
     "id": "mons-mouton-im2-target",
@@ -147,11 +147,11 @@
     "landing_utc": null,
     "status": "reference",
     "coordinate_source": {
-      "label": "LROC image 1401",
+      "label": "LROC, IM-2 intended landing site",
       "url": "https://www.lroc.asu.edu/images/1401"
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Planned target point, given to two decimals (about 300 m uncertainty). Not the point where Athena landed."
   },
   {
     "id": "hakuto-r-m2",
@@ -163,10 +163,10 @@
     "landing_utc": null,
     "status": "crashed",
     "coordinate_source": {
-      "label": "SpacePolicyOnline, June 2025 (LRO crash site)",
+      "label": "LRO crash-site location, reported by SpacePolicyOnline (June 2025)",
       "url": null
     },
     "validity": "MEASURED",
-    "notes": null
+    "notes": "Impact on 5 June 2025 (EDT)."
   }
 ]
