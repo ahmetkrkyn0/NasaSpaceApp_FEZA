@@ -4,12 +4,15 @@ Reads the PGDA 90 height map over the network (no download), casts 720 rays
 per site and writes ``data/horizons/<site_id>_<height>m.json``
 (docs/design/ufuk-hesabi.md; docs/design/veri-kaynaklari-ve-on-hesap.md).
 
-Two windows come from the same file:
+Windows are layered, finest first; each point uses the first grid with data:
 
-- near field: full 20 m grid, a square of +-NEAR_HALF_SIZE_M around the site;
-- far field: the internal overview 8 times coarser (160 m), +-FAR_HALF_SIZE_M.
-
-The near grid is used wherever it has data, the far grid elsewhere.
+- near field: a square of +-NEAR_HALF_SIZE_M around the site, from the 20 m
+  map (80 S to the pole) when the site lies inside it, otherwise from the
+  60 m map (60 S to the pole);
+- far field: the 20 m map's overview 8 times coarser (160 m), +-FAR_HALF_SIZE_M;
+- fallback: the 60 m map's first overview (120 m), +-FAR_HALF_SIZE_M. It fills
+  rays that leave the 80 S map, so sites near or north of 80 S keep the full
+  150 km range (dogrulama/veri-kaynaklari.md, No 18).
 
 Usage:
     python backend/scripts/precompute_horizons.py
@@ -48,6 +51,11 @@ FAR_OVERVIEW_LEVEL = 2  # overviews are 2, 4, 8, ... times coarser; level 2 is 8
 
 COVERAGE_LAT_DEG = -80.0  # LDEM_80S_20MPP covers 80 S to the pole
 
+PGDA90_LDEM_60M_URL = "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_60S_60MPP_ADJ.TIF"
+PGDA90_60M_PRODUCT = "PGDA 90 LDEM_60S_60MPP_ADJ"
+COVERAGE_60M_LAT_DEG = -60.0  # LDEM_60S_60MPP covers 60 S to the pole
+FALLBACK_OVERVIEW_LEVEL = 0  # first overview of the 60 m map: 120 m
+
 
 def _net_bytes() -> int | None:
     try:
@@ -64,25 +72,36 @@ def load_sites(path: Path) -> dict[str, dict]:
 
 def compute_site(site: dict, heights: list[float], out_dir: Path | None) -> None:
     lat, lon = site["lat_deg"], site["lon_deg"]
-    if lat > COVERAGE_LAT_DEG:
-        raise SystemExit(f"{site['id']}: latitude {lat} is outside the 80 S height map")
+    if lat > COVERAGE_60M_LAT_DEG:
+        raise SystemExit(f"{site['id']}: latitude {lat} is outside the 60 S height map")
 
     x, y = latlon_to_xy(lat, lon)
     net0, t0 = _net_bytes(), time.perf_counter()
-    near = read_window(PGDA90_LDEM_20M_URL, x, y, NEAR_HALF_SIZE_M)
-    far = read_window(PGDA90_LDEM_20M_URL, x, y, FAR_HALF_SIZE_M, overview_level=FAR_OVERVIEW_LEVEL)
+    if lat <= COVERAGE_LAT_DEG:
+        near_url, near_product = PGDA90_LDEM_20M_URL, PGDA90_PRODUCT
+    else:
+        near_url, near_product = PGDA90_LDEM_60M_URL, PGDA90_60M_PRODUCT
+    near = read_window(near_url, x, y, NEAR_HALF_SIZE_M)
+    grids = [near]
+    if lat <= COVERAGE_LAT_DEG:
+        grids.append(
+            read_window(PGDA90_LDEM_20M_URL, x, y, FAR_HALF_SIZE_M, overview_level=FAR_OVERVIEW_LEVEL)
+        )
+    grids.append(
+        read_window(
+            PGDA90_LDEM_60M_URL, x, y, FAR_HALF_SIZE_M, overview_level=FALLBACK_OVERVIEW_LEVEL
+        )
+    )
     t_read = time.perf_counter() - t0
     net1 = _net_bytes()
 
-    sampler = LayeredSampler([near, far])
+    sampler = LayeredSampler(grids)
     ground = float(sampler(np.array([lat]), np.array([lon]))[0])
-    decoded_mb = (near.data.nbytes + far.data.nbytes) / 4 / 1e6  # stored as float32
+    decoded_mb = sum(g.data.nbytes for g in grids) / 2 / 1e6  # float64 in memory, float32 on disk
 
     print(f"{site['id']}: x={x:.1f} m, y={y:.1f} m, ground height {ground:.1f} m")
-    print(
-        f"  near grid {near.data.shape} at {near.resolution_m:g} m, "
-        f"far grid {far.data.shape} at {far.resolution_m:g} m"
-    )
+    for g in grids:
+        print(f"  grid {g.data.shape} at {g.resolution_m:g} m")
     print(f"  read time {t_read:.1f} s, decoded pixels {decoded_mb:.1f} MB (float32)")
     if net0 is not None and net1 is not None:
         print(f"  network bytes received (whole machine) {(net1 - net0) / 1e6:.1f} MB")
@@ -103,9 +122,9 @@ def compute_site(site: dict, heights: list[float], out_dir: Path | None) -> None
             method="terrain",
             max_range_km=MAX_RANGE_M / 1000.0,
             dem={
-                "product": PGDA90_PRODUCT,
+                "product": near_product,
                 "resolution_m": near.resolution_m,
-                "url": PGDA90_LDEM_20M_URL,
+                "url": near_url,
             },
             validity="DERIVED",
         )
