@@ -12,7 +12,7 @@ import { RELAY_STATUSES } from '../../api/types';
 import { relayStatus } from '../comms';
 import { RELAY_EXAMPLE, RELAY_LABEL, RelayLabel } from '../comms/relay';
 import { InfoCards } from '../setup';
-import { HOOK_FACTS, HookFacts } from './hook-facts';
+import { HOOK_FACTS, HookFacts, firstFact } from './hook-facts';
 
 const REPO = new URL('../../../../', import.meta.url);
 
@@ -46,6 +46,20 @@ describe('hook facts', () => {
     expect(html).toContain('Did you know?');
     expect(html).toContain(HOOK_FACTS[1]!.text.replaceAll("'", '&#x27;'));
     expect(html).toContain('Source: ');
+  });
+});
+
+describe('S-03 card', () => {
+  it('comes first at Mons Mouton with the scenario text and its verified numbers', () => {
+    const i = firstFact('mons-mouton-im2-target');
+    const fact = HOOK_FACTS[i]!;
+    expect(fact.id).toBe('s03-sun-crawls');
+    expect(fact.text).toContain('Here the Sun wanders just above the horizon');
+    expect(fact.text).toContain('Even a small crater rim can leave a lander in shadow');
+    expect(renderToStaticMarkup(<HookFacts siteId="mons-mouton-im2-target" />)).toContain('6.47 degrees');
+    // Other sites start from the general list.
+    expect(firstFact('apollo-11', 1)).toBe(1);
+    expect(firstFact(null, 1)).toBe(1);
   });
 });
 
