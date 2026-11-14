@@ -7,6 +7,8 @@ FEZA ekibinin dört bilgisayardaki Claude oturumlarının birbiriyle nasıl habe
 | Tuna, Oğuzhan, Ahmet | [gelistirici.md](gelistirici.md) |
 | Göktuğ | [gelistirici.md](gelistirici.md) (kodlama oturumu için) + [sef.md](sef.md) (şef oturumu için) |
 
+Şef oturumu [uygulama planını](../PLAN.md) [sef-plan-yonetimi.md](sef-plan-yonetimi.md) belgesine göre dağıtır ve yönetir: issue haritası, hazır Slack komutları, işleri serbest bırakma kuralları, faz kapıları ve review'da bakılacaklar.
+
 ## Kim ne yapar
 
 | Kişi | Araçlar | Görev |

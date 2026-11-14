@@ -1,7 +1,7 @@
 # Uygulama Planı
 
 - **Tarih:** 14 Kasım 2026
-- **Durum:** Taslak (Aşama 3). Issue'lar GitHub'da açılmadı; ekip onayından sonra açılır.
+- **Durum:** Uygulanıyor. Issue'lar 14 Kasım 2026'da açıldı: iş issue'ları #33 ile #47 arası, takip issue'su #48 (1. bölümdeki tablo).
 - **Teslim:** 15 Kasım 2026, 23:59 yerel saat ([teslim kılavuzu](challenge/project-submission-guide.pdf))
 - **Dayandığı belgeler:** [ADR-0001](adr/0001-uygulama-mimarisi-ve-stack.md), [ADR-0002](adr/0002-koordinat-sistemi-ve-zaman.md), [ADR-0003](adr/0003-veri-sozlesmesi.md), [ADR-0004](adr/0004-api-uc-noktalari.md), [tasarım belgeleri](design/), [kullanıcı planı](product/use-cases-and-scenarios.md), [kitle stratejisi](product/audience-strategy.md), [analiz özeti](research/ANALIZ-OZETI.md)
 
@@ -32,7 +32,16 @@
 | Faz 2: Zorunlu ürün | Challenge'ın istediği her şey (`UC-01` ile `UC-08` arası ve `UC-10`, `UC-11`, `UC-12`) | Saha ve tarih seçilir; Güneş ve Dünya ufka göre görünür; olay saatleri, güç ve iletişim değerlendirilir; senaryolar karşılaştırılır; doğrulama testleri koşar |
 | Faz 3: Ekstralar ve teslim | Üç kapı, "neden" kartları, geçmiş görevler, mini oyun, doğrulama raporu, sunum | Teslim edilecek ürün, 7 slaytlık demo ve proje sayfası metni |
 
-Issue kimlikleri faz ve hat harfinden oluşur: `F1-A`, Faz 1'in A hattındaki issue'dur. GitHub numaraları issue'lar açılınca eklenir.
+Issue kimlikleri faz ve hat harfinden oluşur: `F1-A`, Faz 1'in A hattındaki issue'dur. GitHub'daki karşılıkları:
+
+| Hat | Faz 1 | Faz 2 | Faz 3 |
+|---|---|---|---|
+| A (Oğuzhan) | `F1-A` #33 | `F2-A` #37 | `F3-A1` #41, `F3-A2` #42 |
+| B (Tuna) | `F1-B` #34 | `F2-B` #38 | `F3-B` #43 |
+| C (Göktuğ) | `F1-C` #35 | `F2-C` #39 | `F3-C1` #44, `F3-C2` #45 |
+| D (Ahmet) | `F1-D` #36 | `F2-D` #40 | `F3-D1` #46, `F3-D2` #47 |
+
+Faz kapılarının sonuçları ve kesme kararları takip issue'suna (#48) yazılır. Şef oturumunun bu planı nasıl dağıtacağı ve yöneteceği [sef-plan-yonetimi.md](team-setup/sef-plan-yonetimi.md) belgesindedir.
 
 Planın iki sabit kuralı var:
 
@@ -946,9 +955,9 @@ Plan yazılırken verilen ve plan onayıyla kesinleşecek kararlar. İtiraz olur
 
 | No | Karar | Öneri | Ne zamana kadar |
 |---|---|---|---|
-| 1 | Hat ve kişi eşleşmesi | 2. bölümdeki tablo | Issue'lar açılmadan önce |
+| 1 | Hat ve kişi eşleşmesi | 2. bölümdeki tablo. Issue'lar bu öneriye göre atandı; takas olursa issue sahipleri değiştirilir | İsteyen olursa |
 | 2 | Demo slayt mı, video mu | Slayt. 30 saniyelik videoya ancak üç adım sığıyor ([athena-demosu.md](design/athena-demosu.md), bölüm 8) | Faz 2 kapısı |
-| 3 | Tuna yokken PR'ları kim merge eder | Karar ekibin; plan bir öneri getirmiyor | Issue'lar açılmadan önce |
+| 3 | Tuna yokken PR'ları kim merge eder | Karar ekibin; plan bir öneri getirmiyor | Dağıtımdan hemen sonra |
 | 4 | Yer istasyonu için alım sınırı mı, gönderim sınırı mı | Alım sınırı. Yalnızca "zaman kalırsa" listesindeki iş yapılırsa gerekir | İş alınırsa |
 | 5 | 3B görünümün web arayüzüyle birleştirilme yöntemi | 10. bölümdeki öneri | Teslimden sonra |
 
