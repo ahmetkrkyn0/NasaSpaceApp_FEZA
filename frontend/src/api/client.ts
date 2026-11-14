@@ -22,6 +22,7 @@ import {
   panelProfilesExample,
   powerExample,
   referenceMissionsExample,
+  validationExample,
   sitesExample,
   skySeriesExample,
 } from './examples';
@@ -43,6 +44,7 @@ import {
   type PanelProfile,
   type PowerSeries,
   type ReferenceMission,
+  type ValidationReport,
   type Site,
   type SiteCategory,
   type SkySeries,
@@ -201,6 +203,11 @@ export function getReferenceMissions(options?: RequestOptions): Promise<Referenc
 
 export function getPanelProfiles(options?: RequestOptions): Promise<PanelProfile[]> {
   return isLive() ? getJson('/panel-profiles', {}, options) : fromExample(panelProfilesExample, options);
+}
+
+/** The stored validation report (ADR-0004, "/api/validation"); the server does not rerun the tests. */
+export function getValidation(options?: RequestOptions): Promise<ValidationReport> {
+  return isLive() ? getJson('/validation', {}, options) : fromExample(validationExample, options);
 }
 
 /** Example mode returns a small synthetic grid (layers.ts), never real terrain. */

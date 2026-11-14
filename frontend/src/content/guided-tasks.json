@@ -1,0 +1,61 @@
+{
+  "_about": "Guided tasks of the Classroom door (docs/product/audience-strategy.md, section 3). A task is a preset state, a question and an explanation. Texts hold no numbers: the numbers a task shows come from the server when it opens. Digits appear only in the preset (start_date, days) and in source rows. Every source row must be marked 'doğrulandı' in its validation file; a test checks this.",
+  "tasks": [
+    {
+      "id": "why-poles",
+      "title": "Why go to a pole?",
+      "question": "Guess first: in the same month, where does the Sun climb higher, near the south pole or near the equator?",
+      "sites": ["mons-mouton-im2-target", "apollo-11"],
+      "start_date": "2026-12-01",
+      "days": 30,
+      "metrics": ["max_sun_elevation_deg", "sunlit_fraction"],
+      "explanation": "The Moon's spin axis is tilted only a little, so how high the Sun can climb at a site depends mostly on how far the site is from the equator. Near a pole the Sun stays close to the horizon all year.",
+      "sources": [
+        { "label": "Sun's yearly highest angle by latitude, checked against JPL Horizons", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "11" }
+      ]
+    },
+    {
+      "id": "never-sunlit",
+      "title": "Craters that never see the Sun",
+      "question": "On a ridge near the south pole the Sun is up only part of the time. What would it be like on the floor of a deep crater nearby?",
+      "sites": ["mons-mouton-im2-target"],
+      "start_date": "2026-12-01",
+      "days": 30,
+      "metrics": ["sunlit_fraction", "longest_dark_hours"],
+      "explanation": "Some crater floors near the poles never get direct sunlight. NASA maps these permanently shadowed regions from elevation data, and the map in the Plan door can show them around Mons Mouton. Recent orbiter images found no sign of widespread surface ice in them, only small patches.",
+      "table_note": "These values are for the ridge site, Mons Mouton. The server does not compute a crater floor, so they show how much sunlight even the ridge gets, not the crater.",
+      "sources": [
+        { "label": "NASA PGDA permanently shadowed region map", "file": "docs/research/dogrulama/veri-kaynaklari.md", "row": "23" },
+        { "label": "ShadowCam results in Science Advances", "file": "docs/research/dogrulama/csa-ve-diger-ulkeler.md", "row": "72" }
+      ]
+    },
+    {
+      "id": "earth-stays",
+      "title": "Why does Earth stay in one part of the sky?",
+      "question": "Play the month and watch Earth. Does it rise and set every day, the way the Sun does on Earth?",
+      "sites": ["mons-mouton-im2-target", "change-4"],
+      "start_date": "2026-12-01",
+      "days": 30,
+      "metrics": ["earth_visible_fraction", "longest_earth_hidden_hours"],
+      "explanation": "Seen from the south polar region, Earth's centre only rocks back and forth by a few degrees each month, so it keeps to the same part of the sky. Near the horizon that rocking is enough to hide Earth and show it again, in windows of about two weeks. From the far side Earth does not rise at all: at the Chang'e 4 site it stayed below the horizon for the whole year that was checked.",
+      "sources": [
+        { "label": "Earth's monthly motion seen from the south pole (De Rosa, ESA)", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-28" },
+        { "label": "Earth visibility windows near the poles (De Rosa, ESA)", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-29" },
+        { "label": "Earth below the horizon at the Chang'e 4 site, JPL Horizons", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "14" }
+      ]
+    },
+    {
+      "id": "no-air",
+      "title": "What changes without air?",
+      "question": "What decides the moment the Sun rises on the Moon?",
+      "sites": ["mons-mouton-im2-target"],
+      "start_date": "2026-12-01",
+      "days": 30,
+      "metrics": ["sunlit_fraction", "max_sun_elevation_deg"],
+      "explanation": "The Moon has no atmosphere, so nothing bends the light near the horizon. The horizon is set only by the local terrain and the curve of the Moon, and the Sun is up when its disk clears that horizon. The server finds that moment by searching, with no correction for air.",
+      "sources": [
+        { "label": "Challenge statement: horizon without refraction", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-1" }
+      ]
+    }
+  ]
+}

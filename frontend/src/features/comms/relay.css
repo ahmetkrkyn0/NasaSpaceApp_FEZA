@@ -1,0 +1,29 @@
+/* "Relay required" label (docs/design/role-etiketi.md). */
+.d-relay {
+  display: inline-flex;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+}
+
+.d-relay-required {
+  color: var(--risk-high);
+}
+
+.d-relay-intermittent {
+  color: var(--risk-med);
+}
+
+.d-relay-not_required {
+  color: var(--mint-text);
+}
+
+.d-relay-unknown {
+  color: var(--text-3);
+  border-style: dashed;
+}

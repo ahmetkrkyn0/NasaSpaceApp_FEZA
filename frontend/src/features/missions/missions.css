@@ -1,0 +1,31 @@
+/* Evidence level of a mission fact (docs/design/gecmis-gorev-vakalari.md, section 4). */
+.d-evidence {
+  display: inline-flex;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+}
+
+.d-evidence-official {
+  color: var(--mint-text);
+}
+
+.d-evidence-preliminary {
+  color: var(--risk-med);
+  border-style: dashed;
+}
+
+.d-evidence-commentary {
+  color: var(--text-3);
+  border-style: dotted;
+}
+
+.d-fact {
+  display: block;
+  padding: 4px 0;
+}

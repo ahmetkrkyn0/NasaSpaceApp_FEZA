@@ -1,0 +1,44 @@
+/* Result of a validation row (ADR-0004, "/api/validation"). */
+.d-status {
+  display: inline-flex;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+}
+
+.d-status-pass {
+  color: var(--mint-text);
+}
+
+.d-status-warn {
+  color: var(--risk-med);
+}
+
+.d-status-fail {
+  color: var(--risk-high);
+  font-weight: 700;
+}
+
+.d-status-skipped {
+  color: var(--text-3);
+  border-style: dashed;
+}
+
+.d-status-info {
+  color: var(--lavender);
+  border-style: dotted;
+}
+
+.d-details {
+  padding: 4px 0;
+}
+
+.d-details > summary {
+  cursor: pointer;
+  padding: 4px 0;
+}

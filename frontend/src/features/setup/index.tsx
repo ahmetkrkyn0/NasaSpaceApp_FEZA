@@ -23,6 +23,34 @@ function pickDefined(form: SetupForm): Partial<SetupForm> {
   return Object.fromEntries(Object.entries(form).filter(([, v]) => v !== '' && v !== undefined));
 }
 
+/**
+ * Info cards of a site, such as CSA contributions (docs/design/csa-bilgi-kartlari.md). They come
+ * with the site record from data/sites.json; a site without cards shows none.
+ */
+export function InfoCards({ cards }: { cards: Site['cards'] }) {
+  if (!cards || cards.length === 0) return null;
+  return (
+    <ul className="d-list" aria-label="Info cards">
+      {cards.map((card) => (
+        <li key={card.text} className="d-note">
+          <span className="d-agency">{card.agency}</span> {card.text}{' '}
+          <span className="d-muted">
+            (
+            {card.source.url ? (
+              <a className="d-link" href={card.source.url} target="_blank" rel="noreferrer">
+                {card.source.label}
+              </a>
+            ) : (
+              card.source.label
+            )}
+            )
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function SiteCard({ site }: { site: Site }) {
   const source = { label: site.coordinate_source.label, ...(site.coordinate_source.url ? { url: site.coordinate_source.url } : {}) };
   return (
@@ -53,6 +81,7 @@ function SiteCard({ site }: { site: Site }) {
         </div>
       </dl>
       {site.notes ? <p className="d-muted">{site.notes}</p> : null}
+      <InfoCards cards={site.cards} />
       {site.category === 'artemis_candidate' ? (
         <p className="d-muted">Region from the 2024 Artemis III candidate study; the landing plan has changed since.</p>
       ) : null}
