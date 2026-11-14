@@ -25,7 +25,7 @@
 ## 1. Kısa özet
 
 1. Rover için sıcaklık sorunu aslında bir **enerji** sorunu. Rover soğukta ısıtıcıyla yaşar, ısıtıcı pili, pil güneşi kullanır. Bu yüzden rota için asıl ölçü: **gölgede kaç saat kalıyorum ve zemin ne kadar soğuk?**
-2. Heat1d tek başına düz zemin varsayar. Biz ona her karede kendi hesapladığımız ufuk maskesinden çıkan güneş verisini veriyoruz. Heat1d'nin güncel sürümü (v0.4.1) bunu kodu değiştirmeden kabul ediyor: `Model(flux_series=..., flux_dt=...)`.
+2. Heat1d tek başına uzak arazinin gölgesini bilmez (güncel sürümü eğimli yüzeyi ve krater içi gölgeyi destekliyor). Biz ona her karede kendi hesapladığımız ufuk maskesinden çıkan güneş verisini veriyoruz. Heat1d'nin GitHub'daki geliştirme sürümü (v0.4.1; henüz yayımlanmadı, `pip install heat1d` 0.3.2 kurar ve bu özelliği içermez) bunu kodu değiştirmeden kabul ediyor: `Model(flux_series=..., flux_dt=...)`.
 3. Aynı ufuk maskesinden üç şey çıkıyor: güneş takvimi (gölge süresi, kalıcı gölge), Dünya takvimi (iletişim) ve Heat1d sıcaklığı. Hepsi zamana bağlı A* rota bulucuya giriyor.
 4. Ağır hesaplar bir kez, önceden Python ile yapılır. Arayüz yalnızca hazır dosyaları okur.
 5. Teslime kalan süre için öncelik: **ufuk maskesi → ışık takvimi → pil kurallı A\***. Heat1d sıcaklığı zaman kalırsa eklenir; mimari buna hazır.
@@ -136,7 +136,7 @@ Seçilen tarih aralığında Güneş ve Dünya'nın saat saat yönünü (azimut)
 
 | Girdi | Çıktı | Açık kaynak |
 |---|---|---|
-| Bölge merkezi enlem/boylam, tarih aralığı, adım (ör. 1 saat) | Tablo: `t, sun_az, sun_el, sun_r_au, earth_az, earth_el`<br/>709 satır × 6 sütun, birkaç yüz KB | Ekibin kodu: `site_azel_spice.py` (SpiceyPy), `lunarAzEl.mjs` (astronomy-engine)<br/>astroquery.jplhorizons (Ay yüzeyi gözlemcisi destekli)<br/>heat1d içindeki `heat1d.horizons` |
+| Bölge merkezi enlem/boylam, tarih aralığı, adım (ör. 1 saat) | Tablo: `t, sun_az, sun_el, sun_r_au, earth_az, earth_el`<br/>709 satır × 6 sütun, yaklaşık 40–50 KB | Ekibin kodu: `site_azel_spice.py` (SpiceyPy), `lunarAzEl.mjs` (astronomy-engine)<br/>astroquery.jplhorizons (Ay yüzeyi gözlemcisi destekli)<br/>heat1d içindeki `heat1d.horizons` |
 
 > **Basitleştirme:** Birkaç km'lik bölgede tek bir liste kullanılabilir. 4 km'de yerel dikey yaklaşık 0,13° döner. Kutupta Güneş çok alçak olduğu için bu fark sınır durumlarda önemli olabilir; gerekirse liste kare bazında düzeltilir.
 
@@ -257,7 +257,7 @@ Projenin lisansı Apache 2.0. MIT ve BSD lisanslı araçlar bununla uyumlu. Lisa
 | HORAYZON (Steger vd. 2022) | M2 ufuk maskesi, eğim, bakı | Kontrol edilmeli | Makale okundu, denenmedi |
 | Schörghofer Planetary-Code-Collection | M2 için referans algoritma | Kontrol edilmeli | Denenmedi |
 | astroquery.jplhorizons | M3, Ay yüzeyinden Horizons sorgusu | BSD-3 | Belge okundu |
-| SpiceyPy, astronomy-engine | M3 (ekibin kodu) | Kontrol edilmeli | Ekipte kullanıldı |
+| SpiceyPy, astronomy-engine | M3 (ekibin kodu) | MIT (ikisi de) | Ekipte kullanıldı |
 | rasterio / GDAL, NumPy | M1 ve tüm ön hesap | Açık kaynak | Standart |
 | PGDA 5 m LOLA saha DEM'leri | M1 yükseklik ve eğim | NASA verisi | Sayfa okundu |
 | PGDA kutup aydınlanma haritaları | M4 doğrulaması | NASA verisi | Sayfa okundu |
@@ -282,7 +282,7 @@ Teslim: **15 Kasım 2026, 23:59.** Her aşama bir öncekinin çıktısıyla çal
 
 - **Uzak ufuk:** 5 m'lik saha DEM'i küçük bir alanı kapsıyor. Onlarca km ötedeki arazi için geniş ve kaba bir DEM gerekiyor; hangi ürünün kullanılacağı seçilmeli.
 - **Hesap süresi ölçülmedi:** Hem M2 hem M5 için ilk iş küçük bir bölgede süre ölçmek.
-- **Heat1d ve dış akı:** Dış akı ile denge (spin-up) davranışı ve öğlen hizalaması denenmeli.
+- **Heat1d ve dış akı:** Dış akı ile denge (spin-up) davranışı ve öğlen hizalaması denenmeli. Kaynak koda göre dış akı yalnızca çıktı aşamasında kullanılıyor; ısınma gölgesiz yerleşik akıyla yapıldığı için gölgedeki kareler olduğundan sıcak başlar. Öğlen hizalaması için `flux_lt0_hr` parametresi verilmeli.
 - **Yansıyan ışık yok:** Bu yöntem komşu aydınlık yamaçlardan gelen ışığı ve ısıyı hesaba katmaz. Gölgedeki kareler gerçekte olduğundan biraz daha soğuk çıkar. Rover için bu güvenli yönde bir hata: pil tahmini fazla temkinli olur.
 - **Dünya görünürlük ölçütü:** Merkez mi, ilk kenar mı, tam disk mi? Ephemeris raporundaki bekleyen kararlardan biri; M4'teki `earth_ok` buna göre yazılacak.
 - **Rover parametreleri:** Gerçek bir rover seçilmedi. VIPER değerleri varsayılan olarak kullanılabilir; arayüzde varsayım olduğu belirtilmeli.

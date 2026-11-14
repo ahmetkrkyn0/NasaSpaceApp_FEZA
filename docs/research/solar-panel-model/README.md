@@ -34,7 +34,7 @@
 1. **Kutupta Güneş hep ufkun dibinde.** Mons Mouton'da Aralık 2026 boyunca Güneş en fazla 6,47° yükseliyor ve ufku çember çizerek dolaşıyor. Bu yüzden panelin hangi yöne baktığı ve önünde tepe olup olmadığı, panelin kendisinden daha belirleyici.
 2. **Dik ve Güneş'le birlikte dönen panel en iyisi.** Tek eksende (dikey eksen etrafında) dönen dik panel, iki eksende dönen pahalı panelle neredeyse aynı enerjiyi topluyor (fark yüzde 0,3). Sabit dik panel bunun yarısını, yere yatık panel ise yaklaşık yüzde 6'sını topluyor.
 3. **Yükseklik ve arazi, panel tipinden sonraki en büyük etken.** Ufku yalnızca 1° yukarı ya da aşağı almak, dönen panelin aylık enerjisini 686 ile 890 W/m² arasında oynatıyor. Paneli direğe çıkarmak, yakındaki tepelerin üstünden bakmak demek.
-4. **Rover yönünü değiştirerek yüzde 18 daha fazla enerji topluyor.** VIPER benzeri üç panelli bir rover'da Güneş arka köşeye gelince iki panel birden ışık alıyor.
+4. **Rover yönünü değiştirerek yüzde 12 ile 18 arası daha fazla enerji topluyor.** Yüzde 18, ufkun 1° aşağıda olduğu varsayım içindir. VIPER benzeri üç panelli bir rover'da Güneş arka köşeye gelince iki panel birden ışık alıyor.
 5. **Ürüne katkısı:** kullanıcı bir yer, panel tipi ve yüksekliği seçer; program saat saat güç eğrisini, aylık enerjiyi ve en uzun karanlık süreyi gösterir. Aynı fonksiyon, zamanlı A* rota bulucunun pil hesabına girer.
 
 ---
@@ -46,10 +46,10 @@ Yakın zamandaki iki iniş, panelin yönünün görevi nasıl belirlediğini gö
 | Görev | Ne oldu | Bizim için dersi |
 |---|---|---|
 | SLIM (JAXA, 2024) | Burnunun üstüne devrildi, paneller batıya baktı. Sabah güç yoktu, Güneş batıya geçince uyandı. | Panel yönü girdi olmalı, sabit kabul edilmemeli ([CSA notu](../csa-moon-exploration.md)). |
-| Athena (IM-2, 2025) | Güney kutbunda bir kraterin içine yan yattı, paneller Güneş'i göremedi. Görev 13 saatten kısa sürdü. | Arazinin eğimi ve yakındaki gölge, panel gücünü sıfıra indirebilir. |
-| VIPER (NASA, iptal edildi) | Üç dik paneli (sol, sağ, arka) vardı. Ekip, Güneş'i arka köşeye alacak şekilde sürüş planlıyordu. | Rover'ın yönü de bir karar değişkeni. |
+| Athena (IM-2, 2025) | Güney kutbunda bir kraterin içine yan yattı, paneller Güneş'i göremedi. Görev 12 saat 45 dakika sürdü (NASA). | Arazinin eğimi ve yakındaki gölge, panel gücünü sıfıra indirebilir. |
+| VIPER (NASA; 2024'te iptal edildi, 2025'te yeniden başlatıldı, 2027 sonunda Mons Mouton'a gönderilmesi planlanıyor) | Üç dik paneli (sol, sağ, arka) vardı. Ekip, Güneş'i arka köşeye alacak şekilde sürüş planlıyordu. | Rover'ın yönü de bir karar değişkeni. |
 
-Ayrıca NASA, kutupta güç için 10–20 m'lik dikey güneş paneli direkleri geliştiriyor (VSAT: Astrobotic, Honeybee Robotics, Lockheed Martin; prototipler 2024'te JSC'deki vakum odasında test edildi). Yani "dik, dönen ve yüksek panel" fikri NASA'nın kendi tercihiyle aynı.
+Ayrıca NASA, kutupta güç için 10–20 m'lik dikey güneş paneli direkleri geliştiriyor (VSAT: Astrobotic, Honeybee Robotics, Lockheed Martin; 2023 tarihli belgeye göre prototiplerin 2024'te JSC'deki vakum odasında test edilmesi planlanıyordu; testin yapıldığı doğrulanamadı). Yani "dik, dönen ve yüksek panel" fikri NASA'nın kendi tercihiyle aynı.
 
 ---
 
@@ -155,13 +155,13 @@ def rover_gucu(az, el, r_au, ufuk, s, A, psi, alan_m2, verim):
 
 **En iyi yön:** düz zeminde Güneş arka köşeye (rover'a göre 135° veya 225°) geldiğinde iki panel birden `cos 45° = 0,707` ile ışık alır. Toplam `1,414`, tek panelin en iyi durumundan (`1`) yüzde 41 fazla. Eğimli zeminde en iyi yön değişir; bu yüzden kod, yönü 5°'lik adımlarla tarayıp en iyisini seçebilir (36 veya 72 deneme, çok ucuz).
 
-**Sürerken yön:** normal bir rover hareket yönüne bakar, yani yön `psi` hamlenin yönüdür. VIPER her yöne sürülebiliyordu (yengeç yürüyüşü); böyle bir rover'da yön, hareket yönünden bağımsız seçilebilir. Bu, rover profilinde `her_yone_surus: true/false` ayarı olarak tutulur.
+**Sürerken yön:** normal bir rover hareket yönüne bakar, yani yön `psi` hamlenin yönüdür. VIPER'ın direksiyon aralığı gösterilen kaynağa göre ±50°; her yöne sürüş (yengeç yürüyüşü) doğrulanmadı. Her yöne sürülebilen bir rover'da yön, hareket yönünden bağımsız seçilebilir. Bu, rover profilinde `her_yone_surus: true/false` ayarı olarak tutulur.
 
 ---
 
 ## 7. Sıcaklık ve verim
 
-- **Verim (`verim`):** uzay tipi üç eklemli GaAs hücreler için yaklaşık 0,28–0,30 alınabilir. Rover profilinde bir sayı olarak tutulur.
+- **Verim (`verim`):** uzay tipi üç eklemli GaAs hücreler için yaklaşık 0,27–0,30 alınabilir (gösterilen Spectrolab veri sayfası ömür başı için %26,8 veriyor; aşağıdaki örnekte kullanılan 0,29 iyimser bir varsayımdır). Rover profilinde bir sayı olarak tutulur.
 - **Sıcaklık:** hücre ısındıkça verim düşer. Normal sıcaklıklar için ölçülmüş katsayı, her derece için yaklaşık yüzde 0,2 düşüş (`k ≈ −0,002 / K`). Bu değer bu araştırmada Ay kutbunun soğuk koşulları için doğrulanmadı.
 - **Hücre sıcaklığı:** arXiv 2509.13110 (Ay'da PV sıcaklığı için gri bant modeli) panelin hem Güneş'ten hem sıcak zeminden ısındığını gösteriyor (örneğinde 390 K zeminin yanında, Güneş'e dik panel için 329 K).
 
@@ -218,7 +218,7 @@ Rover değerleri üç panelin **toplam** alanına bölündü (bir anda en fazla 
 2. Sabit dik panel, Güneş arkasına geçtiği günlerde (yaklaşık 2–16 Aralık) hiç üretmiyor.
 3. Ufku 1° aşağı almak dönen panelin enerjisini yüzde 16 artırıyor (769 → 890), 1° yukarı almak yüzde 11 azaltıyor (769 → 686). Gerçek arazi maskesi en önemli eksik parça.
 4. 2–10 Aralık arasında Güneş ufkun altında. Yaklaşık 232 saatlik bu karanlık, VIPER'ın 50 saatlik güvenli sınırının çok üstünde. Rover bu günleri daha yüksek, güneş gören bir noktada geçirmeli. Bu, zamanlı A*'ın bulması gereken şey.
-5. Rover'ın yönünü Güneş'e göre ayarlaması, park haline göre yüzde 18 daha fazla enerji veriyor.
+5. Rover'ın yönünü Güneş'e göre ayarlaması, park haline göre ufuk −1° iken yüzde 18, 0° iken yüzde 14,5, +1° iken yüzde 11,8 daha fazla enerji veriyor.
 
 > **Sınırlar:** arazi yok (sabit ufuk); verim ve sıcaklık uygulanmadı; yalnızca bir ay. Mons Mouton için literatürde hazır bir aydınlanma yüzdesi bulunamadı; doğrulama için PGDA kutup aydınlanma haritası kullanılmalı.
 
@@ -345,7 +345,7 @@ M2 ile aynı algoritma, yalnızca gözlemci yüksekliği farklı ve yalnızca bi
   ],
   "verim": 0.29,
   "panel_yuksekligi_m": 1.0,
-  "her_yone_surus": true,
+  "her_yone_surus": false,
   "sicaklik_katsayisi_K": 0.0,
   "T_ref_K": 301
 }

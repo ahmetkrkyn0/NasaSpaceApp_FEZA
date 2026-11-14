@@ -10,7 +10,7 @@
 
 1. Portal büyük ölçüde bir **yönlendirme sayfası**. Asıl içerik 8 alt sayfada: Kanada'nın rolü, Canadarm3, Gateway, Kanada utility rover'ı, Artemis, Apollo'dan Artemis'e, ISS sonrası keşif, LEAP fon programı.
 2. **2026'da tablo büyük ölçüde değişti:**
-   - NASA **Gateway**'i 24 Mart 2026'da "durdurdu" (paused).
+   - NASA **Gateway**'i Mart 2026'da (gün doğrulanamadı) "durdurdu" (paused).
    - Kanada **Canadarm3** yatırımını Ay yüzeyindeki lojistik işlere yönlendiriyor (Ağustos 2026).
    - Güney kutbuna gidecek **ilk Kanada rover'ı (Lunar Rover Mission)** Mart 2026'da iptal edildi.
 3. CSA sitesinin bazı sayfaları **eskimiş durumda**. CSA bunu kendisi de not düşüyor: "updating its website to align with the latest Artemis program updates". Ayrıntılar 5. bölümde.
@@ -48,7 +48,7 @@ Ek kaynaklar: [Bilgi kiti](https://www.asc-csa.gc.ca/eng/astronomy/moon-explorat
 ### 2.1 Canadarm3 ve Gateway
 
 - **Gateway:** ABD liderliğinde planlanan bir Ay yörüngesi istasyonu. ISS'in yaklaşık 1/6'sı boyutunda, 4 kişilik ekiplerin 3 aya kadar kalması öngörülüyordu. Planlanan rolleri: bilim laboratuvarı, teknoloji test alanı, yüzeye iniş için buluşma noktası ve yüzey operasyonları için kontrol merkezi.
-- **Durum:** NASA Gateway'i **24 Mart 2026'da durdurdu** ([Payload](https://payloadspace.com/mda-space-will-repurpose-canadarm3-for-lunar-surface/)). SpaceQ'ya göre bu, "şu an ilerlemiyor" anlamına geliyor ([SpaceQ](https://spaceq.ca/nasa-clps-2-canada-canadarm3/)).
+- **Durum:** NASA Gateway'i **Mart 2026'da durdurdu** (24 Mart tarihi doğrulanamadı; kaynak sayfa açılamadı) ([Payload](https://payloadspace.com/mda-space-will-repurpose-canadarm3-for-lunar-surface/)). SpaceQ'ya göre bu, "şu an ilerlemiyor" anlamına geliyor ([SpaceQ](https://spaceq.ca/nasa-clps-2-canada-canadarm3/)).
 - **Canadarm3'ün teknik özellikleri** (CSA veri sayfası):
   - 8,5 m uzunluk, 7 serbestlik derecesi (omuzda 3, dirsekte 1, bilekte 3 eklem)
   - Karbon fiber kompozit gövde, büyük kol için tahmini kütle 1076 kg
@@ -227,7 +227,7 @@ Bu bölüm CSA dışındaki Ay görevlerinden çıkan dersleri ve her birinden p
 | --- | --- | --- | --- |
 | 2019 | Çin | Chang'e 4 | Uzak yüze iniş. Dünya ile iletişim yalnızca Queqiao röle uydusu üzerinden (Dünya-Ay L2). |
 | 2023 | Hindistan | Chandrayaan-3 | Kutba yakın ilk yumuşak iniş (~69° G). Saha seçim kriterleri bizim metriklerimizle örtüşüyor. |
-| 2023 | Japonya | HAKUTO-R M1 (ispace) | Krater kenarında ölçülen irtifa ~3 km sıçradı, yazılım sensörü arızalı sayıp yok saydı. Kaza. |
+| 2023 | Japonya | HAKUTO-R M1 (ispace) | Krater kenarının üzerinden geçerken irtifa verisi yanlış yorumlandı; araç yaklaşık 5 km yükseklikte askıda kaldı. Kaza. |
 | 2024 | Japonya | SLIM (JAXA) | Görüntü eşleştirmeli hassas iniş, ama ters durdu. Batıya bakan paneller yalnızca öğleden sonra güç üretti. |
 | 2024 | Çin | Chang'e 6 | Uzak yüzden ilk örnek dönüşü, Queqiao-2 rölesiyle. |
 | 2025 | ABD | Athena (Intuitive Machines IM-2) | Güney kutbunda uzun gölgeler, loş ışık ve altimetre gürültüsü. Krater içine yan yattı. |
@@ -236,16 +236,16 @@ Bu bölüm CSA dışındaki Ay görevlerinden çıkan dersleri ve her birinden p
 
 **Sırada:**
 
-- **Chang'e 7 (Çin):** Güney kutbunda Shackleton kraterini hedefliyor. Ağustos 2026 fırlatma penceresi kaçtı, 2027'ye ertelendi ([CNN](https://www.cnn.com/2026/08/23/science/change-7-china-moon-mission-launch-postponed)). Fırlatma tarihi, Shackleton'da iyi aydınlanma koşullarına göre seçiliyor; projemizin çözdüğü problemin birebir örneği.
+- **Chang'e 7 (Çin):** Güney kutbunda bir krater kenarını hedefliyor. Ağustos 2026 fırlatma penceresi kaçtı, 2027'ye ertelendi ([CNN](https://www.cnn.com/2026/08/23/science/change-7-china-moon-mission-launch-postponed)). CNN erteleme nedeni olarak yüksek irtifa rüzgârlarını ve dar fırlatma penceresini veriyor; aydınlanmaya göre tarih seçimi kaynakta geçmiyor.
 - **LUPEX / Chandrayaan-5 (Hindistan + Japonya):** Güney kutbu görevi. ISRO iniş aracı, Japon rover, JAXA H3 roketi; en erken 2028.
-- **ESA Moonlight (Avrupa):** Ay için iletişim ve navigasyon ağı. Öncü Lunar Pathfinder 2026 sonu ile 2027 arası, ilk hizmet 2028 sonu, tam ağ 2030 ([ESA](https://www.esa.int/Applications/Connectivity_and_Secure_Communications/ESA_s_Moonlight_programme_Pioneering_the_path_for_lunar_exploration)).
+- **ESA Moonlight (Avrupa):** Ay için iletişim ve navigasyon ağı. Öncü Lunar Pathfinder'ın 2026'da çalışmaya başlaması planlanıyor, ilk hizmet 2028 sonu, tam ağ 2030 ([ESA](https://www.esa.int/Applications/Connectivity_and_Secure_Communications/ESA_s_Moonlight_programme_Pioneering_the_path_for_lunar_exploration)).
 
 ### 8.2 Dersten özelliğe
 
 #### 1. Çok kriterli saha puanı (ISRO, Chandrayaan-3)
 
-- **Ders:** ISRO sahayı şu kriterlerle seçti: eğim, kaya boyutu, krater ve kaya dağılımı, güneşli süre, Dünya görünürlüğü, gölgelenme. Son üçü bizim aracın zaten çekirdeği.
-- **Yöntem:** 60-70° G bandında 4 km × 2,4 km'lik kayan pencereyle tehlikesiz alanlar bulundu. Ardından 8 aday, Chandrayaan-2 OHRC'nin 32 cm'den iyi stereo görüntüleriyle sayısal yükseklik modeline çevrildi. Ana saha LS-2, Manzius U ile Boguslawsky M kraterleri arasında.
+- **Ders:** ISRO sahayı şu kriterlerle seçti: eğim, kaya boyutu, krater ve kaya dağılımı, güneşli süre, gölgelenme. Son ikisi bizim aracın zaten çekirdeği. (Dünya görünürlüğü, gösterilen kaynaklarda ölçüt olarak geçmiyor.)
+- **Yöntem:** 60-70° G bandında 4 km × 2,4 km'lik kayan pencereyle tehlikesiz alanlar bulundu. Ardından 8 aday, Chandrayaan-2 OHRC'nin 32 cm'den iyi stereo görüntüleriyle sayısal yükseklik modeline çevrildi. Ana sahanın Manzius U ile Boguslawsky M kraterleri arasında olduğu bilgisi gösterilen kaynaklarda bulunamadı.
 - **Özellik:** Eğim ve kaya riskini güç ve iletişim metrikleriyle tek puanda toplamak. Ağırlıkları kullanıcı kaydırıcıyla seçsin.
 - **Veri:** LOLA eğim haritası, LROC görüntüleri.
 
@@ -257,9 +257,9 @@ Bu bölüm CSA dışındaki Ay görevlerinden çıkan dersleri ve her birinden p
 
 #### 3. Gece sayacı ve uyanma zamanı (ISRO, JAXA, CNSA)
 
-- **Chandrayaan-3:** Vikram ve Pragyan tek bir Ay günü (~14 Dünya günü) için tasarlandı. Eylül 2023'te uyku moduna alındılar. ISRO 22 Eylül'deki yerel gün doğumunda uyandırmayı denedi, sinyal gelmedi. Gece sıcaklığı −150 °C'ye kadar indi.
+- **Chandrayaan-3:** Vikram ve Pragyan tek bir Ay günü (~14 Dünya günü) için tasarlandı. Eylül 2023'te uyku moduna alındılar. ISRO 22 Eylül'deki yerel gün doğumunda uyandırmayı denedi, sinyal gelmedi. (Gece sıcaklığı için gösterilen kaynakta bir değer yok.)
 - **SLIM:** Gece için tasarlanmadığı halde 3 geceyi atlattı.
-- **Yutu-2 (Çin):** Radyoizotop ısıtıcı taşıyor, geceleri panellerini kapatıp uyuyor. 3 aylık tasarım ömrünü kat kat aştı. 2026'daki durumunu doğrulayamadım.
+- **Yutu-2 (Çin):** Radyoizotop ısıtıcı taşıyor, geceleri panellerini kapatıp uyuyor. 3 aylık tasarım ömrünü 2019'da doldurdu ve çalışmayı sürdürdü. 2026'daki durumunu doğrulayamadım.
 - **Özellik:** Gün batımına kalan süre, gecenin uzunluğu ve bir sonraki gün doğumu (uyanma zamanı). Challenge'daki "time remaining before sunset" hedefine birebir uyuyor.
 - **Veri:** JPL Horizons.
 
@@ -328,6 +328,7 @@ Bu bölüm CSA dışındaki Ay görevlerinden çıkan dersleri ve her birinden p
 - [Swarajya: What went into finding the best spot for Chandrayaan-3](https://swarajyamag.com/science/explained-what-went-into-finding-the-best-spot-for-chandrayan-3-landing-on-the-moon)
 - [Live Science: Chandrayaan-3 lander fails to answer wake-up call](https://www.livescience.com/space/space-exploration/indias-chandrayaan-3-moon-lander-fails-to-answer-wake-up-call-may-be-dead-for-good)
 - [Scientific American: Japan's SLIM mission is revived on the Moon](https://www.scientificamerican.com/article/japans-slim-mission-is-revived-on-the-moon)
+- [JAXA: SLIM iniş sonuçları (25 Ocak 2024)](https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf). Panellerin batıya baktığı ve hedefin yaklaşık 55 m doğusuna inildiği bilgisinin birincil kaynağı.
 - [The Register: JAXA ends SLIM moon mission (Ağustos 2024)](https://www.theregister.com/2024/08/26/jaxa_ends_slim_moon_mission/)
 - [Space.com: Chang'e 4 enters 3rd lunar night, Yutu 2 hits design lifetime](https://www.space.com/change-4-moon-spacecraft-third-lunar-night.html)
 - [CNN: China postpones Chang'e 7 launch (Ağustos 2026)](https://www.cnn.com/2026/08/23/science/change-7-china-moon-mission-launch-postponed)
