@@ -14,7 +14,11 @@
     "one_input": "{a} and {b} differ in one input only, the {input}, so the whole difference comes from it.",
     "counterfactual_intro": "Each row keeps {a} as it is and changes one input to the value in {b}. The server computed every row.",
     "counterfactual_note": "The rows need not add up to the total: inputs can work together.",
-    "same_inputs": "{a} and {b} ask the same question, so there is no difference to explain."
+    "same_inputs": "{a} and {b} ask the same question, so there is no difference to explain.",
+    "mixed_horizon": "{a} and {b} were computed with different horizon models ({models}). The difference mixes the inputs with the horizon model, so it cannot be tied to a single input.",
+    "mixed_validity": "{a} and {b} carry different reliability labels ({models}), so they were not computed the same way. The difference cannot be tied to a single input.",
+    "mixed_caveat": "Not a like-for-like difference: the two scenarios were not computed the same way.",
+    "mixed_rows": "A row marked \"other model\" changed the way the result was computed along with the input, so it does not isolate that input."
   },
   "metrics": {
     "sunlit_fraction": {

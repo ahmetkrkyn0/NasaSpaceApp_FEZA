@@ -8,6 +8,7 @@ import { scenarioStore } from '../../state/scenario-store';
 import { MAST_HEIGHTS, TERRAIN_MAST_HEIGHTS } from '../../state/scenario-tools';
 import { readScenarioDraft } from '../../state/url-sync';
 import { SourcePopover } from '../../ui/SourcePopover';
+import { TERRAIN_RULE_TEXT } from '../compare/horizon-models';
 import { EMPTY_FORM, PANEL_TYPE_LABEL, STATUS_LABEL, checkForm, formFromScenario, groupSites, type SetupForm } from './form';
 import { ErrorNote, ExampleNote, HorizonNote, PanelHeader, useHorizon } from './shared';
 
@@ -49,6 +50,11 @@ export function InfoCards({ cards }: { cards: Site['cards'] }) {
       ))}
     </ul>
   );
+}
+
+/** Horizon model a mast height asks for: `terrain` where the site has a profile, else `flat` (ADR-0003). */
+export function mastHorizonKind(height: number): 'terrain' | 'flat' {
+  return TERRAIN_MAST_HEIGHTS.includes(height) ? 'terrain' : 'flat';
 }
 
 function SiteCard({ site }: { site: Site }) {
@@ -212,15 +218,22 @@ export default function SetupPanel() {
           <span className="d-control-label">Mast height</span>
           <div className="d-choice" role="group" aria-label="Mast height">
             {MAST_HEIGHTS.map((h) => (
-              <button key={h} type="button" className="d-choice-option" aria-pressed={form.mastHeight === h} onClick={() => set({ mastHeight: h })}>
-                {h} m
+              <button
+                key={h}
+                type="button"
+                className="d-choice-option d-choice-stack"
+                aria-pressed={form.mastHeight === h}
+                aria-label={`${h} m, ${mastHorizonKind(h)} horizon`}
+                onClick={() => set({ mastHeight: h })}
+              >
+                {h} m<span className="d-choice-note">{mastHorizonKind(h)}</span>
               </button>
             ))}
           </div>
+          {/* Shown before a height is chosen, so a mast comparison is not made across horizon models (issue #71). */}
+          <span className="d-hint">{TERRAIN_RULE_TEXT}</span>
           {form.mastHeight === 0 ? (
             <span className="d-hint">0 m: flat horizon at ground level, the condition of the reference tests.</span>
-          ) : !TERRAIN_MAST_HEIGHTS.includes(form.mastHeight) ? (
-            <span className="d-hint">Terrain horizons exist for 2 m and 10 m only; {form.mastHeight} m uses the flat horizon.</span>
           ) : null}
           {check.place ? (
             horizon.state.status === 'error' ? (

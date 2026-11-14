@@ -13,10 +13,11 @@ import {
   sameSiteAnotherDate,
   slippedScenario,
 } from '../../state/scenario-tools';
-import { VALIDITY_LABEL, ValidityBadge } from '../../ui/ValidityBadge';
+import { ValidityBadge } from '../../ui/ValidityBadge';
 import { AsyncBlock, ExampleNote, NeedsScenario, PanelHeader } from '../setup/shared';
 import { WHY_PANEL_ID } from '../why';
 import { whyStore } from '../why/why-state';
+import { HORIZON_MODEL_LABEL, fetchHorizonModels, mixWarning, modelMix, type HorizonModels } from './horizon-models';
 import { compareScenarios } from './results';
 import { compareCsv, compareJson, download } from './export';
 
@@ -193,17 +194,19 @@ function WhyLink({ metric, scenarioId, label }: { metric: CompareMetricName; sce
   );
 }
 
-export function ResultTable({ response }: { response: CompareResponse }) {
+export function ResultTable({ response, models = {} }: { response: CompareResponse; models?: HorizonModels }) {
   const results = response.scenarios;
   const reference = results[0];
-  const validities = new Set(results.map((r) => r.validity));
   const bestOf = new Map(response.deltas.map((d) => [d.metric, d.best_scenario_id]));
+  // Scenarios computed with different horizon models are not like for like (issue #71).
+  const warning = mixWarning(
+    modelMix(results.map((r, i) => ({ name: String.fromCharCode(65 + i), model: models[r.scenario.scenario_id], validity: r.validity }))),
+  );
   return (
     <>
-      {validities.size > 1 ? (
+      {warning ? (
         <p className="d-note d-note-warn" role="note">
-          These scenarios carry different reliability labels ({[...validities].map((v) => VALIDITY_LABEL[v]).join(', ')}).
-          A difference may come from how they were computed, for example terrain against flat horizon, not from the place or date.
+          {warning}
         </p>
       ) : null}
       <div className="d-table-wrap">
@@ -215,6 +218,9 @@ export function ResultTable({ response }: { response: CompareResponse }) {
               {results.map((r, i) => (
                 <th key={r.scenario.scenario_id} scope="col">
                   {String.fromCharCode(65 + i)} <ValidityBadge validity={r.validity} />
+                  {models[r.scenario.scenario_id] ? (
+                    <span className="d-diff">{HORIZON_MODEL_LABEL[models[r.scenario.scenario_id]!.method]}</span>
+                  ) : null}
                 </th>
               ))}
             </tr>
@@ -292,6 +298,8 @@ export default function ComparePanel() {
     (_signal) => (waiting !== null ? Promise.resolve(null) : compareScenarios(list)),
     [key],
   );
+  // Horizon model per scenario, from the server; when it cannot be read the table falls back to the reliability labels.
+  const models = useAsync((_signal) => fetchHorizonModels(list), [key]);
 
   return (
     <section className="d-panel" aria-label="Compare scenarios">
@@ -309,7 +317,7 @@ export default function ComparePanel() {
           {(data) =>
             data ? (
               <>
-                <ResultTable response={data} />
+                <ResultTable response={data} models={models.state.data} />
                 <ExportBar response={data} sites={sites} />
               </>
             ) : null

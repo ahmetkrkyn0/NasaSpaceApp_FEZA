@@ -121,7 +121,10 @@ describe('Compare tab', () => {
   it('says so when the scenarios carry different reliability labels', async () => {
     const { response } = await walkS01();
     const mixed = { ...response, scenarios: response.scenarios.map((r, i) => (i === 1 ? { ...r, validity: 'DERIVED' as const } : r)) };
-    expect(renderToStaticMarkup(<ResultTable response={mixed} />)).toContain('different reliability labels (Assumed, Derived)');
+    // Issue #71: the note names each scenario's label and says the difference is not one input's effect.
+    const html = renderToStaticMarkup(<ResultTable response={mixed} />);
+    expect(html).toContain('different reliability labels (A: Assumed, B: Derived, C: Assumed)');
+    expect(html).toContain('does not show the effect of one input alone');
     expect(renderToStaticMarkup(<ResultTable response={response} />)).not.toContain('different reliability labels');
   });
 

@@ -12,6 +12,7 @@
 
 import content from '../../content/why-cards.json';
 import { postCompare, type RequestOptions } from '../../api/client';
+import type { ModelMix } from '../compare/horizon-models';
 import { COMPARE_METRICS, displayDifference, displayWithUnit, type MetricDef } from '../../api/compare-metrics';
 import {
   DEFAULT_EARTH_CRITERION,
@@ -198,12 +199,31 @@ export interface PlanRow {
   /** Signed difference from A in displayed units; `null` when unknown. */
   diff: number | null;
   validity: CompareScenarioResult['validity'] | null;
+  /**
+   * The copy's reliability label differs from A's: changing this input also changed how the
+   * result was computed (for example a mast height without a terrain horizon), so the row does
+   * not isolate the input (issue #71).
+   */
+  otherModel: boolean;
 }
 
 /** Plan level: the total difference, then one row per input changed alone. */
-export function planRows(def: MetricDef, a: Named, b: Named, bLetter: string, counterfactuals: readonly Counterfactual[]): PlanRow[] {
+export function planRows(
+  def: MetricDef,
+  a: Named,
+  b: Named,
+  bLetter: string,
+  counterfactuals: readonly Counterfactual[],
+  aValidity?: CompareScenarioResult['validity'],
+): PlanRow[] {
   const rows: PlanRow[] = [
-    { label: `${bLetter}: every input as in ${bLetter}`, value: displayWithUnit(def, b.value), diff: displayDifference(def, b.value, a.value), validity: null },
+    {
+      label: `${bLetter}: every input as in ${bLetter}`,
+      value: displayWithUnit(def, b.value),
+      diff: displayDifference(def, b.value, a.value),
+      validity: null,
+      otherModel: false,
+    },
   ];
   for (const cf of counterfactuals) {
     const value = cf.result ? cf.result.metrics[def.key] : null;
@@ -212,13 +232,19 @@ export function planRows(def: MetricDef, a: Named, b: Named, bLetter: string, co
       value: displayWithUnit(def, value),
       diff: displayDifference(def, value, a.value),
       validity: cf.result?.validity ?? null,
+      otherModel: aValidity !== undefined && cf.result !== undefined && cf.result.validity !== aValidity,
     });
   }
   return rows;
 }
 
-/** Sentence above the Plan rows, or the reason there are no rows. */
-export function planIntro(a: Scenario, b: Scenario, aName: string, bName: string): string {
+/**
+ * Sentence above the Plan rows, or the reason there are no rows. When A and B were not computed
+ * the same way, the difference is never tied to a single input (issue #71).
+ */
+export function planIntro(a: Scenario, b: Scenario, aName: string, bName: string, mix: ModelMix = { kind: 'same' }): string {
+  if (mix.kind === 'horizon') return fill(COMMON.mixed_horizon, { a: aName, b: bName, models: mix.text });
+  if (mix.kind === 'validity') return fill(COMMON.mixed_validity, { a: aName, b: bName, models: mix.text });
   const inputs = differingInputs(a, b);
   if (inputs.length === 0) return fill(COMMON.same_inputs, { a: aName, b: bName });
   if (inputs.length === 1) return fill(COMMON.one_input, { a: aName, b: bName, input: INPUT_LABEL[inputs[0]!] });
@@ -226,6 +252,9 @@ export function planIntro(a: Scenario, b: Scenario, aName: string, bName: string
 }
 
 export const PLAN_NOTE = COMMON.counterfactual_note;
+/** Shown under a headline when the two scenarios were not computed the same way. */
+export const MIXED_CAVEAT = COMMON.mixed_caveat;
+export const MIXED_ROWS_NOTE = COMMON.mixed_rows;
 export const NONE_KNOWN = COMMON.none_known;
 
 /** Result of one scenario in a compare answer. */

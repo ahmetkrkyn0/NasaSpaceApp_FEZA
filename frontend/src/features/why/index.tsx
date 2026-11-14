@@ -5,11 +5,14 @@ import type { CompareResponse, Scenario } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { uiStore, type Door } from '../../shell/ui-state';
 import { scenarioStore } from '../../state/scenario-store';
-import { VALIDITY_LABEL, ValidityBadge } from '../../ui/ValidityBadge';
+import { ValidityBadge } from '../../ui/ValidityBadge';
+import { TERRAIN_RULE_TEXT, fetchHorizonModels, mixWarning, modelMix, type ModelMix } from '../compare/horizon-models';
 import { compareScenarios } from '../compare/results';
 import { AsyncBlock, ErrorNote, ExampleNote, PanelHeader } from '../setup/shared';
 import {
   NONE_KNOWN,
+  MIXED_CAVEAT,
+  MIXED_ROWS_NOTE,
   PLAN_NOTE,
   classroomText,
   compareValues,
@@ -37,6 +40,8 @@ import './why.css';
  */
 
 export const WHY_PANEL_ID = 'why-panel';
+
+const SAME_MODEL: ModelMix = { kind: 'same' };
 
 const LEVEL_LABEL: Record<WhyLevel, string> = {
   explore: 'Explore: one sentence',
@@ -101,15 +106,24 @@ export function counterfactualState(answer: PairRows | undefined, key: string): 
   return { status: 'error', error: answer.error };
 }
 
-export function PlanDetail({ def, a, b, bIndex, response, counterfactuals: cf }: CardProps & { bIndex: number; counterfactuals: CounterfactualState }) {
+export function PlanDetail({
+  def,
+  a,
+  b,
+  bIndex,
+  response,
+  counterfactuals: cf,
+  mix = SAME_MODEL,
+}: CardProps & { bIndex: number; counterfactuals: CounterfactualState; mix?: ModelMix }) {
   const counterfactuals = cf.status === 'ready' ? cf.rows : undefined;
   const bLetter = letter(bIndex);
   const na = named(0, a, response, def);
   const nb = named(bIndex, b, response, def);
   const several = differingInputs(a, b).length > 1;
+  const rows = counterfactuals ? planRows(def, na, nb, bLetter, counterfactuals, resultFor(response, a.scenario_id)?.validity) : [];
   return (
     <>
-      <p>{planIntro(a, b, 'A', bLetter)}</p>
+      <p>{planIntro(a, b, 'A', bLetter, mix)}</p>
       {several && cf.status === 'loading' ? <p className="d-muted">Computing one input at a time…</p> : null}
       {several && cf.status === 'error' ? (
         <p className="d-note d-note-error" role="alert">
@@ -130,10 +144,11 @@ export function PlanDetail({ def, a, b, bIndex, response, counterfactuals: cf }:
               </tr>
             </thead>
             <tbody>
-              {planRows(def, na, nb, bLetter, counterfactuals).map((row) => (
+              {rows.map((row) => (
                 <tr key={row.label}>
                   <th scope="row">
                     {row.label} {row.validity ? <ValidityBadge validity={row.validity} /> : null}
+                    {row.otherModel ? <span className="d-diff d-other-model">other model</span> : null}
                   </th>
                   <td className="d-num">{row.value}</td>
                   <td className="d-num">{row.diff === null ? '—' : `${row.diff > 0 ? '+' : ''}${row.diff.toFixed(def.decimals)}`}</td>
@@ -144,6 +159,11 @@ export function PlanDetail({ def, a, b, bIndex, response, counterfactuals: cf }:
         </div>
       ) : null}
       {several && counterfactuals ? <p className="d-muted">{PLAN_NOTE}</p> : null}
+      {rows.some((r) => r.otherModel) ? (
+        <p className="d-note d-note-warn" role="note">
+          {MIXED_ROWS_NOTE} {TERRAIN_RULE_TEXT}
+        </p>
+      ) : null}
     </>
   );
 }
@@ -164,7 +184,8 @@ function WhyCard({
   level,
   focused,
   counterfactuals,
-}: CardProps & { bIndex: number; level: WhyLevel; focused: boolean; counterfactuals: CounterfactualState }) {
+  mix = SAME_MODEL,
+}: CardProps & { bIndex: number; level: WhyLevel; focused: boolean; counterfactuals: CounterfactualState; mix?: ModelMix }) {
   const na = named(0, a, response, def);
   const nb = named(bIndex, b, response, def);
   const sentence = headline(def, na, nb);
@@ -174,8 +195,11 @@ function WhyCard({
     <article className={focused ? 'd-card d-card-focus' : 'd-card'} aria-label={`Why: ${def.label}`} aria-current={focused || undefined}>
       <p className="d-card-title">{def.label}</p>
       <p>{sentence}</p>
+      {differs && mix.kind !== 'same' ? <p className="d-muted">{MIXED_CAVEAT}</p> : null}
       {level === 'classroom' ? <ClassroomDetail def={def} a={a} b={b} aIndex={0} bIndex={bIndex} response={response} /> : null}
-      {level === 'plan' && differs ? <PlanDetail def={def} a={a} b={b} bIndex={bIndex} response={response} counterfactuals={counterfactuals} /> : null}
+      {level === 'plan' && differs ? (
+        <PlanDetail def={def} a={a} b={b} bIndex={bIndex} response={response} counterfactuals={counterfactuals} mix={mix} />
+      ) : null}
     </article>
   );
 }
@@ -207,6 +231,14 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
   const cfState = counterfactualState(counterfactuals.state.status === 'success' ? counterfactuals.state.data : undefined, pairKey);
   const ra = resultFor(response, a.scenario_id);
   const rb = resultFor(response, b.scenario_id);
+  // Horizon model of A and B, from the server; a difference between two models is not tied to an input (issue #71).
+  const modelKey = JSON.stringify([a, b]);
+  const models = useAsync((_signal) => fetchHorizonModels([a, b]), [modelKey]);
+  const mix = modelMix([
+    { name: 'A', model: models.state.data?.[a.scenario_id], validity: ra?.validity },
+    { name: letter(bIndex), model: models.state.data?.[b.scenario_id], validity: rb?.validity },
+  ]);
+  const warning = mixWarning(mix);
   const noneKnown = COMPARE_METRICS.every((def) => compareValues(def, named(0, a, response, def), named(bIndex, b, response, def)).kind === 'unknown');
   const choose = (id: string) => {
     if (focus) whyStore.open({ ...focus, scenarioId: id });
@@ -232,10 +264,9 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
           </span>
         ) : null}
       </div>
-      {ra && rb && ra.validity !== rb.validity ? (
+      {warning ? (
         <p className="d-note d-note-warn" role="note">
-          A is {VALIDITY_LABEL[ra.validity]} and {letter(bIndex)} is {VALIDITY_LABEL[rb.validity]}. Part of a difference may come from how they were
-          computed, not from the place or date.
+          {warning}
         </p>
       ) : null}
       {level === 'plan' && cfState.status === 'error' ? <ErrorNote error={cfState.error} /> : null}
@@ -251,6 +282,7 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
           level={level}
           focused={focus?.metric === def.key}
           counterfactuals={cfState}
+          mix={mix}
         />
       ))}
     </>

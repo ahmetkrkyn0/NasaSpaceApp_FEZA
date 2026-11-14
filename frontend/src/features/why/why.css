@@ -9,3 +9,8 @@
   padding: 0 0.3em;
   font-size: var(--fs-small);
 }
+
+/* Counterfactual row whose result was computed another way than A (issue #71). */
+.d-other-model {
+  color: var(--risk-med);
+}
