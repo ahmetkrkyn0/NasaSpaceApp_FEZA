@@ -68,7 +68,11 @@ function ClassroomDetail({ def, a, b, aIndex, bIndex, response }: CardProps & { 
   );
 }
 
-function PlanDetail({ def, a, b, bIndex, response, counterfactuals }: CardProps & { bIndex: number; counterfactuals: readonly Counterfactual[] | undefined }) {
+/** Counterfactual rows of the pair: still loading, failed, or the server's answers. */
+export type CounterfactualState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; rows: readonly Counterfactual[] };
+
+export function PlanDetail({ def, a, b, bIndex, response, counterfactuals: cf }: CardProps & { bIndex: number; counterfactuals: CounterfactualState }) {
+  const counterfactuals = cf.status === 'ready' ? cf.rows : undefined;
   const bLetter = letter(bIndex);
   const na = named(0, a, response, def);
   const nb = named(bIndex, b, response, def);
@@ -76,7 +80,12 @@ function PlanDetail({ def, a, b, bIndex, response, counterfactuals }: CardProps 
   return (
     <>
       <p>{planIntro(a, b, 'A', bLetter)}</p>
-      {several && counterfactuals === undefined ? <p className="d-muted">Computing one input at a time…</p> : null}
+      {several && cf.status === 'loading' ? <p className="d-muted">Computing one input at a time…</p> : null}
+      {several && cf.status === 'error' ? (
+        <p className="d-note d-note-error" role="alert">
+          The one-input-at-a-time rows could not be computed. The difference above still comes from the server.
+        </p>
+      ) : null}
       {several && counterfactuals ? (
         <div className="d-table-wrap">
           <table className="d-table">
@@ -125,7 +134,7 @@ function WhyCard({
   level,
   focused,
   counterfactuals,
-}: CardProps & { bIndex: number; level: WhyLevel; focused: boolean; counterfactuals: readonly Counterfactual[] | undefined }) {
+}: CardProps & { bIndex: number; level: WhyLevel; focused: boolean; counterfactuals: CounterfactualState }) {
   const na = named(0, a, response, def);
   const nb = named(bIndex, b, response, def);
   const sentence = headline(def, na, nb);
@@ -165,6 +174,12 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
     (signal) => (level === 'plan' ? fetchCounterfactuals(a, b, letter(bIndex), postCompare, { signal }) : Promise.resolve([])),
     [pairKey, level],
   );
+  const cfState: CounterfactualState =
+    counterfactuals.state.status === 'success'
+      ? { status: 'ready', rows: counterfactuals.state.data }
+      : counterfactuals.state.status === 'error'
+        ? { status: 'error' }
+        : { status: 'loading' };
   const ra = resultFor(response, a.scenario_id);
   const rb = resultFor(response, b.scenario_id);
   const noneKnown = COMPARE_METRICS.every((def) => compareValues(def, named(0, a, response, def), named(bIndex, b, response, def)).kind === 'unknown');
@@ -198,7 +213,7 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
           computed, not from the place or date.
         </p>
       ) : null}
-      {counterfactuals.state.status === 'error' ? <ErrorNote error={counterfactuals.state.error} /> : null}
+      {counterfactuals.state.status === 'error' && level === 'plan' ? <ErrorNote error={counterfactuals.state.error} /> : null}
       {noneKnown ? <p className="d-muted">{NONE_KNOWN}</p> : null}
       {noneKnown ? null : cardOrder(focus).map((def) => (
         <WhyCard
@@ -210,7 +225,7 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
           response={response}
           level={level}
           focused={focus?.metric === def.key}
-          counterfactuals={counterfactuals.state.status === 'success' ? counterfactuals.state.data : undefined}
+          counterfactuals={cfState}
         />
       ))}
     </>

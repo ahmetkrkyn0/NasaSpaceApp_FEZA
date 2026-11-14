@@ -11,13 +11,14 @@ import {
   differingInputs,
   fetchCounterfactuals,
   headline,
+  hoursText,
   metricDef,
   planIntro,
   planRows,
   withInputFrom,
   type Named,
 } from './explain';
-import { WhyCards, cardOrder, pairIndex } from './index';
+import { PlanDetail, WhyCards, cardOrder, pairIndex } from './index';
 
 /*
  * The metric values below are test fixtures, not product numbers: they only check that the
@@ -151,6 +152,23 @@ describe('card texts', () => {
     expect(headline(def, n('A', a, 0.5), n('B', longer, 0.55))).toBe('B gets 5.0 percentage points of the time more sunlight than A in this period.');
   });
 
+  it('compares period lengths on the instants, not on rounded days (PR #62 review)', () => {
+    const a = { ...base(), start_utc: '2026-12-01T00:00:00Z' as const, end_utc: '2026-12-02T00:00:00Z' as const };
+    const b = { ...a, start_utc: '2026-12-05T00:00:00Z' as const, end_utc: '2026-12-06T01:00:00Z' as const };
+    const def = metricDef('sunlit_fraction');
+    // 24 h against 25 h: not the same length, so the gap stays in percentage points.
+    expect(headline(def, n('A', a, 0.5), n('B', b, 0.6))).toContain('10.0 percentage points of the time');
+    const same = { ...b, end_utc: '2026-12-06T00:00:00Z' as const };
+    expect(headline(def, n('A', a, 0.5), n('B', same, 0.6))).toContain('2.4 hours');
+  });
+
+  it('never writes a small gap as zero hours (PR #62 review)', () => {
+    expect(hoursText(36)).toBe('36 hours');
+    expect(hoursText(2.4)).toBe('2.4 hours');
+    expect(hoursText(0.04)).toBe('2 minutes');
+    expect(hoursText(0.004)).toBe('less than a minute');
+  });
+
   it('uses the better direction of each metric, and says so when values are equal or unknown', () => {
     const a = base();
     const b = sameSiteAnotherDate(a, '2026-12-06T00:00:00Z', sitesExample);
@@ -211,6 +229,15 @@ describe('Why panel', () => {
 
     const plan = renderToStaticMarkup(<WhyCards list={list} response={answer} level="plan" focus={null} />);
     expect(plan).toContain('A and B differ in one input only, the dates');
+  });
+
+  it('says so when the one-input rows fail, instead of waiting forever (PR #62 review)', () => {
+    const b2 = { ...b, mast_height_m: 10 };
+    const props = { def: metricDef('max_sun_elevation_deg'), a, b: b2, bIndex: 1, response: answer };
+    expect(renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'loading' }} />)).toContain('Computing one input at a time');
+    const failed = renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'error' }} />);
+    expect(failed).toContain('could not be computed');
+    expect(failed).not.toContain('Computing one input at a time');
   });
 
   it('shows one note instead of six cards when no metric is known in both scenarios', () => {

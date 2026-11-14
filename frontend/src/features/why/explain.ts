@@ -21,7 +21,6 @@ import {
   type CompareScenarioResult,
   type Scenario,
 } from '../../api/types';
-import { scenarioDays } from '../../state/scenario-tools';
 
 export const WHY_LEVELS = ['explore', 'classroom', 'plan'] as const;
 export type WhyLevel = (typeof WHY_LEVELS)[number];
@@ -147,10 +146,17 @@ export type Comparison =
   | { kind: 'same' }
   | { kind: 'differs'; better: Named; worse: Named; amount: string };
 
-/** Whole hours above ten, one decimal below, so a small gap is not shown as zero. */
-function hoursText(hours: number): string {
-  const shown = hours >= 10 ? Math.round(hours).toString() : hours.toFixed(1);
-  return `${shown} hours`;
+/** Whole hours above ten, one decimal down to 0.1 h, minutes below that, so a gap is never shown as zero. */
+export function hoursText(hours: number): string {
+  if (hours >= 10) return `${Math.round(hours)} hours`;
+  if (hours >= 0.1) return `${hours.toFixed(1)} hours`;
+  const minutes = Math.round(hours * 60);
+  return minutes >= 1 ? `${minutes} minutes` : 'less than a minute';
+}
+
+/** Length of the scenario period in milliseconds, from its start and end instants. */
+function periodMs(s: Scenario): number {
+  return Date.parse(s.end_utc) - Date.parse(s.start_utc);
 }
 
 /**
@@ -165,10 +171,11 @@ export function compareValues(def: MetricDef, a: Named, b: Named): Comparison {
   const [better, worse] = bBetter ? [b, a] : [a, b];
   let amount: string;
   if (def.percent) {
-    const days = scenarioDays(a.scenario);
+    // Hours only when both periods are equally long, checked on the instants, not on rounded days.
+    const ms = periodMs(a.scenario);
     amount =
-      days === scenarioDays(b.scenario)
-        ? hoursText(Math.abs(b.value - a.value) * days * 24)
+      ms > 0 && ms === periodMs(b.scenario)
+        ? hoursText((Math.abs(b.value - a.value) * ms) / 3_600_000)
         : `${Math.abs(diff).toFixed(def.decimals)} percentage points of the time`;
   } else {
     amount = displayWithUnit(def, Math.abs(diff));
