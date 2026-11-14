@@ -65,6 +65,19 @@ def test_sky_series_hourly_samples(client: TestClient) -> None:
     assert body["samples"][-1]["utc"] == "2025-03-07T17:30:00Z"
 
 
+def test_sky_series_ends_at_range_end_for_partial_step(client: TestClient) -> None:
+    params = dict(BASE_PARAMS, hours=1.5, step_minutes=60)
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    utcs = [sample["utc"] for sample in response.json()["samples"]]
+    assert utcs == [
+        "2025-03-06T17:30:00Z",
+        "2025-03-06T18:30:00Z",
+        "2025-03-06T19:00:00Z",
+    ]
+
+
 def test_sky_series_default_mast_height(client: TestClient) -> None:
     params = {
         key: value for key, value in BASE_PARAMS.items() if key != "mast_height_m"

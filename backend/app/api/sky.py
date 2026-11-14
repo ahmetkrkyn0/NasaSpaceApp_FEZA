@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Query
 
@@ -50,6 +50,23 @@ def _validate_bounds(mast_height_m: float, hours: float, step_minutes: int) -> N
         )
 
 
+def _sample_times(start: datetime, hours: float, step_minutes: int) -> list[datetime]:
+    """Every ``step_minutes`` from ``start``; the range end is always the last sample (ADR-0004).
+
+    When ``hours`` is not a whole number of steps the last interval is shorter,
+    e.g. ``hours=1.5``, ``step_minutes=60`` gives 0, 60 and 90 minutes.
+    """
+
+    end = start + timedelta(hours=hours)
+    step = timedelta(minutes=step_minutes)
+    times = [start]
+    while times[-1] + step < end - timedelta(microseconds=1):
+        times.append(times[-1] + step)
+    if end > times[-1]:
+        times.append(end)
+    return times
+
+
 def _round(value: float) -> float:
     return round(value, ANGLE_DECIMALS)
 
@@ -73,8 +90,7 @@ def sky_series(
         raise InvalidParameter("Invalid parameter 'start_utc': required.")
     start = ephemeris.parse_utc(start_utc, "start_utc")
 
-    count = math.floor(hours * 60 / step_minutes + 1e-9) + 1
-    times = [start + timedelta(minutes=k * step_minutes) for k in range(count)]
+    times = _sample_times(start, hours, step_minutes)
 
     height_m = (place.elevation_m or 0.0) + mast_height_m
     suns = ephemeris.body_positions(place.lat_deg, place.lon_deg, height_m, times, "SUN")
