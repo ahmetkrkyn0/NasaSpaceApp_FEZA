@@ -119,7 +119,17 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": "Landed upright near Mons Latreille in Mare Crisium."
+    "notes": "Landed upright near Mons Latreille in Mare Crisium.",
+    "cards": [
+      {
+        "agency": "CSA",
+        "text": "Coatings from a Canadian testing laboratory flew on a NASA dust experiment aboard this lander.",
+        "source": {
+          "label": "SpaceQ",
+          "url": "https://spaceq.ca/nasa-clps-2-canada-canadarm3/"
+        }
+      }
+    ]
   },
   {
     "id": "im2-athena",

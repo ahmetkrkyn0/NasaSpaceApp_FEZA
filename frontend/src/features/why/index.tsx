@@ -25,6 +25,7 @@ import {
   type Named,
   type WhyLevel,
 } from './explain';
+import { HookFacts } from './hook-facts';
 import { whyStore, type WhyFocus } from './why-state';
 import './why.css';
 
@@ -236,6 +237,7 @@ export default function WhyPanel() {
   const door = useStore(uiStore, (s) => s.door);
   const list = useStore(scenarioStore, (s) => s.compare);
   const focus = useStore(whyStore, (s) => s.focus);
+  const siteId = useStore(scenarioStore, (s) => s.active?.site_id ?? null);
   const key = JSON.stringify(list);
   const results = useAsync((_signal) => (list.length < 2 ? Promise.resolve(null) : compareScenarios(list)), [key]);
 
@@ -244,6 +246,7 @@ export default function WhyPanel() {
       <PanelHeader title="Why they differ">
         <span className="d-muted">{LEVEL_LABEL[door]}</span>
       </PanelHeader>
+      {door === 'explore' ? <HookFacts key={siteId ?? 'none'} siteId={siteId} start={1} /> : null}
       <ExampleNote />
       {list.length < 2 ? (
         <p className="d-muted">{EMPTY_TEXT[door]}</p>

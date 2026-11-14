@@ -1,11 +1,12 @@
 import { getCommWindow, getEvents } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { formatDate, formatDeg, formatHours, formatMinutes, formatPercent, formatUtc } from '../../api/format';
-import { CRITERIA, DEFAULT_EARTH_CRITERION, type CommWindow, type Criterion, type EventList, type Scenario } from '../../api/types';
+import { CRITERIA, DEFAULT_EARTH_CRITERION, type CommWindow, type Criterion, type EventList, type RelayStatus, type Scenario } from '../../api/types';
 import { useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { commWindowRequest, eventsRequest, momentIn } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
+import { RelayLabel } from './relay';
 import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, useRequest } from '../setup/shared';
 
 /**
@@ -126,6 +127,19 @@ function WindowsBlock({ events }: { events: EventList }) {
   );
 }
 
+/**
+ * Relay status to show: the period's (from `/api/events`) first, else the moment's
+ * (from `/api/comm-window`). Only settled answers count, so a label never belongs to the
+ * previous scenario while a new one loads.
+ */
+export function relayStatus(
+  events: { status: string; data?: { relay_status?: RelayStatus } | undefined },
+  comm: { status: string; data?: { relay_status?: RelayStatus } | undefined },
+): RelayStatus | undefined {
+  const settled = (s: typeof events) => (s.status === 'success' ? s.data?.relay_status : undefined);
+  return settled(events) ?? settled(comm);
+}
+
 export default function CommsPanel() {
   const scenario = useStore(scenarioStore, (s) => s.active);
   if (!scenario) {
@@ -154,6 +168,7 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
         <span className="data">{scenario.label}</span>, {formatDate(scenario.start_utc)} to {formatDate(scenario.end_utc)}
       </p>
       <CriterionPicker scenario={scenario} />
+      <RelayLabel status={relayStatus(events.state, comm.state)} />
       <div className="d-section">
         <h3 className="d-section-title">Now</h3>
         <AsyncBlock result={comm}>{(data) => <NowBlock comm={data} requested={criterion} />}</AsyncBlock>

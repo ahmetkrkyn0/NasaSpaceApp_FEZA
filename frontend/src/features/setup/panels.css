@@ -317,3 +317,17 @@
   padding: 4px 0;
   border-bottom: 1px solid var(--line);
 }
+
+/* ── Info cards on a site (CSA) ──────────────────────────────────────── */
+
+.d-agency {
+  display: inline-flex;
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  color: var(--coral-text);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+}

@@ -3,7 +3,10 @@ import { EXAMPLES, eventsEclipseExample, eventsExample, findExampleProblems, fin
 
 describe('example responses', () => {
   it('has one file per endpoint plus the eclipse, relay and error examples', () => {
-    expect(Object.keys(EXAMPLES)).toHaveLength(14);
+    // 12 endpoints of client.ts minus getLayer (synthetic grid), plus /api/validation (F3-D1),
+    // plus events-eclipse, comm-window-relay and error.
+    expect(Object.keys(EXAMPLES)).toHaveLength(15);
+    expect(Object.keys(EXAMPLES)).toContain('validation.json');
   });
 
   it('passes the run-time contract check: value sets, UTC strings, snake_case names', () => {

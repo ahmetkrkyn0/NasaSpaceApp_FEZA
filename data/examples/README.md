@@ -20,7 +20,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | Dosya | Uç nokta | Koşul | Doğrulanmış değerler | Basit hesaplar |
 | --- | --- | --- | --- | --- |
 | `health.json` | `GET /api/health` | – | – | – |
-| `sites.json` | `GET /api/sites` | On saha | [`data/sites.json`](../sites.json) ile birebir aynı: koordinat, kaynak, not ve iniş anları ([saha kataloğu](../../docs/design/saha-katalogu.md)). Tek fark Apollo 11'deki isteğe bağlı `cards` alanı; bilgi kartı: [csa-ve-diger-ulkeler.md](../../docs/research/dogrulama/csa-ve-diger-ulkeler.md), No 28 | – |
+| `sites.json` | `GET /api/sites` | On saha | [`data/sites.json`](../sites.json) ile birebir aynı: koordinat, kaynak, not ve iniş anları ([saha kataloğu](../../docs/design/saha-katalogu.md)). CSA bilgi kartları (`cards`, Apollo 11 ve Blue Ghost 1) da katalogdan: [csa-ve-diger-ulkeler.md](../../docs/research/dogrulama/csa-ve-diger-ulkeler.md), No 28 ve 30 | – |
 | `horizon.json` | `GET /api/horizon` | Mons Mouton test sahası, direk 2 m, düz ufuk | Ufuk alçalması 0,087 derece (T4; [ufuk-ve-isik-isi.md](../../docs/research/dogrulama/ufuk-ve-isik-isi.md), No A-7) | – |
 | `sky-series.json` | `GET /api/sky-series` | Athena iniş noktası, 2025-03-06 17:30 UTC, `hours` 0 (tek örnek), direk 0 m | Güneş yönü 65,67, yüksekliği 2,47; Dünya yönü 335,85, yüksekliği 11,19 (T1; [aciklanabilirlik.md](../../docs/research/dogrulama/aciklanabilirlik.md), No 1 ve 2) | – |
 | `events.json` | `GET /api/events` | Mons Mouton test sahası, 2026-12-01 00:00 ile 2026-12-31 00:00 arası, ölçüt `center`, direk 0 m | Dünya batıyor 3 Aralık 10:03, doğuyor 11 Aralık 04:41, yeniden batıyor 30 Aralık 11:02 (T2b; [efemeris-ve-yer-istasyonlari.md](../../docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 42). Dünya sürenin yüzde 27,7'sinde ufkun altında (aynı dosya, No 43). Güneş en fazla 6,47 derece (T2a; [gunes-paneli.md](../../docs/research/dogrulama/gunes-paneli.md), No 2) | Pencere süreleri iki olay anının farkı. `earth_visible_fraction` 0,723 = 1 − 0,277. Pencereler sorgu aralığının uçlarında kesilir |
@@ -31,6 +31,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `power.json` | `GET /api/power` | Mons Mouton test sahası, 1 Aralık 2026 00:00 ile 1 Ocak 2027 00:00 arası, `vertical_tracking`, düz ufuk (direk 0 m) | En uzun karanlık 280 saat ([gunes-paneli.md](../../docs/research/dogrulama/gunes-paneli.md), No 6) | `mean_power_w` 207,6 = 768,8 W/m² (T3, düz ufuk, dik ve dönen panel, verim uygulanmadan; aynı dosya, No 4) × varsayılan verim 0,27 × 1 m². Verim bir varsayım; sonuç bu yüzden `SYNTHETIC` |
 | `compare.json` | `POST /api/compare` | İki senaryo: `a` = `events.json` ile aynı aralık; `b` = aynı saha, başlangıç 5 gün sonra | `a` için `events.json` değerleri | – |
 | `reference-missions.json` | `GET /api/reference-missions` | Altı geçmiş iniş ([gecmis-gorev-vakalari.md](../../docs/design/gecmis-gorev-vakalari.md)) | `expected` açıları T1 tablosundan ([dogrulama-plani.md](../../docs/design/dogrulama-plani.md), Test 1). Athena olgusu: [gorev-araclari.md](../../docs/research/dogrulama/gorev-araclari.md), No 35. SLIM olgusu: [aciklanabilirlik.md](../../docs/research/dogrulama/aciklanabilirlik.md), No 44 | – |
+| `validation.json` | `GET /api/validation` | `backend/scripts/run_validation.py` koşusu | Sunucu [`data/validation_report.json`](../validation_report.json) dosyasını olduğu gibi döndürür; bu dosya onun kopyasıdır. Biçim: [ADR-0004](../../docs/adr/0004-api-uc-noktalari.md), `/api/validation`. Rapor yenilenince bu kopya da güncellenmeli | – |
 | `panel-profiles.json` | `GET /api/panel-profiles` | Dört panel tipi | – (değerler [guc-degerlendirmesi.md](../../docs/design/guc-degerlendirmesi.md), bölüm 8'deki varsayılanlar; hepsi `SYNTHETIC`) | – |
 | `error.json` | Her uç noktanın hata gövdesi | HTTP 404 | – ([ADR-0004](../../docs/adr/0004-api-uc-noktalari.md), "Hata yanıtı") | – |
 
@@ -62,7 +63,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 2. Karşılaştırma fark satırındaki `unit` değerleri (yukarıda).
 3. Geçmiş görev kaydı `validity` alanı taşımıyor; tasarım belgesindeki örnek de taşımıyor. Kaydın güvenilirliği yalnızca `landing_utc_validity` ile veriliyor.
 
-`sites.json`, sunucunun döndüreceği [`data/sites.json`](../sites.json) dosyasının kopyasıdır. Katalog değişince bu dosya da güncellenmeli; `cards` alanı katalog CSA kartlarını taşıyana kadar ([csa-bilgi-kartlari.md](../../docs/design/csa-bilgi-kartlari.md)) yalnızca örnekte durur.
+`sites.json`, sunucunun döndüreceği [`data/sites.json`](../sites.json) dosyasının kopyasıdır. Katalog değişince bu dosya da güncellenmeli. CSA kartları artık katalogda ([csa-bilgi-kartlari.md](../../docs/design/csa-bilgi-kartlari.md)); örnek onları aynen taşır.
 
 ## Örnek kipinin seçimi
 

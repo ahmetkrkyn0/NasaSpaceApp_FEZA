@@ -26,6 +26,7 @@ import powerJson from '../../../data/examples/power.json';
 import referenceMissionsJson from '../../../data/examples/reference-missions.json';
 import sitesJson from '../../../data/examples/sites.json';
 import skySeriesJson from '../../../data/examples/sky-series.json';
+import validationJson from '../../../data/examples/validation.json';
 import {
   CRITERIA,
   EVENT_TYPES,
@@ -35,6 +36,8 @@ import {
   RELAY_STATUSES,
   SITE_CATEGORIES,
   SITE_STATUSES,
+  VALIDATION_KINDS,
+  VALIDATION_STATUSES,
   VALIDITY_VALUES,
   WINDOW_KINDS,
   type ApiErrorBody,
@@ -49,6 +52,7 @@ import {
   type ReferenceMission,
   type Site,
   type SkySeries,
+  type ValidationReport,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -111,6 +115,7 @@ export const compareExample = typed<CompareResponse>()(compareJson);
 export const referenceMissionsExample = typed<ReferenceMission[]>()(referenceMissionsJson);
 export const panelProfilesExample = typed<PanelProfile[]>()(panelProfilesJson);
 export const errorExample = typed<ApiErrorBody>()(errorJson);
+export const validationExample = typed<ValidationReport>()(validationJson);
 
 /** Every example by its file name in `data/examples/`. */
 export const EXAMPLES = {
@@ -128,6 +133,7 @@ export const EXAMPLES = {
   'reference-missions.json': referenceMissionsExample,
   'panel-profiles.json': panelProfilesExample,
   'error.json': errorExample,
+  'validation.json': validationExample,
 } as const;
 
 export type ExampleFile = keyof typeof EXAMPLES;
@@ -152,6 +158,21 @@ const ALLOWED: Record<string, readonly string[]> = {
   type: [...EVENT_TYPES, ...PANEL_TYPES],
 };
 
+/**
+ * The validation report reuses the names `status` and `kind` for its own value sets
+ * (ADR-0004, "/api/validation"), so its file is checked against these instead.
+ */
+const VALIDATION_ALLOWED: Record<string, readonly string[]> = {
+  ...ALLOWED,
+  status: VALIDATION_STATUSES,
+  kind: VALIDATION_KINDS,
+};
+
+/** Value sets per example file, where a file differs from `ALLOWED`. */
+const FILE_ALLOWED: Partial<Record<string, Record<string, readonly string[]>>> = {
+  'validation.json': VALIDATION_ALLOWED,
+};
+
 const UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const FIELD_PATTERN = /^[a-z][a-z0-9_]*$/;
 /** Objects whose keys are data (scenario ids), not field names. */
@@ -161,34 +182,34 @@ function isUtcField(key: string): boolean {
   return key === 'utc' || key.endsWith('_utc');
 }
 
-function walk(value: unknown, path: string, out: string[], keysAreData = false): void {
+function walk(value: unknown, path: string, out: string[], keysAreData = false, sets: Record<string, readonly string[]> = ALLOWED): void {
   if (Array.isArray(value)) {
-    value.forEach((item, i) => walk(item, `${path}[${i}]`, out));
+    value.forEach((item, i) => walk(item, `${path}[${i}]`, out, false, sets));
     return;
   }
   if (typeof value !== 'object' || value === null) return;
   for (const [key, child] of Object.entries(value)) {
     const here = `${path}.${key}`;
     if (!keysAreData && !FIELD_PATTERN.test(key)) out.push(`${here}: field name is not snake_case`);
-    const allowed = keysAreData ? undefined : ALLOWED[key];
+    const allowed = keysAreData ? undefined : sets[key];
     if (allowed && child !== null && !allowed.includes(child as string)) {
       out.push(`${here}: "${String(child)}" is not one of ${allowed.join(', ')}`);
     }
     if (!keysAreData && isUtcField(key) && child !== null && !(typeof child === 'string' && UTC_PATTERN.test(child))) {
       out.push(`${here}: "${String(child)}" is not a UTC time ending in Z`);
     }
-    walk(child, here, out, DATA_KEYED.has(key));
+    walk(child, here, out, DATA_KEYED.has(key), sets);
   }
 }
 
 /** Problems in one value; empty when it is clean. */
-export function findProblems(value: unknown, path = '$'): string[] {
+export function findProblems(value: unknown, path = '$', sets: Record<string, readonly string[]> = ALLOWED): string[] {
   const out: string[] = [];
-  walk(value, path, out);
+  walk(value, path, out, false, sets);
   return out;
 }
 
 /** Problems in every example file; empty when all are clean. */
 export function findExampleProblems(): string[] {
-  return Object.entries(EXAMPLES).flatMap(([file, value]) => findProblems(value, file));
+  return Object.entries(EXAMPLES).flatMap(([file, value]) => findProblems(value, file, FILE_ALLOWED[file] ?? ALLOWED));
 }
