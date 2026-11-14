@@ -102,10 +102,78 @@ def test_report_summary_and_exit_code(tmp_path):
         return (200, _sky()) if endpoint == "/api/sky-series" else (404, None)
 
     report = rv.run(vectors, fetch)
-    assert report["summary"] == {"pass": 1, "warn": 0, "fail": 0, "skipped": 1}
+    assert report["summary"] == {"pass": 1, "warn": 0, "fail": 0, "skipped": 1, "info": 0}
     for row in report["rows"]:
-        for key in ("id", "title", "expected", "measured", "diff", "threshold", "unit", "status", "source"):
+        for key in ("id", "title", "condition", "kind", "expected", "measured", "diff",
+                    "threshold", "unit", "status", "source"):
             assert key in row
+        assert row["kind"] == "reference"
+
+
+def test_condition_comes_from_the_plan_or_the_vector():
+    assert rv.evaluate(_vector(), _const(200, _sky()))["condition"] == rv.CONDITIONS["T1"]
+    row = rv.evaluate(_vector(condition="custom"), _const(200, _sky()))
+    assert row["condition"] == "custom"
+
+
+class _FakePowerTest:
+    T3_MEAN_POWER = {"two_axis": {0.0: 771.2}, "horizontal": {0.0: 54.3}}
+    T3_LONGEST_DARK_HOURS = {0.0: 280.0}
+
+    @staticmethod
+    def _t3(panel_type, horizon_deg):
+        mean = {"two_axis": 771.5, "horizontal": 60.0}.get(panel_type, 0.0)
+        return {"summary": {"mean_power_w": mean, "longest_dark_hours": 280.4}}
+
+
+def test_t3_rows_use_the_unit_test_computation():
+    rows = {row["id"]: row for row in rv.t3_rows(lambda: _FakePowerTest)}
+    assert rows["T3-two-axis-h+0"]["status"] == "pass"
+    assert rows["T3-two-axis-h+0"]["threshold"] == pytest.approx(3.856)
+    assert rows["T3-horizontal-h+0"]["status"] == "fail"
+    assert rows["T3-longest-dark-h+0"]["status"] == "pass"
+    for row in rows.values():
+        assert row["endpoint"] is None and row["test"] == "T3"
+
+
+def test_t3_import_failure_is_a_failed_row():
+    def broken():
+        raise ImportError("no module")
+
+    (row,) = rv.t3_rows(broken)
+    assert row["status"] == "fail" and "no module" in row["note"]
+
+
+def _nasa():
+    return {"average_visibility": 0.4646}
+
+
+def test_t6_is_info_with_difference_and_no_threshold():
+    row = rv.t6_row(_nasa, lambda: {"sunlit_fraction": 0.4498, "horizon_method": "terrain"})
+    assert row["kind"] == "approximate" and row["status"] == "info"
+    assert row["threshold"] is None
+    assert row["expected"] == pytest.approx(46.46)
+    assert row["diff"] == pytest.approx(-1.48)
+
+
+def test_t6_without_terrain_horizon_fails():
+    row = rv.t6_row(_nasa, lambda: {"sunlit_fraction": 0.5, "horizon_method": "sphere"})
+    assert row["status"] == "fail"
+
+
+def test_t6_without_nasa_value_is_skipped():
+    def offline():
+        raise OSError("network down")
+
+    row = rv.t6_row(offline, lambda: {"sunlit_fraction": 0.5, "horizon_method": "terrain"})
+    assert row["status"] == "skipped" and "network down" in row["note"]
+
+
+def test_rows_are_ordered_by_test_and_info_is_counted():
+    t6 = rv.t6_row(_nasa, lambda: {"sunlit_fraction": 0.45, "horizon_method": "terrain"})
+    report = rv.run([_vector(id="a", test="T7"), _vector(id="b")], _const(200, _sky()), [t6])
+    assert [row["test"] for row in report["rows"]] == ["T1", "T6", "T7"]
+    assert report["summary"]["info"] == 1
 
 
 def test_missing_feature_event_is_skipped_with_reason():

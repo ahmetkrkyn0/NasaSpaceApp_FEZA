@@ -46,6 +46,15 @@ Harita katmanı adları (`name`): `hillshade` (gölgeli kabartma), `elevation` (
 
 Destekleyici iki uç nokta, ilgili iş yapılırsa eklenir: `/api/validation` (doğrulama testlerinin sonuç tablosu; [dogrulama-plani.md](../design/dogrulama-plani.md)) ve `/api/ground-stations` (yer istasyonlarının Ay'ı gördüğü pencereler; [iletisim-penceresi.md](../design/iletisim-penceresi.md)).
 
+`GET /api/validation` parametre almaz ve `data/validation_report.json` dosyasını olduğu gibi döndürür; dosya `backend/scripts/run_validation.py` ile üretilir. Dosya yoksa 503 ve `data_unavailable`. Biçim:
+
+- Üst düzey: `generated_utc`, `target`, `summary`, `rows`.
+- `summary`: `pass`, `warn`, `fail`, `skipped`, `info` sayıları.
+- `rows[]`: `id`, `test` (`T1` … `T7`), `title`, `condition` (koşul metni, İngilizce), `kind`, `expected`, `measured`, `diff` (ölçülen eksi beklenen), `threshold`, `unit`, `status`, `source`, `endpoint`, `note`; isteğe bağlı `expected_range` (`[alt, üst]`, ucu `null` olabilir).
+- `kind`: `reference` (eşikli referans test) ya da `approximate` (eşiksiz yaklaşık karşılaştırma; yalnızca T6).
+- `status`: `pass`, `warn`, `fail`, `skipped` ya da `info`. `info` yalnızca `approximate` satırlarda kullanılır ve "doğrulandı" anlamı taşımaz; bu satırlarda `threshold` `null` olur.
+- T3 satırları uç noktadan değil A hattının birim testinin hesabından (`backend/tests/core/test_power.py`) yazılır; `endpoint` `null` olur.
+
 Ekstra özellikler için uç noktalar, o özellik yapılırsa eklenir: `/api/eclipses`, `/api/site-score`, `/api/approach-profile`, `/api/surface-temperature`. Biçimleri ilgili proje dokümanında.
 
 ### Sınırlar
@@ -104,3 +113,4 @@ Yapılacaklar:
 
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `/api/health` yanıtına `ephemeris_range` ve hata kodlarına `date_out_of_range` eklendi (`UC-03`, aralık dışı tarih). `/api/power` isteğine `fixed_azimuth_deg` eklendi (`UC-06`). Harita katmanı adları, `region` değeri ve `X-Layer-Bounds` başlığı tanımlandı (`UC-12`). `/api/validation` (`UC-10`) ve `/api/ground-stations` (`UC-07`) destekleyici uç nokta olarak eklendi. Hata kodları tablosu eklendi. `/api/sky-series` yanıtının iki ucu da içerdiği "Sınırlar" bölümüne yazıldı.
 - 14 Kasım 2026, F2-A ([#37](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/37)): "Sınırlar" bölümüne `/api/events`, `/api/power`, `/api/now`, `/api/comm-window` ve `/api/compare` sınırları ile ölçülen süreler yazıldı; ölçülmemiş sınır varsayımı kaldırıldı.
+- 14 Kasım 2026, F3-B ([#43](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/43)): `/api/validation` biçimi yazıldı. Rapor satırlarına `condition` ve `kind` alanları, `status` değerlerine ve `summary` sayılarına `info` eklendi (T6, yaklaşık karşılaştırma); T3 satırları birim testten yazılır ve `endpoint` `null` olur.

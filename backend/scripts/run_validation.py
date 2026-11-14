@@ -1,9 +1,17 @@
-"""Run the reference test vectors against the API and write the validation report.
+"""Run the reference tests and write the validation report.
 
 Reads ``data/examples/test_vectors.json`` (docs/PLAN.md, 4.2: T1, T2a, T2b,
-T4, T5, T7), calls each endpoint and writes ``data/validation_report.json``.
-Each row: id, test, title, expected, measured, diff, threshold, unit, status
-(``pass``, ``warn``, ``fail`` or ``skipped``) and source.
+T4, T5, T7), calls each endpoint, adds the T3 rows (line A's unit test
+computation, ``backend/tests/core/test_power.py``) and the T6 approximate
+comparison, and writes ``data/validation_report.json`` (ADR-0004,
+``/api/validation``). Each row: id, test, title, condition, kind, expected,
+measured, diff, threshold, unit, status (``pass``, ``warn``, ``fail``,
+``skipped`` or ``info``), source, endpoint and note.
+
+T6 has no threshold: its row is ``kind: approximate`` with ``status: info``
+and is never reported as validated (docs/PLAN.md, 4.1, rule 11). Its NASA
+value is read with an HTTP range request from the PGDA 69 average solar
+visibility map and cached under ``data/raw/validation/``.
 
 A test whose endpoint does not exist yet (HTTP 404 without the API's error
 body) is reported as ``skipped``. So is a test with a ``requires`` entry when
@@ -21,7 +29,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import math
 import sys
 import urllib.error
 import urllib.parse
@@ -34,7 +44,53 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 REPO_ROOT = BACKEND_DIR.parent
 DEFAULT_VECTORS = REPO_ROOT / "data" / "examples" / "test_vectors.json"
 DEFAULT_REPORT = REPO_ROOT / "data" / "validation_report.json"
+DEFAULT_MARKDOWN = REPO_ROOT / "docs" / "validation-report.md"
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
+T6_CACHE = REPO_ROOT / "data" / "raw" / "validation" / "t6_avgvisib.json"
+POWER_TEST = BACKEND_DIR / "tests" / "core" / "test_power.py"
+
+STATUSES = ("pass", "warn", "fail", "skipped", "info")
+TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7")
+
+CONDITIONS = {
+    "T1": "Six past landings at the landing instant; zero height, flat horizon (sphere)",
+    "T2a": "Mons Mouton test site, 1 to 31 Dec 2026, 12 h step, zero height, flat horizon",
+    "T2b": "Mons Mouton test site, 1 Dec 00:00 to 31 Dec 00:00 2026, Earth criterion centre, horizon 0 deg",
+    "T3": (
+        "Mons Mouton test site, 1 Dec 2026 00:00 to 1 Jan 2027 00:00, 745 hourly samples, 1 m2, "
+        "no efficiency, vertical disk fraction with 0.267 deg Sun radius; "
+        "horizon -1, 0 and +1 deg in every direction"
+    ),
+    "T4": "Flat horizon (sphere, R = 1737.4 km); observation height 1, 2, 5 and 10 m",
+    "T5": "Apollo 11 site, 20 and 21 Feb 2027",
+    "T6": (
+        "Mons Mouton test site, calendar year 2027, 2 m mast, terrain horizon; "
+        "NASA PGDA 69 average solar visibility map (120 m/px, 18.6-year average)"
+    ),
+    "T7": "Apollo 11 and Mons Mouton sites, first sunrise of Dec 2026; horizon moved by one arcminute",
+}
+"""Test conditions of docs/PLAN.md, 4.2; a vector may override with ``condition``."""
+
+T3_SOURCE = "docs/research/dogrulama/gunes-paneli.md, No 4 and 6; docs/design/guc-degerlendirmesi.md, Test data"
+T3_REL_THRESHOLD = 0.005
+T3_DARK_THRESHOLD_H = 1.0
+
+T6_SITE_ID = "mons-mouton-im2-target"
+T6_MAST_HEIGHT_M = 2.0
+T6_START = datetime(2027, 1, 1, tzinfo=timezone.utc)
+T6_END = datetime(2028, 1, 1, tzinfo=timezone.utc)
+T6_MAP_URL = "https://pgda.gsfc.nasa.gov/data/MoonIllumination/AVGVISIB_75S_120M_201608.TIF"
+T6_MAP_PRODUCT = "PGDA 69 AVGVISIB_75S_120M_201608"
+T6_MAP_SCALE = 0.00004
+"""``AVERAGE_VISIBILITY = DN * 0.00004`` (the product's PDS label)."""
+T6_SOURCE = "docs/research/dogrulama/veri-kaynaklari.md, No 34; https://pgda.gsfc.nasa.gov/products/69"
+T6_NOTE = (
+    "Approximate comparison, not a validation: no threshold applies. 'Expected' holds the NASA map value "
+    "(DN x 0.00004 from the product label) and 'measured' this product's value. Expected differences: the map is an "
+    "18.6-year average and this run covers one year; the map averages the visible fraction of the solar "
+    "disc, this run counts the time any part of the disc is above the horizon; the map cell is 120 m wide "
+    "while this run uses one point with its own 20 m terrain horizon profile at a 2 m mast."
+)
 
 Fetch = Callable[[str, dict], tuple[int, Any]]
 """``fetch(endpoint, params) -> (status_code, json_body_or_None)``."""
@@ -176,6 +232,8 @@ def evaluate(vector: dict, fetch: Fetch) -> dict:
         "id": vector["id"],
         "test": vector["test"],
         "title": vector["title"],
+        "condition": vector.get("condition") or CONDITIONS.get(vector["test"]),
+        "kind": "reference",
         "expected": vector.get("expected"),
         "measured": None,
         "diff": None,
@@ -244,9 +302,178 @@ def evaluate(vector: dict, fetch: Fetch) -> dict:
     return row
 
 
-def run(vectors: list[dict], fetch: Fetch) -> dict:
-    rows = [evaluate(vector, fetch) for vector in vectors]
-    summary = {status: 0 for status in ("pass", "warn", "fail", "skipped")}
+def _row(test: str, row_id: str, title: str, unit: str, source: str, **fields: Any) -> dict:
+    row = {
+        "id": row_id,
+        "test": test,
+        "title": title,
+        "condition": CONDITIONS[test],
+        "kind": "reference",
+        "expected": None,
+        "measured": None,
+        "diff": None,
+        "threshold": None,
+        "unit": unit,
+        "status": "fail",
+        "source": source,
+        "endpoint": None,
+        "note": None,
+    }
+    row.update(fields)
+    return row
+
+
+def _ensure_backend_path() -> None:
+    if str(BACKEND_DIR) not in sys.path:
+        sys.path.insert(0, str(BACKEND_DIR))
+
+
+def load_power_test() -> Any:
+    """Line A's T3 unit test module: its reference table and ``_t3`` computation."""
+
+    _ensure_backend_path()
+    spec = importlib.util.spec_from_file_location("t3_power_test", POWER_TEST)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _fill(row: dict, compute: Callable[[], float]) -> None:
+    try:
+        measured = float(compute())
+    except Exception as exc:  # noqa: BLE001 - a computation error is a failed row, not a crash
+        row["note"] = f"{row['note']} Computation failed: {exc}"
+        return
+    diff = measured - float(row["expected"])
+    row["measured"] = round(measured, 6)
+    row["diff"] = round(diff, 6)
+    row["status"] = "pass" if abs(diff) <= float(row["threshold"]) + 1e-9 else "fail"
+
+
+def t3_rows(load: Callable[[], Any] = load_power_test) -> list[dict]:
+    """T3 rows from the unit test's own computation (docs/PLAN.md, 4.2, T3 note)."""
+
+    note = f"Computed by {POWER_TEST.relative_to(REPO_ROOT).as_posix()} (_t3), not by an endpoint."
+    try:
+        test = load()
+    except Exception as exc:  # noqa: BLE001 - any import failure becomes a failed row
+        return [_row("T3", "T3-power", "Panel power reference table", "W", T3_SOURCE,
+                     note=f"T3 unit test could not be loaded: {exc}")]
+
+    rows = []
+    for panel_type, by_horizon in test.T3_MEAN_POWER.items():
+        for horizon_deg, expected in by_horizon.items():
+            row = _row(
+                "T3", f"T3-{panel_type.replace('_', '-')}-h{horizon_deg:+g}",
+                f"{panel_type} panel, horizon {horizon_deg:+g} deg: mean power per m2",
+                "W", T3_SOURCE, expected=expected,
+                threshold=round(expected * T3_REL_THRESHOLD, 4),
+                note=f"{note} Threshold is 0.5 % of the expected value.",
+            )
+            _fill(row, lambda p=panel_type, h=horizon_deg: test._t3(p, h)["summary"]["mean_power_w"])
+            rows.append(row)
+    for horizon_deg, expected in test.T3_LONGEST_DARK_HOURS.items():
+        row = _row(
+            "T3", f"T3-longest-dark-h{horizon_deg:+g}",
+            f"Longest dark period, horizon {horizon_deg:+g} deg",
+            "h", T3_SOURCE, expected=expected, threshold=T3_DARK_THRESHOLD_H, note=note,
+        )
+        _fill(row, lambda h=horizon_deg: test._t3("vertical_tracking", h)["summary"]["longest_dark_hours"])
+        rows.append(row)
+    return rows
+
+
+def read_nasa_avgvisib(cache: Path = T6_CACHE) -> dict:
+    """PGDA 69 average solar visibility at the T6 site; cached after the first read."""
+
+    if cache.is_file():
+        with open(cache, encoding="utf-8") as f:
+            return json.load(f)
+
+    _ensure_backend_path()
+    from app.core.catalog import find_site
+    from app.terrain.dem import read_window
+    from app.terrain.projection import latlon_to_xy
+
+    site = find_site(T6_SITE_ID)
+    x, y = latlon_to_xy(site["lat_deg"], site["lon_deg"])
+    window = read_window(T6_MAP_URL, float(x), float(y), 60.0)
+    rows, cols = window.data.shape
+    dn = float(window.data[rows // 2, cols // 2])
+    if not math.isfinite(dn):
+        raise ValueError("the map cell at the T6 site is nodata")
+    value = {
+        "product": T6_MAP_PRODUCT,
+        "url": T6_MAP_URL,
+        "site_id": T6_SITE_ID,
+        "lat_deg": site["lat_deg"],
+        "lon_deg": site["lon_deg"],
+        "dn": dn,
+        "scaling_factor": T6_MAP_SCALE,
+        "average_visibility": dn * T6_MAP_SCALE,
+        "resolution_m": window.resolution_m,
+    }
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    with open(cache, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(value, f, indent=2)
+        f.write("\n")
+    return value
+
+
+def compute_t6_sunlit_fraction() -> dict:
+    """One-year sunlit fraction at the T6 site with the terrain horizon (product computation)."""
+
+    _ensure_backend_path()
+    from app.core.events import compute_events, observer_for
+    from app.core.location import resolve
+
+    observer = observer_for(resolve(T6_SITE_ID, None, None), T6_MAST_HEIGHT_M)
+    result = compute_events(observer, T6_START, T6_END)
+    return {
+        "sunlit_fraction": result["metrics"]["sunlit_fraction"],
+        "horizon_method": observer.profile.method,
+        "validity": result["validity"],
+    }
+
+
+def t6_row(
+    nasa: Callable[[], dict] = read_nasa_avgvisib,
+    ours: Callable[[], dict] = compute_t6_sunlit_fraction,
+) -> dict:
+    """T6: approximate comparison with the NASA map; ``info``, never ``pass``."""
+
+    row = _row(
+        "T6", "T6-mons-mouton-sunlit-fraction",
+        "Mons Mouton test site: one-year sunlit time fraction next to the NASA average solar visibility map",
+        "%", T6_SOURCE, kind="approximate", note=T6_NOTE,
+    )
+    try:
+        reference = nasa()
+    except Exception as exc:  # noqa: BLE001 - network or GDAL failure
+        row["status"] = "skipped"
+        row["note"] = f"NASA map value not available: {exc}"
+        return row
+    row["expected"] = round(100.0 * float(reference["average_visibility"]), 3)
+    try:
+        measured = ours()
+    except Exception as exc:  # noqa: BLE001 - e.g. kernels missing
+        row["note"] = f"{T6_NOTE} Computation failed: {exc}"
+        return row
+    if measured["horizon_method"] != "terrain":
+        row["note"] = f"{T6_NOTE} Terrain horizon not available (got {measured['horizon_method']})."
+        return row
+    value = 100.0 * float(measured["sunlit_fraction"])
+    row["measured"] = round(value, 3)
+    row["diff"] = round(value - row["expected"], 3)
+    row["status"] = "info"
+    return row
+
+
+def run(vectors: list[dict], fetch: Fetch, extra_rows: list[dict] | None = None) -> dict:
+    rows = [evaluate(vector, fetch) for vector in vectors] + list(extra_rows or [])
+    order = {test: i for i, test in enumerate(TEST_ORDER)}
+    rows.sort(key=lambda row: order.get(row["test"], len(order)))
+    summary = {status: 0 for status in STATUSES}
     for row in rows:
         summary[row["status"]] += 1
     return {
@@ -256,24 +483,108 @@ def run(vectors: list[dict], fetch: Fetch) -> dict:
     }
 
 
+TEST_HEADINGS = {
+    "T1": "T1: Sun and Earth angles at six past landings",
+    "T2a": "T2a: Mons Mouton test site, one month of Sun and Earth elevation",
+    "T2b": "T2b: Mons Mouton test site, Earth set and rise",
+    "T3": "T3: Panel power",
+    "T4": "T4: Flat horizon dip",
+    "T5": "T5: An eclipse at the Apollo 11 site",
+    "T6": "T6: Comparison with the NASA average illumination map (approximate)",
+    "T7": "T7: Event time sensitivity to the horizon",
+}
+
+
+def _cell(value: Any) -> str:
+    if value is None:
+        return "–"
+    if isinstance(value, list):
+        return " to ".join(_cell(v) for v in value)
+    if isinstance(value, float):
+        return f"{value:g}"
+    return str(value).replace("|", "\\|")
+
+
+def render_markdown(report: dict) -> str:
+    """The report as English Markdown: one table per test, every row shown."""
+
+    summary = report["summary"]
+    lines = [
+        "# Validation report",
+        "",
+        "<!-- Generated by backend/scripts/run_validation.py; do not edit by hand. -->",
+        "",
+        f"- **Generated (UTC):** {report['generated_utc']}",
+        f"- **Target:** {report.get('target', '–')}",
+        "- **Summary:** " + ", ".join(f"{summary[s]} {s}" for s in STATUSES),
+        "- **Machine-readable:** [`data/validation_report.json`](../data/validation_report.json), "
+        "served as `GET /api/validation`",
+        "",
+        "Every reference test of [docs/PLAN.md, 4.2](PLAN.md#42-referans-testler) is listed; failed rows "
+        "are not hidden. Expected values are verified rows of the `docs/research/dogrulama/` tables. "
+        "`diff` is measured minus expected. Status `info` marks the approximate comparison (T6): it has no "
+        "threshold and is not a validation.",
+        "",
+    ]
+    for test in TEST_ORDER:
+        rows = [row for row in report["rows"] if row["test"] == test]
+        if not rows:
+            continue
+        conditions = sorted({row["condition"] for row in rows if row.get("condition")})
+        lines += [f"## {TEST_HEADINGS.get(test, test)}", ""]
+        lines += [f"**Condition:** {c}" for c in conditions] + [""]
+        lines += [
+            "| Row | Expected | Measured | Diff | Threshold | Unit | Status | Source |",
+            "|---|---:|---:|---:|---:|---|---|---|",
+        ]
+        notes = []
+        for row in rows:
+            expected = row.get("expected_range") if row.get("expected") is None else row["expected"]
+            lines.append(
+                f"| {_cell(row['title'])} | {_cell(expected)} | {_cell(row['measured'])} | "
+                f"{_cell(row['diff'])} | {_cell(row['threshold'])} | {row['unit']} | "
+                f"**{row['status']}** | {_cell(row['source'])} |"
+            )
+            if row.get("note"):
+                notes.append(row["note"])
+        unique_notes = list(dict.fromkeys(notes))
+        if unique_notes:
+            lines += [""] + [f"- {note}" for note in unique_notes]
+        lines.append("")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--in-process", action="store_true", help="call the app without a server")
     parser.add_argument("--vectors", type=Path, default=DEFAULT_VECTORS)
     parser.add_argument("--out", type=Path, default=DEFAULT_REPORT)
+    parser.add_argument("--no-t3", action="store_true", help="leave out the T3 unit test rows")
+    parser.add_argument("--no-t6", action="store_true", help="leave out the T6 approximate comparison")
+    parser.add_argument(
+        "--markdown", type=Path, default=DEFAULT_MARKDOWN,
+        help="also write the report as Markdown (default docs/validation-report.md)",
+    )
     args = parser.parse_args(argv)
 
     with open(args.vectors, encoding="utf-8") as f:
         vectors = json.load(f)["vectors"]
     fetch = in_process_fetcher() if args.in_process else http_fetcher(args.base_url)
 
-    report = run(vectors, fetch)
+    extra = [] if args.no_t3 else t3_rows()
+    if not args.no_t6:
+        extra.append(t6_row())
+    report = run(vectors, fetch, extra)
     report["target"] = "in-process" if args.in_process else args.base_url
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
         f.write("\n")
+    if args.markdown is not None:
+        args.markdown.parent.mkdir(parents=True, exist_ok=True)
+        with open(args.markdown, "w", encoding="utf-8", newline="\n") as f:
+            f.write(render_markdown(report))
 
     for row in report["rows"]:
         diff = "" if row["diff"] is None else f" diff {row['diff']:+.4f} {row['unit']}"
