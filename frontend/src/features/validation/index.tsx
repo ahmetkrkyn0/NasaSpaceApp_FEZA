@@ -1,7 +1,8 @@
 import { getValidation } from '../../api/client';
+import { getDataMode } from '../../api/config';
 import type { ValidationReport, ValidationRow } from '../../api/types';
 import { useAsync } from '../../lib/hooks';
-import { AsyncBlock, ExampleNote, PanelHeader } from '../setup/shared';
+import { AsyncBlock, PanelHeader } from '../setup/shared';
 import { STATUS_LABEL, attentionRows, countsText, diffText, expectedText, groupByTest, valueText } from './report';
 import './validation.css';
 
@@ -95,7 +96,12 @@ export default function ValidationPanel() {
   return (
     <section className="d-panel" aria-label="Validation">
       <PanelHeader title="Validation" />
-      <ExampleNote />
+      {getDataMode() === 'examples' ? (
+        <p className="d-note d-note-example" role="note">
+          Example data: a copy of the stored report from data/examples/validation.json. Add <span className="data">?data=live</span> to read
+          the server's report.
+        </p>
+      ) : null}
       <AsyncBlock result={report}>{(data) => <ValidationSummary report={data} />}</AsyncBlock>
     </section>
   );
