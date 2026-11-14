@@ -600,7 +600,11 @@
       "expected": "2027-02-20T22:09:00Z",
       "threshold": 2,
       "unit": "min",
-      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
+      "requires": {
+        "feature": "eclipse events in /api/events",
+        "issue": "#41, F3-A1"
+      }
     },
     {
       "id": "T5-eclipse-end",
@@ -625,7 +629,11 @@
       "expected": "2027-02-21T00:36:00Z",
       "threshold": 2,
       "unit": "min",
-      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
+      "requires": {
+        "feature": "eclipse events in /api/events",
+        "issue": "#41, F3-A1"
+      }
     },
     {
       "id": "T5-max-obscured",
@@ -650,7 +658,11 @@
       "expected": 0.343,
       "threshold": 0.005,
       "unit": "fraction",
-      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
+      "requires": {
+        "feature": "eclipse events in /api/events",
+        "issue": "#41, F3-A1"
+      }
     },
     {
       "id": "T7-sunrise-shift-apollo-11",

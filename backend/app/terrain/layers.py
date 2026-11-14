@@ -123,9 +123,9 @@ class Layer:
             "X-Layer-Unit": m.unit,
             "X-Layer-Source": m.product,
         }
-        if finite.size:
-            headers["X-Layer-Min"] = _num(float(finite.min()))
-            headers["X-Layer-Max"] = _num(float(finite.max()))
+        # An all-NaN grid still sends both headers, as "nan" (read as null).
+        headers["X-Layer-Min"] = _num(float(finite.min())) if finite.size else "nan"
+        headers["X-Layer-Max"] = _num(float(finite.max())) if finite.size else "nan"
         return headers
 
 
