@@ -45,6 +45,14 @@ def test_missing_start_utc_returns_422(client: TestClient) -> None:
     _assert_error(response, 422, "invalid_parameter")
 
 
+def test_start_utc_without_z_returns_422(client: TestClient) -> None:
+    params = dict(BASE_PARAMS, start_utc="2025-03-06T20:30:00+03:00")
+    response = client.get("/api/sky-series", params=params)
+
+    body = _assert_error(response, 422, "invalid_parameter")
+    assert "start_utc" in body["error"]["message"]
+
+
 def test_zero_step_minutes_returns_422(client: TestClient) -> None:
     params = dict(BASE_PARAMS, step_minutes=0)
     response = client.get("/api/sky-series", params=params)

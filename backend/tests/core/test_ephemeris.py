@@ -143,16 +143,22 @@ def test_fractional_seconds_are_kept() -> None:
     assert whole.azimuth_true_deg != fraction.azimuth_true_deg
 
 
-def test_parse_utc_accepts_z_suffix_and_naive_text() -> None:
+def test_parse_utc_accepts_z_suffix() -> None:
     expected = datetime(2025, 3, 6, 17, 30, tzinfo=timezone.utc)
 
     from_z = ephemeris.parse_utc("2025-03-06T17:30:00Z")
-    from_naive = ephemeris.parse_utc("2025-03-06T17:30:00")
 
     assert from_z == expected
-    assert from_z.tzinfo is not None
-    assert from_naive == expected
-    assert from_naive.tzinfo is not None
+    assert from_z.utcoffset() == timedelta(0)
+
+
+@pytest.mark.parametrize(
+    "text", ["2025-03-06T17:30:00", "2025-03-06T17:30:00+03:00", "2025-03-06T17:30:00+00:00"]
+)
+def test_parse_utc_rejects_times_without_z(text: str) -> None:
+    with pytest.raises(InvalidParameter) as excinfo:
+        ephemeris.parse_utc(text, "start_utc")
+    assert "'start_utc'" in excinfo.value.message
 
 
 def test_parse_utc_rejects_bad_text() -> None:

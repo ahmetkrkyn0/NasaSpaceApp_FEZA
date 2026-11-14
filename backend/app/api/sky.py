@@ -71,12 +71,7 @@ def sky_series(
 
     if start_utc is None:
         raise InvalidParameter("Invalid parameter 'start_utc': required.")
-    try:
-        start = ephemeris.parse_utc(start_utc)
-    except InvalidParameter:
-        raise InvalidParameter(
-            f"Invalid parameter 'start_utc': cannot parse '{start_utc}' as an ISO 8601 timestamp."
-        ) from None
+    start = ephemeris.parse_utc(start_utc, "start_utc")
 
     count = math.floor(hours * 60 / step_minutes + 1e-9) + 1
     times = [start + timedelta(minutes=k * step_minutes) for k in range(count)]

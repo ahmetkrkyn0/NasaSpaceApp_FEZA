@@ -182,18 +182,24 @@ def format_utc(dt: datetime) -> str:
     return f"{to_spice_utc(dt)}Z"
 
 
-def parse_utc(text: str) -> datetime:
-    """Parse an ISO 8601 timestamp into a tz-aware UTC datetime."""
+def parse_utc(text: str, name: str = "utc") -> datetime:
+    """Parse an ISO 8601 UTC timestamp ending in ``Z`` (ADR-0002 rule 5) into a tz-aware datetime.
 
+    Offsets such as ``+03:00`` and times without a zone are rejected so a
+    request cannot silently mean a different instant. ``name`` is the
+    parameter named in the error message.
+    """
+
+    error = InvalidParameter(
+        f"Invalid parameter '{name}': '{text}' must be an ISO 8601 UTC time ending in Z, "
+        "e.g. 2026-12-01T00:00:00Z."
+    )
+    if not isinstance(text, str) or not text.strip().upper().endswith("Z"):
+        raise error
     try:
-        parsed = datetime.fromisoformat(text.strip().replace("Z", "+00:00"))
-    except (AttributeError, TypeError, ValueError):
-        raise InvalidParameter(
-            f"Invalid parameter 'utc': cannot parse '{text}' as an ISO 8601 timestamp."
-        ) from None
-
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+        parsed = datetime.fromisoformat(text.strip()[:-1] + "+00:00")
+    except ValueError:
+        raise error from None
     return parsed.astimezone(timezone.utc)
 
 
