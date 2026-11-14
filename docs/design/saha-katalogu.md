@@ -65,7 +65,7 @@ Kural: Bu bölgeler listede `artemis_candidate` kategorisiyle ve "2024 Artemis I
 2. Enlem eksi 90 ile artı 90 arasında değilse reddedilir.
 3. Boylam 180'den büyükse 360 çıkarılarak çevrilir ([ADR-0002](../adr/0002-koordinat-sistemi-ve-zaman.md)).
 4. Kayıt `category` değeri `custom`, `validity` değeri `SYNTHETIC` olan geçici bir saha olarak işlenir.
-5. O nokta için yükseklik haritası yoksa hesap düz ufukla yapılır ve arayüz bunu belirtir ([ADR-0004](../adr/0004-api-uc-noktalari.md)).
+5. İlk sürümde hesap düz ufukla yapılır ve arayüz bunu belirtir ([ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md), madde 5; [ADR-0004](../adr/0004-api-uc-noktalari.md)).
 
 ## 5. Girdi ve çıktı
 

@@ -68,6 +68,7 @@ Uç nokta `GET /api/sky-series` ([ADR-0004](../adr/0004-api-uc-noktalari.md)). P
   "start_utc": "2025-03-06T17:30:00Z", "step_minutes": 60,
   "ephemeris": { "source": "SPICE DE440", "frame": "MOON_ME", "correction": "LT+S" },
   "horizon": { "method": "sphere", "validity": "SYNTHETIC" },
+  "validity": "SYNTHETIC",
   "samples": [{
     "utc": "2025-03-06T17:30:00Z",
     "sun":   { "azimuth_true_deg": 65.67, "elevation_deg": 2.47, "horizon_deg": 0.0, "visible_fraction": 1.0, "range_au": null, "radius_deg": null },
