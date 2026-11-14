@@ -547,7 +547,7 @@ Aynı şey için farklı belgelerde farklı sayı ya da karar var. Aşama 2'de h
 |---|---|---|---|
 | Ufuk kaç yönde hesaplanacak | `zamanda-degisen-veri-hazirlama.md` ve `lunar-horizon`: 720 yön (yarım derece aralık) | `light-heat-layer` ve `solar-panel-model`: 360 yön | 720 yön. Literatürdeki standart bu ve saha başına dosya yalnızca birkaç kilobayt. |
 | Ön hesap dosyalarının biçimi | `zamanda-degisen-veri-hazirlama.md`: ikili dosyalar (`ephem_*.bin`, `horizon.i16`) ve olaylar için JSON | `light-heat-layer`: CSV, NPZ ve ham ikili dosyalar. `lunar-horizon`: saha başına JSON. Efemeris raporu: statik JSON | Tek bir veri sözleşmesi yazılmalı (ADR). Dört belge dört ayrı biçim öneriyor. |
-| Uygulamanın nerede çalışacağı | Rover notu: Unreal Engine, Cesium ve Blender | Araç raporu: Unity ya da Unreal. Diğer notlar: Python ile ön hesap ve tarayıcıda arayüz | Karar verildi (14 Kasım 2026): web arayüzü, `frontend-migrate/DESIGN.md` belgesindeki tasarım esas. Unreal ve Unity kullanılmayacak. Karar belgesi Aşama 2'de yazılacak. |
+| Uygulamanın nerede çalışacağı | Rover notu: Unreal Engine, Cesium ve Blender | Araç raporu: Unity ya da Unreal. Diğer notlar: Python ile ön hesap ve tarayıcıda arayüz | Karar verildi (14 Kasım 2026): web arayüzü, `frontend-migrate/DESIGN.md` belgesindeki tasarım esas. Unity kullanılmayacak. 3B arazi görünümü ayrı olarak Unreal Engine ile geliştiriliyor ve sonra birleştirilecek. Karar belgesi: [ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md). |
 | İki Ay koordinat sistemi arasındaki fark | Efemeris raporu: yaklaşık 875 m | `zamanda-degisen-veri-hazirlama.md`: sahaya göre 663 ile 875 m arası | İkisi de aynı şeyi söylüyor: sistemler karıştırılırsa yüzlerce metre hata olur. Tek sistem seçilmeli. |
 | Hangi efemeris sürümü | Horizons DE441, ekibin SPICE dosyaları DE440 | Yükseklik haritaları DE421 ile hizalı; `data-sources` karar önerisinde "DE421 uyumlu" yazıyor | Çelişki değil ama karışıklığa açık. Karar belgesinde açıkça yazılmalı. |
 | `astronomy-engine` kütüphanesinin lisansı | `data-sources`: MIT | `light-heat-layer`: "kontrol edilmeli" | Doğrulandı: MIT. "Kontrol edilmeli" notu kaldırılabilir. |
@@ -580,7 +580,9 @@ Bu özet 14 Kasım 2026'da gözden geçirildi ve aşağıdaki kararlar verildi.
 | Konu | Karar |
 |---|---|
 | Sınıflandırma | Onaylandı. Rover ile ilgili bütün konular, batarya ve kapsam dışı konular çıkarıldı (bölüm 7.5). |
-| Arayüz | Web arayüzü. `frontend-migrate/DESIGN.md` belgesindeki tasarım esas alınacak. Unreal kullanılmayacak. |
+| Arayüz | Web arayüzü. `frontend-migrate/DESIGN.md` belgesindeki tasarım esas alınacak. 3B arazi görünümü ayrı olarak Unreal Engine ile geliştiriliyor; web arayüzüyle birleştirme sonraya bırakıldı. Rover simülasyonu yine kapsam dışı. |
+| Stack | Onaylandı: [ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md). |
+| Çin görevlerinin sahaları | Listede kalacak. |
 | Ekstra özellikler | Çıkarılanlar dışında kalan bütün ekstra özellikler için proje dokümanı yazılacak. |
 | Araştırma notları | Düzeltildi (bölüm 6). |
 
