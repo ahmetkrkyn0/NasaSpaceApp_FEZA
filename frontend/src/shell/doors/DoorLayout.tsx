@@ -3,6 +3,7 @@ import { PanelSlot } from '../PanelSlot';
 import type { Door, Mode } from '../ui-state';
 import { arrangeDoor } from './arrange';
 import { DoorSummary } from './DoorSummary';
+import { SitePicker } from './SitePicker';
 import './doors.css';
 
 const LEFT_LABEL: Record<Door, string> = {
@@ -21,8 +22,9 @@ export interface DoorLayoutProps {
 /**
  * Explore and Classroom layout (docs/PLAN.md, F3-C1 items 1 and 2): the horizon strip and the
  * timeline are the main screen. Explore adds the one-sentence result; Classroom keeps the
- * guided tasks column next to them, which also works while that panel is empty. The scenario
- * is read, never written, so changing the door keeps site, dates and the selected moment.
+ * guided tasks column next to them, which also works while that panel is empty. Both doors have
+ * a site picker, since they have no setup panel. Changing the door never writes the scenario,
+ * so site, dates and the selected moment stay; only a site pick changes it.
  */
 export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
   const a = arrangeDoor({ door, mode });
@@ -33,9 +35,7 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
     a.side.length > 0 ? 'has-right-rail' : 'no-right-rail',
   ].join(' ');
   const hasSummary = door === 'explore';
-  const stageClass = ['door-stage', hasSummary ? '' : 'no-summary', a.head.length > 0 ? '' : 'no-hud']
-    .filter(Boolean)
-    .join(' ');
+  const stageClass = a.head.length > 0 ? 'door-stage' : 'door-stage no-hud';
 
   return (
     <main className={gridClass} data-door-layout={door}>
@@ -46,7 +46,11 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
       ) : null}
       <section className="center-stage" aria-label="Main view">
         <div className={stageClass}>
-          {hasSummary ? <DoorSummary /> : null}
+          <div className="door-stage-lead">
+            {/* These doors have no setup panel; the site is picked here (S-03, step 1). */}
+            <SitePicker />
+            {hasSummary ? <DoorSummary /> : null}
+          </div>
           <div className="door-stage-main">
             <PanelSlot panels={a.stage} />
           </div>

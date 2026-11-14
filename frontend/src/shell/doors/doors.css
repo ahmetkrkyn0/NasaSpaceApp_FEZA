@@ -35,11 +35,6 @@
   overflow-y: auto;
 }
 
-.door-stage.no-summary {
-  grid-template-areas: 'main hud';
-  grid-template-rows: auto;
-}
-
 .door-stage.no-hud {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
@@ -47,12 +42,48 @@
     'main';
 }
 
-.door-stage.no-summary.no-hud {
-  grid-template-areas: 'main';
+.door-stage-lead {
+  grid-area: summary;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.door-site {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.door-site-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  letter-spacing: var(--track-label);
+}
+
+.door-site-select {
+  min-width: 260px;
+  padding: 4px 8px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+}
+
+.door-site-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
 }
 
 .door-summary {
-  grid-area: summary;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

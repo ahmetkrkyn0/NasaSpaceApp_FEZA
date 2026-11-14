@@ -10,6 +10,9 @@ import { STAGE_PANEL_IDS, arrangeDoor } from './arrange';
 import { DoorLayout } from './DoorLayout';
 import { SummaryView } from './DoorSummary';
 import { percentText, placeName, summarySentence } from './summary';
+import { SitePickerView } from './SitePicker';
+import { scenarioForPick } from './site-pick';
+import { DEFAULT_DURATION_DAYS, DEFAULT_MAST_HEIGHT_M, DEFAULT_PANEL_PROFILE_ID, addDaysUtc } from '../../state/scenario-tools';
 
 const ids = (list: { id: string }[]) => list.map((p) => p.id);
 
@@ -135,13 +138,18 @@ describe('one-sentence result', () => {
     expect(placeName(unnamed, [{ ...sitesExample[0]!, id: 'mons-mouton-im2-target', name: 'Mons Mouton (IM-2)' }])).toBe('Mons Mouton (IM-2)');
     expect(placeName(unnamed, [])).toBe('mons-mouton-im2-target');
     expect(placeName({ ...unnamed, site_id: null, lat_deg: -84.5, lon_deg: 12 }, [])).toBe('-84.5°, 12°');
+    // A dated label does not repeat the date in the sentence when the site is in the catalogue.
+    const dated = { ...scenario, label: 'Mons Mouton (IM-2 target point), 2026-12-01' };
+    expect(placeName(dated, [{ ...sitesExample[0]!, id: 'mons-mouton-im2-target', name: 'Mons Mouton (IM-2 target point)' }])).toBe(
+      'Mons Mouton (IM-2 target point)',
+    );
     const html = renderToStaticMarkup(<SummaryView scenario={unnamed} window={window} events={eventsExample} sites={[]} />);
     expect(html).toContain('At mons-mouton-im2-target, from');
   });
 
-  it('points to the Plan door when no scenario is set', () => {
+  it('points to the site picker when no scenario is set', () => {
     const html = renderToStaticMarkup(<SummaryView scenario={null} window={null} events={null} />);
-    expect(html).toContain('Choose a site and dates in the Plan door');
+    expect(html).toContain('Pick one above');
   });
 });
 
@@ -155,5 +163,57 @@ describe('answers of the previous scenario', () => {
     const html = renderToStaticMarkup(<SummaryView scenario={scenario} window={window} events={null} />);
     expect(html).toContain('Loading the result');
     expect(html).not.toContain('Earth is in view');
+  });
+});
+
+describe('site picker of the Explore and Classroom doors', () => {
+  const NOW = Date.parse('2026-12-03T15:42:10Z');
+  const mons = sitesExample.find((s) => s.id === 'mons-mouton-im2-target')!;
+  const other = sitesExample.find((s) => s.id !== mons.id)!;
+
+  it('starts a scenario from today with the setup defaults when none is active', () => {
+    const s = scenarioForPick(null, mons, sitesExample, NOW);
+    expect(s.site_id).toBe(mons.id);
+    expect(s.start_utc).toBe('2026-12-03T00:00:00Z');
+    expect(s.end_utc).toBe(addDaysUtc('2026-12-03T00:00:00Z', DEFAULT_DURATION_DAYS));
+    expect(s.mast_height_m).toBe(DEFAULT_MAST_HEIGHT_M);
+    expect(s.panel_profile_id).toBe(DEFAULT_PANEL_PROFILE_ID);
+  });
+
+  it('moves the active scenario to the picked site and keeps its dates and settings', () => {
+    const active: Scenario = { ...scenario, mast_height_m: 10, earth_criterion: 'full_disk' };
+    const s = scenarioForPick(active, other, sitesExample, NOW);
+    expect(s.site_id).toBe(other.id);
+    expect([s.start_utc, s.end_utc, s.mast_height_m, s.panel_profile_id, s.earth_criterion]).toEqual([
+      active.start_utc,
+      active.end_utc,
+      10,
+      active.panel_profile_id,
+      'full_disk',
+    ]);
+  });
+
+  it('lists the catalogue, shows the active site and the dates it covers', () => {
+    const html = renderToStaticMarkup(<SitePickerView sites={sitesExample} active={scenario} onPick={() => undefined} />);
+    expect(html).toContain('<option value="mons-mouton-im2-target" selected="">');
+    expect(html).toContain('2026-12-01 to 2026-12-31 UTC');
+    expect(html).not.toContain('Choose a site…');
+    expect(sitesExample.every((s) => html.includes(`value="${s.id}"`))).toBe(true);
+  });
+
+  it('asks for a site when none is chosen and marks a custom point', () => {
+    const empty = renderToStaticMarkup(<SitePickerView sites={sitesExample} active={null} onPick={() => undefined} />);
+    expect(empty).toContain('Choose a site…');
+    expect(empty).toContain(`${DEFAULT_DURATION_DAYS} days from today`);
+    const custom = renderToStaticMarkup(
+      <SitePickerView sites={sitesExample} active={{ ...scenario, site_id: null, lat_deg: -85, lon_deg: 30 }} onPick={() => undefined} />,
+    );
+    expect(custom).toContain('Custom point (set in the Plan door)');
+  });
+
+  it('is part of both door layouts', () => {
+    for (const door of ['explore', 'classroom'] as const) {
+      expect(renderToStaticMarkup(<DoorLayout door={door} mode="plan" />)).toContain('door-site-select');
+    }
   });
 });
