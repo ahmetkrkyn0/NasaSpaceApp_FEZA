@@ -2,9 +2,9 @@
 
 - **Tarih:** 14 Kasım 2026
 - **Durum:** Taslak. Ekip gözden geçirecek; değişiklikler PR ile yapılır.
-- **Kapsam:** Ürünü kimin, hangi soruyla, hangi adımlarla kullanacağı. Hesap yöntemi ve ekran tasarımı bu belgenin konusu değil.
+- **Kapsam:** Ürünü kimin, hangi soruyla, hangi adımlarla kullanacağı. Hesap yöntemi ve ekran tasarımı bu belgenin konusu değil; onlar [docs/design/](../design/) altındaki tasarım belgelerinde ve [docs/adr/](../adr/README.md) altındaki karar kayıtlarında.
 
-Bu belge, [araştırma analiz özetinin](../research/ANALIZ-OZETI.md) 9. bölümünde eksik diye yazılan iki maddeyi karşılar: "kullanıcı türlerine göre içerik planı yok" ve (kısmen) "ekran tasarımı yok". Kimlikler (`K`, `UC`, `S`) sabittir; düzenlerken numara değiştirmeyin, yeni madde için sıradaki numarayı kullanın.
+Bu belge, [araştırma analiz özetinin](../research/ANALIZ-OZETI.md) 9. bölümünde eksik diye yazılan "kullanıcı türlerine göre içerik planı yok" maddesini karşılar. Tasarım belgeleri her özelliği tek tek anlatır; bu belge onları kullanıcının gözünden birbirine bağlar. Bir çelişki olursa tasarım belgeleri ve karar kayıtları geçerlidir. Kimlikler (`K`, `UC`, `S`) sabittir; düzenlerken numara değiştirmeyin, yeni madde için sıradaki numarayı kullanın.
 
 ## İçindekiler
 
@@ -15,7 +15,7 @@ Bu belge, [araştırma analiz özetinin](../research/ANALIZ-OZETI.md) 9. bölüm
 5. [Use case'ler](#5-use-caseler)
 6. [Kullanıcıya göre akışlar](#6-kullanıcıya-göre-akışlar)
 7. [Senaryolar](#7-senaryolar)
-8. [İzlenebilirlik](#8-izlenebilirlik)
+8. [Hedeflere izlenebilirlik](#8-hedeflere-izlenebilirlik)
 9. [Demo için notlar](#9-demo-için-notlar)
 10. [Açık kararlar](#10-açık-kararlar)
 11. [Kitle stratejisi belgesiyle farklar](#11-kitle-stratejisi-belgesiyle-farklar)
@@ -27,7 +27,9 @@ Bu belge, [araştırma analiz özetinin](../research/ANALIZ-OZETI.md) 9. bölüm
 | [Challenge metni](../challenge/lunar-landing-site-navigator.md) | Üç kullanıcı türü ve yedi hedef (bölüm 8'de `O1`–`O7`) |
 | [Araştırma analiz özeti](../research/ANALIZ-OZETI.md) | Onaylı kapsam (bölüm 7 ve 10), doğrulanmış sayılar (bölüm 5), belgeler arası çelişkiler (bölüm 8) |
 | [Açıklanabilirlik raporu](../research/explainability-mission-differences/) | Üç düzeyde anlatım, karşılaştırma yöntemi, "neden" kartları, vaka senaryoları |
-| [Arayüz tasarım belgesi](../../frontend-migrate/DESIGN.md) | Ekranlar ve panel yerleşimi (Plan ve Analyze modları) |
+| [Arayüz tasarım belgesi](../../frontend-migrate/DESIGN.md) | Referans ekranlar ve panel yerleşimi (PLAN ve ANALYZE kipleri) |
+| [Tasarım belgeleri](../design/) | Her use case'in hesabı, girdisi, çıktısı ve arayüzdeki yeri. Özellikle [gösterim ve arayüz](../design/gosterim-ve-arayuz.md) ile [karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md) |
+| [Karar kayıtları](../adr/README.md) | Mimari (ADR-0001), koordinat ve zaman kuralları (ADR-0002), veri sözleşmesi (ADR-0003), sunucu uç noktaları (ADR-0004) |
 | [Zamanla değişen veri notu](../research/zamanda-degisen-veri-hazirlama.md), [ufuk hesabı notu](../research/lunar-horizon/README.md) | Olaylar, pencereler, ufuk ve gösterim önerisi |
 | [Güneş paneli notu](../research/solar-panel-model/README.md), [efemeris ve yer istasyonları](../research/ephemeris-rotation-ground-stations/README.md) | Güç ve iletişim use case'lerinin girdileri |
 | [Veri kaynakları kataloğu](../research/data-sources/README.md), [CSA notu](../research/csa-moon-exploration.md) | Saha listesi, katmanlar, ekstra özelliklerin kaynağı |
@@ -48,6 +50,8 @@ Sınıflar analiz özetinin 7. bölümünden aynen alındı.
 
 Kapsam dışı maddeler için bu planda use case ya da senaryo yok. Gece uzunluğu ve "gün batımına kalan süre" kapsamda; bunlar olay saatlerinin parçası.
 
+3B arazi görünümü web arayüzünün ilk sürümünde yok. Unreal Engine ile ayrı geliştiriliyor ve sonra birleştirilecek ([ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md)). Bu plandaki use case'ler web arayüzünü anlatır.
+
 ## 3. Kullanıcılar
 
 Challenge üç kullanıcı türü sayıyor. Açıklanabilirlik raporu (bölüm 7, "kademeli açıklama") her birine ayrı bir anlatım düzeyi öneriyor. Üçü de aynı hesabı görür; değişen yalnızca ayrıntı düzeyidir.
@@ -57,6 +61,8 @@ Challenge üç kullanıcı türü sayıyor. Açıklanabilirlik raporu (bölüm 7
 | `K1` | Görev planlamacı | Bilim ve mühendislik ekiplerinde saha ve tarih seçen kişi | "Tarih ya da saha değişirse güç ve iletişim nasıl etkilenir?" | Sayılar, saat aralıkları (hata payıyla), fark tablosu, dışa aktarma | İki ya da daha çok senaryoyu aynı ölçülerle kıyaslayıp birini seçebildi |
 | `K2` | Eğitimci | Öğretmen, atölye yürütücüsü, bilim iletişimcisi | "Kutupta iniş neden bu kadar zor, bunu nasıl gösteririm?" | Gökyüzü görünümü, fiziksel neden ve basit formül | Bir kavramı tek bir girdiyi değiştirerek gösterebildi |
 | `K3` | Halk | Meraklı ziyaretçi, öğrenci | "Ay'da bu noktada durmak nasıl bir şey?" | Tek cümlelik sonuç ve simge | Bir sahada Güneş'in ve Dünya'nın ne yaptığını kendi cümlesiyle anlatabildi |
+
+Tasarım belgelerinde bu üç düzey üç giriş kapısı olarak geçer: halk için Keşfet, eğitimci için Sınıf, planlamacı için Planla ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), "Üç giriş kapısı"). Üç kapı aynı saha, tarih ve zaman durumunu paylaşır; kullanıcı kapı değiştirdiğinde aynı senaryoya başka ayrıntıyla bakar.
 
 Jüri bir kullanıcı türü değildir ama demoyu izler; ona dair notlar bölüm 9'da.
 
@@ -81,55 +87,56 @@ flowchart TD
   I --> H
   J --> H
   L --> H
-  H -- "Bitirir" --> K["Rapor al, dışa aktar<br/>UC-11"]
+  H -- "Bitirir" --> K["Dışa aktar,<br/>bağlantıyı paylaş<br/>UC-11"]
 ```
 
-Anlatım düzeyi (`K1`, `K2`, `K3`) bu akışın bir adımı değil, her adımda geçerli bir ayardır. Düzeyin nerede ve nasıl seçileceği açık karar (bölüm 10, madde 1).
+Anlatım düzeyi (`K1`, `K2`, `K3`) bu akışın bir adımı değil, her adımda geçerli bir ayardır. Düzey, kapı (Keşfet, Sınıf, Planla) seçilerek belirlenir; kapıların ayrı sayfalar mı yoksa tek sayfada bir anahtar mı olacağı açık karar (bölüm 10, madde 1).
 
-### Akışın arayüz tasarımındaki karşılığı
+### Akışın arayüzdeki karşılığı
 
-Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümünde planlanan `docs/design/gosterim-ve-arayuz.md` belgesinde yazılacak. Tasarım belgesi rover rota planlama için yazıldığından bazı ekranların içeriği değişmek zorunda.
+Ekranların kesin tarifi [gösterim ve arayüz](../design/gosterim-ve-arayuz.md) belgesinde (bölüm 4, "Ekran iskeleti"). Aşağıdaki tablo o belgenin akış adımlarına göre özetidir.
 
-| Akış adımı | Tasarım belgesindeki karşılığı | Not |
+| Akış adımı | Arayüzde nerede | Not |
 | --- | --- | --- |
-| Giriş | Açılış ekranı ve tanıtım sayfası (bölüm 2.1, S0 ve S1) | Metinler rover yerine saha karşılaştırmayı anlatmalı |
-| Hazır senaryo ya da saha seçimi | Hangar ekranı (S3) | Bu ekran rover seçimi içindi; yerine ne geleceği açık karar (bölüm 10, madde 2) |
-| Saha, tarih ve panel kurulumu | Çalışma ekranı, Plan modu, sol panel (`mission-setup`) | Başlangıç ve hedef noktası yerine saha ve tarih |
-| Gökyüzü görünümü | Karşılığı yok | Yeni görünüm; orta sahnede 2B harita ve 3B arazinin yanında üçüncü seçenek olabilir |
-| Zamanı oynatma | Alt bölümdeki zaman ekseni (`time-axis`) ve oynatma çubuğu (`playback`) | Doğrudan kullanılabilir |
-| Özet ölçüler | Analyze modu, sağ paneldeki sekmeler | Sekme adları (Route, Safety, Analysis, Compare) yeniden adlandırılmalı |
-| Karşılaştırma | Sağ panelde `Compare` sekmesi | İçerik yeniden yazılacak |
-| Harita ve katmanlar | Katman seçici (`layer-picker`), analiz katmanları (`analysis-layers`: PSR mask, Earth visibility) | Rover'a özgü katmanlar (Cost, Traverse) çıkar |
-| Dünya görünürlüğü | `earth-visibility` paneli | Mevcut panel konuya uygun |
-| Kaynak ve güvenilirlik | `layer-provenance`, `psr-validation` panelleri | Mevcut paneller konuya uygun |
-| Rapor ve dışa aktarma | Görev raporu (`mission-report`; İngilizce ve Türkçe, CSV) | İçerik rota yerine senaryo karşılaştırması |
+| Giriş | Açılış ve karşılama ekranı | Referans tasarımdaki ekran korunur; ürün adı ve metinler değişir |
+| Hazır senaryo ya da saha seçimi | Saha ve tarih seçim ekranı | Referans tasarımdaki rover seçim ekranı ("hangar") buna dönüşür |
+| Saha, tarih ve panel kurulumu | Çalışma ekranı, PLAN kipi, sol bölme | Senaryo: saha, tarih aralığı, direk yüksekliği, panel tipi |
+| Gökyüzü görünümü | ANALYZE kipi, sağ bölmede Sky sekmesi: ufuk şeridi | Referans tasarımda yok; yeni bileşen |
+| Zamanı oynatma | Alt bölmedeki zaman çizelgesi ve durum şeridindeki oynatma denetimi | Korunur |
+| Kalan süre | Haritanın üstündeki bilgi alanı | Dört değer: gün batımı ya da doğumu, Dünya'nın batışı ya da doğuşu |
+| Güç ve iletişim | Sağ bölmede Power ve Comms sekmeleri | Dünya görünürlüğü paneli Comms sekmesine taşınır |
+| Karşılaştırma ve dışa aktarma | Sağ bölmede Compare sekmesi | En fazla dört senaryo; tablo CSV ya da JSON olarak iner |
+| Harita ve katmanlar | Orta alanda 2B harita, katman seçici | 3B arazi web arayüzünde yok (ADR-0001) |
+| Kaynak ve güvenilirlik | Veri kaynağı paneli ve her sonucun yanındaki güvenilirlik etiketi | Etiketler: Measured, Model, Derived, Assumed |
+
+Referans tasarımdaki asistan ve görev raporu ilk sürümde yok. Rover, rota ve ROS ile ilgili paneller kaldırılıyor.
 
 ## 5. Use case'ler
 
 ### 5.1 Özet tablo
 
-"Kim" sütununda ilk yazılan asıl kullanıcıdır. "Yazılacak belge" sütunu analiz özetinin 10.2 ve 10.3 bölümlerindeki dosya adlarıdır (`docs/design/` altında).
+"Kim" sütununda ilk yazılan asıl kullanıcıdır. "Tasarım belgesi" sütunu use case'in hesabını ve arayüzdeki yerini anlatan belgeye bağlanır; parantez içindekiler o use case'in seçeneklerine aittir.
 
-| Kimlik | Use case | Kim | Sınıf | Challenge hedefi | Yazılacak belge |
+| Kimlik | Use case | Kim | Sınıf | Challenge hedefi | Tasarım belgesi |
 | --- | --- | --- | --- | --- | --- |
-| `UC-01` | Hazır listeden saha seçmek | Hepsi | Zorunlu | O1 | `saha-katalogu.md` |
-| `UC-02` | Özel koordinat girmek | K1 | Zorunlu | O1 | `saha-katalogu.md`, `ufuk-hesabi.md` |
-| `UC-03` | Tarih ve saat seçmek, zamanı oynatmak | Hepsi | Zorunlu | O2, O6 | `gosterim-ve-arayuz.md` |
-| `UC-04` | Güneş ve Dünya'yı ufka göre görmek | Hepsi | Zorunlu | O3, O5 | `gunes-dunya-konumu.md`, `ufuk-hesabi.md`, `gosterim-ve-arayuz.md` |
-| `UC-05` | Olay saatlerini ve kalan süreyi görmek | K1, K3 | Zorunlu | O3, O6 | `olaylar-ve-sureler.md` |
-| `UC-06` | Güç durumunu değerlendirmek | K1, K2 | Zorunlu | O4 | `guc-degerlendirmesi.md` |
-| `UC-07` | İletişim penceresini değerlendirmek | K1, K2 | Zorunlu | O4 | `iletisim-penceresi.md` |
-| `UC-08` | Senaryoları yan yana karşılaştırmak | K1, K2 | Zorunlu | O1, O2 | `karsilastirma-ve-aciklama.md` |
-| `UC-09` | "Neden" açıklamasını okumak | K3, K2, K1 | Destekleyici | O7 | `karsilastirma-ve-aciklama.md` |
-| `UC-10` | Sonucun güvenilirliğini görmek | K1 | Destekleyici | – | `olaylar-ve-sureler.md`, `dogrulama-plani.md` |
-| `UC-11` | Rapor almak ve dışa aktarmak | K1 | Destekleyici (öneri) | – | `gosterim-ve-arayuz.md` |
-| `UC-12` | Haritada sahayı ve katmanları görmek | Hepsi | Destekleyici | O5 | `kalici-golge-katmani.md`, `gosterim-ve-arayuz.md` |
-| `UC-13` | Hazır senaryoyu (geçmiş görev vakası) açmak | K2, K3 | Ekstra | O7 | `gecmis-gorev-vakalari.md`, `athena-demosu.md` |
-| `UC-14` | Sahaları puanla sıralamak | K1 | Ekstra | O1 | `saha-puani.md` |
-| `UC-15` | Yaklaşma profilini ve gölge uyarısını görmek | K1 | Ekstra | – | `yaklasma-profili-ve-golge-uyarisi.md` |
-| `UC-16` | Zemin sıcaklığını görmek | K1, K2 | Ekstra | – | `zemin-sicakligi.md` |
+| `UC-01` | Hazır listeden saha seçmek | Hepsi | Zorunlu | O1 | [saha-katalogu](../design/saha-katalogu.md) ([csa-bilgi-kartlari](../design/csa-bilgi-kartlari.md)) |
+| `UC-02` | Özel koordinat girmek | K1 | Zorunlu | O1 | [saha-katalogu](../design/saha-katalogu.md), [ufuk-hesabi](../design/ufuk-hesabi.md) |
+| `UC-03` | Tarih ve saat seçmek, zamanı oynatmak | Hepsi | Zorunlu | O2, O6 | [gosterim-ve-arayuz](../design/gosterim-ve-arayuz.md) |
+| `UC-04` | Güneş ve Dünya'yı ufka göre görmek | Hepsi | Zorunlu | O3, O5 | [gunes-dunya-konumu](../design/gunes-dunya-konumu.md), [ufuk-hesabi](../design/ufuk-hesabi.md), [gosterim-ve-arayuz](../design/gosterim-ve-arayuz.md) |
+| `UC-05` | Olay saatlerini ve kalan süreyi görmek | K1, K3 | Zorunlu | O3, O6 | [olaylar-ve-sureler](../design/olaylar-ve-sureler.md) ([tutulmalar](../design/tutulmalar.md)) |
+| `UC-06` | Güç durumunu değerlendirmek | K1, K2 | Zorunlu | O4 | [guc-degerlendirmesi](../design/guc-degerlendirmesi.md) |
+| `UC-07` | İletişim penceresini değerlendirmek | K1, K2 | Zorunlu | O4 | [iletisim-penceresi](../design/iletisim-penceresi.md) ([role-etiketi](../design/role-etiketi.md)) |
+| `UC-08` | Senaryoları yan yana karşılaştırmak | K1, K2 | Zorunlu | O1, O2 | [karsilastirma-ve-aciklama](../design/karsilastirma-ve-aciklama.md) |
+| `UC-09` | "Neden" açıklamasını okumak | K3, K2, K1 | Destekleyici | O7 | [karsilastirma-ve-aciklama](../design/karsilastirma-ve-aciklama.md) |
+| `UC-10` | Sonucun güvenilirliğini görmek | K1 | Destekleyici | – | [olaylar-ve-sureler](../design/olaylar-ve-sureler.md), [dogrulama-plani](../design/dogrulama-plani.md) |
+| `UC-11` | Karşılaştırmayı dışa aktarmak ve paylaşmak | K1 | Destekleyici | – | [karsilastirma-ve-aciklama](../design/karsilastirma-ve-aciklama.md) |
+| `UC-12` | Haritada sahayı ve katmanları görmek | Hepsi | Destekleyici | O5 | [kalici-golge-katmani](../design/kalici-golge-katmani.md), [gosterim-ve-arayuz](../design/gosterim-ve-arayuz.md) ([arac-modelleri](../design/arac-modelleri.md)) |
+| `UC-13` | Hazır senaryoyu (geçmiş görev vakası) açmak | K2, K3 | Ekstra | O7 | [gecmis-gorev-vakalari](../design/gecmis-gorev-vakalari.md), [athena-demosu](../design/athena-demosu.md) |
+| `UC-14` | Sahaları puanla sıralamak | K1 | Ekstra | O1 | [saha-puani](../design/saha-puani.md) |
+| `UC-15` | Yaklaşma profilini ve gölge uyarısını görmek | K1 | Ekstra | – | [yaklasma-profili-ve-golge-uyarisi](../design/yaklasma-profili-ve-golge-uyarisi.md) |
+| `UC-16` | Zemin sıcaklığını görmek | K1, K2 | Ekstra | – | [zemin-sicakligi](../design/zemin-sicakligi.md) |
 
-`UC-11` analiz özetinde ayrı bir konu olarak sınıflandırılmadı. Dışa aktarma açıklanabilirlik raporunda, rapor ekranı tasarım belgesinde geçtiği için buraya "öneri" olarak alındı.
+`UC-11` analiz özetinde ayrı bir konu olarak sınıflandırılmadı; [karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md) belgesinde planlamacı kapısının ek gösterimi olarak geçiyor.
 
 ### 5.2 Kim hangisini kullanır
 
@@ -147,7 +154,7 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 | `UC-08` Karşılaştırma | ● | ● | ○ |
 | `UC-09` Neden kartı | ○ | ● | ● |
 | `UC-10` Güvenilirlik | ● | ○ | |
-| `UC-11` Rapor | ● | ○ | |
+| `UC-11` Dışa aktarma | ● | ○ | |
 | `UC-12` Harita ve katmanlar | ● | ● | ● |
 | `UC-13` Hazır senaryo | ○ | ● | ● |
 | `UC-14` Saha puanı | ● | | |
@@ -156,18 +163,20 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 
 ### 5.3 Zorunlu use case'ler
 
+Her use case'in tasarım belgesi 5.1'deki tabloda. Aşağıdaki "Dayanak" satırları araştırma kaynaklarını gösterir.
+
 #### UC-01 Hazır listeden saha seçmek
 
 - **Amaç:** Koordinat bilmeden tanınmış bir sahayla başlamak.
 - **Akış:**
-  1. Kullanıcı saha listesini açar. Liste gruplara ayrılmıştır: geçmiş inişler, gelecekteki hedefler, aday bölgeler.
+  1. Kullanıcı saha listesini açar. Liste kategorilere ayrılmıştır: Apollo, CLPS, ticari, uluslararası, Artemis aday bölgeleri, test sahası.
   2. Bir saha seçer. Saha haritada işaretlenir ve kısa bir bilgi kartı açılır (görev, tarih, koordinat, kaynak).
   3. Seçilen saha etkin senaryonun sahası olur.
 - **Seçenekler:**
   - Geçmiş bir iniş seçildiğinde tarih de o inişin anına ayarlanabilir (`UC-13`'e geçiş).
   - Kanada katkısı olan sahalarda CSA bilgi kartı görünür (ekstra).
 - **Dikkat:**
-  - Artemis aday bölgeleri eski plana ait; katman adı "2024 Artemis III aday çalışması" olmalı ve tarihiyle gösterilmeli.
+  - Artemis aday bölgeleri eski plana ait; "2024 Artemis III candidate study" etiketiyle gösterilir. Temsili noktaları henüz elimizde olmadığı için sınır dosyası indirilene kadar listeye girmezler.
   - IM-2 hedef noktası ile Athena'nın gerçekten indiği yer iki ayrı kayıt.
 - **Dayanak:** Veri kaynakları kataloğu (bölüm 2), analiz özeti (7.1 ve 8), CSA notu (6.1).
 
@@ -176,19 +185,19 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 - **Amaç:** Listede olmayan bir noktayı değerlendirmek.
 - **Akış:**
   1. Kullanıcı enlem ve boylam yazar ya da haritada bir noktaya tıklar.
-  2. Sistem girdiyi doğrular ve noktayı haritada gösterir.
+  2. Sistem girdiyi doğrular ve noktayı haritada gösterir. Boylam 0 ile 360 arası yazılırsa çevrilir.
   3. Nokta etkin senaryonun sahası olur.
 - **Seçenekler:**
   - Geçersiz girdi (aralık dışı, eksik) alan yanında açıklanır; senaryo değişmez.
-  - O nokta için arazi ufku hesaplanamıyorsa sistem düz (arazisiz) ufka düşer ve sonucu "arazi hesaba katılmadı" diye etiketler (bölüm 10, madde 5).
-- **Dikkat:** Koordinat sistemi tek olmalı. İki Ay koordinat sistemi karışırsa saha 660 ile 875 m arası kayar.
+  - O nokta için yükseklik haritası yoksa hesap düz (arazisiz) ufukla yapılır; sonuç "arazi hesaba katılmadı" diye gösterilir ve güvenilirlik etiketi Assumed olur (bölüm 10, madde 5).
+- **Dikkat:** Koordinatlar tek sistemde tutulur ([ADR-0002](../adr/0002-koordinat-sistemi-ve-zaman.md)). İki Ay koordinat sistemi karışırsa saha 660 ile 875 m arası kayar.
 - **Dayanak:** Ufuk hesabı notu (bölüm 10, madde 3), analiz özeti (7.2).
 
 #### UC-03 Tarih ve saat seçmek, zamanı oynatmak
 
 - **Amaç:** Koşulların zaman içinde nasıl değiştiğini görmek.
 - **Akış:**
-  1. Kullanıcı bir tarih ve saat seçer. Saatler UTC olarak gösterilir.
+  1. Kullanıcı bir başlangıç tarihi ve süre seçer; seçili an bu aralıkta gezer. Saatler UTC olarak gösterilir.
   2. Zaman çubuğunu sürükler ya da oynatır; gökyüzü görünümü ve özet ölçüler birlikte güncellenir.
   3. İsterse bir Ay günü ya da birkaç ay ileri geri atlar.
 - **Seçenekler:** Hazır veri aralığının dışındaki bir tarih seçilirse sistem aralığı söyler ve en yakın geçerli tarihi önerir.
@@ -199,8 +208,8 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 
 - **Amaç:** Challenge'ın "yapın" diye yazdığı tek hedef: seçilen saha ve anda Güneş ile Dünya ufka göre nerede.
 - **Akış:**
-  1. Sistem, sahanın ufuk çizgisini bir siluet olarak çizer.
-  2. Güneş'in ve Dünya'nın o andaki yeri ve seçili dönemdeki yolu siluetin üzerine çizilir.
+  1. Sistem, sahanın ufuk çizgisini bir siluet olarak çizer (ufuk şeridi).
+  2. Güneş'in ve Dünya'nın seçili dönemdeki yolu siluetin üzerine çizilir. Seçili andaki Güneş ve Dünya görünen boyutlarıyla birer disk olarak gösterilir; ufkun altındaysa soluk çizilir.
   3. Kullanıcı Güneş'in ya da Dünya'nın üzerine geldiğinde yön ve yükseklik açısını okur.
 - **Seçenekler:** Güneş ufukla kısmen örtülüyse görünen oranı gösterilir (Güneş nokta değil, yaklaşık yarım derecelik bir disk).
 - **Dikkat:** Atmosfer yok; kırılma düzeltmesi ve alacakaranlık yok. Ufku arazi ve Ay'ın eğriliği belirler.
@@ -211,12 +220,14 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 - **Amaç:** "Ne zaman kararır, ne zaman Dünya batar?" sorusuna tek bakışta cevap.
 - **Akış:**
   1. Sistem seçili an için şunları gösterir: gün batımına kalan süre, Dünya'nın batışına kalan süre, bir sonraki gün doğumu, gecenin uzunluğu.
-  2. Zaman çizelgesinde üç bant görünür: Güneş görünür, Dünya görünür, ikisi birlikte.
+  2. Zaman çizelgesinde güneşli ve karanlık dönemler, Dünya'nın görünür ve görünmez olduğu dönemler ve seçili an görünür.
   3. Kullanıcı bir olaya tıklayınca zaman o ana gider.
 - **Seçenekler:**
   - Güneş ya da Dünya o dönemde hiç batmıyorsa ya da hiç doğmuyorsa geri sayım yerine bu durum yazılır.
   - Dünya'nın Güneş'i örttüğü olaylar (tutulma) listede ayrı bir işaretle görünür (ekstra).
-- **Dikkat:** Kutupta küçük bir ufuk hatası olay saatini 20 dakikadan fazla kaydırır. Tek saat yerine saat aralığı gösterilmeli (`UC-10`).
+- **Dikkat:**
+  - Kutupta küçük bir ufuk hatası olay saatini 20 dakikadan fazla kaydırır. Tek saat yerine saat aralığı gösterilmeli (`UC-10`).
+  - "Gün doğumu"nun Güneş'in ilk kenarıyla mı merkeziyle mi sayılacağı açık karar (bölüm 10, madde 11).
 - **Dayanak:** Zamanla değişen veri notu (bölüm 6), analiz özeti (7.1).
 
 #### UC-06 Güç durumunu değerlendirmek
@@ -224,12 +235,13 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 - **Amaç:** Bu saha ve tarihte Güneş'ten ne kadar yararlanılabilir.
 - **Akış:**
   1. Sistem Güneş'in yükseklik açısını, seçili dönemdeki güneşli süreyi ve en uzun karanlık süreyi gösterir.
-  2. Kullanıcı isterse panel tipini (yere yatık, dik sabit, dik dönen, iki eksenli) ve direk yüksekliğini seçer.
+  2. Kullanıcı isterse panel tipini (yere yatık, dik sabit, dik dönen, iki eksenli) ve direk yüksekliğini (2, 5, 10 ya da 20 m) seçer.
   3. Sistem dönem boyunca güç eğrisini ve ortalama gücü gösterir.
 - **Seçenekler:** Dik sabit panelde kullanıcı panelin baktığı yönü de girer.
 - **Dikkat:**
   - Ufuktaki 1 derecelik fark enerji sonucunu yüzde 11 ile 16 arası oynatır; arazi ufku yoksa sonuç kabadır ve öyle etiketlenmeli.
   - Uygulama bataryayı ve gece dayanımını modellemez; yalnızca gün batımına kalan süreyi ve gece uzunluğunu gösterir.
+  - Hazır panel profilleri varsayımdır; güç sonuçları Assumed etiketi taşır.
 - **Dayanak:** Güneş paneli notu (bölüm 4 ve 12, "Kullanım 1"), analiz özeti (7.1, 7.2, 7.5).
 
 #### UC-07 İletişim penceresini değerlendirmek
@@ -239,7 +251,9 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
   1. Sistem Dünya'nın yükseklik açısını ve seçili dönemde Dünya'nın görünür olduğu pencereleri gösterir.
   2. Kullanıcı isterse yer istasyonu katmanını açar: yalnızca Dünya'nın görünmesi yetmez, bir istasyonun da Ay'ı görmesi gerekir.
 - **Seçenekler:** Dünya dönem boyunca hiç görünmüyorsa "röle gerekli" etiketi çıkar (ekstra). Röle uydusunun kendisi modellenmez.
-- **Dikkat:** "Dünya görünüyor" ölçütü (merkezi mi, kenarı mı, tamamı mı) seçilmedi; seçim pencereyi 19 ile 38 saat arası oynatıyor (bölüm 10, madde 3).
+- **Dikkat:**
+  - "Dünya görünüyor" ölçütü (merkezi mi, kenarı mı, tamamı mı) pencereyi 19 ile 38 saat arası oynatıyor. Öneri merkez; ölçüt arayüzde değiştirilebilir (bölüm 10, madde 3).
+  - Yer istasyonu katmanı için öneri alım sınırı, yani 6 derece (bölüm 10, madde 4).
 - **Dayanak:** Efemeris raporu, zamanla değişen veri notu (bölüm 9), analiz özeti (5.2, 7.1, 7.3).
 
 #### UC-08 Senaryoları yan yana karşılaştırmak
@@ -248,12 +262,13 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 - **Akış:**
   1. Kullanıcı etkin senaryoyu (saha ve tarih) karşılaştırmaya ekler.
   2. Tek bir girdiyi değiştirerek ikinci senaryoyu oluşturur. İki hazır kalıp vardır: "aynı saha, başka tarih" ve "aynı tarih, başka saha".
-  3. Sistem senaryoları aynı ölçülerle yan yana gösterir: Güneş'in en yüksek açısı, güneşli süre, en uzun karanlık, Dünya'nın görünür olduğu süre, ikisinin birlikte olduğu süre.
-  4. Kullanıcı bir senaryoyu referans seçer; diğerleri ona göre fark olarak da okunur.
+  3. Sistem senaryoları aynı ölçülerle yan yana gösterir: güneşli zaman oranı, en uzun karanlık, Güneş'in en yüksek açısı, Dünya'nın görünür olduğu zaman oranı, en uzun "Dünya görünmez" süresi, ortalama panel gücü.
+  4. Sistem her ölçüde en iyi senaryoyu işaretler ve farkı gösterir.
 - **Seçenekler:**
-  - İkiden fazla senaryo eklenebilir.
+  - Bir seferde en fazla dört senaryo karşılaştırılır.
+  - Planlamacı kapısında "fırlatma N gün kayarsa" kaydırıcısı aynı sahanın başlangıç tarihini kaydırır ve karşılaştırmayı yineler.
   - Farkın nedeni sorulursa `UC-09` açılır.
-- **Dikkat:** Karşılaştırma ekranının nasıl görüneceği hiçbir belgede çizilmedi; orta riskli.
+- **Dikkat:** Senaryolardan biri arazi ufkuyla, diğeri düz ufukla hesaplandıysa fark gerçek olmayabilir; arayüz bunu belirtir.
 - **Dayanak:** Açıklanabilirlik raporu (bölüm 7, karşı-olgusal karşılaştırma; bölüm 8.3), analiz özeti (7.1).
 
 ### 5.4 Destekleyici use case'ler
@@ -278,32 +293,35 @@ Aşağıdaki eşleme bir öneridir. Kesin hali, analiz özetinin 10.2 bölümün
 - **Amaç:** Bir sayının ne kadar güvenilir olduğunu ve nereden geldiğini bilmek.
 - **Akış:**
   1. Olay saatleri tek saat yerine aralık olarak gösterilir ("14:05–14:52 UTC" gibi).
-  2. Kullanıcı bir değerin kaynağını açar: hangi veri, hangi çözünürlük, hangi varsayım.
-  3. Doğrulama bölümünde sonuçlarımızın NASA araçlarıyla ve hazır NASA haritalarıyla karşılaştırması görünür.
+  2. Her sonucun yanında bir güvenilirlik etiketi görünür: Measured, Model, Derived ya da Assumed ([ADR-0003](../adr/0003-veri-sozlesmesi.md)).
+  3. Kullanıcı bir değerin kaynağını açar: hangi veri, hangi çözünürlük, hangi varsayım.
+  4. Doğrulama bölümünde sonuçlarımızın NASA araçlarıyla ve hazır NASA haritalarıyla karşılaştırması görünür.
 - **Seçenekler:** Kutup sahalarında aralık genişse "yüksek belirsizlik" uyarısı çıkar.
 - **Dikkat:** Yükseklik haritasındaki hata sonucu iyimser gösterir; sonuçlar küçük bir güvenlik payıyla sunulmalı.
 - **Dayanak:** Açıklanabilirlik raporu (bölüm 7, belirsizlik), ufuk hesabı notu, analiz özeti (5.3, 7.2).
 
-#### UC-11 Rapor almak ve dışa aktarmak
+#### UC-11 Karşılaştırmayı dışa aktarmak ve paylaşmak
 
 - **Amaç:** Karşılaştırmayı ekip arkadaşına ya da ders notuna taşımak.
 - **Akış:**
-  1. Kullanıcı rapor düğmesine basar.
-  2. Sistem karşılaştırılan senaryoları, ölçüleri ve kaynakları tek sayfada toplar.
-  3. Kullanıcı tabloyu CSV olarak indirir.
-- **Dikkat:** Senaryonun bağlantı olarak paylaşılması açık karar (bölüm 10, madde 8).
-- **Dayanak:** Açıklanabilirlik raporu (bölüm 7, planlamacı düzeyi), tasarım belgesi (bölüm 5.4).
+  1. Kullanıcı karşılaştırma tablosunu CSV ya da JSON olarak indirir.
+  2. Senaryo adres çubuğuna yazılır; kullanıcı bağlantıyı kopyalayıp paylaşır.
+  3. Bağlantıyı açan kişi aynı senaryoyu görür.
+- **Dikkat:** Referans tasarımdaki görev raporu ekranı ilk sürümde yok; dışa aktarma karşılaştırma tablosundan yapılır.
+- **Dayanak:** Açıklanabilirlik raporu (bölüm 7, planlamacı düzeyi), [karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md) (bölüm 4, "Dışa aktarma ve bağlantı").
 
 #### UC-12 Haritada sahayı ve katmanları görmek
 
 - **Amaç:** Sahanın çevresini görmek ve mekânsal ilişkiyi kurmak.
 - **Akış:**
-  1. Kullanıcı sahayı 2B haritada görür; isterse 3B arazi görünümüne geçer.
+  1. Kullanıcı sahayı 2B haritada görür.
   2. Katman seçiciden bir katman açar: yükseklik, eğim, kalıcı gölge.
   3. Haritada başka bir noktaya tıklayarak onu yeni senaryo sahası yapabilir (`UC-02`).
-- **Seçenekler:** 3B görünümde sahaya lisansı doğrulanmış bir araç modeli konabilir (ekstra).
-- **Dikkat:** Kalıcı gölge katmanı buzun varlığını göstermez; buz için "belirsiz" etiketi kullanılmalı.
-- **Dayanak:** Veri kaynakları kataloğu (bölüm 4 ve 5), tasarım belgesi (bölüm 3 ve 4), analiz özeti (7.2, 7.3).
+- **Seçenekler:** Seçilen sahanın yanında o sahaya inen aracın kısa bilgi kartı görünür (ekstra).
+- **Dikkat:**
+  - 3B arazi görünümü web arayüzünde yok. Unreal Engine ile ayrı geliştiriliyor; birleştirilene kadar araç modeli yalnızca orada görünür (bölüm 10, madde 12).
+  - Kalıcı gölge katmanı buzun varlığını göstermez; buz için "belirsiz" etiketi kullanılmalı.
+- **Dayanak:** Veri kaynakları kataloğu (bölüm 4 ve 5), arayüz tasarım belgesi (bölüm 3), [ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md), analiz özeti (7.2, 7.3).
 
 ### 5.5 Ekstra use case'ler
 
@@ -313,11 +331,14 @@ Bunlar analiz özetinin 7.3 bölümündeki sırayla, yani yapılabilirliğe gör
 
 - **Amaç:** Gerçek bir iniş üzerinden ürünü ve bir kavramı tek adımda göstermek.
 - **Akış:**
-  1. Kullanıcı vaka listesinden birini seçer (örneğin Athena, Blue Ghost, SLIM, Chang'e-4).
+  1. Kullanıcı "Past missions" listesinden bir vaka seçer. İlk altı vaka: Athena, Blue Ghost 1, Chandrayaan-3, IM-1, SLIM, Chang'e 4.
   2. Sistem o inişin sahasını ve anını yükler, gökyüzünü gösterir ve vakaya özgü mesajı açar.
   3. Kullanıcı tek bir girdiyi değiştirerek "öyle olmasaydı" sorusunu dener (`UC-08`).
-- **Dikkat:** Uygulama bir görevin neden başarısız olduğunu hesaplamaz. Ortamı ölçer; araç kaynaklı nedeni yalnızca resmi kaynağa atıfla ve kanıt etiketiyle gösterir.
-- **Dayanak:** Açıklanabilirlik raporu (bölüm 8.1), analiz özeti (5.6, 7.3). Altı inişin Güneş ve Dünya açıları yeniden hesaplandı ve tuttu.
+- **Seçenekler:** Sınıf kapısında hazır senaryo bir soru ve bir açıklamayla birlikte gelir (hazır görev). Yeni ekran gerektirmez; aynı gösterimleri kullanır.
+- **Dikkat:**
+  - Uygulama bir görevin neden başarısız olduğunu hesaplamaz. Ortamı ölçer; araç kaynaklı nedeni yalnızca resmi kaynağa atıfla ve kanıt etiketiyle (Official report, Preliminary ya da Commentary) gösterir.
+  - Çin görevlerinin sahaları için yalnızca NASA'nın kendi tablosundaki koordinat ve resmi açıklamalar kullanılır.
+- **Dayanak:** Açıklanabilirlik raporu (bölüm 8.1), analiz özeti (5.6, 7.3). Altı inişin Güneş açıları yeniden hesaplandı ve tuttu.
 
 #### UC-14 Sahaları puanla sıralamak
 
@@ -348,13 +369,13 @@ flowchart LR
   P1["Senaryo A:<br/>saha ve planlanan tarih"] --> P2["Özet ölçüler"]
   P2 --> P3["Senaryo B:<br/>aynı saha, yeni tarih"]
   P3 --> P4{"Güç ve iletişim<br/>yeterli mi?"}
-  P4 -- "Evet" --> P7["Rapor al"]
+  P4 -- "Evet" --> P7["Dışa aktar"]
   P4 -- "Hayır" --> P5["Senaryo C:<br/>aynı tarih, yakın başka saha"]
   P5 --> P6["Üçünü yan yana oku,<br/>farkın nedenine bak"]
   P6 --> P7
 ```
 
-Kullandığı use case'ler: `UC-01` ya da `UC-02`, `UC-03`, `UC-05`, `UC-06`, `UC-07`, `UC-08`, `UC-10`, `UC-11`.
+Kullandığı use case'ler: `UC-01` ya da `UC-02`, `UC-03`, `UC-05`, `UC-06`, `UC-07`, `UC-08`, `UC-09`, `UC-10`, `UC-11`.
 
 ### 6.2 Eğitimci: "Bunu derste nasıl gösteririm?"
 
@@ -366,7 +387,7 @@ flowchart LR
   E4 --> E5["İki durumu yan yana<br/>göster ve tartış"]
 ```
 
-Kullandığı use case'ler: `UC-13`, `UC-03`, `UC-04`, `UC-09`, `UC-08`.
+Kullandığı use case'ler: `UC-13`, `UC-03`, `UC-04`, `UC-06`, `UC-09`, `UC-08`.
 
 ### 6.3 Halk: "Ay'da bu noktada durmak nasıl bir şey?"
 
@@ -386,7 +407,7 @@ Kullandığı use case'ler: `UC-01`, `UC-03`, `UC-04`, `UC-05`, `UC-09`, `UC-12`
 
 Senaryo, bir kullanıcının belirli bir saha ve tarihle baştan sona yaptığı iştir. Demo, test ve içerik yazımı için ortak örneklerdir.
 
-**Sayılar hakkında:** Aşağıdaki açılar NASA'nın Horizons aracıyla hesaplanıp doğrulanmış değerlerdir ve araziyi hesaba katmaz. Arazi ufku eklendiğinde ürünün göstereceği saatler ve süreler değişir. Koordinatlar `saha-katalogu.md` yazıldığında oradan alınmalı.
+**Sayılar hakkında:** Aşağıdaki açılar NASA'nın Horizons aracıyla hesaplanıp doğrulanmış değerlerdir ve araziyi hesaba katmaz. Arazi ufku eklendiğinde ürünün göstereceği saatler ve süreler değişir. Koordinatlar [saha kataloğundan](../design/saha-katalogu.md) alınır.
 
 ### 7.1 Özet tablo
 
@@ -401,19 +422,24 @@ Senaryo, bir kullanıcının belirli bir saha ve tarihle baştan sona yaptığı
 | `S-07` | Panelin baktığı yön | K2 | SLIM sahası | Ekstra | `UC-13`, `UC-06` |
 | `S-08` | Dünya hiç görünmüyor | K2, K1 | Chang'e-4 sahası | Ekstra | `UC-13`, `UC-07` |
 | `S-09` | Ay'dan Güneş tutulması | K3, K2 | Apollo 11 sahası | Ekstra | `UC-05` |
-| `S-10` | Athena demosu | Hepsi | Athena'nın indiği yer | Ekstra | `UC-13`, `UC-04`, `UC-08` |
+| `S-10` | Athena demosu | Hepsi | Athena'nın indiği yer | Ekstra | `UC-13`, `UC-04`, `UC-08`, `UC-15` |
 
 ### 7.2 Zorunlu ve destekleyici senaryolar
 
 #### S-01 Plan değişti: aynı saha, başka tarih
 
-- **Durum:** Planlamacı Mons Mouton test sahasında (84,78° G, 29,13° D) Aralık 2026 için bir iniş planlıyor. Donanım gecikmesi tarihi kaydırıyor.
+- **Durum:** Planlamacı Mons Mouton test sahasında (84,78° G, 29,13° D) 1 Aralık 2026 için bir iniş planlıyor. Donanım gecikmesi tarihi 5 gün kaydırıyor.
 - **Adımlar:**
-  1. Sahayı ve ilk tarihi seçer, özet ölçüleri okur.
-  2. Senaryoyu karşılaştırmaya ekler; "aynı saha, başka tarih" ile tarihi 3–11 Aralık aralığına kaydırır.
-  3. İki senaryoyu yan yana okur.
-- **Beklenen sonuç:** İkinci senaryoda Dünya ufkun altında; doğrudan iletişim penceresi yok. Sistem bir sonraki Dünya doğuşunu gösterir.
-- **Kanıt:** Aralık 2026'da bu sahada Dünya ufkun 2,1 derece altı ile 10,6 derece üstü arasında geziyor ve 3–11 Aralık arasında ufkun altında (ayın yaklaşık yüzde 26'sı). Güneş en fazla 6,5 derece yükseliyor. Doğrulandı (analiz özeti 5.2).
+  1. Sahayı ve 1 Aralık 2026 tarihini seçer, özet ölçüleri okur.
+  2. Senaryoyu karşılaştırmaya ekler; "aynı saha, başka tarih" ile tarihi 6 Aralık 2026'ya kaydırır.
+  3. Üçüncü senaryo olarak 12 Aralık 2026'yı ekler.
+  4. Üç senaryoyu yan yana okur.
+- **Beklenen sonuç:**
+  - 1 Aralık: Dünya ufkun üstünde ama birkaç gün içinde batıyor.
+  - 6 Aralık: Dünya ufkun altında; doğrudan iletişim yok. Sistem bir sonraki Dünya doğuşunu gösteriyor.
+  - 12 Aralık: Dünya yeniden görünür; pencere ay sonuna, Dünya'nın yeniden battığı 30–31 Aralık'a kadar sürer. Kısa gecikme durumu kötüleştiriyor, biraz daha uzun gecikme iyileştiriyor.
+- **Kanıt:** Aralık 2026'da bu sahada Dünya ufkun 2,1 derece altı ile 10,6 derece üstü arasında geziyor ve 3–11 Aralık arasında ufkun altında (ayın yaklaşık yüzde 26'sı); ayın son iki gününde yeniden ufkun altına iniyor. Güneş en fazla 6,5 derece yükseliyor. Doğrulandı (analiz özeti 5.2).
+- **Dikkat:** Üç tarih arazisiz hesaba göre seçildi. Arazi ufku eklenince Dünya'nın batış ve doğuş anları kayar; senaryo ürünün kendi hesabıyla yeniden sınanmalı.
 
 #### S-02 Aynı tarih, başka saha
 
@@ -457,7 +483,7 @@ Senaryo, bir kullanıcının belirli bir saha ve tarihle baştan sona yaptığı
 
 ### 7.3 Ekstra senaryolar
 
-Bunların hepsi `UC-13`'e, yani geçmiş görev vakalarına dayanır. Kaza nedenleri "ön bulgu" etiketiyle gösterilmeli.
+`S-09` dışındakiler `UC-13`'e, yani geçmiş görev vakalarına dayanır. Bu vakalarda kaza nedenleri kanıt düzeyi etiketiyle gösterilmeli; çoğu ön bulgudur ("Preliminary").
 
 #### S-06 Alçak Güneş tek başına başarısızlık değildir
 
@@ -479,7 +505,7 @@ Bunların hepsi `UC-13`'e, yani geçmiş görev vakalarına dayanır. Kaza neden
 - **Adımlar:** Chang'e-4 vakasını açar, gökyüzü görünümünde Dünya'nın yoluna bakar, zamanı bir yıl boyunca oynatır.
 - **Beklenen sonuç:** Dünya'nın yolu hep ufkun altında. Sistem "röle gerekli" etiketini gösteriyor.
 - **Kanıt:** İniş anında Dünya ufkun 39 derece altındaydı ve bütün yıl ufkun altında. Doğrulandı (analiz özeti 5.6).
-- **Dikkat:** Space Apps kılavuzunda Çin ile ilgili bir uygunluk incelemesi var. Kamuya açık görev bilgisini kullanmanın bu kapsama girip girmediğine NASA karar veriyor (analiz özeti 5.7). Bu vakayı demoya koymadan önce ekipçe karar verilmeli.
+- **Dikkat:** Ekip kararı (14 Kasım 2026): Çin görevlerinin sahaları listede ve vakalarda kalır. Space Apps kılavuzundaki uygunluk incelemesi nedeniyle bu sahalar için yalnızca NASA'nın kendi tablosundaki koordinat ve resmi açıklamalar kullanılır; Çin kaynaklı veri ya da görsel kullanılmaz ([saha kataloğu](../design/saha-katalogu.md), bölüm 8).
 
 #### S-09 Ay'dan Güneş tutulması
 
@@ -490,13 +516,16 @@ Bunların hepsi `UC-13`'e, yani geçmiş görev vakalarına dayanır. Kaza neden
 
 #### S-10 Athena demosu
 
-- **Durum:** Tek bir gerçek iniş üzerinden bütün ürünü anlatmak.
-- **Adımlar:** Athena'nın indiği yeri ve anını açar; aynı konum ve saat için iki duruşu yan yana görür; sonra duruşu sabit tutup sahayı ya da tarihi değiştirir.
-- **Beklenen sonuç:** Güneş görünse bile küçük bir kenarın onu kesebildiği görülüyor.
+- **Durum:** Tek bir gerçek iniş üzerinden bütün ürünü anlatmak. Adımların tamamı [Athena demosu](../design/athena-demosu.md) belgesinde.
+- **Adımlar:** Athena'nın indiği yeri ve anını açar; gölge uzunluğu uyarısını görür; zamanı ileri oynatır; Blue Ghost 1 inişini ikinci senaryo olarak ekler; sonra aynı sahada tarihi bir ay kaydırır.
+- **Beklenen sonuç:** Güneş ufuk boyunca dolanıyor ama hiç yükselmiyor. Blue Ghost'un sahasında Güneş sonradan çok yükseliyor; fark iniş anında değil, sonrasında ortaya çıkıyor.
 - **Kanıt:** İniş anında Güneş 2,47, Dünya 11,19 derece yüksekteydi. Doğrulandı.
-- **Dikkat:** Orta ile yüksek arası riskli: krater kenarı için çok ince yükseklik haritası gerekiyor ve aracın gerçek duruş açıları bilinmiyor. Gösterim "senaryo" diye etiketlenmeli (açıklanabilirlik raporu 8.2).
+- **Dikkat:**
+  - Krater kenarının Güneş'i kesip kesmediği hesaplanmıyor ve gösterilmiyor; bunun için çok ince bir yükseklik haritası gerekir.
+  - Aracın duruşu bir girdi değil, çünkü gerçek duruş açıları bilinmiyor. Yan yatışın panel gücüne etkisi gösterilirse "Illustrative" etiketi taşır.
+  - Kazanın nedeni "Preliminary" etiketiyle yazılır.
 
-## 8. İzlenebilirlik
+## 8. Hedeflere izlenebilirlik
 
 ### 8.1 Challenge hedeflerinden use case'lere
 
@@ -506,11 +535,11 @@ Hedefler challenge metnindeki "Objectives" listesinin sırasıyla numaralandı.
 | --- | --- | --- | --- |
 | O1 | Saha seçimi ve karşılaştırma | `UC-01`, `UC-02`, `UC-08`, `UC-14` | `S-01`, `S-02` |
 | O2 | Tarih ve saat esnekliği | `UC-03`, `UC-08` | `S-01` |
-| O3 | Güneş ve Dünya konumunun gösterimi, batışa kalan süre | `UC-04`, `UC-05` | `S-03`, `S-08` |
+| O3 | Güneş ve Dünya konumunun gösterimi, batışa kalan süre | `UC-04`, `UC-05` | `S-03`, `S-04`, `S-08` |
 | O4 | Güç ve iletişim değerlendirmesi | `UC-06`, `UC-07` | `S-01`, `S-05`, `S-07` |
 | O5 | Birden çok gösterim (2B, 3B, başka) | `UC-04`, `UC-12` | `S-03` |
 | O6 | Zaman içindeki değişim | `UC-03`, `UC-05` | `S-03`, `S-09` |
-| O7 | Farklı beceri düzeyleri | `UC-09`, `UC-13` | `S-03`, `S-06`, `S-07` |
+| O7 | Farklı beceri düzeyleri | `UC-09`, `UC-13` | `S-03`, `S-06`, `S-07`, `S-10` |
 
 ### 8.2 Jüri ölçütlerine katkı
 
@@ -531,31 +560,37 @@ Bu bölüm tam bir sunum planı değildir; yalnızca senaryoların demoya nasıl
 - **Önerilen ana senaryo:** `S-01`. Challenge metnindeki plan değişikliği hikâyesinin birebir karşılığı ve sayıları doğrulanmış.
 - **Önerilen açılış görüntüsü:** `S-03`. Güneş'in ufukta dolandığı gökyüzü görünümü.
 - **Canlı sunum olursa:** Açıklanabilirlik raporunun yönetici özetindeki 3–4 dakikalık akış kullanılabilir (Athena, SLIM, Chang'e-4; yani `S-10`, `S-07`, `S-08`).
+- **Demo akışı:** Adımlar [Athena demosu](../design/athena-demosu.md) belgesinde. 30 saniyelik videoya ancak üç adım sığıyor; demonun slayt mı video mu olacağı açık karar (bölüm 10, madde 13).
+- **İki parça:** 3B görünüm ayrı bir uygulama olduğu için, birleştirilene kadar demo iki parçalı olur.
 - **Kurallar:** NASA logosu kullanılamaz. Kullanılan her veri, kod ve yapay zekâ aracı teslimde belirtilmeli; yapay zekâ ile üretilen görsel ve videoda görünür filigran olmalı.
 
 ## 10. Açık kararlar
 
-Bu plan aşağıdaki kararlar verilmeden kesinleşmez. İlk beşi use case'lerin akışını doğrudan değiştirir.
+Bu planı yazarken çıkan sorular. Bir kısmı tasarım belgeleri ve karar kayıtlarıyla kapandı; açık kalanların yanında tasarım belgelerindeki öneri var. Numaralar sabittir.
 
-| No | Karar | Etkilediği yer | Not |
-| --- | --- | --- | --- |
-| 1 | Anlatım düzeyi nasıl seçilecek: girişte üç ayrı kapı mı, çalışma ekranında bir düzey anahtarı mı? | Bütün akış, `UC-09` | Kitle stratejisi belgesi "üç kapı" önermişti |
-| 2 | Hangar ekranının (rover seçimi) yerine ne gelecek: saha ve hazır senaryo seçimi mi, yoksa ekran kaldırılacak mı? | Genel akış, `UC-01`, `UC-13` | Rover kapsam dışı |
-| 3 | "Dünya görünüyor" ölçütü: merkezi mi, kenarı mı, tamamı mı ufkun üstünde? | `UC-07`, `S-01` | Seçim pencereyi 19 ile 38 saat arası oynatıyor |
-| 4 | Yer istasyonu için alım sınırı mı (6 derece), gönderim sınırı mı (10,1 derece)? | `UC-07` | Etkisi günde dakikalar düzeyinde |
-| 5 | Özel koordinatta arazi ufku nasıl hesaplanacak: sunucuda anında mı, yalnızca hazır sahalarda mı? | `UC-02` | Ufuk hesabı notu sunucu öneriyor |
-| 6 | Ortak veri sözleşmesi (dosya biçimi) | Bütün use case'ler | Dört belge dört ayrı biçim öneriyor; `docs/adr/` boş |
-| 7 | Hazır saha ve hazır senaryo listesi | `UC-01`, `UC-13` | Chang'e-4 koordinatı iki belgede farklı: resmi tablo 45,4561° G, 177,5885° D; açıklanabilirlik raporu 45,4446° G, 177,5991° D |
-| 8 | Senaryonun bağlantı olarak paylaşılması | `UC-11` | Araştırma belgelerinde yok |
-| 9 | Tasarım belgesindeki asistan (sohbet) kapsamda mı? | `UC-09` | Analiz özetinde geçmiyor |
-| 10 | Arayüz dili: yalnızca İngilizce mi, Türkçe de mi? | Bütün metinler | Teslim İngilizce istiyor; açıklanabilirlik raporunda iki dilde hazır metin var |
+| No | Karar | Durum | Etkilediği yer | Not |
+| --- | --- | --- | --- | --- |
+| 1 | Üç kapı ayrı sayfalar mı, tek sayfada bir anahtar mı? | Açık | Bütün akış, `UC-09` | Öneri: üst çubukta üç seçenekli bir anahtar ([karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md), bölüm 8) |
+| 2 | Hangar ekranının (rover seçimi) yerine ne gelecek? | Kapandı | Genel akış, `UC-01`, `UC-13` | Saha ve tarih seçim ekranına dönüşüyor ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), bölüm 4) |
+| 3 | "Dünya görünüyor" ölçütü: merkezi mi, kenarı mı, tamamı mı ufkun üstünde? | Açık | `UC-07`, `S-01` | Öneri: merkez; ölçüt arayüzde değiştirilebilir ([iletişim penceresi](../design/iletisim-penceresi.md), bölüm 8). Seçim pencereyi 19 ile 38 saat arası oynatıyor |
+| 4 | Yer istasyonu için alım sınırı mı (6 derece), gönderim sınırı mı (10,1 derece)? | Açık | `UC-07` | Öneri: alım sınırı ([iletişim penceresi](../design/iletisim-penceresi.md), bölüm 8) |
+| 5 | Özel koordinatta arazi ufku sunucuda anında mı hesaplanacak, ilk sürümde yalnızca düz ufuk mu verilecek? | Açık | `UC-02` | ADR-0001 anında hesabı öngörüyor; son karar süre ölçümüne bağlı ([ufuk hesabı](../design/ufuk-hesabi.md), bölüm 8) |
+| 6 | Ortak veri sözleşmesi (dosya biçimi) | Taslak | Bütün use case'ler | [ADR-0003](../adr/0003-veri-sozlesmesi.md) ve [ADR-0004](../adr/0004-api-uc-noktalari.md) yazıldı; durumları "Proposed" |
+| 7 | Hazır saha ve hazır senaryo listesi | Kapandı | `UC-01`, `UC-13` | İlk on saha [saha kataloğunda](../design/saha-katalogu.md), ilk altı vaka [geçmiş görev vakalarında](../design/gecmis-gorev-vakalari.md). Chang'e 4 için resmi tablodaki koordinat kullanılıyor |
+| 8 | Senaryonun bağlantı olarak paylaşılması | Kapandı | `UC-11` | Senaryo adres çubuğuna yazılıyor ([karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md), bölüm 4) |
+| 9 | Referans tasarımdaki asistan (sohbet) kapsamda mı? | Kapandı | `UC-09` | Asistan ve görev raporu ilk sürümde yok ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), bölüm 4) |
+| 10 | Arayüz dili: yalnızca İngilizce mi, Türkçe de mi? | Açık | Bütün metinler | Öneri: ilk sürüm İngilizce; Türkçe metinler eğitim görevleriyle eklenir ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), bölüm 8) |
+| 11 | "Gün doğumu" Güneş'in ilk kenarıyla mı, merkeziyle mi sayılacak? | Açık | `UC-05` | Öneri: ilk kenar ([olaylar ve süreler](../design/olaylar-ve-sureler.md), bölüm 8) |
+| 12 | 3B görünüm web arayüzüyle nasıl birleştirilecek? | Açık | `UC-12`, bölüm 9 | Öneri: 3B görünüm de aynı sunucudan beslenir ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), bölüm 8) |
+| 13 | Demo slayt mı, video mu olacak? | Açık | Bölüm 9 | [Athena demosu](../design/athena-demosu.md), bölüm 8 |
 
 ## 11. Kitle stratejisi belgesiyle farklar
 
-[Kitle stratejisi](audience-strategy.md) belgesi kapsam kararlarından önce yazıldı. Ana fikri (tek motor, üç kitle) bu planla aynı. Üç yerde fark var ve bu plan geçerli:
+[Kitle stratejisi](audience-strategy.md) belgesinin ana fikri (tek motor, üç kapı) geçerli ve tasarım belgelerinde kullanılıyor. Kapsam kararlarından önce yazıldığı için dört yerde fark var; bu yerlerde bu plan ve tasarım belgeleri geçerli:
 
 | Kitle stratejisinde | Bu planda | Neden |
 | --- | --- | --- |
 | "Lander'ın hayatta kalır mı?" batarya oyunu | Yok | Batarya ve geceyi atlatma kapsamdan çıkarıldı (analiz özeti 7.5). Yerine gün batımına kalan süre ve gece uzunluğu (`UC-05`) |
 | Yaklaşık 3 dakikalık demo hikâyesi | 7 slayt ya da 30 saniyelik video | Teslim kılavuzunun sınırı |
-| Paylaşılabilir iniş kartı, tarih × saha ısı haritası, eğitim görevleri | Use case olarak yok | Onaylı kapsam listesinde yoklar. Eğitim görevlerinin yerini hazır senaryolar (`UC-13`) tutuyor; diğer ikisi ekip isterse sonradan eklenebilir |
+| Tarih × saha ısı haritası, paylaşılabilir iniş kartı | İlk sürümde yok | Onaylı kapsam listesinde yoklar; ısı haritası çok sayıda hesap gerektiriyor ([karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md), bölüm 8). Ekip isterse sonradan eklenir |
+| Eğitim görevleri | Hazır senaryoların Sınıf kapısındaki hali (`UC-13`) | Yeni ekran gerektirmiyor: önceden ayarlanmış bir durum, bir soru ve bir açıklama ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), "Üç giriş kapısı") |

@@ -2,7 +2,7 @@
 
 Challenge metni aracın üç kitleye birden hizmet etmesini istiyor: *"mission planners, educators, and the public"* ([challenge metni](../challenge/lunar-landing-site-navigator.md), "Accessibility across skill levels"). Bu doküman bu üç kitleye aracı nasıl sunacağımızı tarif eder.
 
-> **Not (14 Kasım 2026):** Bu belge kapsam kararlarından önce yazıldı. Güncel kullanıcı planı [use-cases-and-scenarios.md](use-cases-and-scenarios.md) belgesinde. Batarya oyunu kapsam dışı kaldı ve demo sınırı 7 slayt ya da 30 saniyelik video; farkların tamamı o belgenin 11. bölümünde.
+> **Not (14 Kasım 2026):** Ana fikir (tek motor, üç kapı) geçerli ve tasarım belgelerinde kullanılıyor. Bu belge kapsam kararlarından önce yazıldığı için birkaç madde değişti: batarya oyunu kapsam dışı kaldı, ısı haritası ilk sürümde yok ve demo sınırı 7 slayt ya da 30 saniyelik video. Farkların tamamı ve kullanıcı planı [use-cases-and-scenarios.md](use-cases-and-scenarios.md) belgesinde (bölüm 11).
 
 ## Ana fikir
 
