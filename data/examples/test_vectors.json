@@ -1,0 +1,716 @@
+{
+  "description": "Reference tests of docs/PLAN.md 4.2 that can be set up with endpoints (T1, T2a, T2b, T4, T5, T7). T3 is a unit test of line A and is not listed here. Run with backend/scripts/run_validation.py.",
+  "vectors": [
+    {
+      "id": "T1-athena-sun-azimuth",
+      "test": "T1",
+      "title": "IM-2 Athena: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -84.7906,
+        "lon_deg": 29.1957,
+        "start_utc": "2025-03-06T17:30:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 65.67,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 1"
+    },
+    {
+      "id": "T1-athena-sun-elevation",
+      "test": "T1",
+      "title": "IM-2 Athena: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -84.7906,
+        "lon_deg": 29.1957,
+        "start_utc": "2025-03-06T17:30:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 2.47,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 1"
+    },
+    {
+      "id": "T1-blue-ghost-1-sun-azimuth",
+      "test": "T1",
+      "title": "Blue Ghost 1: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": 18.562,
+        "lon_deg": 61.81,
+        "start_utc": "2025-03-02T08:34:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 91.62,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 3"
+    },
+    {
+      "id": "T1-blue-ghost-1-sun-elevation",
+      "test": "T1",
+      "title": "Blue Ghost 1: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": 18.562,
+        "lon_deg": 61.81,
+        "start_utc": "2025-03-02T08:34:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 3.43,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 3"
+    },
+    {
+      "id": "T1-chandrayaan-3-sun-azimuth",
+      "test": "T1",
+      "title": "Chandrayaan-3: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -69.373,
+        "lon_deg": 32.319,
+        "start_utc": "2023-08-23T12:34:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 62.04,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 4"
+    },
+    {
+      "id": "T1-chandrayaan-3-sun-elevation",
+      "test": "T1",
+      "title": "Chandrayaan-3: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -69.373,
+        "lon_deg": 32.319,
+        "start_utc": "2023-08-23T12:34:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 8.61,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 4"
+    },
+    {
+      "id": "T1-im1-sun-azimuth",
+      "test": "T1",
+      "title": "IM-1: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -80.13,
+        "lon_deg": 1.44,
+        "start_utc": "2024-02-22T23:23:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 18.61,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 5"
+    },
+    {
+      "id": "T1-im1-sun-elevation",
+      "test": "T1",
+      "title": "IM-1: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -80.13,
+        "lon_deg": 1.44,
+        "start_utc": "2024-02-22T23:23:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 10.47,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 5"
+    },
+    {
+      "id": "T1-slim-sun-azimuth",
+      "test": "T1",
+      "title": "SLIM: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -13.3,
+        "lon_deg": 25.2,
+        "start_utc": "2024-01-19T15:20:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 81.66,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 6"
+    },
+    {
+      "id": "T1-slim-sun-elevation",
+      "test": "T1",
+      "title": "SLIM: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -13.3,
+        "lon_deg": 25.2,
+        "start_utc": "2024-01-19T15:20:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 37.16,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 6"
+    },
+    {
+      "id": "T1-change-4-sun-azimuth",
+      "test": "T1",
+      "title": "Chang'e 4: Sun azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -45.4446,
+        "lon_deg": 177.5991,
+        "start_utc": "2019-01-03T02:26:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 50.7,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 7"
+    },
+    {
+      "id": "T1-change-4-sun-elevation",
+      "test": "T1",
+      "title": "Chang'e 4: Sun elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -45.4446,
+        "lon_deg": 177.5991,
+        "start_utc": "2019-01-03T02:26:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.sun.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 31.51,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 7"
+    },
+    {
+      "id": "T1-athena-earth-azimuth",
+      "test": "T1",
+      "title": "IM-2 Athena: Earth azimuth at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -84.7906,
+        "lon_deg": 29.1957,
+        "start_utc": "2025-03-06T17:30:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.earth.azimuth_true_deg",
+        "kind": "angle"
+      },
+      "expected": 335.85,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 2"
+    },
+    {
+      "id": "T1-athena-earth-elevation",
+      "test": "T1",
+      "title": "IM-2 Athena: Earth elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -84.7906,
+        "lon_deg": 29.1957,
+        "start_utc": "2025-03-06T17:30:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.earth.elevation_deg",
+        "kind": "number"
+      },
+      "expected": 11.19,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 2"
+    },
+    {
+      "id": "T1-change-4-earth-elevation",
+      "test": "T1",
+      "title": "Chang'e 4: Earth elevation at landing",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "lat_deg": -45.4446,
+        "lon_deg": 177.5991,
+        "start_utc": "2019-01-03T02:26:00Z",
+        "hours": 0,
+        "step_minutes": 60,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.0.earth.elevation_deg",
+        "kind": "number"
+      },
+      "expected": -39.2,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 7"
+    },
+    {
+      "id": "T2a-sun-max-elevation",
+      "test": "T2a",
+      "title": "Mons Mouton test site, December 2026: highest Sun elevation (21 Dec 12:00)",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "hours": 720,
+        "step_minutes": 720,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.*.sun.elevation_deg",
+        "reduce": "max",
+        "kind": "number"
+      },
+      "expected": 6.47,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/gunes-paneli.md, No 2"
+    },
+    {
+      "id": "T2a-earth-min-elevation",
+      "test": "T2a",
+      "title": "Mons Mouton test site, December 2026: lowest Earth elevation",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "hours": 720,
+        "step_minutes": 720,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.*.earth.elevation_deg",
+        "reduce": "min",
+        "kind": "number"
+      },
+      "expected": -2.1,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 40"
+    },
+    {
+      "id": "T2a-earth-max-elevation",
+      "test": "T2a",
+      "title": "Mons Mouton test site, December 2026: highest Earth elevation",
+      "endpoint": "/api/sky-series",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "hours": 720,
+        "step_minutes": 720,
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "samples.*.earth.elevation_deg",
+        "reduce": "max",
+        "kind": "number"
+      },
+      "expected": 10.65,
+      "threshold": 0.01,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 40"
+    },
+    {
+      "id": "T2b-earthset-1",
+      "test": "T2b",
+      "title": "Mons Mouton test site, December 2026: first Earth set",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "earthset",
+          "index": 0
+        },
+        "field": "utc",
+        "kind": "utc"
+      },
+      "expected": "2026-12-03T10:03:00Z",
+      "threshold": 2,
+      "warn_threshold": 20,
+      "unit": "min",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 42"
+    },
+    {
+      "id": "T2b-earthrise-1",
+      "test": "T2b",
+      "title": "Mons Mouton test site, December 2026: Earth rise",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "earthrise",
+          "index": 0
+        },
+        "field": "utc",
+        "kind": "utc"
+      },
+      "expected": "2026-12-11T04:41:00Z",
+      "threshold": 2,
+      "warn_threshold": 20,
+      "unit": "min",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 42"
+    },
+    {
+      "id": "T2b-earthset-2",
+      "test": "T2b",
+      "title": "Mons Mouton test site, December 2026: second Earth set",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "earthset",
+          "index": 1
+        },
+        "field": "utc",
+        "kind": "utc"
+      },
+      "expected": "2026-12-30T11:02:00Z",
+      "threshold": 2,
+      "warn_threshold": 20,
+      "unit": "min",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 42"
+    },
+    {
+      "id": "T2b-earth-hidden-fraction",
+      "test": "T2b",
+      "title": "Mons Mouton test site, December 2026: share of time with Earth below the horizon",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "path": "metrics.earth_visible_fraction",
+        "transform": "one_minus",
+        "kind": "number"
+      },
+      "expected": 0.277,
+      "threshold": 0.005,
+      "unit": "fraction",
+      "source": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 43"
+    },
+    {
+      "id": "T4-dip-1m",
+      "test": "T4",
+      "title": "Flat horizon dip at 1 m",
+      "endpoint": "/api/horizon",
+      "params": {
+        "lat_deg": 0.0,
+        "lon_deg": 0.0,
+        "mast_height_m": 1
+      },
+      "measure": {
+        "path": "horizon_deg.0",
+        "transform": "negate",
+        "kind": "number"
+      },
+      "expected": 0.061,
+      "threshold": 0.001,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/ufuk-ve-isik-isi.md, No A-7"
+    },
+    {
+      "id": "T4-dip-2m",
+      "test": "T4",
+      "title": "Flat horizon dip at 2 m",
+      "endpoint": "/api/horizon",
+      "params": {
+        "lat_deg": 0.0,
+        "lon_deg": 0.0,
+        "mast_height_m": 2
+      },
+      "measure": {
+        "path": "horizon_deg.0",
+        "transform": "negate",
+        "kind": "number"
+      },
+      "expected": 0.087,
+      "threshold": 0.001,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/ufuk-ve-isik-isi.md, No A-7"
+    },
+    {
+      "id": "T4-dip-5m",
+      "test": "T4",
+      "title": "Flat horizon dip at 5 m",
+      "endpoint": "/api/horizon",
+      "params": {
+        "lat_deg": 0.0,
+        "lon_deg": 0.0,
+        "mast_height_m": 5
+      },
+      "measure": {
+        "path": "horizon_deg.0",
+        "transform": "negate",
+        "kind": "number"
+      },
+      "expected": 0.137,
+      "threshold": 0.001,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/ufuk-ve-isik-isi.md, No A-7"
+    },
+    {
+      "id": "T4-dip-10m",
+      "test": "T4",
+      "title": "Flat horizon dip at 10 m",
+      "endpoint": "/api/horizon",
+      "params": {
+        "lat_deg": 0.0,
+        "lon_deg": 0.0,
+        "mast_height_m": 10
+      },
+      "measure": {
+        "path": "horizon_deg.0",
+        "transform": "negate",
+        "kind": "number"
+      },
+      "expected": 0.194,
+      "threshold": 0.001,
+      "unit": "deg",
+      "source": "docs/research/dogrulama/ufuk-ve-isik-isi.md, No A-7"
+    },
+    {
+      "id": "T5-eclipse-start",
+      "test": "T5",
+      "title": "Apollo 11 site: Earth starts covering the Sun",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "apollo-11",
+        "start_utc": "2027-02-20T00:00:00Z",
+        "end_utc": "2027-02-22T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "eclipse_start",
+          "index": 0
+        },
+        "field": "utc",
+        "kind": "utc"
+      },
+      "expected": "2027-02-20T22:09:00Z",
+      "threshold": 2,
+      "unit": "min",
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+    },
+    {
+      "id": "T5-eclipse-end",
+      "test": "T5",
+      "title": "Apollo 11 site: Earth stops covering the Sun",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "apollo-11",
+        "start_utc": "2027-02-20T00:00:00Z",
+        "end_utc": "2027-02-22T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "eclipse_end",
+          "index": 0
+        },
+        "field": "utc",
+        "kind": "utc"
+      },
+      "expected": "2027-02-21T00:36:00Z",
+      "threshold": 2,
+      "unit": "min",
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+    },
+    {
+      "id": "T5-max-obscured",
+      "test": "T5",
+      "title": "Apollo 11 site: largest covered share of the Sun",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "apollo-11",
+        "start_utc": "2027-02-20T00:00:00Z",
+        "end_utc": "2027-02-22T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "eclipse_start",
+          "index": 0
+        },
+        "field": "max_obscured_fraction",
+        "kind": "number"
+      },
+      "expected": 0.343,
+      "threshold": 0.005,
+      "unit": "fraction",
+      "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70"
+    },
+    {
+      "id": "T7-sunrise-shift-apollo-11",
+      "test": "T7",
+      "title": "Apollo 11 site: sunrise shift for a one arcminute horizon change",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "apollo-11",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "sunrise",
+          "index": 0
+        },
+        "field": "half_range_minutes",
+        "kind": "number"
+      },
+      "expected": null,
+      "expected_range": [
+        1.5,
+        3.0
+      ],
+      "threshold": null,
+      "unit": "min",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 10",
+      "note": "Shift is half of utc_latest minus utc_earliest; the range is the threshold."
+    },
+    {
+      "id": "T7-sunrise-shift-mons-mouton",
+      "test": "T7",
+      "title": "Mons Mouton test site: sunrise shift for a one arcminute horizon change",
+      "endpoint": "/api/events",
+      "params": {
+        "site_id": "mons-mouton-im2-target",
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "earth_criterion": "center",
+        "mast_height_m": 0
+      },
+      "measure": {
+        "event": {
+          "type": "sunrise",
+          "index": 0
+        },
+        "field": "half_range_minutes",
+        "kind": "number"
+      },
+      "expected": null,
+      "expected_range": [
+        21.0,
+        null
+      ],
+      "threshold": null,
+      "unit": "min",
+      "source": "docs/research/dogrulama/aciklanabilirlik.md, No 10",
+      "note": "Shift is half of utc_latest minus utc_earliest; the range is the threshold."
+    }
+  ]
+}

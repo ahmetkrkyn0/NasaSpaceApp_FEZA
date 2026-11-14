@@ -1,0 +1,195 @@
+[
+  {
+    "id": "im2-athena",
+    "mission": "IM-2 Athena",
+    "site_id": "im2-athena",
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "landing_utc_validity": "SYNTHETIC",
+    "outcome": "landed_tipped",
+    "expected": {
+      "sun_elevation_deg": 2.47,
+      "sun_azimuth_true_deg": 65.67,
+      "earth_elevation_deg": 11.19
+    },
+    "facts": [
+      {
+        "text": "Landed more than 400 m from its target and operated for 12 h 45 min.",
+        "evidence": "official",
+        "source": {
+          "label": "NASA release 25-025",
+          "url": null
+        }
+      },
+      {
+        "text": "Hit the surface faster than intended and ended up on its side within a 20 m diameter crater.",
+        "evidence": "official",
+        "source": {
+          "label": "LROC, 10 March 2025",
+          "url": "https://lroc.im-ldi.com/images/1408"
+        }
+      },
+      {
+        "text": "Intuitive Machines said the tipped orientation of the solar panels meant Athena was not expected to recharge.",
+        "evidence": "preliminary",
+        "source": {
+          "label": "SpaceNews, IM-2 lunar lander mission ends",
+          "url": "https://spacenews.com/im-2-lunar-lander-mission-ends/"
+        }
+      },
+      {
+        "text": "Intuitive Machines' preliminary findings cite altimeter signal noise and distortion, long shadows and dim lighting.",
+        "evidence": "preliminary",
+        "source": {
+          "label": "The Register, 14 May 2025",
+          "url": null
+        }
+      }
+    ]
+  },
+  {
+    "id": "blue-ghost-1",
+    "mission": "Blue Ghost 1",
+    "site_id": "blue-ghost-1",
+    "landing_utc": "2025-03-02T08:34:00Z",
+    "landing_utc_validity": "MEASURED",
+    "outcome": "landed",
+    "expected": {
+      "sun_elevation_deg": 3.43,
+      "sun_azimuth_true_deg": 91.62,
+      "earth_elevation_deg": null
+    },
+    "facts": [
+      {
+        "text": "Landed upright and stable near Mons Latreille in Mare Crisium at 3:34 a.m. EST on 2 March 2025.",
+        "evidence": "official",
+        "source": {
+          "label": "NASA, 2 March 2025",
+          "url": null
+        }
+      },
+      {
+        "text": "Used camera-based terrain relative navigation and executed two hazard avoidance maneuvers during descent.",
+        "evidence": "official",
+        "source": {
+          "label": "Firefly Aerospace, Spacecraft Autonomy",
+          "url": "https://fireflyspace.com/spacecraft-autonomy/"
+        }
+      }
+    ]
+  },
+  {
+    "id": "chandrayaan-3",
+    "mission": "Chandrayaan-3",
+    "site_id": "chandrayaan-3",
+    "landing_utc": "2023-08-23T12:34:00Z",
+    "landing_utc_validity": "SYNTHETIC",
+    "outcome": "landed",
+    "expected": {
+      "sun_elevation_deg": 8.61,
+      "sun_azimuth_true_deg": 62.04,
+      "earth_elevation_deg": null
+    },
+    "facts": []
+  },
+  {
+    "id": "im1-odysseus",
+    "mission": "IM-1 Odysseus",
+    "site_id": "im1-odysseus",
+    "landing_utc": "2024-02-22T23:23:00Z",
+    "landing_utc_validity": "SYNTHETIC",
+    "outcome": "landed",
+    "expected": {
+      "sun_elevation_deg": 10.47,
+      "sun_azimuth_true_deg": 18.61,
+      "earth_elevation_deg": null
+    },
+    "facts": [
+      {
+        "text": "Preliminary findings: a laser range finder safety switch was left enabled and the pre-flight test that would have caught it was skipped.",
+        "evidence": "preliminary",
+        "source": {
+          "label": "Ad Astra, February 2024",
+          "url": null
+        }
+      },
+      {
+        "text": "A software patch was loaded for the NASA Doppler lidar, but its range and velocity data were not used for navigation.",
+        "evidence": "preliminary",
+        "source": {
+          "label": "NASA NTRS 20240009717",
+          "url": "https://ntrs.nasa.gov/citations/20240009717"
+        }
+      }
+    ]
+  },
+  {
+    "id": "slim",
+    "mission": "SLIM",
+    "site_id": "slim",
+    "landing_utc": "2024-01-19T15:20:00Z",
+    "landing_utc_validity": "DERIVED",
+    "outcome": "landed_tipped",
+    "expected": {
+      "sun_elevation_deg": 37.16,
+      "sun_azimuth_true_deg": 81.66,
+      "earth_elevation_deg": null
+    },
+    "facts": [
+      {
+        "text": "At about 50 m altitude the total thrust of the two main engines suddenly fell to about 55%.",
+        "evidence": "official",
+        "source": {
+          "label": "JAXA, 25 January 2024",
+          "url": "https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf"
+        }
+      },
+      {
+        "text": "JAXA assumes a nozzle detached from one main engine; the cause was still under investigation.",
+        "evidence": "preliminary",
+        "source": {
+          "label": "JAXA, 25 January 2024",
+          "url": "https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf"
+        }
+      },
+      {
+        "text": "Landed about 55 m east of its target with the main engine facing up and the solar panels facing west.",
+        "evidence": "official",
+        "source": {
+          "label": "JAXA, 25 January 2024",
+          "url": "https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf"
+        }
+      },
+      {
+        "text": "Survived three lunar nights, which was not part of the original mission plan; operations ended on 23 August 2024.",
+        "evidence": "official",
+        "source": {
+          "label": "JAXA, 26 August 2024",
+          "url": "https://global.jaxa.jp/press/2024/08/20240826-1_e.html"
+        }
+      }
+    ]
+  },
+  {
+    "id": "change-4",
+    "mission": "Chang'e 4",
+    "site_id": "change-4",
+    "landing_utc": "2019-01-03T02:26:00Z",
+    "landing_utc_validity": "MEASURED",
+    "outcome": "landed",
+    "expected": {
+      "sun_elevation_deg": 31.51,
+      "sun_azimuth_true_deg": 50.7,
+      "earth_elevation_deg": -39.2
+    },
+    "facts": [
+      {
+        "text": "Landed in Von Karman crater at 10:26 a.m. Beijing time (02:26 UTC) on 3 January 2019.",
+        "evidence": "official",
+        "source": {
+          "label": "CNSA, 3 January 2019",
+          "url": null
+        }
+      }
+    ]
+  }
+]
