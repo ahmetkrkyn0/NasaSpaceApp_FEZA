@@ -4,7 +4,7 @@ Instructions for AI coding agents (Claude Code, Cursor, Copilot, Codex, Gemini, 
 
 ## Project Status
 
-Lunar Landing Site Navigator, team FEZA's NASA Space Apps Challenge 2026 project (see [README.md](README.md) and [LunarLandingSiteNavigator.md](LunarLandingSiteNavigator.md)). The stack is not fixed yet. Do not introduce a framework, language, or major dependency that the team has not agreed on (check `docs/adr/` and the README) without the user explicitly asking for it.
+Lunar Landing Site Navigator, team FEZA's NASA Space Apps Challenge 2026 project (see [README.md](README.md) and [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md)). The stack is not fixed yet. Do not introduce a framework, language, or major dependency that the team has not agreed on (check `docs/adr/` and the README) without the user explicitly asking for it.
 
 ## Hard Rules
 
@@ -62,7 +62,6 @@ Fill these in once the stack is chosen. Run tests and lint before every commit o
 | --------------------- | ----------------------------------------- |
 | `.github/`            | CI workflow, PR/issue templates, CODEOWNERS |
 | `docs/`               | Design notes, ADRs, assets                |
-| `LunarLandingSiteNavigator.md` | Challenge statement              |
-| `Resources.md`        | Data sources and tools from the challenge |
+| `docs/challenge/`     | Challenge statement, data sources, judging and submission guides (PDF) |
 | `CONTRIBUTING.md`     | Full team workflow rules                  |
 | `CHANGELOG.md`        | Release notes                             |
