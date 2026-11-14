@@ -442,6 +442,50 @@ export interface ReferenceMission {
 }
 
 // ---------------------------------------------------------------------------
+// Validation report (`/api/validation`), ADR-0004 "/api/validation"
+// ---------------------------------------------------------------------------
+
+export const VALIDATION_STATUSES = ['pass', 'warn', 'fail', 'skipped', 'info'] as const;
+export type ValidationStatus = (typeof VALIDATION_STATUSES)[number];
+
+/** `reference`: test with a threshold. `approximate`: comparison without one (T6 only). */
+export const VALIDATION_KINDS = ['reference', 'approximate'] as const;
+export type ValidationKind = (typeof VALIDATION_KINDS)[number];
+
+export interface ValidationRow {
+  id: string;
+  /** `T1` to `T7`. */
+  test: string;
+  title: string;
+  condition: string;
+  kind: ValidationKind;
+  /** A number, or a UTC time for event rows; `null` when only `expected_range` is given. */
+  expected: number | string | null;
+  measured: number | string | null;
+  /** Measured minus expected, in `unit`. */
+  diff: number | null;
+  /** `null` on `approximate` rows and on range rows. */
+  threshold: number | null;
+  unit: string;
+  status: ValidationStatus;
+  /** Validation table row or document the expected value comes from. */
+  source: string;
+  /** Endpoint that produced the measured value; `null` for unit-test rows (T3) and T6. */
+  endpoint: string | null;
+  note: string | null;
+  /** `[low, high]`; either end may be `null`. */
+  expected_range?: [number | null, number | null];
+}
+
+export interface ValidationReport {
+  generated_utc: UtcString;
+  /** Where the run was made, for example `in-process`. */
+  target: string;
+  summary: Record<ValidationStatus, number>;
+  rows: ValidationRow[];
+}
+
+// ---------------------------------------------------------------------------
 // Health (`/api/health`) and error body
 // ---------------------------------------------------------------------------
 
