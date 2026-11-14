@@ -1,0 +1,11 @@
+[
+  {
+    "id": "vertical_tracking",
+    "type": "vertical_tracking",
+    "area_m2": 1.0,
+    "efficiency": 0.3,
+    "fixed_azimuth_deg": null,
+    "mast_height_m": 2.0,
+    "validity": "SYNTHETIC"
+  }
+]

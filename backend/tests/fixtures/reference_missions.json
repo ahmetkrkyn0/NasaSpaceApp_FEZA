@@ -1,0 +1,16 @@
+[
+  {
+    "id": "im2-athena",
+    "name": "IM-2 Athena",
+    "site_id": "im2-athena",
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "validity": "MEASURED"
+  },
+  {
+    "id": "change4",
+    "name": "Chang'e 4",
+    "site_id": "change4",
+    "landing_utc": "2019-01-03T02:26:00Z",
+    "validity": "MEASURED"
+  }
+]

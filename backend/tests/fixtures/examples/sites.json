@@ -1,0 +1,18 @@
+[
+  {
+    "id": "im2-athena",
+    "name": "Intuitive Machines IM-2 Athena",
+    "category": "clps",
+    "lat_deg": -84.7906,
+    "lon_deg": 29.1957,
+    "elevation_m": null,
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "status": "landed_tipped",
+    "coordinate_source": {
+      "label": "NASA IM-2 landing site",
+      "url": "https://www.nasa.gov/"
+    },
+    "validity": "MEASURED",
+    "notes": "Landed near Mons Mouton, tipped over."
+  }
+]

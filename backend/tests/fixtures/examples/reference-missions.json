@@ -1,0 +1,9 @@
+[
+  {
+    "id": "apollo11",
+    "name": "Apollo 11",
+    "site_id": "apollo11",
+    "landing_utc": "1969-07-20T20:17:40Z",
+    "validity": "MEASURED"
+  }
+]

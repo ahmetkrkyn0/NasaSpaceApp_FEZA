@@ -1,0 +1,51 @@
+[
+  {
+    "id": "mons-mouton-im2-target",
+    "name": "Mons Mouton (IM-2 target)",
+    "category": "test",
+    "lat_deg": -84.78,
+    "lon_deg": 29.13,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "reference",
+    "coordinate_source": {
+      "label": "Fixture reference coordinates",
+      "url": "https://example.org/fixture/mons-mouton"
+    },
+    "validity": "MEASURED",
+    "notes": "Fixture record for the IM-2 target area; no landing occurred."
+  },
+  {
+    "id": "im2-athena",
+    "name": "IM-2 Athena",
+    "category": "clps",
+    "lat_deg": -84.7906,
+    "lon_deg": 29.1957,
+    "elevation_m": null,
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "status": "landed_tipped",
+    "coordinate_source": {
+      "label": "Fixture landing coordinates",
+      "url": "https://example.org/fixture/im2-athena"
+    },
+    "validity": "MEASURED",
+    "notes": "Fixture record for the Athena lander.",
+    "fixture_extra": true
+  },
+  {
+    "id": "change4",
+    "name": "Chang'e 4",
+    "category": "international",
+    "lat_deg": -45.4446,
+    "lon_deg": 177.5991,
+    "elevation_m": null,
+    "landing_utc": "2019-01-03T02:26:00Z",
+    "status": "landed",
+    "coordinate_source": {
+      "label": "Fixture landing coordinates",
+      "url": "https://example.org/fixture/change4"
+    },
+    "validity": "MEASURED",
+    "notes": "Fixture record for the Chang'e 4 lander."
+  }
+]
