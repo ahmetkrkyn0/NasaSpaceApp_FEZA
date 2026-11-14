@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { getSites, postCompare } from '../../api/client';
+import { getSites } from '../../api/client';
 import { COMPARE_METRICS, displayDifference, displayWithUnit } from '../../api/compare-metrics';
 import { formatDate } from '../../api/format';
-import { MAX_COMPARE_SCENARIOS, MIN_COMPARE_SCENARIOS, type CompareResponse, type Scenario, type Site } from '../../api/types';
+import { MAX_COMPARE_SCENARIOS, MIN_COMPARE_SCENARIOS, type CompareMetricName, type CompareResponse, type Scenario, type Site } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import {
@@ -15,6 +15,9 @@ import {
 } from '../../state/scenario-tools';
 import { VALIDITY_LABEL, ValidityBadge } from '../../ui/ValidityBadge';
 import { AsyncBlock, ExampleNote, NeedsScenario, PanelHeader } from '../setup/shared';
+import { WHY_PANEL_ID } from '../why';
+import { whyStore } from '../why/why-state';
+import { compareScenarios } from './results';
 import { compareCsv, compareJson, download } from './export';
 
 /**
@@ -176,6 +179,20 @@ function ScenarioList({ list, sites }: { list: readonly Scenario[]; sites: reado
   );
 }
 
+/** Opens the Why card for one difference and brings the Why panel into view. */
+function WhyLink({ metric, scenarioId, label }: { metric: CompareMetricName; scenarioId: string; label: string }) {
+  const open = () => {
+    whyStore.open({ metric, scenarioId });
+    const doc = (globalThis as { document?: Document }).document;
+    doc?.getElementById(WHY_PANEL_ID)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  return (
+    <button type="button" className="d-button d-why-link" onClick={open} aria-label={`Why does ${label.toLowerCase()} differ?`}>
+      Why?
+    </button>
+  );
+}
+
 export function ResultTable({ response }: { response: CompareResponse }) {
   const results = response.scenarios;
   const reference = results[0];
@@ -215,7 +232,12 @@ export function ResultTable({ response }: { response: CompareResponse }) {
                     <td key={r.scenario.scenario_id} className="d-num">
                       <span className={best ? 'd-best' : undefined}>{displayWithUnit(m, r.metrics[m.key])}</span>
                       {best ? <span className="d-best"> best</span> : null}
-                      {diff !== null ? <span className="d-diff">{`${diff > 0 ? '+' : ''}${diff.toFixed(m.decimals)}`}</span> : null}
+                      {diff !== null ? (
+                        <span className="d-diff">
+                          {`${diff > 0 ? '+' : ''}${diff.toFixed(m.decimals)}`}
+                          {diff !== 0 ? <WhyLink metric={m.key} scenarioId={r.scenario.scenario_id} label={m.label} /> : null}
+                        </span>
+                      ) : null}
                     </td>
                   );
                 })}
@@ -267,7 +289,7 @@ export default function ComparePanel() {
   const key = useMemo(() => JSON.stringify(list), [list]);
   const waiting = compareWaitingReason(list);
   const results = useAsync(
-    (signal) => (waiting !== null ? Promise.resolve(null) : postCompare({ scenarios: [...list] }, { signal })),
+    (_signal) => (waiting !== null ? Promise.resolve(null) : compareScenarios(list)),
     [key],
   );
 

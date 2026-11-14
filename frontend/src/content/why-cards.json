@@ -1,0 +1,51 @@
+{
+  "_about": "Why-card texts (docs/design/karsilastirma-ve-aciklama.md, 'Neden kartlari'). No numbers here: every number in a card comes from the server answer and is filled in by features/why/explain.ts. Placeholders: {better}, {worse}, {a}, {b}, {amount}, {label}, {input}.",
+  "inputs": {
+    "date": "dates",
+    "place": "site",
+    "mast": "mast height",
+    "panel": "panel",
+    "criterion": "Earth criterion"
+  },
+  "common": {
+    "same": "{a} and {b} have the same value for {label}.",
+    "none_known": "None of the six metrics has a computed value in both scenarios yet, so there is nothing to explain.",
+    "unknown": "{label} has no computed value in at least one of these scenarios, so there is nothing to explain yet.",
+    "one_input": "{a} and {b} differ in one input only, the {input}, so the whole difference comes from it.",
+    "counterfactual_intro": "Each row keeps {a} as it is and changes one input to the value in {b}. The server computed every row.",
+    "counterfactual_note": "The rows need not add up to the total: inputs can work together.",
+    "same_inputs": "{a} and {b} ask the same question, so there is no difference to explain."
+  },
+  "metrics": {
+    "sunlit_fraction": {
+      "explore": "{better} gets {amount} more sunlight than {worse} in this period.",
+      "classroom": "The server counts a moment as sunlit when the Sun is above the local horizon in the Sun's direction.",
+      "related": "max_sun_elevation_deg"
+    },
+    "longest_dark_hours": {
+      "explore": "The longest dark spell at {better} is {amount} shorter than at {worse}.",
+      "classroom": "A dark spell lasts from the moment the Sun drops below the local horizon until it comes back above it.",
+      "related": "max_sun_elevation_deg"
+    },
+    "max_sun_elevation_deg": {
+      "explore": "At {better} the Sun climbs {amount} higher than at {worse}.",
+      "classroom": "This is the highest angle of the Sun's centre above the flat horizon during the period. It depends on where the site is and on the dates.",
+      "related": "sunlit_fraction"
+    },
+    "earth_visible_fraction": {
+      "explore": "{better} has Earth in view for {amount} more than {worse} in this period.",
+      "classroom": "Earth counts as in view when it is above the local horizon, by the criterion the scenario uses. Direct radio contact needs Earth in view.",
+      "related": "longest_earth_hidden_hours"
+    },
+    "longest_earth_hidden_hours": {
+      "explore": "The longest stretch without Earth in view is {amount} shorter at {better} than at {worse}.",
+      "classroom": "This is the longest time Earth stays below the local horizon in the period, by the criterion the scenario uses.",
+      "related": "earth_visible_fraction"
+    },
+    "mean_power_w": {
+      "explore": "A panel at {better} makes {amount} more on average than at {worse}.",
+      "classroom": "Panel power is computed from the Sun's position, the local horizon and the panel profile. The panel values are assumed, not measured.",
+      "related": "sunlit_fraction"
+    }
+  }
+}
