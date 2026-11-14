@@ -1,0 +1,260 @@
+/* Timeline (F2-C). Dark and Earth-hidden windows are hatched as well as coloured, so the
+   bands read without colour (docs/design/gosterim-ve-arayuz.md, "Tasarım ilkeleri"). */
+
+.tl-panel,
+.tl-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tl-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.tl-group {
+  display: inline-flex;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+}
+
+.tl-button {
+  padding: 4px 10px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  cursor: pointer;
+}
+
+.tl-group .tl-button {
+  border: 0;
+  border-radius: 0;
+}
+
+.tl-group .tl-button + .tl-button {
+  border-left: 1px solid var(--line-button);
+}
+
+.tl-button:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.tl-button.is-active,
+.tl-play[aria-pressed='true'] {
+  background: var(--line-accent);
+  color: var(--lavender-bright);
+}
+
+.tl-button:disabled {
+  color: var(--text-dimmest);
+  cursor: not-allowed;
+}
+
+.tl-selected {
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.tl-data {
+  color: var(--text);
+  font-family: var(--font-data);
+}
+
+.tl-track {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  row-gap: 4px;
+  touch-action: none;
+  cursor: ew-resize;
+  user-select: none;
+}
+
+.tl-row-label {
+  align-self: center;
+  color: var(--text-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.tl-band,
+.tl-marks,
+.tl-scale {
+  position: relative;
+  min-height: 16px;
+}
+
+.tl-band {
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.tl-marks {
+  min-height: 20px;
+}
+
+.tl-scale {
+  min-height: 18px;
+}
+
+.tl-band-empty {
+  display: block;
+  padding: 0 6px;
+  color: var(--text-dim);
+  font-size: var(--fs-micro);
+  line-height: 16px;
+}
+
+.tl-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.tl-seg-sunlit,
+.tl-key-sunlit::before {
+  background: var(--risk-med);
+}
+
+.tl-seg-dark,
+.tl-key-dark::before {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--line-button) 0 2px,
+    var(--bg-raised) 2px 6px
+  );
+}
+
+.tl-seg-earth_visible,
+.tl-key-earth_visible::before {
+  background: var(--cyan);
+}
+
+.tl-seg-earth_hidden,
+.tl-key-earth_hidden::before {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--umbra-dim) 0 2px,
+    var(--bg-raised) 2px 6px
+  );
+  box-shadow: inset 0 0 0 1px var(--line-button);
+}
+
+.tl-cursor {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--lavender-bright);
+  pointer-events: none;
+}
+
+.tl-mark {
+  position: absolute;
+  top: 2px;
+  width: 12px;
+  height: 16px;
+  margin-left: -6px;
+  padding: 0;
+  border: 1.5px solid var(--text-2);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  cursor: pointer;
+}
+
+.tl-mark-sunrise,
+.tl-mark-sunset {
+  border-color: var(--risk-med);
+}
+
+.tl-mark-sunrise,
+.tl-mark-earthrise {
+  background: currentColor;
+}
+
+.tl-mark-earthrise,
+.tl-mark-earthset {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.tl-mark-sunrise {
+  color: var(--risk-med);
+}
+
+.tl-mark-eclipse_start,
+.tl-mark-eclipse_end {
+  border-style: dashed;
+}
+
+.tl-mark.is-uncertain {
+  outline: 1px dashed var(--risk-med);
+  outline-offset: 2px;
+}
+
+.tl-mark:hover,
+.tl-mark:focus-visible {
+  border-color: var(--lavender-bright);
+}
+
+.tl-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--text-dim);
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  white-space: nowrap;
+}
+
+.tl-tick.is-start {
+  transform: none;
+}
+
+.tl-tick.is-end {
+  transform: translateX(-100%);
+}
+
+.tl-range {
+  width: 100%;
+  accent-color: var(--lavender);
+}
+
+.tl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.tl-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tl-key::before {
+  content: '';
+  width: 18px;
+  height: 10px;
+  border-radius: var(--radius);
+}
+
+.tl-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
