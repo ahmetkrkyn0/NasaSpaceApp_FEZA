@@ -7,6 +7,7 @@
  * as they are (docs/PLAN.md, section 4.1, rule 2).
  */
 
+import { exampleCompareResponse } from './compare-metrics';
 import { getApiConfig } from './config';
 import { ApiError, errorFromResponse, errorFromThrown } from './errors';
 import {
@@ -180,6 +181,9 @@ export function getPower(params: PowerParams, options?: RequestOptions): Promise
 /**
  * At most four scenarios. Both modes answer five or more with the server's
  * `too_many_scenarios` error (HTTP 422), so the interface sees the same failure either way.
+ *
+ * Example mode answers for the scenarios actually sent: a scenario that matches one in
+ * `compare.json` gets its metrics, any other gets `null` metrics (compare-metrics.ts).
  */
 export function postCompare(body: CompareRequest, options?: RequestOptions): Promise<CompareResponse> {
   if (isLive()) return postJson('/compare', body, options);
@@ -188,7 +192,7 @@ export function postCompare(body: CompareRequest, options?: RequestOptions): Pro
       new ApiError('too_many_scenarios', `At most ${MAX_COMPARE_SCENARIOS} scenarios can be compared.`, 422),
     );
   }
-  return fromExample(compareExample, options);
+  return fromExample(exampleCompareResponse(body.scenarios, compareExample), options);
 }
 
 export function getReferenceMissions(options?: RequestOptions): Promise<ReferenceMission[]> {

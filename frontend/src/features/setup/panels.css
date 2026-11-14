@@ -1,0 +1,319 @@
+/* Shared styles of the setup, Power, Comms and Compare panels (D line).
+   Values come from the design tokens only: colours, fonts, sizes and radius. */
+
+.d-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: var(--fs-body);
+}
+
+.d-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.d-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.d-section-title {
+  margin: 0;
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+}
+
+.d-muted {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+.d-note {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  font-size: var(--fs-small);
+}
+
+.d-note-example {
+  color: var(--text-2);
+  border-style: dashed;
+}
+
+.d-note-error {
+  color: var(--coral-text);
+  border-color: var(--coral);
+}
+
+.d-note-warn {
+  color: var(--risk-med);
+}
+
+.d-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ── Label-value rows ────────────────────────────────────────────────── */
+
+.d-fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.d-field {
+  display: contents;
+}
+
+.d-field-label {
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.d-field-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text);
+}
+
+.d-horizon-note {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Form controls ───────────────────────────────────────────────────── */
+
+.d-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.d-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.d-control-label {
+  color: var(--text-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+}
+
+.d-input,
+.d-select {
+  padding: 5px 8px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--fs-body);
+}
+
+.d-input[aria-invalid='true'] {
+  border-color: var(--coral);
+}
+
+.d-hint {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+.d-error {
+  margin: 0;
+  color: var(--coral-text);
+  font-size: var(--fs-small);
+}
+
+.d-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.d-row > .d-control {
+  flex: 1 1 120px;
+}
+
+.d-choice {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.d-choice-option {
+  padding: 4px 10px;
+  border: 1px solid var(--line-button);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  cursor: pointer;
+}
+
+.d-choice-option + .d-choice-option {
+  border-left: 0;
+}
+
+.d-choice-option[aria-pressed='true'] {
+  background: var(--bg-surface);
+  color: var(--lavender-bright);
+  border-color: var(--lavender);
+}
+
+.d-button {
+  padding: 6px 12px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  cursor: pointer;
+}
+
+.d-button-primary {
+  border-color: var(--lavender);
+  background: var(--lavender);
+  color: var(--void);
+}
+
+.d-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.d-link {
+  color: var(--cyan-text);
+}
+
+/* ── Site card ───────────────────────────────────────────────────────── */
+
+.d-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+}
+
+.d-card-title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--fs-strong);
+}
+
+/* ── Power curve ─────────────────────────────────────────────────────── */
+
+.d-chart {
+  width: 100%;
+  height: 120px;
+  color: var(--cyan);
+}
+
+.d-chart-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.d-chart-axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.d-chart-caption {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.d-table-wrap {
+  overflow-x: auto;
+}
+
+.d-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+
+.d-table th,
+.d-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.d-table th {
+  color: var(--text-3);
+  font-family: var(--font-label);
+  font-weight: 600;
+}
+
+.d-table td.d-num {
+  font-family: var(--font-data);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.d-best {
+  color: var(--mint-text);
+  font-weight: 600;
+}
+
+.d-diff {
+  display: block;
+  color: var(--text-dim);
+}
+
+.d-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.d-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
