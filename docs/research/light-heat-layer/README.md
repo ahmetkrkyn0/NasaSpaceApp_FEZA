@@ -196,6 +196,8 @@ pil     += (P_panel − P_sürüş − P_elektronik − P_ısıtıcı) × dt
 
 > Heat1d hazır değilken ısıtıcı için sabit bir "gölgede saatlik harcama" kullanılır. M5 gelince bu değer zemin sıcaklığına göre değişir.
 
+> Panel gücünün ayrıntılı modeli (panel tipleri, direk yüksekliği, rover eğimi ve yönü, Mons Mouton ön hesabı): [solar-panel-model](../solar-panel-model/README.md).
+
 ### M7 · Zamana bağlı A* (madde 8)
 
 Normal A* yalnızca "hangi kareye" diye sorar. Bu sürüm **"oraya saat kaçta varırım ve pilim yüzde kaç olur"** diye de sorar. "Burada bekle" de bir hamledir: gölge geçene kadar güneşte beklemek çoğu zaman en iyi seçenektir.
