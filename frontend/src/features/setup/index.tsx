@@ -5,9 +5,10 @@ import type { Site } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { uiStore } from '../../shell/ui-state';
 import { scenarioStore } from '../../state/scenario-store';
-import { MAST_HEIGHTS, TERRAIN_MAST_HEIGHTS } from '../../state/scenario-tools';
+import { MAST_HEIGHTS } from '../../state/scenario-tools';
 import { readScenarioDraft } from '../../state/url-sync';
 import { SourcePopover } from '../../ui/SourcePopover';
+import { TERRAIN_RULE_TEXT, fetchMastModels, mastModelsKey, mastModelsState, type MastModelsState } from '../compare/horizon-models';
 import { EMPTY_FORM, PANEL_TYPE_LABEL, STATUS_LABEL, checkForm, formFromScenario, groupSites, type SetupForm } from './form';
 import { ErrorNote, ExampleNote, HorizonNote, PanelHeader, useHorizon } from './shared';
 
@@ -48,6 +49,49 @@ export function InfoCards({ cards }: { cards: Site['cards'] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * Word under a mast height option: the horizon model the server uses at the chosen place for
+ * that height. A terrain profile exists at a few sites only, so the word comes from
+ * `/api/horizon` for this place and is never assumed from the height (PR #75 review). `null`
+ * while no place is chosen or the model is not known.
+ */
+export function mastHorizonKind(state: MastModelsState, height: number): 'terrain' | 'flat' | null {
+  if (state.status !== 'ready') return null;
+  const method = state.methods[height];
+  return method === undefined ? null : method === 'terrain' ? 'terrain' : 'flat';
+}
+
+/** Line under the mast options about this place; `null` when there is nothing to add to the rule. */
+export function mastPlaceNote(state: MastModelsState, heights: readonly number[]): string | null {
+  if (state.status === 'error') return 'The horizon model for this place could not be read.';
+  if (state.status !== 'ready') return null;
+  const terrain = heights.filter((h) => state.methods[h] === 'terrain');
+  if (terrain.length === 0) return 'This place has no terrain profile: every mast height uses the flat horizon.';
+  return `This place has a terrain profile at ${terrain.map((h) => `${h} m`).join(' and ')}.`;
+}
+
+export function MastOptions({ value, models, onChange }: { value: number; models: MastModelsState; onChange: (height: number) => void }) {
+  return (
+    <div className="d-choice" role="group" aria-label="Mast height">
+      {MAST_HEIGHTS.map((h) => {
+        const kind = mastHorizonKind(models, h);
+        return (
+          <button
+            key={h}
+            type="button"
+            className="d-choice-option d-choice-stack"
+            aria-pressed={value === h}
+            aria-label={kind ? `${h} m, ${kind} horizon` : `${h} m`}
+            onClick={() => onChange(h)}
+          >
+            {h} m{kind ? <span className="d-choice-note">{kind}</span> : null}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -117,6 +161,16 @@ export default function SetupPanel() {
       : { lat_deg: check.place.lat_deg, lon_deg: check.place.lon_deg }
     : null;
   const horizon = useHorizon(horizonLocation, form.mastHeight);
+  // Horizon model per mast height at this place, tagged with the place so another place's answer is never shown.
+  const mastKey = mastModelsKey(horizonLocation, MAST_HEIGHTS);
+  const mastAnswer = useAsync(
+    (_signal) => (horizonLocation ? fetchMastModels(horizonLocation, MAST_HEIGHTS) : Promise.resolve(undefined)),
+    [mastKey],
+  );
+  const mastModels: MastModelsState = horizonLocation
+    ? mastModelsState(mastAnswer.state.status === 'success' ? mastAnswer.state.data : undefined, mastKey)
+    : { status: 'loading' };
+  const mastNote = horizonLocation ? mastPlaceNote(mastModels, MAST_HEIGHTS) : null;
   const unchanged = check.scenario !== null && active !== null && check.scenario.scenario_id === active.scenario_id;
 
   const set = (patch: Partial<SetupForm>) => setForm((f) => ({ ...f, ...patch }));
@@ -210,17 +264,12 @@ export default function SetupPanel() {
 
         <div className="d-control">
           <span className="d-control-label">Mast height</span>
-          <div className="d-choice" role="group" aria-label="Mast height">
-            {MAST_HEIGHTS.map((h) => (
-              <button key={h} type="button" className="d-choice-option" aria-pressed={form.mastHeight === h} onClick={() => set({ mastHeight: h })}>
-                {h} m
-              </button>
-            ))}
-          </div>
+          <MastOptions value={form.mastHeight} models={mastModels} onChange={(h) => set({ mastHeight: h })} />
+          {/* Shown before a height is chosen, so a mast comparison is not made across horizon models (issue #71). */}
+          <span className="d-hint">{TERRAIN_RULE_TEXT}</span>
+          {mastNote ? <span className="d-hint">{mastNote}</span> : null}
           {form.mastHeight === 0 ? (
             <span className="d-hint">0 m: flat horizon at ground level, the condition of the reference tests.</span>
-          ) : !TERRAIN_MAST_HEIGHTS.includes(form.mastHeight) ? (
-            <span className="d-hint">Terrain horizons exist for 2 m and 10 m only; {form.mastHeight} m uses the flat horizon.</span>
           ) : null}
           {check.place ? (
             horizon.state.status === 'error' ? (

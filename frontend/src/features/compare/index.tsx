@@ -13,10 +13,21 @@ import {
   sameSiteAnotherDate,
   slippedScenario,
 } from '../../state/scenario-tools';
-import { VALIDITY_LABEL, ValidityBadge } from '../../ui/ValidityBadge';
+import { ValidityBadge } from '../../ui/ValidityBadge';
 import { AsyncBlock, ExampleNote, NeedsScenario, PanelHeader } from '../setup/shared';
 import { WHY_PANEL_ID } from '../why';
 import { whyStore } from '../why/why-state';
+import {
+  HORIZON_MODEL_LABEL,
+  fetchHorizonModels,
+  mixIsWarning,
+  mixWarning,
+  modelMix,
+  modelsKey,
+  modelsState,
+  validityNote,
+  type ModelsState,
+} from './horizon-models';
 import { compareScenarios } from './results';
 import { compareCsv, compareJson, download } from './export';
 
@@ -179,6 +190,8 @@ function ScenarioList({ list, sites }: { list: readonly Scenario[]; sites: reado
   );
 }
 
+const LOADING_MODELS: ModelsState = { status: 'loading' };
+
 /** Opens the Why card for one difference and brings the Why panel into view. */
 function WhyLink({ metric, scenarioId, label }: { metric: CompareMetricName; scenarioId: string; label: string }) {
   const open = () => {
@@ -193,17 +206,27 @@ function WhyLink({ metric, scenarioId, label }: { metric: CompareMetricName; sce
   );
 }
 
-export function ResultTable({ response }: { response: CompareResponse }) {
+export function ResultTable({ response, models = LOADING_MODELS }: { response: CompareResponse; models?: ModelsState }) {
   const results = response.scenarios;
   const reference = results[0];
-  const validities = new Set(results.map((r) => r.validity));
   const bestOf = new Map(response.deltas.map((d) => [d.metric, d.best_scenario_id]));
+  // Scenarios computed with different horizon models are not like for like (issue #71).
+  const sides = results.map((r, i) => ({ name: String.fromCharCode(65 + i), scenarioId: r.scenario.scenario_id, validity: r.validity }));
+  const mix = modelMix(sides, models);
+  const modelNote = mixWarning(mix);
+  // Different reliability labels are always stated, whatever is known about the horizon models.
+  const labelNote = mix.kind === 'validity' ? null : validityNote(sides);
+  const known = models.status === 'ready' ? models.models : {};
   return (
     <>
-      {validities.size > 1 ? (
+      {modelNote ? (
+        <p className={mixIsWarning(mix) ? 'd-note d-note-warn' : 'd-muted'} role="note">
+          {modelNote}
+        </p>
+      ) : null}
+      {labelNote ? (
         <p className="d-note d-note-warn" role="note">
-          These scenarios carry different reliability labels ({[...validities].map((v) => VALIDITY_LABEL[v]).join(', ')}).
-          A difference may come from how they were computed, for example terrain against flat horizon, not from the place or date.
+          {labelNote}
         </p>
       ) : null}
       <div className="d-table-wrap">
@@ -215,6 +238,7 @@ export function ResultTable({ response }: { response: CompareResponse }) {
               {results.map((r, i) => (
                 <th key={r.scenario.scenario_id} scope="col">
                   {String.fromCharCode(65 + i)} <ValidityBadge validity={r.validity} />
+                  {known[r.scenario.scenario_id] ? <span className="d-diff">{HORIZON_MODEL_LABEL[known[r.scenario.scenario_id]!]}</span> : null}
                 </th>
               ))}
             </tr>
@@ -292,6 +316,10 @@ export default function ComparePanel() {
     (_signal) => (waiting !== null ? Promise.resolve(null) : compareScenarios(list)),
     [key],
   );
+  // Horizon model per scenario, from the server. The answer is tagged with its list, so a model of the previous list is never shown.
+  const listModelsKey = modelsKey(list);
+  const modelsAnswer = useAsync((_signal) => fetchHorizonModels(list), [listModelsKey]);
+  const models = modelsState(modelsAnswer.state.status === 'success' ? modelsAnswer.state.data : undefined, listModelsKey);
 
   return (
     <section className="d-panel" aria-label="Compare scenarios">
@@ -309,7 +337,7 @@ export default function ComparePanel() {
           {(data) =>
             data ? (
               <>
-                <ResultTable response={data} />
+                <ResultTable response={data} models={models} />
                 <ExportBar response={data} sites={sites} />
               </>
             ) : null

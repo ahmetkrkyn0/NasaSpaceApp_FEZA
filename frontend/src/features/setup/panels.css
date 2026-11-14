@@ -331,3 +331,18 @@
   font-weight: 600;
   letter-spacing: var(--track-label);
 }
+
+/* ── Mast height options with their horizon model (issue #71) ────────── */
+
+.d-choice-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.d-choice-note {
+  color: var(--text-3);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+}

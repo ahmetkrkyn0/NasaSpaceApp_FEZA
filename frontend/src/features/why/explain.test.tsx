@@ -54,6 +54,9 @@ function response(entries: [Scenario, Partial<CompareMetrics>][]): CompareRespon
   };
 }
 
+/** A and B known to use the same horizon model: the only case where a difference is tied to an input. */
+const SAME = { kind: 'same' } as const;
+
 function n(name: string, scenario: Scenario, value: number | null): Named {
   return { name, scenario, value };
 }
@@ -186,14 +189,15 @@ describe('card texts', () => {
     const rows = planRows(def, n('A', a, 6), n('B', b, 7.5), 'B', [
       { input: 'date', scenario: date, result: response([[date, { max_sun_elevation_deg: 7.25 }]]).scenarios[0] },
       { input: 'mast', scenario: mast, result: undefined },
-    ]);
+    ], {});
     expect(rows.map((r) => [r.label, r.value, r.diff])).toEqual([
       ['B: every input as in B', '7.50°', 1.5],
       ['A with the dates of B', '7.25°', 1.25],
       ['A with the mast height of B', '—', null],
     ]);
-    expect(planIntro(a, b, 'A', 'B')).toContain('changes one input');
-    expect(planIntro(a, date, 'A', 'B')).toBe('A and B differ in one input only, the dates, so the whole difference comes from it.');
+    // A difference is tied to an input only when A and B are known to use the same horizon model (issue #71).
+    expect(planIntro(a, b, 'A', 'B', SAME)).toContain('changes one input');
+    expect(planIntro(a, date, 'A', 'B', SAME)).toBe('A and B differ in one input only, the dates, so the whole difference comes from it.');
   });
 });
 
@@ -202,6 +206,7 @@ describe('Why panel', () => {
   const b = sameSiteAnotherDate(a, '2026-12-06T00:00:00Z', sitesExample);
   const c = sameDateAnotherSite(a, SLIM, sitesExample);
   const list = [a, b, c];
+  const ALL_FLAT = { status: 'ready', models: { [a.scenario_id]: 'sphere', [b.scenario_id]: 'sphere', [c.scenario_id]: 'sphere' } } as const;
   const answer = response([
     [a, { max_sun_elevation_deg: 6, sunlit_fraction: 0.5 }],
     [b, { max_sun_elevation_deg: 7, sunlit_fraction: 0.6 }],
@@ -227,13 +232,13 @@ describe('Why panel', () => {
     expect(classroom).toContain('highest angle of the Sun');
     expect(classroom).toContain('Related computed value, Sunlit time');
 
-    const plan = renderToStaticMarkup(<WhyCards list={list} response={answer} level="plan" focus={null} />);
+    const plan = renderToStaticMarkup(<WhyCards list={list} response={answer} level="plan" focus={null} models={ALL_FLAT} />);
     expect(plan).toContain('A and B differ in one input only, the dates');
   });
 
   it('says so when the one-input rows fail, instead of waiting forever (PR #62 review)', () => {
     const b2 = { ...b, mast_height_m: 10 };
-    const props = { def: metricDef('max_sun_elevation_deg'), a, b: b2, bIndex: 1, response: answer };
+    const props = { def: metricDef('max_sun_elevation_deg'), a, b: b2, bIndex: 1, response: answer, mix: SAME, models: {} };
     expect(renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'loading' }} />)).toContain('Computing one input at a time');
     const failed = renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'error', error: new Error('test') }} />);
     expect(failed).toContain('could not be computed');
