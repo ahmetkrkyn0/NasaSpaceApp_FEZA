@@ -1,0 +1,28 @@
+[
+  {
+    "id": "im2-athena",
+    "name": "IM-2 Athena (landing point)",
+    "category": "clps",
+    "lat_deg": -84.7906,
+    "lon_deg": 29.1957,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed_tipped",
+    "coordinate_source": {
+      "label": "Fixture source",
+      "url": "https://example.org/fixture/im2-athena"
+    },
+    "validity": "MEASURED",
+    "notes": null,
+    "cards": [
+      {
+        "agency": "CSA",
+        "text": "Fixture card.",
+        "source": {
+          "label": "Fixture source",
+          "url": null
+        }
+      }
+    ]
+  }
+]

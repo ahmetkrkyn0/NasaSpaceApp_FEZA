@@ -60,18 +60,18 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 
 | Layer          | Technology |
 | -------------- | ---------- |
-| Frontend       | TODO       |
-| Backend        | TODO       |
-| Data / Ephemeris | TODO (e.g. JPL Horizons, SPICE, LOLA DEM) |
-| Mobile         | TODO       |
-| Infrastructure | TODO       |
+| Frontend       | React, TypeScript, Vite ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)) |
+| Backend        | Python 3.11+, FastAPI, Uvicorn ([`backend/`](backend/README.md)) |
+| Data / Ephemeris | NASA SPICE via SpiceyPy (DE440 kernels, `MOON_ME` frame), NumPy, rasterio for DEMs; JPL Horizons only for validation |
+| 3D view        | Unreal Engine, developed separately ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md), item 2) |
+| Infrastructure | Local only for now; hosting is an open decision |
 
 ## Getting Started
 
 ### Prerequisites
 
-- TODO: runtime / SDK and version
-- TODO: package manager
+- Python 3.11 or newer, with `pip`
+- Node.js and npm (frontend)
 - Git
 
 ### Installation
@@ -79,20 +79,18 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 ```bash
 git clone https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA.git
 cd NasaSpaceApp_FEZA
-# TODO: install dependencies
+python -m pip install -e "backend[dev]"
+python backend/scripts/download_kernels.py   # five SPICE kernels (~46 MB) into data/raw/kernels/
 ```
 
 ### Configuration
 
-Copy the example environment file and fill in the values:
+No configuration is needed for local use. Optional environment variables for the backend:
 
-```bash
-cp .env.example .env
-```
-
-| Variable   | Description | Required | Default |
-| ---------- | ----------- | -------- | ------- |
-| `TODO_VAR` | TODO        | Yes      | –       |
+| Variable          | Description | Required | Default |
+| ----------------- | ----------- | -------- | ------- |
+| `FEZA_DATA_DIR`   | Folder with `sites.json`, `panel_profiles.json`, `reference_missions.json` | No | `data/` |
+| `FEZA_KERNEL_DIR` | Folder with the SPICE kernels | No | `data/raw/kernels/` |
 
 > [!WARNING]
 > Never commit `.env` or any secret. It is ignored by `.gitignore`.
@@ -100,7 +98,8 @@ cp .env.example .env
 ### Running Locally
 
 ```bash
-# TODO: command to start the app
+python -m uvicorn app.main:app --app-dir backend --port 8000 --reload
+# API under http://localhost:8000/api, e.g. /api/health
 ```
 
 ## Usage
@@ -110,8 +109,10 @@ TODO: Show the main use cases with screenshots.
 ## Testing
 
 ```bash
-# TODO: command to run tests
+python -m pytest backend
 ```
+
+The ephemeris tests need the SPICE kernels; run `python backend/scripts/download_kernels.py` first.
 
 ## Architecture
 

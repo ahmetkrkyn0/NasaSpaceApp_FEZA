@@ -1,0 +1,39 @@
+[
+  {
+    "id": "im2-athena",
+    "mission": "IM-2 Athena",
+    "site_id": "im2-athena",
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "landing_utc_validity": "SYNTHETIC",
+    "outcome": "landed_tipped",
+    "expected": {
+      "sun_elevation_deg": 2.47,
+      "sun_azimuth_true_deg": 65.67,
+      "earth_elevation_deg": 11.19
+    },
+    "facts": [
+      {
+        "text": "Fixture fact for the Athena lander.",
+        "evidence": "official",
+        "source": {
+          "label": "Fixture source",
+          "url": "https://example.org/fixture/im2-athena"
+        }
+      }
+    ]
+  },
+  {
+    "id": "change-4",
+    "mission": "Chang'e 4",
+    "site_id": "change-4",
+    "landing_utc": "2019-01-03T02:26:00Z",
+    "landing_utc_validity": "MEASURED",
+    "outcome": "landed",
+    "expected": {
+      "sun_elevation_deg": 31.51,
+      "sun_azimuth_true_deg": 50.7,
+      "earth_elevation_deg": -39.2
+    },
+    "facts": []
+  }
+]

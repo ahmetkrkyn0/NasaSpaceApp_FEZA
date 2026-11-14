@@ -4,7 +4,7 @@ Instructions for AI coding agents (Claude Code, Cursor, Copilot, Codex, Gemini, 
 
 ## Project Status
 
-Lunar Landing Site Navigator, team FEZA's NASA Space Apps Challenge 2026 project (see [README.md](README.md) and [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md)). The stack is not fixed yet. Do not introduce a framework, language, or major dependency that the team has not agreed on (check `docs/adr/` and the README) without the user explicitly asking for it.
+Lunar Landing Site Navigator, team FEZA's NASA Space Apps Challenge 2026 project (see [README.md](README.md) and [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md)). The stack is fixed in [ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md): a Python FastAPI backend in `backend/` (SpiceyPy, NumPy, rasterio) and a React + TypeScript + Vite frontend in `frontend/`. Work is split into issues by [docs/PLAN.md](docs/PLAN.md), which also lists who owns which file. Do not introduce a framework, language, or major dependency that the team has not agreed on (check `docs/adr/` and the README) without the user explicitly asking for it.
 
 ## Hard Rules
 
@@ -42,13 +42,17 @@ gh pr create --title "feat(scope): summary" --body-file <filled PR template>
 
 | Task         | Command |
 | ------------ | ------- |
-| Install      | TODO |
-| Run locally  | TODO |
-| Test         | TODO |
-| Lint/format  | TODO |
-| Build        | TODO |
+| Install (backend)  | `python -m pip install -e "backend[dev]"` |
+| SPICE kernels      | `python backend/scripts/download_kernels.py` |
+| Run backend        | `python -m uvicorn app.main:app --app-dir backend --port 8000 --reload` |
+| Test backend       | `python -m pytest backend` |
+| Install (frontend) | `npm --prefix frontend install` |
+| Run frontend       | `npm --prefix frontend run dev` |
+| Check frontend     | `npm --prefix frontend run typecheck` and `npm --prefix frontend run test` |
+| Build frontend     | `npm --prefix frontend run build` |
+| Validation run     | `python backend/scripts/run_validation.py` |
 
-Fill these in once the stack is chosen. Run tests and lint before every commit once they exist.
+Frontend and validation commands start working once their issues (`F1-C`, `F2-B`) are merged. Run the tests before every commit.
 
 ## Code Conventions
 
@@ -61,6 +65,8 @@ Fill these in once the stack is chosen. Run tests and lint before every commit o
 | Path                  | Purpose                                   |
 | --------------------- | ----------------------------------------- |
 | `.github/`            | CI workflow, PR/issue templates, CODEOWNERS |
+| `backend/`            | FastAPI server: `app/core` (calculations), `app/api` (auto-loaded routers), `scripts/`, `tests/` |
+| `data/`               | Shared data files (`sites.json`, examples); `data/raw/` holds downloads and is not committed |
 | `docs/`               | Design notes, ADRs, assets                |
 | `docs/challenge/`     | Challenge statement, data sources, judging and submission guides (PDF) |
 | `docs/research/`      | Background research notes; put new research here, not in a root `research/` folder |

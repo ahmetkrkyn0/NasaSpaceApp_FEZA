@@ -1,0 +1,38 @@
+{
+  "lat_deg": -84.7906,
+  "lon_deg": 29.1957,
+  "mast_height_m": 2.0,
+  "start_utc": "2025-03-06T17:30:00Z",
+  "step_minutes": 60,
+  "samples": [
+    {
+      "utc": "2025-03-06T17:30:00Z",
+      "sun": {
+        "azimuth_true_deg": 65.670467,
+        "elevation_deg": 2.465431,
+        "horizon_deg": -0.086937,
+        "visible_fraction": 1.0,
+        "range_au": 0.992258288,
+        "radius_deg": 0.268532
+      },
+      "earth": {
+        "azimuth_true_deg": 335.846736,
+        "elevation_deg": 11.193443,
+        "horizon_deg": -0.086937,
+        "visible_fraction": 1.0,
+        "range_km": 374795.688,
+        "radius_deg": 0.975086
+      }
+    }
+  ],
+  "ephemeris": {
+    "source": "SPICE DE440",
+    "frame": "MOON_ME",
+    "correction": "LT+S"
+  },
+  "horizon": {
+    "method": "sphere",
+    "validity": "SYNTHETIC"
+  },
+  "validity": "SYNTHETIC"
+}

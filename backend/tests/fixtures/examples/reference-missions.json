@@ -1,0 +1,25 @@
+[
+  {
+    "id": "im2-athena",
+    "mission": "IM-2 Athena",
+    "site_id": "im2-athena",
+    "landing_utc": "2025-03-06T17:30:00Z",
+    "landing_utc_validity": "SYNTHETIC",
+    "outcome": "landed_tipped",
+    "expected": {
+      "sun_elevation_deg": 2.47,
+      "sun_azimuth_true_deg": 65.67,
+      "earth_elevation_deg": 11.19
+    },
+    "facts": [
+      {
+        "text": "Fixture fact.",
+        "evidence": "official",
+        "source": {
+          "label": "Fixture source",
+          "url": null
+        }
+      }
+    ]
+  }
+]
