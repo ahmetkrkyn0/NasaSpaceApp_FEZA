@@ -1,0 +1,43 @@
+{
+  "_about": "One-sentence hook facts for the Explore door (docs/product/audience-strategy.md, section 1). Every fact cites at least one validation row marked 'doğrulandı'; a fact without one is not added (PLAN 4.1, rule 7). A test checks the rows.",
+  "facts": [
+    {
+      "id": "low-sun-pole",
+      "text": "Near the south pole the Sun never climbs high: at Mons Mouton its highest point all year is only about 6.8 degrees above the horizon.",
+      "sources": [{ "label": "Sun's yearly highest angle, checked against JPL Horizons", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "11" }]
+    },
+    {
+      "id": "far-side-earth",
+      "text": "At the Chang'e 4 landing site on the far side, Earth stayed below the horizon for the whole of 2019.",
+      "sources": [{ "label": "JPL Horizons, Chang'e 4 site, 2019", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "14" }]
+    },
+    {
+      "id": "no-refraction",
+      "text": "With no air to bend the light, the Moon's horizon is set only by the terrain and the curve of the Moon itself.",
+      "sources": [{ "label": "Challenge statement", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-1" }]
+    },
+    {
+      "id": "earth-rocks",
+      "text": "Seen from near the south pole, Earth barely moves: each month it rocks only about 6.5 degrees up and down.",
+      "sources": [{ "label": "De Rosa, ESA", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-28" }]
+    },
+    {
+      "id": "earth-size",
+      "text": "From the Moon, Earth spans about 1.8 to 2 degrees of sky, depending on how far away it is.",
+      "sources": [{ "label": "Computed from Earth's radius and the Moon's distance", "file": "docs/research/dogrulama/ufuk-ve-isik-isi.md", "row": "A-27" }]
+    },
+    {
+      "id": "slow-sun",
+      "text": "The Sun crawls across the Moon's sky at about half a degree per hour.",
+      "sources": [{ "label": "Computed from the length of the lunar day", "file": "docs/research/dogrulama/rover-konumlama.md", "row": "3" }]
+    },
+    {
+      "id": "low-sun-landings",
+      "text": "Blue Ghost 1 landed upright with the Sun 3.43 degrees above the horizon; Athena tipped over with it at 2.47 degrees. A low Sun alone does not decide a landing.",
+      "sources": [
+        { "label": "JPL Horizons, Blue Ghost 1 landing", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "3" },
+        { "label": "JPL Horizons, Athena landing", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "1" }
+      ]
+    }
+  ]
+}
