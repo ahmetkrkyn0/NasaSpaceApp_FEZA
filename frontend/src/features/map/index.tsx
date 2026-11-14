@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getLayer, getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
+import { isApiError } from '../../api/errors';
 import { LAYER_REGIONS, type LayerName, type Scenario, type Site } from '../../api/types';
 import { useAsync } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
@@ -21,6 +22,11 @@ export function withSite(active: Scenario, site: Site): Scenario {
   return { ...active, site_id: site.id, lat_deg: null, lon_deg: null, label: site.name };
 }
 
+/** The server has no such layer: HTTP 503 or the `data_unavailable` code (ADR-0004, "Hata kodları"). */
+export function layerMissing(error: unknown): boolean {
+  return isApiError(error) && (error.status === 503 || error.code === 'data_unavailable');
+}
+
 /** Map panel: sites from `/api/sites`, layers from `/api/layers/{name}`. */
 export default function MapPanel() {
   const { active } = useScenario();
@@ -30,13 +36,26 @@ export default function MapPanel() {
   const mode = getDataMode();
 
   const sites = useAsync((signal) => getSites({}, { signal }), [mode]).state;
-  const layerState = useAsync(
-    (signal) => (view === 'region' && layerName ? getLayer(layerName, { region: LAYER_REGIONS[0] }, { signal }) : Promise.resolve(null)),
-    [view, layerName, mode],
+  const regionOpen = view === 'region';
+  // The permanent shadow layer is asked for as soon as the region view opens, so a missing
+  // layer (503) shows as a disabled option before anyone picks it. The answer is reused when
+  // the layer is picked.
+  const psrState = useAsync(
+    (signal) => (regionOpen ? getLayer('psr', { region: LAYER_REGIONS[0] }, { signal }) : Promise.resolve(null)),
+    [regionOpen, mode],
   ).state;
+  const psrAvailable = !(psrState.status === 'error' && layerMissing(psrState.error));
+  const otherState = useAsync(
+    (signal) =>
+      regionOpen && layerName && layerName !== 'psr'
+        ? getLayer(layerName, { region: LAYER_REGIONS[0] }, { signal })
+        : Promise.resolve(null),
+    [regionOpen, layerName, mode],
+  ).state;
+  const layerState = layerName === 'psr' ? psrState : otherState;
 
   let layer: LayerStatus = { kind: 'none' };
-  if (view === 'region' && layerName) {
+  if (regionOpen && layerName) {
     if (layerState.status === 'error') layer = { kind: 'unavailable', message: describeError(layerState.error) };
     else if (layerState.status === 'success' && layerState.data) layer = { kind: 'ready', grid: layerState.data };
     else layer = { kind: 'loading' };
@@ -76,6 +95,7 @@ export default function MapPanel() {
         layerName={layerName}
         onLayerName={setLayerName}
         layer={layer}
+        psrAvailable={psrAvailable}
         onPickPoint={onPickPoint}
         onPickSite={onPickSite}
       />
