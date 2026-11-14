@@ -1,6 +1,6 @@
 # Chandrayaan-3 İniş Alanı Seçimi: 4 km × 2,4 km Pencere ve Puanlama
 
-"ISRO, Chandrayaan-3'ün 4 km × 2,4 km'lik iniş penceresini neye göre belirledi ve adayları nasıl puanladı?" sorusunun cevabı. Kaynaklar ISRO'nun Space Applications Centre (SAC) ve Physical Research Laboratory (PRL) ekiplerinin yayınları; hepsinin tam metni okundu.
+"ISRO, Chandrayaan-3'ün 4 km × 2,4 km'lik iniş penceresini neye göre belirledi ve adayları nasıl puanladı?" sorusunun cevabı. Ana kaynaklar ISRO'nun Space Applications Centre (SAC) ve Physical Research Laboratory (PRL) ekiplerinin yayınları. [9] dışındaki kaynakların tam metni okundu; [9] yalnızca [8]'deki atıftan biliniyor, [3]'ün ek materyaline de erişilemedi (bölüm 6).
 
 ## Dosyalar
 
@@ -29,7 +29,7 @@ Chandrayaan-2'de hedef 500 m × 500 m idi. SAC ekibi Chandrayaan-3 için şöyle
 
 Yörünge geometrisi: iniş manevrası, iniş noktası tam yörünge izinin altında kalacak şekilde tasarlandı, bu yüzden yan yönde düzeltme gerekmedi [7]. Retargeting rehberliği simülasyonda hedefi 3,027 km kaydırabildi [6]. Uzun eksenin (4 km) yörünge yönünde olduğu bu bilgilerden çıkarılan bir sonuçtur; kaynaklarda açıkça yazmıyor.
 
-Basında farklı ölçüler geçiyor: ISRO başkanı S. Somanath "4 km × 2,5 km" ve "4,5 km × 2,5 km" dedi [10][11]. Teknik yayınların hepsi 4 km × 2,4 km diyor [1][2][3][4].
+Basında farklı ölçüler geçiyor: ISRO başkanı S. Somanath "4 km × 2,5 km" ve "4,5 km × 2,5 km" dedi [10][11]. Teknik yayınlar iniş alanını 4 km × 2,4 km olarak veriyor [1][2][3][4]. Tek istisna [3]'ün yükseklik profillerini anlattığı cümle: orada "landing area of 4.5 km × 2.5 km" yazıyor. Makale iki ölçüyü birbirine bağlamıyor.
 
 ## 2. Eleme aşamaları
 
@@ -47,10 +47,12 @@ Seçilen yerler:
 | | Enlem | Boylam | Not |
 |---|---|---|---|
 | PLS (ana, LS-2) | 69,367621° G | 32,348126° D | Manzinus U ve Boguslawsky M kraterleri arası [1][3] |
-| ALS (yedek) | 69,497764° G | 17,330409° B | PLS'nin ~450 km batısı [4] |
+| ALS (yedek) | 69,497764° G | 17,330409° B | Kaynağa göre PLS'nin ~450 km batısı [3][4] |
 | Gerçek iniş (Shiv Shakti) | 69,373560° G | 32,319750° D | [6] |
 
 Gerçek iniş noktası ile PLS merkezi arasındaki büyük çember mesafesi (Ay yarıçapı 1737,4 km): **yaklaşık 353 m.** Somanath "300 m içinde" demişti [11].
+
+Aynı yöntemle PLS ile ALS arası yaklaşık 515 km çıkıyor. Kaynakların verdiği ~450 km ile arasındaki farkın nedeni kaynaklarda açıklanmıyor; mesafe gerekirse koordinatlardan hesaplanmalı.
 
 ## 3. Eşik değerleri
 
@@ -75,6 +77,8 @@ PRL ekibi ek olarak bilimsel ölçütleri sayar: bileşim, yerel jeoloji ve ıs�
 
 Kaynak [1], Şekil 5. Tablo PDF'te resim olarak duruyor; elle yazıldı ve [sites.csv](sites.csv) dosyasına aktarıldı.
 
+`sites.csv` sütunları kaynaktaki gibidir: enlem ve boylam ondalık derece, enlem eksi ise güney, boylam artı ise doğu. `height_m` kaynaktaki "Height (m)" sütunudur; hangi referans yüzeye göre ölçüldüğü kaynakta yazmıyor.
+
 | LS | Enlem | Boylam | Yükseklik (m) | Ortalama eğim (°) | Güvenli alan (%) | Krater > 1,2 m / km² | Boş 24 m kare | Sıra |
 |---|---|---|---|---|---|---|---|---|
 | **2** | −69,36 | 32,34 | 533 | **4,27** | **88,61** | **280** | **3901** | **1** |
@@ -90,13 +94,13 @@ Kaynak [1], Şekil 5. Tablo PDF'te resim olarak duruyor; elle yazıldı ve [site
 
 Bu bölüm kaynaklarda yazmıyor; tablonun yorumudur.
 
-- Sıralama, boş 24 m kare sayısına göre yapılan sıralamayla neredeyse aynı. Tek istisna LS-3 ile LS-4: LS-4'ün karesi biraz daha fazla ama krater yoğunluğu (415) ve eğimi daha kötü.
+- Sıralama, boş 24 m kare sayısına göre yapılan sıralamayla neredeyse aynı. Tek istisna LS-3 ile LS-4: LS-4'ün boş karesi daha fazla (1404'e karşı 1247) ve ortalama eğimi daha iyi (5,25°'ye karşı 6,10°). Buna karşın krater yoğunluğu daha yüksek (415'e karşı 306) ve güvenli alan yüzdesi daha düşük (%81,38'e karşı %82,88). Sıralamada LS-3 önde.
 - Güvenli alan yüzdesi sıralamayı açıklamıyor. LS-7 %74,11 ile en düşük yüzdeye sahip ama 3. sırada; LS-5 %82,19 ile 8. sırada, çünkü sadece 108 boş karesi var.
 - Yani ölçülen "ne kadar alan güvenli" değil, **"güvenli alan, aracın inebileceği büyüklükte ve alana yayılmış parçalar halinde mi"**.
 
 ### 4.3 100 m erişilebilirlik ızgarası
 
-Son 3 aday arasında karar için ek ölçüt [1]: alan 100 m aralıklı noktalara bölünür (41 × 24 nokta) ve her nokta için "100 m içinde kaç boş 24 m kare var" sayılır (kaynak [1], Şekil 4). Değeri 0 olan nokta, aracın oraya gelirse kaçacak yer bulamayacağı noktadır. LS-2 bu ölçütte seçildi: alanın her yerinde, havada asılı kalma noktasından 100 m içinde inilebilecek bir kare var.
+Son 3 aday arasında karar için ek ölçüt [1]: alan 100 m aralıklı noktalara bölünür ve her nokta için "100 m içinde kaç boş 24 m kare var" sayılır (kaynak [1], Şekil 4). Şekil 4'teki tabloda 41 satır (100–4100 m) ve 24 sütun (100–2400 m) var; kaynak bu sayıları metinde ayrıca vermiyor. Değeri 0 olan nokta, aracın oraya gelirse kaçacak yer bulamayacağı noktadır. LS-2 bu ölçütte seçildi: alanın her yerinde, havada asılı kalma noktasından 100 m içinde inilebilecek bir kare var.
 
 ## 5. Uçuşta kullanım (HDA)
 
@@ -127,10 +131,10 @@ Kaynak [2]:
 Yöntem açık verilerle kopyalanabilir. Çözünürlük farkı: OHRC 32 cm'lik kayayı görür; NAC DTM ve LOLA ile kaya tespiti yapılamaz, sadece eğim ve gölge ölçütleri kalır.
 
 1. **Tehlike haritası.** DEM'den eğim: $s = \arctan\sqrt{(\partial z/\partial x)^2 + (\partial z/\partial y)^2}$. Hücre tehlikeli ise $H=1$: $s > 10°$ ya da iniş anında gölgede (ufuk maskesi, [zamanda-degisen-veri-hazirlama.md](../zamanda-degisen-veri-hazirlama.md)).
-2. **Güvenli kare.** $k = 24\,\text{m} / \Delta$ hücrelik pencere içinde hiç tehlikeli hücre yoksa kare güvenlidir. İntegral görüntü $I$ ile her kare için $O(1)$: $\sum H = I(i{+}k,j{+}k) - I(i,j{+}k) - I(i{+}k,j) + I(i,j)$, güvenli ise $=0$.
+2. **Güvenli kare.** $k = \lceil 24\,\text{m} / \Delta \rceil$ hücrelik pencere içinde hiç tehlikeli hücre yoksa kare güvenlidir. Bu, ızgara aralığı $\Delta \le 24$ m olan haritalarda anlamlıdır; 24'ü tam bölmeyen aralıklarda kare 24 m'den biraz büyük olur (örneğin 10 m'lik haritada $k = 3$, yani 30 m). 30 m'lik LOLA haritasında 24 m'lik kare ayırt edilemez. İntegral görüntü $I$ ile her kare için $O(1)$: $\sum H = I(i{+}k,j{+}k) - I(i,j{+}k) - I(i{+}k,j) + I(i,j)$, güvenli ise $=0$.
 3. **Aday bulma.** 4 × 2,4 km pencereyi kaydırıp her konum için güvenli alan yüzdesi, boş kare sayısı, ortalama eğim ve güneş alan gün sayısını hesapla.
 4. **Erişilebilirlik.** 100 m aralıklı her nokta için 100 m yarıçapta boş kare sayısı $N(p)$. $\min_p N(p) > 0$ şartı ve $N$'nin dağılımı adayları ayırır.
-5. **Sıralama.** ISRO ağırlık yayımlamadı. Bölüm 4.2'ye uygun bir başlangıç: önce $\min_p N(p) > 0$ şartı, sonra boş kare sayısı, eşitlikte eğim ve krater yoğunluğu. Ağırlıklar uygulamada kullanıcıya açık bırakılabilir.
+5. **Sıralama.** ISRO ağırlık yayımlamadı. Bölüm 4.2'ye uygun bir başlangıç: önce $\min_p N(p) > 0$ şartı, sonra boş kare sayısı. Boş kare sayıları birbirine yakın adaylarda krater yoğunluğuna ve güvenli alan yüzdesine de bakılmalı. LS-3 ile LS-4 örneğinde sırayı bu ikisi açıklıyor; eğim açıklamıyor, çünkü LS-4'ün eğimi daha iyi. Ağırlıklar uygulamada kullanıcıya açık bırakılabilir.
 
 ## Kaynaklar
 
