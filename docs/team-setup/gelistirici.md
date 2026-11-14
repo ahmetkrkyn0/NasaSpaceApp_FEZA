@@ -63,9 +63,9 @@ setx AGENT_NAME "oguzhan"
 gh auth login
 ```
 
-### 5. Slack kimliğini team.json'a ekle
+### 5. Slack kimliği
 
-Slack'te kendi profiline tıkla → ⋮ → **Copy member ID** (U ile başlar). `team.json` içinde kendi satırındaki `slack_id` alanına yapıştır ve bunu küçük bir PR ile gönder. Bu kimlik gizli değil; olmazsa `@adın` etiketleri sana bildirim göndermez.
+Dört kişinin Slack üye kimlikleri `team.json`'a eklendi; bir şey yapmana gerek yok. Ekibe yeni biri katılırsa: Slack'te profil → ⋮ → **Copy member ID** (U ile başlar), `team.json`'a küçük bir PR ile eklenir. Bu kimlik gizli değil; olmazsa `@isim` etiketleri o kişiye bildirim göndermez.
 
 ### 6. Test et
 

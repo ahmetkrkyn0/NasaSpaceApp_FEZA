@@ -18,6 +18,14 @@ body:
         - [ ] ...
         - [ ] ...
   - type: textarea
+    id: files
+    attributes:
+      label: Files / Folders to Touch
+      description: Which files or folders this work will change. The coordinator uses this to spot two tasks colliding.
+      placeholder: |
+        - src/sun/
+        - docs/adr/0003-sun-api.md
+  - type: textarea
     id: notes
     attributes:
       label: Notes / Design
