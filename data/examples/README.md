@@ -50,7 +50,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `compare.json` | `scenarios[1].scenario` | 6 Aralık 2026 ile 5 Ocak 2027 arası | Yalnızca karşılaştırma yapısını göstermek için; ölçüleri `null` |
 | `compare.json` | `deltas[].unit` | `fraction`, `hours`, `deg`, `W` | Birim adları sözleşmede sabitlenmedi; öneri |
 | `reference-missions.json` | `landing_utc` | T1 sorgu anları | Güvenilirliği `landing_utc_validity` alanında: Blue Ghost ve Chang'e 4 `MEASURED` (NASA ve CNSA). SLIM `DERIVED`, çünkü JAXA'nın 15:19:52 anı dakikaya yuvarlandı. Athena, IM-1 ve Chandrayaan-3 `SYNTHETIC`, çünkü saatleri birincil kaynaktan doğrulanamadı ([aciklanabilirlik.md](../../docs/research/dogrulama/aciklanabilirlik.md), No 22, 35 ve 56) |
-| `reference-missions.json` | `facts` | Dört vakada `[]` | Tasarım belgesi bu vakaların olgularını kaynak adı vermeden listeliyor; kaynak etiketi olmadan olgu yazılmadı |
+| `reference-missions.json` | `facts` | Chandrayaan-3'te `[]` | Dosya [`data/reference_missions.json`](../reference_missions.json) ile birebir aynı; olgular ve kaynakları oradan. Kaynak adı olmayan olgu yazılmadı |
 | `reference-missions.json` | `facts[].evidence` | `official` | Kod adları (`official`, `preliminary`, `commentary`) tasarım belgesindeki üç kanıt düzeyinden alındı; sözleşmede tanımlı değil |
 | `sites.json` | `elevation_m`; `landing_utc` (SLIM ve Blue Ghost 1 dışında) | `null` | Katalogda doğrulanmış değer yok; `data/sites.json` ile aynı |
 
