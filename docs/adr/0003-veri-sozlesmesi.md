@@ -98,11 +98,11 @@ Her örnek:
 
 - `type` değerleri: `sunrise`, `sunset`, `earthrise`, `earthset`, `eclipse_start`, `eclipse_end`.
 - `kind` değerleri: `sunlit`, `dark`, `earth_visible`, `earth_hidden`.
-- `utc_earliest` ve `utc_latest` olayın hata payını verir; hesaplanamadıysa `null`.
+- `utc_earliest` ve `utc_latest` olayın hata payını verir; hesaplanamadıysa `null`. İlk sürümde bu iki an, ufuk profili bir yay dakikası (derecenin altmışta biri) alçaltılarak ve yükseltilerek bulunur. Aralık bir güven aralığı değil, olayın ufuk hatasına duyarlılığının göstergesidir; arayüz de öyle adlandırır ([olaylar-ve-sureler.md](../design/olaylar-ve-sureler.md), bölüm 8).
 - `criterion` olayın hangi ölçüte göre sayıldığını söyler: `center`, `first_limb` ya da `full_disk`.
 - `metrics` alanları: `sunlit_fraction`, `longest_dark_hours`, `max_sun_elevation_deg`, `earth_visible_fraction`, `longest_earth_hidden_hours`.
 
-Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`, `criterion`, `mast_height_m`, `search_limited`, `validity` (ufuk profilinden devralınır). Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)). `criterion` Dünya alanlarının hangi ölçüte göre sayıldığını söyler (`EventList` ile aynı değerler).
+Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`, `night_hours`, `criterion`, `mast_height_m`, `search_limited`, `validity` (ufuk profilinden devralınır). `night_hours`, Güneş batmışsa içinde bulunulan karanlık pencerenin, batmamışsa bir sonraki karanlık pencerenin toplam süresidir. Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)). `criterion` Dünya alanlarının hangi ölçüte göre sayıldığını söyler (`EventList` ile aynı değerler).
 
 ### İletişim penceresi (`CommWindow`)
 
@@ -137,7 +137,7 @@ Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun
 | `mast_height_m` | sayı | Panelin zeminden varsayılan yüksekliği |
 | `validity` | metin | Varsayılan değerler için `SYNTHETIC` |
 
-`PowerSeries`: `panel_profile_id`, `mast_height_m`, `samples` dizisi (`utc`, `incidence_cos`, `sun_visible_fraction`, `irradiance_w_m2`, `power_w`), `summary` nesnesi (`mean_power_w`, `energy_kwh`, `sunlit_fraction`, `longest_dark_hours`) ve `validity` (panel profili ile ufuk profilinin düşük olanı).
+`PowerSeries`: `panel_profile_id`, `mast_height_m`, `fixed_azimuth_deg` (yalnızca `vertical_fixed` için; kullanılan panel yönü, diğer tiplerde `null`), `samples` dizisi (`utc`, `incidence_cos`, `sun_visible_fraction`, `irradiance_w_m2`, `power_w`), `summary` nesnesi (`mean_power_w`, `energy_kwh`, `sunlit_fraction`, `longest_dark_hours`) ve `validity` (panel profili ile ufuk profilinin düşük olanı).
 
 ### Direk yüksekliği kuralı
 
@@ -150,7 +150,7 @@ Kullanılan değer yanıtta `mast_height_m` alanında döner.
 
 ### Senaryo ve karşılaştırma
 
-`Scenario`: `scenario_id`, `label`, `site_id` (ya da `lat_deg` ile `lon_deg`), `start_utc`, `end_utc`, `mast_height_m`, `panel_profile_id`.
+`Scenario`: `scenario_id`, `label`, `site_id` (ya da `lat_deg` ile `lon_deg`), `start_utc`, `end_utc`, `mast_height_m`, `panel_profile_id`. İsteğe bağlı iki alan: `fixed_azimuth_deg` (yalnızca `vertical_fixed` panel için kullanıcının seçtiği yön) ve `earth_criterion` (verilmezse `center`).
 
 `CompareResponse`: `scenarios` dizisi (her biri `scenario`, `metrics`, `now`, `validity`) ve `deltas` dizisi (`metric`, `values`, `unit`, `best_scenario_id`).
 
@@ -200,3 +200,7 @@ Yapılacaklar:
 
 - Her yapı için bir örnek dosya `data/examples/` altına konmalı; arayüz ve sunucu testleri bunlara karşı yazılmalı.
 - "Dünya görünüyor" ölçütünün varsayılanı ([iletisim-penceresi.md](../design/iletisim-penceresi.md)) seçildiğinde `criterion` alanının varsayılanı buraya işlenmeli.
+
+## Değişiklik notu
+
+- 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `NowStatus` yapısına `night_hours` eklendi (`UC-05`, gecenin uzunluğu). `Scenario` ve `PowerSeries` yapılarına `fixed_azimuth_deg` eklendi (`UC-06`, dik sabit panelde kullanıcının seçtiği yön). `Scenario` yapısına isteğe bağlı `earth_criterion` eklendi (`UC-07`). `utc_earliest` ve `utc_latest` alanlarının ilk sürümde nasıl bulunduğu yazıldı (`UC-10`; [PLAN.md](../PLAN.md), bölüm 12, karar 4).

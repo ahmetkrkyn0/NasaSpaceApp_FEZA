@@ -2,7 +2,7 @@
 
 Challenge metni aracın üç kitleye birden hizmet etmesini istiyor: *"mission planners, educators, and the public"* ([challenge metni](../challenge/lunar-landing-site-navigator.md), "Accessibility across skill levels"). Bu doküman bu üç kitleye aracı nasıl sunacağımızı tarif eder.
 
-> **Not (14 Kasım 2026):** Ana fikir (tek motor, üç kapı) geçerli ve tasarım belgelerinde kullanılıyor. Bu belge kapsam kararlarından önce yazıldığı için birkaç madde değişti: batarya oyunu kapsam dışı kaldı, ısı haritası ilk sürümde yok ve demo sınırı 7 slayt ya da 30 saniyelik video. Farkların tamamı ve kullanıcı planı [use-cases-and-scenarios.md](use-cases-and-scenarios.md) belgesinde (bölüm 11).
+> **Not (14 Kasım 2026):** Ana fikir (tek motor, üç kapı) geçerli ve tasarım belgelerinde kullanılıyor. Bu belge kapsam kararlarından önce yazıldığı için birkaç madde değişti: batarya oyununun yerini bataryasız "iniş penceresi" oyunu aldı ([mini-oyun.md](../design/mini-oyun.md)), ısı haritası ilk sürümde yok ve demo sınırı 7 slayt ya da 30 saniyelik video. Farkların tamamı ve kullanıcı planı [use-cases-and-scenarios.md](use-cases-and-scenarios.md) belgesinde (bölüm 11).
 
 ## Ana fikir
 
@@ -27,7 +27,7 @@ Amaç bilgi yüklemek değil, şaşırtmak. Challenge metni: *"make the extreme 
   - "Ay'da bir gün yaklaşık 29,5 Dünya günü sürer."
   - "Hava olmadığı için alacakaranlık yok: ışık ya var ya yok."
   - "Krater kenarından birkaç yüz metre kaysan günlerce karanlıkta kalabilirsin." (Rakamı kendi hesabımızdan alıp somutlaştıralım.)
-- **Mini oyun: "Lander'ın hayatta kalır mı?"** Saha ve tarih seç; gün ilerledikçe batarya dolar ve boşalır, uzun gece gelince sistem kapanır. Sonuç: "Lander'ın N gün yaşadı." Oyunun mekaniği gerçek mühendislik sorusudur: güç penceresi.
+- **Mini oyun: "İniş penceresi."** Bir saha için 14 günlük görevin iniş tarihini seç; ürün o tarih için gerçek hesabı yapar ve üç hedeften kaçının tuttuğunu gösterir: yeterli güneş, kısa karanlık, Dünya ile bağlantı. Sonuç: "Lander'ın 14 günün N gününde Güneş gördü, N gününde Dünya ile konuşabildi." Oyunun mekaniği gerçek mühendislik sorusudur: tarih kayınca güç ve iletişim pencereleri nasıl değişir. Batarya modeli yoktur; ayrıntı [mini-oyun.md](../design/mini-oyun.md) belgesinde (`UC-17`).
 - **Paylaşılabilir iniş kartı.** Saha, tarih, güneşli saat sayısı, Dünya görünür mü. Tek bir PNG olarak indirilir.
 - **Tanıdık bağlam.** Apollo 11 ile Artemis güney kutbu adaylarını karşılaştır: "Neden artık ekvatora değil kutba gidiyoruz?" Yerel kanca: "Türkiye'nin Ay görevi nereye inmeli?"
 
@@ -70,7 +70,7 @@ Mühendis etkilenmek değil, sonuca güvenip hızlı karar vermek ister. Challen
 | 2 | Karşılaştırma tablosu + "fırlatma kayarsa" kaydırıcısı | Challenge'ın ana senaryosu |
 | 3 | Eğitim görevleri | Ucuz: metin + hazır durumlar, yeni ekran yok |
 | 4 | Halk kanca bilgileri + iniş kartı | Demoda etkiyi artırır |
-| 5 | "Hayatta kalır mı?" mini oyunu | Zaman kalırsa |
+| 5 | "İniş penceresi" mini oyunu | Zaman kalırsa |
 
 ## Demo hikâyesi (yaklaşık 3 dakika)
 

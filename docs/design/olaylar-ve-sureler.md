@@ -109,7 +109,7 @@ Bilinen diğer hata kaynakları ve büyüklükleri (doğrulama: [dogrulama/zaman
 
 - Açık karar: "Gün doğumu" Güneş'in ilk kenarı göründüğünde mi, merkezi göründüğünde mi sayılacak. Öneri: Güneş için ilk kenar (`first_limb`), çünkü güç üretimi diskin bir kısmı görününce başlar. Horizons da Güneş için üst kenarı ölçüt alıyor (doğrulama: [dogrulama/efemeris-ve-yer-istasyonlari.md](../research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 31).
 - Açık karar: Dünya için ölçüt [iletisim-penceresi.md](iletisim-penceresi.md) içinde.
-- Açık karar: Hata payı hesabında ufkun ne kadar oynatılacağı. Öneri: Arazi ufku için haritanın çözünürlüğüne ve mesafeye göre; düz ufukta hata payı verilmez.
+- Karar (14 Kasım 2026, [PLAN.md](../PLAN.md), bölüm 12, karar 4): İlk sürümde ufuk bir yay dakikası alçaltılır ve yükseltilir; çıkan iki an `utc_earliest` ve `utc_latest` alanlarına yazılır. Bu aralık bir güven aralığı değil, olayın ufuk hatasına duyarlılığının göstergesidir ve arayüzde öyle adlandırılır. Düz ufukta da verilir, çünkü kutup ile ekvator sahasının kıyaslanması bunu gerektirir (kullanıcı planı, `S-04`). Bir yay dakikası seçildi, çünkü yukarıdaki hata payı tablosu bu birimle verilmiş ve doğrulanmıştır. Haritanın çözünürlüğüne ve mesafeye göre değişen bir pay sonraki sürüme kalır.
 - Varsayım: Bir dakikalık arama duyarlılığı ekibin tercihidir; bir kaynağa dayanmıyor.
 
 ## 9. Kaynaklar

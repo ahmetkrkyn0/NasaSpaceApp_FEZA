@@ -4,6 +4,7 @@ Design notes, decisions, and images live here.
 
 | Path               | Contents                                              |
 | ------------------ | ----------------------------------------------------- |
+| [PLAN.md](PLAN.md) | Implementation plan: three phases, four parallel lanes, issues with scope, files, acceptance criteria and dependencies, scientific accuracy rules and reference tests |
 | [adr/](adr/)       | Architecture decision records                         |
 | [design/](design/) | Project design docs, one per topic: what we build, why, which data, how it is computed, input and output formats, known limits |
 | [product/](product/) | Product notes: [audience strategy](product/audience-strategy.md) (one engine, three entry points for the public, engineers and educators), [use cases and scenarios](product/use-cases-and-scenarios.md) (users, overall flow, use cases, scenarios, traceability to the challenge objectives) |
