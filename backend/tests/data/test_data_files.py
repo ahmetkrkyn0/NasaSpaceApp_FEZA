@@ -15,6 +15,17 @@ SITE_FIELDS = {
     "id", "name", "category", "lat_deg", "lon_deg", "elevation_m", "landing_utc",
     "status", "coordinate_source", "validity", "notes",
 }
+OPTIONAL_SITE_FIELDS = {"cards"}  # ADR-0003, "Site" extras (csa-bilgi-kartlari.md)
+
+# csa-bilgi-kartlari.md, 4: the only card texts allowed, each backed by a
+# "doğrulandı" row of docs/research/dogrulama/csa-ve-diger-ulkeler.md.
+VERIFIED_CARDS = {
+    "apollo-11": ("The landing gear of the Eagle lunar module was built in Canada.", "No 28"),
+    "blue-ghost-1": (
+        "Coatings from a Canadian testing laboratory flew on a NASA dust experiment aboard this lander.",
+        "No 30",
+    ),
+}
 
 # docs/design/saha-katalogu.md, "İlk liste": id, lat, lon, category, status.
 CATALOGUE = [
@@ -54,7 +65,7 @@ def test_ten_sites_match_catalogue(sites):
 
 def test_site_fields_and_ranges(sites):
     for s in sites:
-        assert set(s) == SITE_FIELDS, s["id"]
+        assert set(s) - OPTIONAL_SITE_FIELDS == SITE_FIELDS, s["id"]
         assert re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", s["id"])
         assert -90.0 <= s["lat_deg"] <= 90.0
         assert -180.0 <= s["lon_deg"] <= 180.0
@@ -118,3 +129,25 @@ def test_10_m_horizon_never_above_2_m():
     low = _load("horizons/mons-mouton-im2-target_2m.json")["horizon_deg"]
     high = _load("horizons/mons-mouton-im2-target_10m.json")["horizon_deg"]
     assert all(h10 <= h2 for h2, h10 in zip(low, high))
+
+
+def test_cards_are_verified_csa_contributions(sites):
+    with_cards = {s["id"]: s["cards"] for s in sites if "cards" in s}
+    assert set(with_cards) == set(VERIFIED_CARDS)
+    for site_id, cards in with_cards.items():
+        assert len(cards) == 1
+        (card,) = cards
+        assert set(card) == {"agency", "text", "source"}
+        assert card["agency"] == "CSA"
+        assert card["text"] == VERIFIED_CARDS[site_id][0]
+        assert set(card["source"]) == {"label", "url"}
+        assert card["source"]["label"]
+        assert card["source"]["url"].startswith("https://")
+
+
+def test_card_source_rows_are_verified():
+    table = (DATA.parent / "docs" / "research" / "dogrulama" / "csa-ve-diger-ulkeler.md").read_text(encoding="utf-8")
+    for _, row in VERIFIED_CARDS.values():
+        number = row.split()[1]
+        (line,) = [ln for ln in table.splitlines() if ln.startswith(f"| {number} |")]
+        assert "| doğrulandı |" in line
