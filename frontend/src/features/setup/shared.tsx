@@ -47,7 +47,35 @@ export function AsyncBlock<T>({ result, children }: { result: AsyncResult<T>; ch
   const { state } = result;
   if (state.status === 'error') return <ErrorNote error={state.error} />;
   if (state.data === undefined) return <p className="d-muted">Loading…</p>;
+  // While a new request runs, the previous answer stays on screen; say that it is being replaced.
+  if (state.status === 'loading') {
+    return (
+      <div aria-busy="true">
+        <p className="d-muted" role="status">
+          Updating for the new settings…
+        </p>
+        {children(state.data)}
+      </div>
+    );
+  }
   return <>{children(state.data)}</>;
+}
+
+/**
+ * Calls `fetcher(params)` and calls it again whenever any request parameter changes. Keying on
+ * the parameters themselves, rather than on the scenario id, means a setting that the server
+ * reads cannot change without a new request.
+ */
+export function useRequest<P, T>(
+  fetcher: (params: P, options: { signal: AbortSignal }) => Promise<T>,
+  params: P,
+): AsyncResult<T> {
+  return useAsync((signal) => fetcher(params, { signal }), [requestKey(params)]);
+}
+
+/** The value `useRequest` keys on: two parameter sets with the same key send the same request. */
+export function requestKey(params: unknown): string {
+  return JSON.stringify(params);
 }
 
 /** Prompt shown by result panels before a scenario exists. */

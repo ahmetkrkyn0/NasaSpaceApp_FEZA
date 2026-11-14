@@ -2,11 +2,11 @@ import { getCommWindow, getEvents } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { formatDate, formatDeg, formatHours, formatMinutes, formatPercent, formatUtc } from '../../api/format';
 import { CRITERIA, DEFAULT_EARTH_CRITERION, type CommWindow, type Criterion, type EventList, type Scenario } from '../../api/types';
-import { useAsync, useStore } from '../../lib/hooks';
+import { useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
-import { locationWithMast, momentIn } from '../../state/scenario-tools';
+import { commWindowRequest, eventsRequest, momentIn } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
-import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader } from '../setup/shared';
+import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, useRequest } from '../setup/shared';
 
 /**
  * Comms tab (UC-07): Earth elevation, visibility windows and time left, for the criterion the
@@ -143,15 +143,8 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
   const selected = useStore(scenarioStore, (s) => s.selected_utc);
   const criterion = scenario.earth_criterion ?? DEFAULT_EARTH_CRITERION;
   const utc = momentIn(scenario, selected);
-  const location = locationWithMast(scenario);
-  const comm = useAsync(
-    (signal) => getCommWindow({ ...location, utc, earth_criterion: criterion }, { signal }),
-    [scenario.scenario_id, utc],
-  );
-  const events = useAsync(
-    (signal) => getEvents({ ...location, start_utc: scenario.start_utc, end_utc: scenario.end_utc, earth_criterion: criterion }, { signal }),
-    [scenario.scenario_id],
-  );
+  const comm = useRequest(getCommWindow, commWindowRequest(scenario, utc));
+  const events = useRequest(getEvents, eventsRequest(scenario));
 
   return (
     <section className="d-panel" aria-label="Earth link">

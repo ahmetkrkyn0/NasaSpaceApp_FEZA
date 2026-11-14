@@ -4,7 +4,8 @@
  * No sky computation (docs/PLAN.md, section 4.1, rule 2).
  */
 
-import type { Criterion, LocationParams, Scenario, Site, UtcString } from '../api/types';
+import type { CommWindowParams, EventsParams, PowerParams } from '../api/client';
+import { DEFAULT_EARTH_CRITERION, type Criterion, type LocationParams, type Scenario, type Site, type UtcString } from '../api/types';
 
 /**
  * Mast heights offered in the setup: 2, 5, 10 and 20 m (docs/design/guc-degerlendirmesi.md,
@@ -242,6 +243,38 @@ export function locationOf(scenario: Scenario): LocationParams {
 export function locationWithMast(scenario: Scenario): LocationParams & { mast_height_m?: number } {
   const location = locationOf(scenario);
   return scenario.mast_height_m === null ? location : { ...location, mast_height_m: scenario.mast_height_m };
+}
+
+/*
+ * Request parameters of the Power and Comms tabs. The panels key their requests on the whole
+ * parameter object, so every setting that reaches the server (criterion, panel direction, panel,
+ * mast, dates) sends a new request when it changes, even though `scenario_id` stays the same.
+ */
+
+/** `/api/events` for the scenario period, with the scenario's Earth criterion. */
+export function eventsRequest(scenario: Scenario): EventsParams {
+  return {
+    ...locationWithMast(scenario),
+    start_utc: scenario.start_utc,
+    end_utc: scenario.end_utc,
+    earth_criterion: scenario.earth_criterion ?? DEFAULT_EARTH_CRITERION,
+  };
+}
+
+/** `/api/comm-window` at one moment, with the scenario's Earth criterion. */
+export function commWindowRequest(scenario: Scenario, utc: UtcString): CommWindowParams {
+  return { ...locationWithMast(scenario), utc, earth_criterion: scenario.earth_criterion ?? DEFAULT_EARTH_CRITERION };
+}
+
+/** `/api/power` for the scenario period; the direction is sent only when the user set one. */
+export function powerRequest(scenario: Scenario): PowerParams {
+  return {
+    ...locationWithMast(scenario),
+    start_utc: scenario.start_utc,
+    end_utc: scenario.end_utc,
+    panel_profile_id: scenario.panel_profile_id,
+    ...(scenario.fixed_azimuth_deg != null ? { fixed_azimuth_deg: scenario.fixed_azimuth_deg } : {}),
+  };
 }
 
 /** Moment the panels show: the selected moment if it lies in the scenario, else the start. */

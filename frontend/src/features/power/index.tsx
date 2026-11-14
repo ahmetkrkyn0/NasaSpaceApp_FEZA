@@ -4,10 +4,10 @@ import { formatDate, formatDeg, formatHours, formatNumber, formatPercent } from 
 import type { PowerSample, PowerSeries, Scenario } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
-import { locationWithMast, scenarioDays } from '../../state/scenario-tools';
+import { eventsRequest, locationWithMast, powerRequest, scenarioDays } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { PANEL_TYPE_LABEL } from '../setup/form';
-import { AsyncBlock, ExampleNote, Field, Fields, HorizonNote, NeedsScenario, PanelHeader, useHorizon } from '../setup/shared';
+import { AsyncBlock, ExampleNote, Field, Fields, HorizonNote, NeedsScenario, PanelHeader, useHorizon, useRequest } from '../setup/shared';
 
 /**
  * Power tab (UC-06): Sun elevation, sunlit time, longest dark, power curve and mean power.
@@ -33,13 +33,13 @@ function PowerCurve({ samples }: { samples: readonly PowerSample[] }) {
   const last = samples[samples.length - 1]!;
   return (
     <figure className="d-section" aria-label="Panel power over time">
-      <svg className="d-chart" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`Power from ${formatDate(first.utc)} to ${formatDate(last.utc)}, peak ${max.toFixed(1)} W`}>
+      <svg className="d-chart" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`Power from ${formatDate(first.utc)} to ${formatDate(last.utc)}, highest hourly sample ${max.toFixed(1)} W`}>
         <line className="d-chart-axis" x1="0" y1={height} x2={width} y2={height} />
         <polyline className="d-chart-line" points={points} />
       </svg>
       <figcaption className="d-chart-caption">
         <span>{formatDate(first.utc)}</span>
-        <span>peak {max.toFixed(1)} W</span>
+        <span>highest hourly sample {max.toFixed(1)} W</span>
         <span>{formatDate(last.utc)}</span>
       </figcaption>
     </figure>
@@ -112,31 +112,10 @@ export default function PowerPanel() {
 }
 
 function PowerForScenario({ scenario }: { scenario: Scenario }) {
-  const key = scenario.scenario_id;
   const location = locationWithMast(scenario);
   const profiles = useAsync((signal) => getPanelProfiles({ signal }), []);
-  const power = useAsync(
-    (signal) =>
-      getPower(
-        {
-          ...location,
-          start_utc: scenario.start_utc,
-          end_utc: scenario.end_utc,
-          panel_profile_id: scenario.panel_profile_id,
-          ...(scenario.fixed_azimuth_deg != null ? { fixed_azimuth_deg: scenario.fixed_azimuth_deg } : {}),
-        },
-        { signal },
-      ),
-    [key],
-  );
-  const events = useAsync(
-    (signal) =>
-      getEvents(
-        { ...location, start_utc: scenario.start_utc, end_utc: scenario.end_utc, earth_criterion: scenario.earth_criterion ?? 'center' },
-        { signal },
-      ),
-    [key],
-  );
+  const power = useRequest(getPower, powerRequest(scenario));
+  const events = useRequest(getEvents, eventsRequest(scenario));
   const horizon = useHorizon(location, scenario.mast_height_m);
   const profile = profiles.state.data?.find((p) => p.id === scenario.panel_profile_id) ?? null;
 
@@ -179,7 +158,7 @@ function PowerForScenario({ scenario }: { scenario: Scenario }) {
           {(data) => (
             <>
               <PowerResults scenario={scenario} power={data} />
-              {profile?.type === 'vertical_fixed' ? <DirectionControl key={key} scenario={scenario} used={data.fixed_azimuth_deg} /> : null}
+              {profile?.type === 'vertical_fixed' ? <DirectionControl key={scenario.scenario_id} scenario={scenario} used={data.fixed_azimuth_deg} /> : null}
             </>
           )}
         </AsyncBlock>
