@@ -113,3 +113,10 @@ def test_bad_parameters_are_422(client, path, params):
     r = client.get(path, params=params)
     assert r.status_code == 422
     assert r.json()["error"]["code"] == "invalid_parameter"
+
+
+def test_all_nan_layer_still_sends_min_and_max(tmp_path):
+    save_layer(tmp_path, _meta(), np.full((ROWS, COLS), np.nan, dtype=np.float32))
+    h = load_layer(tmp_path, "mons-mouton", "elevation").headers()
+    assert h["X-Layer-Min"] == "nan" and h["X-Layer-Max"] == "nan"
+    assert h["X-Layer-Nodata"] == str(ROWS * COLS)

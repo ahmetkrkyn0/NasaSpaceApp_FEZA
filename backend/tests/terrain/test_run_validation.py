@@ -106,3 +106,29 @@ def test_report_summary_and_exit_code(tmp_path):
     for row in report["rows"]:
         for key in ("id", "title", "expected", "measured", "diff", "threshold", "unit", "status", "source"):
             assert key in row
+
+
+def test_missing_feature_event_is_skipped_with_reason():
+    body = {"events": [{"type": "sunrise", "utc": "2027-02-20T10:00:00Z"}]}
+    v = _vector(
+        endpoint="/api/events",
+        measure={"event": {"type": "eclipse_start", "index": 0}, "field": "utc", "kind": "utc"},
+        expected="2027-02-20T22:09:00Z",
+        threshold=2,
+        unit="min",
+        requires={"feature": "eclipse events in /api/events", "issue": "#41, F3-A1"},
+    )
+    row = rv.evaluate(v, _const(200, body))
+    assert row["status"] == "skipped" and "#41" in row["note"]
+
+
+def test_missing_event_without_requires_fails():
+    body = {"events": []}
+    v = _vector(
+        endpoint="/api/events",
+        measure={"event": {"type": "earthset", "index": 0}, "field": "utc", "kind": "utc"},
+        expected="2026-12-03T10:03:00Z",
+        threshold=2,
+        unit="min",
+    )
+    assert rv.evaluate(v, _const(200, body))["status"] == "fail"

@@ -6,7 +6,10 @@ Each row: id, test, title, expected, measured, diff, threshold, unit, status
 (``pass``, ``warn``, ``fail`` or ``skipped``) and source.
 
 A test whose endpoint does not exist yet (HTTP 404 without the API's error
-body) is reported as ``skipped``; that alone does not make the run fail.
+body) is reported as ``skipped``. So is a test with a ``requires`` entry when
+the endpoint answers but returns none of the events it needs (a feature of a
+later issue, e.g. eclipses in #41); the note names that issue. Neither makes
+the run fail. Without ``requires`` a missing event is a ``fail``.
 The exit code is 1 when any row is ``fail``.
 
 Usage:
@@ -39,6 +42,10 @@ Fetch = Callable[[str, dict], tuple[int, Any]]
 
 class MeasureError(Exception):
     """The response does not contain the measured value."""
+
+
+class FeatureMissing(MeasureError):
+    """The endpoint exists but returns none of the events the test needs."""
 
 
 def http_fetcher(base_url: str, timeout_s: float = 120.0) -> Fetch:
@@ -110,6 +117,8 @@ def _find_event(body: Any, spec: dict) -> dict:
         raise MeasureError("response has no 'events' list")
     matches = [e for e in events if isinstance(e, dict) and e.get("type") == spec["type"]]
     index = int(spec.get("index", 0))
+    if not matches:
+        raise FeatureMissing(f"no '{spec['type']}' event in response")
     if index >= len(matches):
         raise MeasureError(f"only {len(matches)} '{spec['type']}' event(s) in response")
     return matches[index]
@@ -198,6 +207,16 @@ def evaluate(vector: dict, fetch: Fetch) -> dict:
     spec = vector["measure"]
     try:
         measured = measure(body, spec)
+    except FeatureMissing as exc:
+        requires = vector.get("requires")
+        if requires:
+            row["status"] = "skipped"
+            row["note"] = (
+                f"{exc}; needs {requires['feature']}, not implemented yet ({requires['issue']})"
+            )
+        else:
+            row["note"] = str(exc)
+        return row
     except (MeasureError, TypeError, ValueError) as exc:
         row["note"] = str(exc)
         return row
