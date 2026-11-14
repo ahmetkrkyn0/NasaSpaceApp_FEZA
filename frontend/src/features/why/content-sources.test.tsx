@@ -12,6 +12,7 @@ import { RELAY_STATUSES } from '../../api/types';
 import { relayStatus } from '../comms';
 import { RELAY_EXAMPLE, RELAY_LABEL, RelayLabel } from '../comms/relay';
 import { InfoCards } from '../setup';
+import { isCurrent } from '../setup/shared';
 import { HOOK_FACTS, HookFacts, firstFact } from './hook-facts';
 
 const REPO = new URL('../../../../', import.meta.url);
@@ -80,11 +81,21 @@ describe('relay label', () => {
     expect(renderToStaticMarkup(<RelayLabel status="intermittent" />)).not.toContain('Queqiao');
   });
 
-  it('takes the period status first and ignores answers that are still loading', () => {
-    const settled = (relay_status: (typeof RELAY_STATUSES)[number]) => ({ status: 'success', data: { relay_status } });
-    expect(relayStatus(settled('intermittent'), settled('required'))).toBe('intermittent');
-    expect(relayStatus({ status: 'loading', data: { relay_status: 'required' } }, settled('not_required'))).toBe('not_required');
-    expect(relayStatus({ status: 'success', data: {} }, { status: 'loading', data: undefined })).toBeUndefined();
+  it('takes the period status first and only from answers to the current scenario (PR #72 review)', () => {
+    const answer = (relay_status: (typeof RELAY_STATUSES)[number] | undefined, current = true) => ({ current, state: { data: { relay_status } } });
+    expect(relayStatus(answer('intermittent'), answer('required'))).toBe('intermittent');
+    // The events answer still belongs to the previous scenario: it is not read.
+    expect(relayStatus(answer('required', false), answer('not_required'))).toBe('not_required');
+    expect(relayStatus(answer('required', false), answer('required', false))).toBeUndefined();
+    expect(relayStatus(answer(undefined), { current: false, state: { data: undefined } })).toBeUndefined();
+  });
+
+  it('tells an answer to the current parameters from one to the previous parameters', () => {
+    const old = { status: 'success', data: { key: 'scenario-A', data: 1 }, error: undefined } as const;
+    expect(isCurrent(old, 'scenario-A')).toBe(true);
+    // The scenario changed; until the new request answers, the kept data is the previous one's.
+    expect(isCurrent(old, 'scenario-B')).toBe(false);
+    expect(isCurrent({ status: 'loading', data: old.data, error: undefined }, 'scenario-A')).toBe(false);
   });
 });
 

@@ -129,15 +129,16 @@ function WindowsBlock({ events }: { events: EventList }) {
 
 /**
  * Relay status to show: the period's (from `/api/events`) first, else the moment's
- * (from `/api/comm-window`). Only settled answers count, so a label never belongs to the
- * previous scenario while a new one loads.
+ * (from `/api/comm-window`). Only an answer to the current scenario counts (`current`), so the
+ * label never belongs to the previous scenario, not while the new request loads and not in the
+ * one render before it starts (PR #72 review).
  */
 export function relayStatus(
-  events: { status: string; data?: { relay_status?: RelayStatus } | undefined },
-  comm: { status: string; data?: { relay_status?: RelayStatus } | undefined },
+  events: { current: boolean; state: { data?: { relay_status?: RelayStatus } | undefined } },
+  comm: { current: boolean; state: { data?: { relay_status?: RelayStatus } | undefined } },
 ): RelayStatus | undefined {
-  const settled = (s: typeof events) => (s.status === 'success' ? s.data?.relay_status : undefined);
-  return settled(events) ?? settled(comm);
+  const own = (r: typeof events) => (r.current ? r.state.data?.relay_status : undefined);
+  return own(events) ?? own(comm);
 }
 
 export default function CommsPanel() {
@@ -168,7 +169,7 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
         <span className="data">{scenario.label}</span>, {formatDate(scenario.start_utc)} to {formatDate(scenario.end_utc)}
       </p>
       <CriterionPicker scenario={scenario} />
-      <RelayLabel status={relayStatus(events.state, comm.state)} />
+      <RelayLabel status={relayStatus(events, comm)} />
       <div className="d-section">
         <h3 className="d-section-title">Now</h3>
         <AsyncBlock result={comm}>{(data) => <NowBlock comm={data} requested={criterion} />}</AsyncBlock>

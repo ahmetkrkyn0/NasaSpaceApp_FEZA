@@ -8,7 +8,7 @@ import { getHorizon } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
 import type { HorizonProfile, LocationParams } from '../../api/types';
-import { useAsync, type AsyncResult } from '../../lib/hooks';
+import { useAsync, type AsyncResult, type AsyncState } from '../../lib/hooks';
 import { uiStore } from '../../shell/ui-state';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import './panels.css';
@@ -69,8 +69,37 @@ export function AsyncBlock<T>({ result, children }: { result: AsyncResult<T>; ch
 export function useRequest<P, T>(
   fetcher: (params: P, options: { signal: AbortSignal }) => Promise<T>,
   params: P,
-): AsyncResult<T> {
-  return useAsync((signal) => fetcher(params, { signal }), [requestKey(params)]);
+): RequestResult<T> {
+  const key = requestKey(params);
+  // The answer carries the key it was asked with, so it can be told from an answer to the previous parameters.
+  const { state: tagged, reload } = useAsync((signal) => fetcher(params, { signal }).then((data) => ({ key, data })), [key]);
+  return { state: untag(tagged), reload, current: isCurrent(tagged, key) };
+}
+
+export interface RequestResult<T> extends AsyncResult<T> {
+  /**
+   * `true` when `state.data` answers the current parameters. `useAsync` keeps the previous answer
+   * while a new request loads, and for one render before it starts; a value that must never be
+   * shown under another scenario (the relay label) is read only when this is `true`.
+   */
+  current: boolean;
+}
+
+interface Tagged<T> {
+  key: string;
+  data: T;
+}
+
+/** Whether a settled answer belongs to `key`. */
+export function isCurrent<T>(state: AsyncState<Tagged<T>>, key: string): boolean {
+  return state.status === 'success' && state.data.key === key;
+}
+
+function untag<T>(state: AsyncState<Tagged<T>>): AsyncState<T> {
+  if (state.status === 'success') return { status: 'success', data: state.data.data, error: undefined };
+  if (state.status === 'error') return { status: 'error', data: state.data?.data, error: state.error };
+  if (state.status === 'loading') return { status: 'loading', data: state.data?.data, error: undefined };
+  return state;
 }
 
 /** The value `useRequest` keys on: two parameter sets with the same key send the same request. */

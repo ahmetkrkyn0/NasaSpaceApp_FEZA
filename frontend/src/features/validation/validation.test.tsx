@@ -66,6 +66,13 @@ describe('validation report', () => {
     expect(renderToStaticMarkup(<ValidationSummary report={clean} />)).toContain('No row failed, gave a warning or was skipped.');
   });
 
+  it('says so when the report has no rows (PR #72 review)', () => {
+    const empty = { ...MIXED, rows: [], summary: { pass: 0, warn: 0, fail: 0, skipped: 0, info: 0 } };
+    const html = renderToStaticMarkup(<ValidationSummary report={empty} />);
+    expect(html).toContain('The report has no rows.');
+    expect(html).not.toContain('No row failed');
+  });
+
   it('writes values as the report gives them: times with seconds, ranges, limits', () => {
     expect(valueText('2026-12-03T10:03:14Z', 'min')).toBe('2026-12-03 10:03:14 UTC');
     expect(valueText(65.670467, 'deg')).toBe('65.670467°');
