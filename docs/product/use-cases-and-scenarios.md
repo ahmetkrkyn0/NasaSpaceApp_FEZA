@@ -45,7 +45,7 @@ Sınıflar analiz özetinin 7. bölümünden aynen alındı.
 | --- | --- |
 | **Zorunlu** | Güneş ve Dünya konumu, ufuk, ufka göre gösterim, olay saatleri ve süreler, güç değerlendirmesi, iletişim penceresi, saha listesi ve özel koordinat, yan yana karşılaştırma (`UC-01`–`UC-08`) |
 | **Destekleyici** | Üç düzeyde açıklama ve "neden" kartları, hata payı ve kaynak gösterimi, panel tipi ve direk yüksekliği, yer istasyonları, kalıcı gölge katmanı (`UC-09`–`UC-12` ve zorunlu use case'lerin içindeki seçenekler) |
-| **Ekstra** | Geçmiş görev vakaları, Athena demosu, "röle gerekli" etiketi, tutulmalar, CSA bilgi kartları, saha puanı, yaklaşma profili ve gölge uyarısı, zemin sıcaklığı, araç modelleri (`UC-13`–`UC-16` ve ilgili seçenekler) |
+| **Ekstra** | Geçmiş görev vakaları, Athena demosu, "röle gerekli" etiketi, tutulmalar, CSA bilgi kartları, saha puanı, yaklaşma profili ve gölge uyarısı, zemin sıcaklığı, araç modelleri, bataryasız mini oyun (`UC-13`–`UC-17` ve ilgili seçenekler) |
 | **Kapsam dışı** | Rover ile ilgili her şey (rota, enerji, konumlama, dijital ikiz), batarya ve geceyi atlatma modeli, karmaşık katkı paylaştırma (Shapley), ajans merkezleri haritası, araçların devrilme hesabı |
 
 Kapsam dışı maddeler için bu planda use case ya da senaryo yok. Gece uzunluğu ve "gün batımına kalan süre" kapsamda; bunlar olay saatlerinin parçası.
@@ -135,6 +135,7 @@ Referans tasarımdaki asistan ve görev raporu ilk sürümde yok. Rover, rota ve
 | `UC-14` | Sahaları puanla sıralamak | K1 | Ekstra | O1 | [saha-puani](../design/saha-puani.md) |
 | `UC-15` | Yaklaşma profilini ve gölge uyarısını görmek | K1 | Ekstra | – | [yaklasma-profili-ve-golge-uyarisi](../design/yaklasma-profili-ve-golge-uyarisi.md) |
 | `UC-16` | Zemin sıcaklığını görmek | K1, K2 | Ekstra | – | [zemin-sicakligi](../design/zemin-sicakligi.md) |
+| `UC-17` | İniş tarihini oyunla denemek | K3, K2 | Ekstra | O2, O7 | [mini-oyun](../design/mini-oyun.md) |
 
 `UC-11` analiz özetinde ayrı bir konu olarak sınıflandırılmadı; [karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md) belgesinde planlamacı kapısının ek gösterimi olarak geçiyor.
 
@@ -160,6 +161,7 @@ Referans tasarımdaki asistan ve görev raporu ilk sürümde yok. Rover, rota ve
 | `UC-14` Saha puanı | ● | | |
 | `UC-15` Yaklaşma profili | ● | | |
 | `UC-16` Zemin sıcaklığı | ● | ○ | |
+| `UC-17` Mini oyun | | ○ | ● |
 
 ### 5.3 Zorunlu use case'ler
 
@@ -325,7 +327,7 @@ Her use case'in tasarım belgesi 5.1'deki tabloda. Aşağıdaki "Dayanak" satır
 
 ### 5.5 Ekstra use case'ler
 
-Bunlar analiz özetinin 7.3 bölümündeki sırayla, yani yapılabilirliğe göre dizildi. Zorunlu use case'ler bitmeden başlanmamalı.
+Bunlar analiz özetinin 7.3 bölümündeki sırayla, yani yapılabilirliğe göre dizildi. Zorunlu use case'ler bitmeden başlanmamalı. `UC-17` analiz özetinde yok; ekip kararıyla 14 Kasım 2026'da eklendi.
 
 #### UC-13 Hazır senaryoyu (geçmiş görev vakası) açmak
 
@@ -359,6 +361,22 @@ Bunlar analiz özetinin 7.3 bölümündeki sırayla, yani yapılabilirliğe gör
 - **Akış:** Sistem seçili dönem için sıcaklık eğrisini gösterir.
 - **Dikkat:** Yüksek riskli. Hazır araçta üç kurulum sorunu çıktı ve model sonuçları yeniden hesaplanmadı.
 - **Dayanak:** Zamanla değişen veri notu (bölüm 8), analiz özeti (5.3, 7.3).
+
+#### UC-17 İniş tarihini oyunla denemek
+
+- **Amaç:** Halk kullanıcısının "tarih kayınca ne değişir" sorusunu deneyerek görmesi.
+- **Akış:**
+  1. Kullanıcı Keşfet kapısında bir seviye seçer. Seviye bir saha, seçilebilecek tarih aralığı ve üç hedef içerir.
+  2. 14 günlük bir görev için iniş tarihini seçer ve "Land" düğmesine basar.
+  3. Sistem o saha ve tarih için özet ölçüleri hesaplar ve üç hedeften kaçının tuttuğunu gösterir: güneşli zaman oranı, en uzun karanlık, Dünya'nın görünür olduğu zaman oranı.
+  4. Kullanıcı başka bir tarihle yeniden dener; önceki denemeler listede kalır.
+- **Seçenekler:**
+  - Sonuç ekranından aynı senaryo Planla kapısında açılabilir (`UC-08`).
+  - Dünya'nın hiç görünmediği sahada iletişim hedefi tutmaz; sonuç "röle gerekli" etiketini gösterir.
+- **Dikkat:**
+  - Oyun bataryayı, ısıyı ve aracın dayanımını modellemez; yalnızca olay saatlerinin özet ölçülerini kullanır (`UC-05`).
+  - Hedef değerler bir görev gereksinimi değildir; oyunu dengeli kılmak için seçilir.
+- **Dayanak:** [Kitle stratejisi](audience-strategy.md) (bölüm 1), [mini oyun](../design/mini-oyun.md).
 
 ## 6. Kullanıcıya göre akışlar
 
@@ -401,7 +419,7 @@ flowchart LR
   H5 --> H1
 ```
 
-Kullandığı use case'ler: `UC-01`, `UC-03`, `UC-04`, `UC-05`, `UC-09`, `UC-12`.
+Kullandığı use case'ler: `UC-01`, `UC-03`, `UC-04`, `UC-05`, `UC-09`, `UC-12`. Zaman kalırsa mini oyun da bu kapıdadır (`UC-17`).
 
 ## 7. Senaryolar
 
@@ -534,12 +552,12 @@ Hedefler challenge metnindeki "Objectives" listesinin sırasıyla numaralandı.
 | Kimlik | Challenge hedefi | Use case'ler | Senaryolar |
 | --- | --- | --- | --- |
 | O1 | Saha seçimi ve karşılaştırma | `UC-01`, `UC-02`, `UC-08`, `UC-14` | `S-01`, `S-02` |
-| O2 | Tarih ve saat esnekliği | `UC-03`, `UC-08` | `S-01` |
+| O2 | Tarih ve saat esnekliği | `UC-03`, `UC-08`, `UC-17` | `S-01` |
 | O3 | Güneş ve Dünya konumunun gösterimi, batışa kalan süre | `UC-04`, `UC-05` | `S-03`, `S-04`, `S-08` |
 | O4 | Güç ve iletişim değerlendirmesi | `UC-06`, `UC-07` | `S-01`, `S-05`, `S-07` |
 | O5 | Birden çok gösterim (2B, 3B, başka) | `UC-04`, `UC-12` | `S-03` |
 | O6 | Zaman içindeki değişim | `UC-03`, `UC-05` | `S-03`, `S-09` |
-| O7 | Farklı beceri düzeyleri | `UC-09`, `UC-13` | `S-03`, `S-06`, `S-07`, `S-10` |
+| O7 | Farklı beceri düzeyleri | `UC-09`, `UC-13`, `UC-17` | `S-03`, `S-06`, `S-07`, `S-10` |
 
 ### 8.2 Jüri ölçütlerine katkı
 
@@ -574,7 +592,7 @@ Bu planı yazarken çıkan sorular. Bir kısmı tasarım belgeleri ve karar kay�
 | 2 | Hangar ekranının (rover seçimi) yerine ne gelecek? | Kapandı | Genel akış, `UC-01`, `UC-13` | Saha ve tarih seçim ekranına dönüşüyor ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), bölüm 4) |
 | 3 | "Dünya görünüyor" ölçütü: merkezi mi, kenarı mı, tamamı mı ufkun üstünde? | Açık | `UC-07`, `S-01` | Öneri: merkez; ölçüt arayüzde değiştirilebilir ([iletişim penceresi](../design/iletisim-penceresi.md), bölüm 8). Seçim pencereyi 19 ile 38 saat arası oynatıyor |
 | 4 | Yer istasyonu için alım sınırı mı (6 derece), gönderim sınırı mı (10,1 derece)? | Açık | `UC-07` | Öneri: alım sınırı ([iletişim penceresi](../design/iletisim-penceresi.md), bölüm 8) |
-| 5 | Özel koordinatta arazi ufku sunucuda anında mı hesaplanacak, ilk sürümde yalnızca düz ufuk mu verilecek? | Açık | `UC-02` | ADR-0001 anında hesabı öngörüyor; son karar süre ölçümüne bağlı ([ufuk hesabı](../design/ufuk-hesabi.md), bölüm 8) |
+| 5 | Özel koordinatta arazi ufku sunucuda anında mı hesaplanacak, ilk sürümde yalnızca düz ufuk mu verilecek? | Kapandı | `UC-02` | İlk sürümde düz ufuk ([ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md), madde 5; [ADR-0004](../adr/0004-api-uc-noktalari.md), "Veri yoksa davranış"). Anında hesap, süre ölçümünden sonra eklenebilir ([ufuk hesabı](../design/ufuk-hesabi.md), bölüm 8) |
 | 6 | Ortak veri sözleşmesi (dosya biçimi) | Taslak | Bütün use case'ler | [ADR-0003](../adr/0003-veri-sozlesmesi.md) ve [ADR-0004](../adr/0004-api-uc-noktalari.md) yazıldı; durumları "Proposed" |
 | 7 | Hazır saha ve hazır senaryo listesi | Kapandı | `UC-01`, `UC-13` | İlk on saha [saha kataloğunda](../design/saha-katalogu.md), ilk altı vaka [geçmiş görev vakalarında](../design/gecmis-gorev-vakalari.md). Chang'e 4 için resmi tablodaki koordinat kullanılıyor |
 | 8 | Senaryonun bağlantı olarak paylaşılması | Kapandı | `UC-11` | Senaryo adres çubuğuna yazılıyor ([karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md), bölüm 4) |
@@ -590,7 +608,7 @@ Bu planı yazarken çıkan sorular. Bir kısmı tasarım belgeleri ve karar kay�
 
 | Kitle stratejisinde | Bu planda | Neden |
 | --- | --- | --- |
-| "Lander'ın hayatta kalır mı?" batarya oyunu | Yok | Batarya ve geceyi atlatma kapsamdan çıkarıldı (analiz özeti 7.5). Yerine gün batımına kalan süre ve gece uzunluğu (`UC-05`) |
+| "Lander'ın hayatta kalır mı?" batarya oyunu | Bataryasız "iniş penceresi" oyunu (`UC-17`, ekstra) | Batarya ve geceyi atlatma kapsamdan çıkarıldı (analiz özeti 7.5). Oyun 14 Kasım 2026'da bataryasız olarak yeniden tasarlandı: sonucu olay saatlerinin özet ölçüleri belirler ([mini oyun](../design/mini-oyun.md)) |
 | Yaklaşık 3 dakikalık demo hikâyesi | 7 slayt ya da 30 saniyelik video | Teslim kılavuzunun sınırı |
 | Tarih × saha ısı haritası, paylaşılabilir iniş kartı | İlk sürümde yok | Onaylı kapsam listesinde yoklar; ısı haritası çok sayıda hesap gerektiriyor ([karşılaştırma ve açıklama](../design/karsilastirma-ve-aciklama.md), bölüm 8). Ekip isterse sonradan eklenir |
 | Eğitim görevleri | Hazır senaryoların Sınıf kapısındaki hali (`UC-13`) | Yeni ekran gerektirmiyor: önceden ayarlanmış bir durum, bir soru ve bir açıklama ([gösterim ve arayüz](../design/gosterim-ve-arayuz.md), "Üç giriş kapısı") |

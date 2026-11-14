@@ -29,18 +29,22 @@ Saha isteyen her uç nokta şu iki biçimden birini kabul eder:
 
 | Yöntem | Yol | Parametreler | Yanıt | Açıklama |
 |---|---|---|---|---|
-| GET | `/api/health` | yok | `{ "ok": true, "kernels_loaded": true, "dem_available": true }` | Sunucu ve veri dosyaları hazır mı |
+| GET | `/api/health` | yok | `{ "ok": true, "kernels_loaded": true, "dem_available": true, "ephemeris_range": { "start_utc": "...", "end_utc": "..." } }` | Sunucu ve veri dosyaları hazır mı; hesaplanabilen tarih aralığı |
 | GET | `/api/sites` | `category` (isteğe bağlı) | `Site` dizisi | Hazır saha listesi |
 | GET | `/api/horizon` | konum, `mast_height_m` | `HorizonProfile` | Ufuk profili. Hazır sahada dosyadan; özel koordinatta ilk sürümde düz ufuk (`method: sphere`) |
 | GET | `/api/sky-series` | konum, `start_utc`, `hours`, `step_minutes` | `SkySeries` | Güneş ve Dünya'nın zaman içindeki konumu |
 | GET | `/api/events` | konum, `start_utc`, `end_utc`, `earth_criterion` | `EventList` | Doğuş ve batış anları, pencereler, özet ölçüler |
 | GET | `/api/now` | konum, `utc`, `earth_criterion` | `NowStatus` | Verilen anda durum ve kalan süreler |
 | GET | `/api/comm-window` | konum, `utc`, `earth_criterion` | `CommWindow` | Dünya ile doğrudan iletişim durumu |
-| GET | `/api/power` | konum, `start_utc`, `end_utc`, `panel_profile_id` | `PowerSeries` | Panel gücü |
+| GET | `/api/power` | konum, `start_utc`, `end_utc`, `panel_profile_id`, `fixed_azimuth_deg` (isteğe bağlı) | `PowerSeries` | Panel gücü. `fixed_azimuth_deg` yalnızca `vertical_fixed` panelde kullanılır; verilmezse sunucu aralıktaki en iyi yönü bulur ve yanıtta bildirir |
 | POST | `/api/compare` | gövde: `{ "scenarios": [Scenario, ...] }` | `CompareResponse` | İki ya da daha çok senaryonun karşılaştırması |
 | GET | `/api/reference-missions` | yok | Geçmiş görev kayıtları dizisi | Geçmiş inişler ve o andaki gökyüzü |
 | GET | `/api/panel-profiles` | yok | `PanelProfile` dizisi | Hazır panel profilleri |
 | GET | `/api/layers/{name}` | `format=f32`, `region` | İkili dizi ve başlıklar | Harita katmanı. Taşıma biçimi referans arayüzle aynı ([DESIGN.md, 6.3](../../frontend-migrate/DESIGN.md)) |
+
+Harita katmanı adları (`name`): `hillshade` (gölgeli kabartma), `elevation` (yükseklik), `slope` (eğim) ve `psr` (kalıcı gölge). `region` ilk sürümde tek değer alır: `mons-mouton`. Katmanların hepsi aynı ızgarada gelir. Izgara, yükseklik haritalarının kendi izdüşümündedir: güney kutbu merkezli düz izdüşüm, metre ([dogrulama/veri-kaynaklari.md](../research/dogrulama/veri-kaynaklari.md), No 17). Izgaranın sınırları `X-Layer-Bounds` başlığında `x_min,y_min,x_max,y_max` olarak metre cinsinden taşınır. Arayüz, haritada tıklanan noktayı bu izdüşümün tersiyle enlem ve boylama çevirir ([zamanda-degisen-veri-hazirlama.md](../research/zamanda-degisen-veri-hazirlama.md), bölüm 3.4).
+
+Destekleyici iki uç nokta, ilgili iş yapılırsa eklenir: `/api/validation` (doğrulama testlerinin sonuç tablosu; [dogrulama-plani.md](../design/dogrulama-plani.md)) ve `/api/ground-stations` (yer istasyonlarının Ay'ı gördüğü pencereler; [iletisim-penceresi.md](../design/iletisim-penceresi.md)).
 
 Ekstra özellikler için uç noktalar, o özellik yapılırsa eklenir: `/api/eclipses`, `/api/site-score`, `/api/approach-profile`, `/api/surface-temperature`. Biçimleri ilgili proje dokümanında.
 
@@ -48,6 +52,7 @@ Ekstra özellikler için uç noktalar, o özellik yapılırsa eklenir: `/api/ecl
 
 - `hours` en fazla 24 çarpı 60 (iki ay). Daha uzun aralık için `step_minutes` büyütülür.
 - `step_minutes` en az 1.
+- `/api/sky-series` iki ucu da içerir: ilk örnek `start_utc` anındadır, son örnek aralığın sonundadır. `hours` 24 ve `step_minutes` 60 ise 25 örnek döner; `hours` sıfırsa tek örnek döner. Doğrulama testleri tek bir an için bu yolla sorgu yapar ([dogrulama-plani.md](../design/dogrulama-plani.md), bölüm 5).
 - `/api/compare` en fazla 4 senaryo alır.
 
 Varsayım: Bu sınırlar ölçülmüş bir başarım değerine dayanmıyor; sunucu yazıldıktan sonra süre ölçülerek düzeltilmeli. Eldeki tek süre ölçümü (saha başına ufuk karşılaştırması için 0,03 saniye) ekibin kendi ölçümü ve tekrar edilmedi ([dogrulama/zamanda-degisen-veri.md](../research/dogrulama/zamanda-degisen-veri.md), No 51).
@@ -59,6 +64,16 @@ Hatalı istek için HTTP 422, bulunamayan saha için 404, veri dosyası eksikse 
 ```json
 { "error": { "code": "site_not_found", "message": "No site with id 'x'." } }
 ```
+
+Hata kodları:
+
+| HTTP | `code` | Ne zaman |
+|---|---|---|
+| 404 | `site_not_found` | `site_id` listede yok |
+| 422 | `invalid_parameter` | Eksik ya da aralık dışı parametre (enlem, boylam, `mast_height_m`, `step_minutes`) |
+| 422 | `date_out_of_range` | Tarih hesaplanabilen aralığın dışında. `message` geçerli aralığı söyler; aralık `/api/health` yanıtındaki `ephemeris_range` ile aynıdır |
+| 422 | `too_many_scenarios` | `/api/compare` isteğinde 4'ten çok senaryo |
+| 503 | `data_unavailable` | SPICE dosyaları ya da gereken veri dosyası yüklenemedi |
 
 Referans arayüz de doğrulama hataları için 422 kullanıyor ([frontend-migrate/design-export/api-contract/fixtures/](../../frontend-migrate/design-export/api-contract/fixtures/), `survival.422-missing-goal.json`).
 
@@ -82,3 +97,7 @@ Yapılacaklar:
 
 - Her uç nokta için bir örnek yanıt dosyası hazırlanmalı.
 - Sınır değerleri sunucu yazıldıktan sonra ölçümle güncellenmeli.
+
+## Değişiklik notu
+
+- 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `/api/health` yanıtına `ephemeris_range` ve hata kodlarına `date_out_of_range` eklendi (`UC-03`, aralık dışı tarih). `/api/power` isteğine `fixed_azimuth_deg` eklendi (`UC-06`). Harita katmanı adları, `region` değeri ve `X-Layer-Bounds` başlığı tanımlandı (`UC-12`). `/api/validation` (`UC-10`) ve `/api/ground-stations` (`UC-07`) destekleyici uç nokta olarak eklendi. Hata kodları tablosu eklendi. `/api/sky-series` yanıtının iki ucu da içerdiği "Sınırlar" bölümüne yazıldı.

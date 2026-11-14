@@ -69,6 +69,12 @@ Düz ufukta gözlem yüksekliğine göre ufuk uzaklığı ve alçalması: [ufuk-
 
 Apollo 11 sahasında 20 ve 21 Şubat 2027: Dünya, Güneş'i 22:09 ile 00:36 UTC arasında örtüyor; en fazla yüzde 34,3 (doğrulama: [dogrulama/zamanda-degisen-veri.md](../research/dogrulama/zamanda-degisen-veri.md), No 70). Bu test yalnızca [tutulmalar.md](tutulmalar.md) yapılırsa geçerlidir.
 
+### Test 7: Olay anının ufuk hatasına duyarlılığı
+
+Ufuk bir yay dakikası oynatıldığında bir gün doğumunun ne kadar kaydığı. Ekvatora yakın bir sahada yaklaşık 2 dakika, Mons Mouton'da en iyi durumda yaklaşık 22 dakika beklenir (doğrulama: [dogrulama/aciklanabilirlik.md](../research/dogrulama/aciklanabilirlik.md), No 10). Test, [olaylar-ve-sureler.md](olaylar-ve-sureler.md) içindeki aralık hesabını sınar.
+
+Testlerin koşulları, eşikleri ve hangi işte sınandıkları [PLAN.md](../PLAN.md) bölüm 4.2'de tek tabloda toplanmıştır. Test 2 için aralık 1 Aralık 00:00 ile 31 Aralık 00:00 arasıdır (30 gün; yükseklik sıfır, ölçüt merkez). Test 3 için aralık 1 Aralık 00:00 ile 1 Ocak 00:00 arasıdır (saatlik 745 örnek) ve referans tablo Güneş diskinin dikey oranıyla hesaplanmıştır (doğrulama: [dogrulama/gunes-paneli.md](../research/dogrulama/gunes-paneli.md), No 4).
+
 ### Test 6: Hazır NASA haritasıyla karşılaştırma
 
 1. Arazi ufku hesaplanan bir saha için uzun bir aralıkta güneşli zaman oranı bulunur.
