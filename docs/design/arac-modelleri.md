@@ -79,6 +79,7 @@ Araç kaydı, `data/vehicles.json` içinde. Öneri:
 ## 7. Bilinen sınırlar
 
 - **Tek model var.** Güncel araçlar (Athena, Blue Ghost, VIPER) için lisansı doğrulanmış model bulunamadı; bu sahalarda model gösterilmez ya da basit bir işaret kullanılır.
+- **Athena için ekibin kendi modeli var.** [shipmodel/](../../shipmodel/README.md) altında Blender betiğiyle sıfırdan üretilen bir Athena (IM-2, Nova-C) modeli bulunuyor (`export/athena_lander.glb` ve `.blend`). Üçüncü taraf geometri ya da doku içermez, logo taşımaz. Ölçülerden yalnızca 4,3 m yükseklik ve 1,6 m gövde yayımlanmış Nova-C değerleridir; diğer oranlar fotoğraflardan tahmindir.
 - **Güncel araçların ölçüleri büyük ölçüde eksik.** Kaynak rapor da bunu belirtiyor.
 - **NASA içeriği NASA'nın onayı varmış gibi sunulamaz.** NASA amblemi ve logosu kamu malı değildir ve yasayla korunur (doğrulama: [dogrulama/gorev-araclari.md](../research/dogrulama/gorev-araclari.md), No 67). Onay ima etmeme kuralı kılavuzda ticari kullanım bağlamında geçiyor (doğrulama: [dogrulama/gorev-araclari.md](../research/dogrulama/gorev-araclari.md), No 66, kısmen doğru).
 - **3B görünüm web arayüzünden ayrı geliştiriliyor** ([gosterim-ve-arayuz.md](gosterim-ve-arayuz.md), 8. bölüm). Birleştirilene kadar web arayüzünde yalnızca bilgi kartı var.

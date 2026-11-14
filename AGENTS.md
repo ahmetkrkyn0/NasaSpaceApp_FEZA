@@ -64,5 +64,6 @@ Fill these in once the stack is chosen. Run tests and lint before every commit o
 | `docs/`               | Design notes, ADRs, assets                |
 | `docs/challenge/`     | Challenge statement, data sources, judging and submission guides (PDF) |
 | `docs/research/`      | Background research notes; put new research here, not in a root `research/` folder |
+| `shipmodel/`          | Athena lander 3D model, generated from scratch by a Blender script |
 | `CONTRIBUTING.md`     | Full team workflow rules                  |
 | `CHANGELOG.md`        | Release notes                             |
