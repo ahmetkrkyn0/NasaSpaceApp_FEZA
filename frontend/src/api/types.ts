@@ -95,6 +95,8 @@ export const SERVER_ERROR_CODES = [
 ] as const;
 export type ServerErrorCode = (typeof SERVER_ERROR_CODES)[number];
 
+/** `/api/compare` takes at least this many scenarios, each with a different `scenario_id` (ADR-0004, "Sınırlar"). */
+export const MIN_COMPARE_SCENARIOS = 2;
 /** `/api/compare` takes at most this many scenarios (ADR-0004, "Sınırlar"). */
 export const MAX_COMPARE_SCENARIOS = 4;
 

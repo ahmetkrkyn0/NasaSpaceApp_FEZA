@@ -17,7 +17,7 @@ import { CriterionUsed } from '../comms';
 import { PowerResults } from '../power';
 import { EMPTY_FORM, checkForm } from '../setup/form';
 import { compareCsv, metricColumn } from './export';
-import { ResultTable, addBlockedReason } from './index';
+import { ResultTable, addBlockedReason, compareWaitingReason } from './index';
 
 afterEach(() => resetApiConfig());
 
@@ -106,6 +106,16 @@ describe('Compare tab', () => {
     );
     expect(store.addToCompare(fifth)).toBe('full');
     expect(addBlockedReason([], null)).toBe('Set up a scenario first.');
+  });
+
+  it('is not sent to /api/compare until it holds at least two scenarios (ADR-0004)', async () => {
+    const { a, b, c } = await walkS01();
+    expect(compareWaitingReason([])).toBe('Nothing to compare yet. Add the active scenario first.');
+    expect(compareWaitingReason([a])).toBe(
+      'Add one more scenario to see the comparison. It needs 2 to 4 scenarios.',
+    );
+    expect(compareWaitingReason([a, b])).toBeNull();
+    expect(compareWaitingReason([a, b, c])).toBeNull();
   });
 
   it('says so when the scenarios carry different reliability labels', async () => {

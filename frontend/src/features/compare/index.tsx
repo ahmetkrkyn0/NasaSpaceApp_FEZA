@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { getSites, postCompare } from '../../api/client';
 import { COMPARE_METRICS, displayDifference, displayWithUnit } from '../../api/compare-metrics';
 import { formatDate } from '../../api/format';
-import { MAX_COMPARE_SCENARIOS, type CompareResponse, type Scenario, type Site } from '../../api/types';
+import { MAX_COMPARE_SCENARIOS, MIN_COMPARE_SCENARIOS, type CompareResponse, type Scenario, type Site } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import {
@@ -31,6 +31,19 @@ export function addBlockedReason(list: readonly Scenario[], candidate: Scenario 
   if (!candidate) return 'Set up a scenario first.';
   if (list.some((s) => s.scenario_id === candidate.scenario_id)) return 'This scenario is already in the comparison.';
   if (list.length >= MAX_COMPARE_SCENARIOS) return FULL_REASON;
+  return null;
+}
+
+/**
+ * Why the list cannot be sent to `/api/compare` yet, or `null` when it can. The server takes
+ * 2 to 4 scenarios with different ids (ADR-0004, "Sınırlar"); the store already keeps ids unique
+ * and the list at most four long.
+ */
+export function compareWaitingReason(list: readonly Scenario[]): string | null {
+  if (list.length === 0) return 'Nothing to compare yet. Add the active scenario first.';
+  if (list.length < MIN_COMPARE_SCENARIOS) {
+    return `Add one more scenario to see the comparison. It needs ${MIN_COMPARE_SCENARIOS} to ${MAX_COMPARE_SCENARIOS} scenarios.`;
+  }
   return null;
 }
 
@@ -137,7 +150,7 @@ function Templates({ active, list, sites }: { active: Scenario; list: readonly S
 }
 
 function ScenarioList({ list, sites }: { list: readonly Scenario[]; sites: readonly Site[] }) {
-  if (list.length === 0) return <p className="d-muted">Nothing to compare yet. Add the active scenario first.</p>;
+  if (list.length === 0) return <p className="d-muted">{compareWaitingReason(list)}</p>;
   return (
     <ul className="d-list" aria-label="Scenarios in the comparison">
       {list.map((s, i) => {
@@ -252,8 +265,9 @@ export default function ComparePanel() {
   const sitesResult = useAsync((signal) => getSites({}, { signal }), []);
   const sites = sitesResult.state.data ?? [];
   const key = useMemo(() => JSON.stringify(list), [list]);
+  const waiting = compareWaitingReason(list);
   const results = useAsync(
-    (signal) => (list.length === 0 ? Promise.resolve(null) : postCompare({ scenarios: [...list] }, { signal })),
+    (signal) => (waiting !== null ? Promise.resolve(null) : postCompare({ scenarios: [...list] }, { signal })),
     [key],
   );
 
@@ -267,7 +281,8 @@ export default function ComparePanel() {
       <ExampleNote />
       {active ? <Templates active={active} list={list} sites={sites} /> : <NeedsScenario />}
       <ScenarioList list={list} sites={sites} />
-      {list.length > 0 ? (
+      {waiting !== null && list.length > 0 ? <p className="d-hint">{waiting}</p> : null}
+      {waiting === null ? (
         <AsyncBlock result={results}>
           {(data) =>
             data ? (
