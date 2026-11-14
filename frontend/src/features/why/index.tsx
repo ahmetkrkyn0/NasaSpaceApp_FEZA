@@ -69,7 +69,36 @@ function ClassroomDetail({ def, a, b, aIndex, bIndex, response }: CardProps & { 
 }
 
 /** Counterfactual rows of the pair: still loading, failed, or the server's answers. */
-export type CounterfactualState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; rows: readonly Counterfactual[] };
+export type CounterfactualState =
+  | { status: 'loading' }
+  | { status: 'error'; error: unknown }
+  | { status: 'ready'; rows: readonly Counterfactual[] };
+
+/** Rows or failure of one pair, tagged with the pair they were computed for. */
+export interface PairRows {
+  key: string;
+  rows?: readonly Counterfactual[];
+  error?: unknown;
+}
+
+/** Runs the counterfactual request and tags its outcome, success or failure, with the pair key. */
+export async function fetchPairRows(key: string, request: Promise<readonly Counterfactual[]>): Promise<PairRows> {
+  try {
+    return { key, rows: await request };
+  } catch (error) {
+    return { key, error };
+  }
+}
+
+/**
+ * State for the pair on screen. An answer for another pair (the previous one, before the new
+ * request starts) counts as loading, so its rows never appear under the new A and B (PR #66 review).
+ */
+export function counterfactualState(answer: PairRows | undefined, key: string): CounterfactualState {
+  if (!answer || answer.key !== key) return { status: 'loading' };
+  if (answer.rows) return { status: 'ready', rows: answer.rows };
+  return { status: 'error', error: answer.error };
+}
 
 export function PlanDetail({ def, a, b, bIndex, response, counterfactuals: cf }: CardProps & { bIndex: number; counterfactuals: CounterfactualState }) {
   const counterfactuals = cf.status === 'ready' ? cf.rows : undefined;
@@ -169,17 +198,12 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
   const bIndex = pairIndex(list, focus, chosen);
   const a = list[0]!;
   const b = list[bIndex]!;
-  const pairKey = JSON.stringify([a, b, bIndex]);
+  const pairKey = JSON.stringify([a, b, bIndex, level]);
   const counterfactuals = useAsync(
-    (signal) => (level === 'plan' ? fetchCounterfactuals(a, b, letter(bIndex), postCompare, { signal }) : Promise.resolve([])),
-    [pairKey, level],
+    (signal) => fetchPairRows(pairKey, level === 'plan' ? fetchCounterfactuals(a, b, letter(bIndex), postCompare, { signal }) : Promise.resolve([])),
+    [pairKey],
   );
-  const cfState: CounterfactualState =
-    counterfactuals.state.status === 'success'
-      ? { status: 'ready', rows: counterfactuals.state.data }
-      : counterfactuals.state.status === 'error'
-        ? { status: 'error' }
-        : { status: 'loading' };
+  const cfState = counterfactualState(counterfactuals.state.status === 'success' ? counterfactuals.state.data : undefined, pairKey);
   const ra = resultFor(response, a.scenario_id);
   const rb = resultFor(response, b.scenario_id);
   const noneKnown = COMPARE_METRICS.every((def) => compareValues(def, named(0, a, response, def), named(bIndex, b, response, def)).kind === 'unknown');
@@ -213,7 +237,7 @@ export function WhyCards({ list, response, level, focus }: { list: readonly Scen
           computed, not from the place or date.
         </p>
       ) : null}
-      {counterfactuals.state.status === 'error' && level === 'plan' ? <ErrorNote error={counterfactuals.state.error} /> : null}
+      {level === 'plan' && cfState.status === 'error' ? <ErrorNote error={cfState.error} /> : null}
       {noneKnown ? <p className="d-muted">{NONE_KNOWN}</p> : null}
       {noneKnown ? null : cardOrder(focus).map((def) => (
         <WhyCard

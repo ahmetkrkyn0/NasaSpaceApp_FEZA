@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { sitesExample } from '../../api/examples';
 import { scenarioDays } from '../../state/scenario-tools';
 import { MAX_DURATION_DAYS } from '../../state/scenario-tools';
-import { AnswerTable, TaskExplanation } from './index';
+import TasksPanel, { AnswerTable, TaskExplanation } from './index';
 import { GUIDED_TASKS, fetchTaskAnswers, taskScenarios, taskState } from './tasks';
 
 const REPO = new URL('../../../../', import.meta.url);
@@ -30,7 +30,7 @@ describe('guided tasks content', () => {
 
   it('writes no numbers in titles, questions or explanations', () => {
     for (const t of GUIDED_TASKS) {
-      for (const text of [t.title, t.question, t.explanation, ...t.sources.map((s) => s.label)]) {
+      for (const text of [t.title, t.question, t.explanation, t.table_note ?? '', ...t.sources.map((s) => s.label)]) {
         const stripped = NAMES.reduce((acc, name) => acc.replaceAll(name, ''), text);
         expect(stripped, `${t.id}: ${text}`).not.toMatch(/\d/);
       }
@@ -59,6 +59,23 @@ describe('guided tasks content', () => {
         expect(s.mast_height_m).toBe(0);
       }
     }
+  });
+});
+
+describe('guided task review fixes (PR #66)', () => {
+  it('says the crater task numbers are for the ridge site, not a crater floor', async () => {
+    const crater = GUIDED_TASKS.find((t) => t.id === 'never-sunlit')!;
+    const answers = await fetchTaskAnswers(taskScenarios(crater, sitesExample));
+    const html = renderToStaticMarkup(<AnswerTable task={crater} answers={answers} sites={sitesExample} />);
+    expect(html).toContain('These values are for the ridge site, Mons Mouton');
+    const poles = GUIDED_TASKS.find((t) => t.id === 'why-poles')!;
+    expect(renderToStaticMarkup(<AnswerTable task={poles} answers={[]} sites={sitesExample} />)).not.toContain('ridge site');
+  });
+
+  it('keeps the task buttons off until the site list has loaded', () => {
+    const html = renderToStaticMarkup(<TasksPanel />);
+    expect(html.match(/disabled=""/g)).toHaveLength(GUIDED_TASKS.length);
+    expect(html).toContain('Loading the site list');
   });
 });
 

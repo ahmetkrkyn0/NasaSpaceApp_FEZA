@@ -18,7 +18,7 @@ import {
   withInputFrom,
   type Named,
 } from './explain';
-import { PlanDetail, WhyCards, cardOrder, pairIndex } from './index';
+import { PlanDetail, WhyCards, cardOrder, counterfactualState, fetchPairRows, pairIndex } from './index';
 
 /*
  * The metric values below are test fixtures, not product numbers: they only check that the
@@ -235,9 +235,21 @@ describe('Why panel', () => {
     const b2 = { ...b, mast_height_m: 10 };
     const props = { def: metricDef('max_sun_elevation_deg'), a, b: b2, bIndex: 1, response: answer };
     expect(renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'loading' }} />)).toContain('Computing one input at a time');
-    const failed = renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'error' }} />);
+    const failed = renderToStaticMarkup(<PlanDetail {...props} counterfactuals={{ status: 'error', error: new Error('test') }} />);
     expect(failed).toContain('could not be computed');
     expect(failed).not.toContain('Computing one input at a time');
+  });
+
+  it('never shows rows computed for another pair (PR #66 review)', async () => {
+    const rows = [{ input: 'date' as const, scenario: b, result: undefined }];
+    const answer = await fetchPairRows('pair-AB', Promise.resolve(rows));
+    expect(counterfactualState(answer, 'pair-AB')).toEqual({ status: 'ready', rows });
+    // The pair changed to A-C; until its own request answers, the A-B rows count as loading.
+    expect(counterfactualState(answer, 'pair-AC')).toEqual({ status: 'loading' });
+    expect(counterfactualState(undefined, 'pair-AC')).toEqual({ status: 'loading' });
+    const failed = await fetchPairRows('pair-AC', Promise.reject(new Error('down')));
+    expect(counterfactualState(failed, 'pair-AC').status).toBe('error');
+    expect(counterfactualState(failed, 'pair-AB').status).toBe('loading');
   });
 
   it('shows one note instead of six cards when no metric is known in both scenarios', () => {

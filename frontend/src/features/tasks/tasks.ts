@@ -29,6 +29,8 @@ export interface GuidedTask {
   /** Values shown after the guess; all come from `/api/events`. */
   metrics: (keyof EventMetrics)[];
   explanation: string;
+  /** Said under the answer table when the numbers answer a nearby question, not the one asked. */
+  table_note?: string;
   sources: TaskSource[];
 }
 
