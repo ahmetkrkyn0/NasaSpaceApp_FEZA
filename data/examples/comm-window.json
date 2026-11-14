@@ -1,0 +1,17 @@
+{
+  "utc": "2026-12-05T00:00:00Z",
+  "lat_deg": -84.78,
+  "lon_deg": 29.13,
+  "mast_height_m": 0,
+  "visible_now": false,
+  "minutes_remaining": null,
+  "minutes_until_visible": 8921,
+  "next_change_utc": "2026-12-11T04:41:00Z",
+  "search_limited": false,
+  "searched_hours": 336,
+  "earth_elevation_deg": null,
+  "earth_azimuth_true_deg": null,
+  "horizon_deg": 0.0,
+  "criterion": "center",
+  "validity": "SYNTHETIC"
+}

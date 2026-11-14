@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "type": "eclipse_start",
+      "utc": "2027-02-20T22:09:00Z",
+      "utc_earliest": null,
+      "utc_latest": null,
+      "criterion": "first_limb",
+      "max_obscured_fraction": 0.343
+    },
+    {
+      "type": "eclipse_end",
+      "utc": "2027-02-21T00:36:00Z",
+      "utc_earliest": null,
+      "utc_latest": null,
+      "criterion": "first_limb",
+      "max_obscured_fraction": 0.343
+    }
+  ],
+  "windows": [],
+  "metrics": {
+    "sunlit_fraction": null,
+    "longest_dark_hours": null,
+    "max_sun_elevation_deg": null,
+    "earth_visible_fraction": null,
+    "longest_earth_hidden_hours": null
+  },
+  "mast_height_m": 0,
+  "validity": "SYNTHETIC"
+}

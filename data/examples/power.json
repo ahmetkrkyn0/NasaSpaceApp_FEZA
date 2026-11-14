@@ -1,0 +1,13 @@
+{
+  "panel_profile_id": "vertical_tracking",
+  "mast_height_m": 0,
+  "fixed_azimuth_deg": null,
+  "samples": [],
+  "summary": {
+    "mean_power_w": 207.6,
+    "energy_kwh": null,
+    "sunlit_fraction": null,
+    "longest_dark_hours": 280
+  },
+  "validity": "SYNTHETIC"
+}

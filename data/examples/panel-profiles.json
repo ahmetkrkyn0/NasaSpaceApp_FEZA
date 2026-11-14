@@ -1,0 +1,38 @@
+[
+  {
+    "id": "horizontal",
+    "type": "horizontal",
+    "area_m2": 1,
+    "efficiency": 0.27,
+    "fixed_azimuth_deg": null,
+    "mast_height_m": 2,
+    "validity": "SYNTHETIC"
+  },
+  {
+    "id": "vertical_fixed",
+    "type": "vertical_fixed",
+    "area_m2": 1,
+    "efficiency": 0.27,
+    "fixed_azimuth_deg": null,
+    "mast_height_m": 2,
+    "validity": "SYNTHETIC"
+  },
+  {
+    "id": "vertical_tracking",
+    "type": "vertical_tracking",
+    "area_m2": 1,
+    "efficiency": 0.27,
+    "fixed_azimuth_deg": null,
+    "mast_height_m": 2,
+    "validity": "SYNTHETIC"
+  },
+  {
+    "id": "two_axis",
+    "type": "two_axis",
+    "area_m2": 1,
+    "efficiency": 0.27,
+    "fixed_azimuth_deg": null,
+    "mast_height_m": 2,
+    "validity": "SYNTHETIC"
+  }
+]

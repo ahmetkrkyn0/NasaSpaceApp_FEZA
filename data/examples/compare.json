@@ -1,0 +1,108 @@
+{
+  "scenarios": [
+    {
+      "scenario": {
+        "scenario_id": "a",
+        "label": "Mons Mouton, Dec 2026",
+        "site_id": "mons-mouton-im2-target",
+        "lat_deg": null,
+        "lon_deg": null,
+        "start_utc": "2026-12-01T00:00:00Z",
+        "end_utc": "2026-12-31T00:00:00Z",
+        "mast_height_m": 0,
+        "panel_profile_id": "vertical_tracking",
+        "earth_criterion": "center"
+      },
+      "metrics": {
+        "sunlit_fraction": null,
+        "longest_dark_hours": null,
+        "max_sun_elevation_deg": 6.47,
+        "earth_visible_fraction": 0.723,
+        "longest_earth_hidden_hours": 186.63,
+        "mean_power_w": null
+      },
+      "now": null,
+      "validity": "SYNTHETIC"
+    },
+    {
+      "scenario": {
+        "scenario_id": "b",
+        "label": "Mons Mouton, launch +5 days",
+        "site_id": "mons-mouton-im2-target",
+        "lat_deg": null,
+        "lon_deg": null,
+        "start_utc": "2026-12-06T00:00:00Z",
+        "end_utc": "2027-01-05T00:00:00Z",
+        "mast_height_m": 0,
+        "panel_profile_id": "vertical_tracking",
+        "earth_criterion": "center"
+      },
+      "metrics": {
+        "sunlit_fraction": null,
+        "longest_dark_hours": null,
+        "max_sun_elevation_deg": null,
+        "earth_visible_fraction": null,
+        "longest_earth_hidden_hours": null,
+        "mean_power_w": null
+      },
+      "now": null,
+      "validity": "SYNTHETIC"
+    }
+  ],
+  "deltas": [
+    {
+      "metric": "sunlit_fraction",
+      "values": {
+        "a": null,
+        "b": null
+      },
+      "unit": "fraction",
+      "best_scenario_id": null
+    },
+    {
+      "metric": "longest_dark_hours",
+      "values": {
+        "a": null,
+        "b": null
+      },
+      "unit": "hours",
+      "best_scenario_id": null
+    },
+    {
+      "metric": "max_sun_elevation_deg",
+      "values": {
+        "a": 6.47,
+        "b": null
+      },
+      "unit": "deg",
+      "best_scenario_id": null
+    },
+    {
+      "metric": "earth_visible_fraction",
+      "values": {
+        "a": 0.723,
+        "b": null
+      },
+      "unit": "fraction",
+      "best_scenario_id": null
+    },
+    {
+      "metric": "longest_earth_hidden_hours",
+      "values": {
+        "a": 186.63,
+        "b": null
+      },
+      "unit": "hours",
+      "best_scenario_id": null
+    },
+    {
+      "metric": "mean_power_w",
+      "values": {
+        "a": null,
+        "b": null
+      },
+      "unit": "W",
+      "best_scenario_id": null
+    }
+  ]
+}

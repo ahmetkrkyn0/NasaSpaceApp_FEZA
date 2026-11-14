@@ -1,0 +1,172 @@
+[
+  {
+    "id": "apollo-11",
+    "name": "Apollo 11",
+    "category": "apollo",
+    "lat_deg": 0.67416,
+    "lon_deg": 23.47314,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null,
+    "cards": [
+      {
+        "agency": "CSA",
+        "text": "The landing gear of the Eagle lunar module was built in Canada.",
+        "source": {
+          "label": "Canadian Space Agency",
+          "url": "https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/from-apollo-to-artemis-the-evolution-of-crewed-lunar-missions.asp"
+        }
+      }
+    ]
+  },
+  {
+    "id": "change-4",
+    "name": "Chang'e 4",
+    "category": "international",
+    "lat_deg": -45.4561,
+    "lon_deg": 177.5885,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "chandrayaan-3",
+    "name": "Chandrayaan-3",
+    "category": "international",
+    "lat_deg": -69.3741,
+    "lon_deg": 32.32,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "LROC image 1314",
+      "url": "https://www.lroc.asu.edu/images/1314"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "slim",
+    "name": "SLIM",
+    "category": "international",
+    "lat_deg": -13.316,
+    "lon_deg": 25.251,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed_tipped",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "im1-odysseus",
+    "name": "IM-1 Odysseus",
+    "category": "clps",
+    "lat_deg": -80.13,
+    "lon_deg": 1.44,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "change-6",
+    "name": "Chang'e 6",
+    "category": "international",
+    "lat_deg": -41.6385,
+    "lon_deg": -153.9852,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "blue-ghost-1",
+    "name": "Blue Ghost 1",
+    "category": "clps",
+    "lat_deg": 18.562,
+    "lon_deg": 61.81,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "im2-athena",
+    "name": "IM-2 Athena (landing point)",
+    "category": "clps",
+    "lat_deg": -84.7906,
+    "lon_deg": 29.1957,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "landed_tipped",
+    "coordinate_source": {
+      "label": "NASA NSSDC lunar artifact table",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
+    },
+    "validity": "MEASURED",
+    "notes": "About 370 m from the planned target point."
+  },
+  {
+    "id": "mons-mouton-im2-target",
+    "name": "Mons Mouton (IM-2 target point)",
+    "category": "test",
+    "lat_deg": -84.78,
+    "lon_deg": 29.13,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "reference",
+    "coordinate_source": {
+      "label": "LROC image 1401",
+      "url": "https://www.lroc.asu.edu/images/1401"
+    },
+    "validity": "MEASURED",
+    "notes": null
+  },
+  {
+    "id": "hakuto-r-m2",
+    "name": "Hakuto-R M2 Resilience (impact point)",
+    "category": "commercial",
+    "lat_deg": 60.44,
+    "lon_deg": -4.6,
+    "elevation_m": null,
+    "landing_utc": null,
+    "status": "crashed",
+    "coordinate_source": {
+      "label": "SpacePolicyOnline, June 2025 (LRO crash site)",
+      "url": null
+    },
+    "validity": "MEASURED",
+    "notes": null
+  }
+]
