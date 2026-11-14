@@ -64,7 +64,7 @@ Panel yükseldikçe yakındaki engellerin üstünden bakar. Bu etki ufuk profili
 
 ### Girdi
 
-`GET /api/power`: konum, `start_utc`, `end_utc`, `panel_profile_id` ([ADR-0004](../adr/0004-api-uc-noktalari.md)). `mast_height_m` panel profilinden gelir.
+`GET /api/power`: konum, `start_utc`, `end_utc`, `panel_profile_id` ([ADR-0004](../adr/0004-api-uc-noktalari.md)). İstekte `mast_height_m` verilmezse panel profilindeki değer kullanılır ([ADR-0003](../adr/0003-veri-sozlesmesi.md), "Direk yüksekliği kuralı").
 
 ### Çıktı
 
@@ -73,6 +73,7 @@ Panel yükseldikçe yakındaki engellerin üstünden bakar. Bu etki ufuk profili
 ```json
 {
   "panel_profile_id": "vertical_tracking",
+  "mast_height_m": 2,
   "summary": { "mean_power_w": 258.2, "energy_kwh": 192.1, "sunlit_fraction": 0.662, "longest_dark_hours": 232 },
   "validity": "SYNTHETIC"
 }
@@ -109,7 +110,7 @@ Aynı saha ve ay için verim uygulanmadan, panelin metrekaresine düşen ortalam
 ## 8. Varsayımlar ve açık kararlar
 
 - Varsayım: Varsayılan verim 0,27. Gösterilen üretici veri sayfası ömür başı için yüzde 26,8 veriyor; araştırma notundaki 0,29 değeri bu kaynakla uyuşmuyor (doğrulama: [dogrulama/gunes-paneli.md](../research/dogrulama/gunes-paneli.md), No 43, kısmen doğru). Hazır profillerin hepsi `SYNTHETIC` etiketi taşır.
-- Öneri: Hazır profiller dört tip için birer tane, alan 1 metrekare, direk yüksekliği 2 m. Kullanıcı yüksekliği 2, 5, 10 ve 20 m arasından seçer.
+- Öneri: Hazır profiller dört tip için birer tane, alan 1 metrekare, direk yüksekliği 2 m. Kullanıcı ilk sürümde 2 ya da 10 m seçer, çünkü ufuk profilleri yalnızca bu iki yükseklik için önceden hesaplanıyor ([ufuk-hesabi.md](ufuk-hesabi.md)). 5 ve 20 m sonradan eklenebilir.
 - Açık karar: `vertical_fixed` için varsayılan yön. Öneri: aralıktaki en iyi yön sunucuda bulunur ve yanıtta bildirilir.
 - Kapsam dışı: Rover üzerindeki paneller ve rover'ın yönüne göre hesap ([ANALIZ-OZETI.md, bölüm 7.5](../research/ANALIZ-OZETI.md)).
 

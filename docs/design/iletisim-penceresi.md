@@ -77,7 +77,7 @@ NASA'nın üç istasyonu (Goldstone, Canberra, Madrid) Ay'ı her an göremiyor. 
 
 ### Çıktı
 
-Referans arayüzün aynı adlı yanıtındaki alanlar korunur; ızgara satır ve sütunu yerine enlem ve boylam gelir (Kaynak: [örnek yanıtlar](../../frontend-migrate/design-export/api-contract/fixtures/), `comm-window.available.json`).
+`CommWindow` ([ADR-0003](../adr/0003-veri-sozlesmesi.md)). Referans arayüzün aynı adlı yanıtındaki alanlar korunur; ızgara satır ve sütunu yerine enlem ve boylam gelir (Kaynak: [örnek yanıtlar](../../frontend-migrate/design-export/api-contract/fixtures/), `comm-window.available.json`).
 
 ```json
 {

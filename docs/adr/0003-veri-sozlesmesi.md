@@ -74,6 +74,7 @@ Yön sayısı 720 olarak sabitlenir (yarım derece aralık). Gerekçe: Güneş k
 | `samples` | dizi | Her eleman bir an (aşağıda) |
 | `ephemeris` | nesne | `source` (örnek: `SPICE DE440`), `frame` (`MOON_ME`), `correction` (`LT+S`) |
 | `horizon` | nesne | Kullanılan ufuk profilinin `method` ve `validity` değeri |
+| `validity` | metin | Ufuk profilinden devralınır |
 
 Her örnek:
 
@@ -100,7 +101,29 @@ Her örnek:
 - `criterion` olayın hangi ölçüte göre sayıldığını söyler: `center`, `first_limb` ya da `full_disk`.
 - `metrics` alanları: `sunlit_fraction`, `longest_dark_hours`, `max_sun_elevation_deg`, `earth_visible_fraction`, `longest_earth_hidden_hours`.
 
-Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`. Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)).
+Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`, `criterion`, `search_limited`, `validity`. Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)). `criterion` Dünya alanlarının hangi ölçüte göre sayıldığını söyler (`EventList` ile aynı değerler).
+
+### İletişim penceresi (`CommWindow`)
+
+`/api/comm-window` yanıtı. Alanlar referans arayüzün aynı adlı yanıtından alınır; ızgara satır ve sütunu yerine enlem ve boylam gelir. Süreler dakikadır.
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `utc` | metin | Sorgu anı |
+| `lat_deg`, `lon_deg` | sayı | Gözlem noktası |
+| `visible_now` | mantıksal | Dünya o anda görünüyor mu |
+| `minutes_remaining` | sayı ya da `null` | Görünüyorsa batışa kalan süre |
+| `minutes_until_visible` | sayı ya da `null` | Görünmüyorsa doğuşa kalan süre |
+| `next_change_utc` | metin ya da `null` | Bir sonraki doğuş ya da batış anı |
+| `search_limited` | mantıksal | Aranan süre içinde olay bulunamadıysa `true` |
+| `searched_hours` | sayı | Aranan süre |
+| `earth_elevation_deg`, `earth_azimuth_true_deg` | sayı ya da `null` | Dünya'nın o andaki açıları |
+| `horizon_deg` | sayı | Dünya yönündeki ufuk açısı |
+| `criterion` | metin | `center`, `first_limb` ya da `full_disk` |
+| `relay_required` | mantıksal | [role-etiketi.md](../design/role-etiketi.md) içinde tanımlı |
+| `validity` | metin | Ufuk profilinden devralınır |
+
+`NowStatus` içindeki Dünya alanları aynı hesaptan gelir; yalnızca birim saattir ve ayrıntı alanları yoktur.
 
 ### Panel profili (`PanelProfile`) ve güç serisi (`PowerSeries`)
 
@@ -111,10 +134,14 @@ Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun
 | `area_m2` | sayı | Panel alanı |
 | `efficiency` | sayı | 0 ile 1 arası |
 | `fixed_azimuth_deg` | sayı ya da `null` | Yalnızca `vertical_fixed` için |
-| `mast_height_m` | sayı | Panelin zeminden yüksekliği |
+| `mast_height_m` | sayı | Panelin zeminden varsayılan yüksekliği |
 | `validity` | metin | Varsayılan değerler için `SYNTHETIC` |
 
-`PowerSeries`: `samples` dizisi (`utc`, `incidence_cos`, `sun_visible_fraction`, `irradiance_w_m2`, `power_w`) ve `summary` nesnesi (`mean_power_w`, `energy_kwh`, `sunlit_fraction`, `longest_dark_hours`).
+`PowerSeries`: `panel_profile_id`, `mast_height_m`, `samples` dizisi (`utc`, `incidence_cos`, `sun_visible_fraction`, `irradiance_w_m2`, `power_w`), `summary` nesnesi (`mean_power_w`, `energy_kwh`, `sunlit_fraction`, `longest_dark_hours`) ve `validity` (panel profili ile ufuk profilinin düşük olanı).
+
+### Direk yüksekliği kuralı
+
+`mast_height_m` şu sırayla belirlenir: istekteki ya da senaryodaki (`Scenario`) değer, yoksa panel profilindeki değer, o da yoksa 2. İlk sürümde yalnızca 2 ve 10 kabul edilir, çünkü ufuk profilleri bu iki yükseklik için önceden hesaplanıyor ([ufuk-hesabi.md](../design/ufuk-hesabi.md)). Başka bir değer HTTP 422 ile reddedilir. Kullanılan değer yanıtta `mast_height_m` alanında döner.
 
 ### Senaryo ve karşılaştırma
 

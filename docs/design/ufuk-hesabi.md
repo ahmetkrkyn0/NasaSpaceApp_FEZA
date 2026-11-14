@@ -111,7 +111,7 @@ Arazi ufku hesaplandığında `method` değeri `terrain`, `validity` değeri `DE
 - Varsayım: Bir saha için arazi ufku hesabının ne kadar süreceği ölçülmedi. Ekibin "saha başına 0,03 saniye" değeri yalnızca hazır profille karşılaştırma adımı içindir ve tekrar edilmedi (doğrulama: [dogrulama/zamanda-degisen-veri.md](../research/dogrulama/zamanda-degisen-veri.md), No 51, doğrulanamadı). İlk iş küçük bir bölgede süre ölçmektir.
 - Varsayım: Bir saha için yaklaşık 440 adım ve 320 bin harita okuması gerekeceği bir hesap tahminidir (doğrulama: [dogrulama/zamanda-degisen-veri.md](../research/dogrulama/zamanda-degisen-veri.md), No 50); gerçek sayı kullanılan haritaya bağlıdır.
 - Öneri: Hazır sahalar için profiller 2 m ve 10 m yükseklik için önceden hesaplanır ve `data/horizons/` altına konur ([ADR-0003](../adr/0003-veri-sozlesmesi.md)).
-- Açık karar: Özel koordinatlarda arazi ufku sunucuda o anda mı hesaplanacak, yoksa ilk sürümde yalnızca düz ufuk mu verilecek. Süre ölçümüne bağlı.
+- Karar (14 Kasım 2026): Özel koordinatlarda ilk sürüm yalnızca düz ufuk verir ve "arazi hesaba katılmadı" etiketi gösterir ([ADR-0001](../adr/0001-uygulama-mimarisi-ve-stack.md), madde 5). Arazi ufkunun o anda hesaplanması süre ölçümünden sonra eklenebilir.
 
 ## 9. Kaynaklar
 
