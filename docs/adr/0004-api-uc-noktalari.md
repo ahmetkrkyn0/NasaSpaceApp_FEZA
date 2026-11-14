@@ -53,9 +53,11 @@ Ekstra özellikler için uç noktalar, o özellik yapılırsa eklenir: `/api/ecl
 - `hours` en fazla 24 çarpı 60 (iki ay). Daha uzun aralık için `step_minutes` büyütülür.
 - `step_minutes` en az 1.
 - `/api/sky-series` iki ucu da içerir: ilk örnek `start_utc` anındadır, son örnek aralığın sonundadır. `hours` 24 ve `step_minutes` 60 ise 25 örnek döner; `hours` sıfırsa tek örnek döner. Doğrulama testleri tek bir an için bu yolla sorgu yapar ([dogrulama-plani.md](../design/dogrulama-plani.md), bölüm 5).
-- `/api/compare` en fazla 4 senaryo alır.
+- `/api/events` ve `/api/power` aralığı (`end_utc` eksi `start_utc`) sıfırdan büyük ve en fazla 24 çarpı 60 saattir (iki ay). `/api/power` saatlik örnek verir ve iki ucu da içerir: 1 Aralık 00:00 ile 1 Ocak 00:00 arası 745 örnektir.
+- `/api/now` ve `/api/comm-window` sonraki değişimi en fazla 720 saat (30 gün) ileride arar. Bulamazsa süre alanları `null`, `search_limited` `true` olur. `/api/now` gece süresini (`night_hours`) de aynı uzunlukta geriye ve ileriye arar.
+- `/api/compare` en az 2, en fazla 4 senaryo alır; `scenario_id` değerleri farklı olmalıdır. Her senaryo `/api/events` ve `/api/power` sınırlarına uyar.
 
-Varsayım: Bu sınırlar ölçülmüş bir başarım değerine dayanmıyor; sunucu yazıldıktan sonra süre ölçülerek düzeltilmeli. Eldeki tek süre ölçümü (saha başına ufuk karşılaştırması için 0,03 saniye) ekibin kendi ölçümü ve tekrar edilmedi ([dogrulama/zamanda-degisen-veri.md](../research/dogrulama/zamanda-degisen-veri.md), No 51).
+Ölçülen süreler (14 Kasım 2026, tek istek, sunucu ısınmış, AMD Ryzen dizüstü, Mons Mouton, 2 m direk, arazi ufku): `/api/events` 30 gün 0,14 s, 60 gün 0,28 s; `/api/power` 60 gün 0,07 s (`vertical_fixed` en iyi yön araması dahil 0,09 s); `/api/now` 0,18 s; `/api/comm-window` 0,07 s; `/api/sky-series` 60 gün saatlik 0,14 s; `/api/compare` 4 senaryo çarpı 60 gün 1,8 s. Sınırlar bu sürelerle arayüzün beklemesi kabul edilebilir kaldığı için değiştirilmedi. Süreler bir kez ölçüldü, başka makinede tekrarlanmadı.
 
 ### Hata yanıtı
 
@@ -101,3 +103,4 @@ Yapılacaklar:
 ## Değişiklik notu
 
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `/api/health` yanıtına `ephemeris_range` ve hata kodlarına `date_out_of_range` eklendi (`UC-03`, aralık dışı tarih). `/api/power` isteğine `fixed_azimuth_deg` eklendi (`UC-06`). Harita katmanı adları, `region` değeri ve `X-Layer-Bounds` başlığı tanımlandı (`UC-12`). `/api/validation` (`UC-10`) ve `/api/ground-stations` (`UC-07`) destekleyici uç nokta olarak eklendi. Hata kodları tablosu eklendi. `/api/sky-series` yanıtının iki ucu da içerdiği "Sınırlar" bölümüne yazıldı.
+- 14 Kasım 2026, F2-A ([#37](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/37)): "Sınırlar" bölümüne `/api/events`, `/api/power`, `/api/now`, `/api/comm-window` ve `/api/compare` sınırları ile ölçülen süreler yazıldı; ölçülmemiş sınır varsayımı kaldırıldı.
