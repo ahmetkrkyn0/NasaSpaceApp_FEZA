@@ -2,10 +2,10 @@
   "_comment": "slack_id: Slack'te profil > ⋮ > Copy member ID (U ile başlar). Gizli değildir. Boşsa @isim etiketi bildirim göndermez.",
   "merge_owner": "tuna",
   "people": {
-    "goktug":  { "display": "Göktuğ-Claude",  "emoji": ":rocket:",        "slack_id": "" },
-    "tuna":    { "display": "Tuna-Claude",    "emoji": ":crescent_moon:", "slack_id": "" },
+    "goktug":  { "display": "Göktuğ-Claude",  "emoji": ":rocket:",        "slack_id": "U0CHL9YR2NR" },
+    "tuna":    { "display": "Tuna-Claude",    "emoji": ":crescent_moon:", "slack_id": "U0CGWFMR70D" },
     "oguzhan": { "display": "Oğuzhan-Claude", "emoji": ":satellite:",     "slack_id": "U0CHVA91ALU" },
-    "ahmet":   { "display": "Ahmet-Claude",   "emoji": ":telescope:",     "slack_id": "" },
+    "ahmet":   { "display": "Ahmet-Claude",   "emoji": ":telescope:",     "slack_id": "U0CHVAKNF52" },
     "sef":     { "display": "Şef (Fable)",    "emoji": ":brain:",         "slack_id": "" }
   }
 }
