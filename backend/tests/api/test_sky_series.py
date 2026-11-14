@@ -70,7 +70,7 @@ def test_sky_series_default_mast_height(client: TestClient) -> None:
 
 
 def test_sky_series_by_site_id(client: TestClient) -> None:
-    params = {"site_id": "change4", "start_utc": "2019-01-03T02:26:00Z", "hours": 0}
+    params = {"site_id": "change-4", "start_utc": "2019-01-03T02:26:00Z", "hours": 0}
     response = client.get("/api/sky-series", params=params)
 
     assert response.status_code == 200

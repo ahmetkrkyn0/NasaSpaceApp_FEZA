@@ -37,7 +37,7 @@ def test_load_sites_returns_file_contents(fixture_data_dir: Path) -> None:
     assert [site["id"] for site in sites] == [
         "mons-mouton-im2-target",
         "im2-athena",
-        "change4",
+        "change-4",
     ]
 
 
@@ -66,7 +66,7 @@ def test_load_reference_missions_returns_file_contents(fixture_data_dir: Path) -
 
     assert isinstance(missions, list)
     assert missions == _read_json("reference_missions.json")
-    assert [mission["id"] for mission in missions] == ["im2-athena", "change4"]
+    assert [mission["id"] for mission in missions] == ["im2-athena", "change-4"]
 
 
 def test_find_site_hit(fixture_data_dir: Path) -> None:

@@ -36,6 +36,15 @@ def test_nested_list_of_dicts_compared_via_first_element() -> None:
     assert contract.diff_keys(actual, expected) == []
 
 
+def test_optional_extra_fields_may_be_missing_or_present() -> None:
+    expected = [{"id": "a", "cards": [{"text": "x"}]}]
+    assert contract.diff_keys([{"id": "b"}], expected) == []
+    assert contract.diff_keys([{"id": "b", "cards": []}], [{"id": "a"}]) == []
+    assert contract.diff_keys(
+        [{"id": "b", "cards": [{"txt": "y"}]}], expected
+    ) == ["missing key: [0].cards[0].text", "extra key: [0].cards[0].txt"]
+
+
 def test_empty_list_on_either_side_passes() -> None:
     assert contract.diff_keys({"samples": []}, {"samples": [{"utc": "a"}]}) == []
     assert contract.diff_keys({"samples": [{"utc": "a"}]}, {"samples": []}) == []
