@@ -1,0 +1,1506 @@
+{
+  "source": {
+    "sha": "5aec750",
+    "branch": "berke/backend-review"
+  },
+  "notes": [
+    "Found by AST over non-test frontend/src: calls to fetch() and to the net/client.ts helpers getJson (GET), postJson (POST), getFloat32 (GET, binary). Helper paths are relative to BASE = \"/api\" and are shown with /api prefixed.",
+    "path: template substitutions written as {name}; a substitution that builds the query string is dropped from the path and marks queryDynamic, with keys recovered from URLSearchParams .set/.append/object literals in the same function.",
+    "binary: getFloat32, an arrayBuffer() read in the calling function, or format=f32 in the URL.",
+    "responseType: helper generic, else a `.json() as T` cast, else the calling function's return type (Promise unwrapped); responseTypeSources says which.",
+    "dynamicCalls: fetches whose URL is a variable (manifest-supplied binary_url, constructed asset URLs); urlSource says where it comes from.",
+    "literalMentions: /api... literals not passed directly to fetch/helpers (they may be built into a URL elsewhere, or displayed).",
+    "headers: every X-* header name string in frontend/src, with the call that reads it.",
+    "Vite proxy: see vite-proxy.txt (/api -> http://127.0.0.1:8000, dev and preview)."
+  ],
+  "counts": {
+    "endpoints": 29,
+    "callSites": 42,
+    "dynamicCalls": 7,
+    "literalMentions": 8,
+    "headerNames": 9
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "AiChatResponse",
+      "responseTypeSources": [
+        "AiChatResponse (cast)"
+      ],
+      "responseTypeDeclaredAt": {
+        "AiChatResponse": [
+          "frontend/src/api/assistant.ts:60"
+        ]
+      },
+      "urlTemplates": [
+        "/api/ai/chat"
+      ],
+      "callers": [
+        "frontend/src/api/assistant.ts:94"
+      ],
+      "wrappers": [
+        {
+          "name": "postAiChat",
+          "consumers": [
+            "frontend/src/features/assistant/ChatPanel.tsx:530"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/cell-telemetry",
+      "queryParams": [
+        "col",
+        "goal_col",
+        "goal_row",
+        "rover_id",
+        "row",
+        "start_utc",
+        "survival",
+        "thermal_dwell"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "CellTelemetryResponse",
+      "responseTypeSources": [
+        "CellTelemetryResponse (cast)"
+      ],
+      "responseTypeDeclaredAt": {
+        "CellTelemetryResponse": [
+          "frontend/src/net/types.ts:189"
+        ]
+      },
+      "urlTemplates": [
+        "/api/cell-telemetry?${query.toString()}"
+      ],
+      "callers": [
+        "frontend/src/api.ts:495"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchCellTelemetry",
+          "consumers": [
+            "frontend/src/App.tsx:784",
+            "frontend/src/features/cost-explain/useCostExplain.ts:66",
+            "frontend/src/features/mission-context/useCellDetail.ts:57"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/comm-window",
+      "queryParams": [
+        "col",
+        "row",
+        "utc"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "CommWindow",
+      "responseTypeSources": [
+        "CommWindow (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "CommWindow": [
+          "frontend/src/net/analysis.ts:141"
+        ]
+      },
+      "urlTemplates": [
+        "/api/comm-window?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:168"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchCommWindow",
+          "consumers": [
+            "frontend/src/features/earth-visibility/useEarthVisibility.ts:102"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/compare",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "CompareResponse",
+      "responseTypeSources": [
+        "CompareResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "CompareResponse": [
+          "frontend/src/net/types.ts:416"
+        ]
+      },
+      "urlTemplates": [
+        "/api/compare"
+      ],
+      "callers": [
+        "frontend/src/net/compare.ts:16"
+      ],
+      "wrappers": [
+        {
+          "name": "compareProfiles",
+          "consumers": [
+            "frontend/src/features/profile-compare/useProfileCompare.ts:46"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/dem-uncertainty",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "UncertaintyResponse",
+      "responseTypeSources": [
+        "UncertaintyResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "UncertaintyResponse": [
+          "frontend/src/net/uncertainty.ts:42"
+        ]
+      },
+      "urlTemplates": [
+        "/api/dem-uncertainty"
+      ],
+      "callers": [
+        "frontend/src/net/uncertainty.ts:58"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchRouteUncertainty",
+          "consumers": [
+            "frontend/src/features/uncertainty/useUncertainty.ts:89"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/earth-series",
+      "queryParams": [
+        "downsample",
+        "n_slices",
+        "slice_hours",
+        "start_utc"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "EarthSeriesManifest",
+      "responseTypeSources": [
+        "EarthSeriesManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "EarthSeriesManifest": [
+          "frontend/src/net/analysis.ts:183"
+        ]
+      },
+      "urlTemplates": [
+        "/api/earth-series?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:218"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchEarthSeries",
+          "consumers": [
+            "frontend/src/features/earth-visibility/useEarthVisibility.ts:72"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "{ dem_loaded: boolean }",
+      "responseTypeSources": [
+        "{ dem_loaded: boolean } (cast)"
+      ],
+      "responseTypeDeclaredAt": {},
+      "urlTemplates": [
+        "/api/health"
+      ],
+      "callers": [
+        "frontend/src/api.ts:504"
+      ],
+      "wrappers": [
+        {
+          "name": "checkHealth",
+          "consumers": [
+            "frontend/src/App.tsx:342"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/illumination-corridor",
+      "queryParams": [
+        "coarsen",
+        "lit_rule",
+        "n_slices",
+        "rover_id",
+        "slice_hours",
+        "start_utc"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "CorridorManifest",
+      "responseTypeSources": [
+        "CorridorManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "CorridorManifest": [
+          "frontend/src/net/analysis.ts:490"
+        ]
+      },
+      "urlTemplates": [
+        "/api/illumination-corridor?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:535"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchIlluminationCorridor",
+          "consumers": [
+            "frontend/src/features/illumination-corridor/useIlluminationCorridor.ts:73"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/illumination-series",
+      "queryParams": [
+        "downsample",
+        "n_slices",
+        "slice_hours",
+        "start_utc"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "IlluminationSeries | SeriesManifest",
+      "responseTypeSources": [
+        "IlluminationSeries (cast)",
+        "SeriesManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "IlluminationSeries": [
+          "frontend/src/api.ts:208"
+        ],
+        "SeriesManifest": [
+          "frontend/src/TerrainCanvas3D.tsx:120",
+          "frontend/src/net/types.ts:348"
+        ]
+      },
+      "urlTemplates": [
+        "/api/illumination-series${suffix ? `?${suffix}` : ''}",
+        "/api/illumination-series?${SERIES_QUERY}",
+        "/api/illumination-series?${query.toString()}"
+      ],
+      "callers": [
+        "frontend/src/TerrainCanvas3D.tsx:1589",
+        "frontend/src/api.ts:383",
+        "frontend/src/net/series.ts:26"
+      ],
+      "wrappers": [
+        {
+          "name": "build",
+          "consumers": [
+            "frontend/src/TerrainCanvas3D.tsx:1722"
+          ]
+        },
+        {
+          "name": "fetchIlluminationSeries",
+          "consumers": []
+        },
+        {
+          "name": "fetchSeriesManifest",
+          "consumers": [
+            "frontend/src/features/time-axis/useTimeAxis.ts:123"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/layers/{name}",
+      "queryParams": [
+        "downsample",
+        "format",
+        "rover_id",
+        "w_energy",
+        "w_shadow",
+        "w_slope",
+        "w_thermal"
+      ],
+      "queryDynamic": true,
+      "binary": true,
+      "responseType": "LayerResponse | BinaryField",
+      "responseTypeSources": [
+        "LayerResponse (returnType)",
+        "BinaryField (returnType)"
+      ],
+      "responseTypeDeclaredAt": {
+        "LayerResponse": [
+          "frontend/src/api.ts:120"
+        ],
+        "BinaryField": [
+          "frontend/src/net/layers.ts:22"
+        ]
+      },
+      "urlTemplates": [
+        "/api/layers/${name}?${query.toString()}",
+        "/api/layers/${name}?${query}"
+      ],
+      "callers": [
+        "frontend/src/api.ts:320",
+        "frontend/src/net/layers.ts:134"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchBinaryLayer",
+          "consumers": [
+            "frontend/src/mission/useBinaryField.ts:51"
+          ]
+        },
+        {
+          "name": "fetchLayer",
+          "consumers": [
+            "frontend/src/App.tsx:357",
+            "frontend/src/App.tsx:358",
+            "frontend/src/App.tsx:359",
+            "frontend/src/App.tsx:360",
+            "frontend/src/App.tsx:361",
+            "frontend/src/App.tsx:362",
+            "frontend/src/App.tsx:363",
+            "frontend/src/App.tsx:474",
+            "frontend/src/App.tsx:496"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/lidar-scan",
+      "queryParams": [
+        "col",
+        "elevation_angles_deg",
+        "max_range_m",
+        "n_azimuth",
+        "row",
+        "sensor_height_m"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "BackendLidarScanResponse",
+      "responseTypeSources": [
+        "BackendLidarScanResponse (cast)"
+      ],
+      "responseTypeDeclaredAt": {
+        "BackendLidarScanResponse": [
+          "frontend/src/lidarSimulation.ts:806"
+        ]
+      },
+      "urlTemplates": [
+        "/api/lidar-scan?${params.toString()}"
+      ],
+      "callers": [
+        "frontend/src/lidarSimulation.ts:839"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchBackendLidarScan",
+          "consumers": [
+            "frontend/src/TerrainCanvas3D.tsx:2525"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/load-preprocessed",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "void",
+      "responseTypeSources": [
+        "void (returnType)"
+      ],
+      "responseTypeDeclaredAt": {},
+      "urlTemplates": [
+        "/api/load-preprocessed"
+      ],
+      "callers": [
+        "frontend/src/api.ts:510"
+      ],
+      "wrappers": [
+        {
+          "name": "loadPreprocessed",
+          "consumers": [
+            "frontend/src/App.tsx:345"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/plan",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "PlanResponse",
+      "responseTypeSources": [
+        "PlanResponse (cast)"
+      ],
+      "responseTypeDeclaredAt": {
+        "PlanResponse": [
+          "frontend/src/api.ts:106"
+        ]
+      },
+      "urlTemplates": [
+        "/api/plan"
+      ],
+      "callers": [
+        "frontend/src/api.ts:421"
+      ],
+      "wrappers": [
+        {
+          "name": "planRoute",
+          "consumers": [
+            "frontend/src/App.tsx:640",
+            "frontend/src/App.tsx:937",
+            "frontend/src/features/mission-setup/MissionSetupPanel.tsx:87",
+            "frontend/src/mission/types.ts:264"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/plan-4d",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "Plan4DResponse",
+      "responseTypeSources": [
+        "Plan4DResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "Plan4DResponse": [
+          "frontend/src/net/types.ts:315"
+        ]
+      },
+      "urlTemplates": [
+        "/api/plan-4d"
+      ],
+      "callers": [
+        "frontend/src/net/plan4d.ts:22"
+      ],
+      "wrappers": [
+        {
+          "name": "planRoute4D",
+          "consumers": [
+            "frontend/src/features/time-axis/useTimeAxis.ts:263"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/plan-multi",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "PlanMultiResponse",
+      "responseTypeSources": [
+        "PlanMultiResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "PlanMultiResponse": [
+          "frontend/src/net/types.ts:423"
+        ]
+      },
+      "urlTemplates": [
+        "/api/plan-multi"
+      ],
+      "callers": [
+        "frontend/src/net/compare.ts:27"
+      ],
+      "wrappers": [
+        {
+          "name": "planMulti",
+          "consumers": []
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/pose",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "PoseResponse",
+      "responseTypeSources": [
+        "PoseResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "PoseResponse": [
+          "frontend/src/net/types.ts:391"
+        ]
+      },
+      "urlTemplates": [
+        "/api/pose"
+      ],
+      "callers": [
+        "frontend/src/net/pose.ts:55"
+      ],
+      "wrappers": [
+        {
+          "name": "submitPose",
+          "consumers": [
+            "frontend/src/features/pose-loop/usePoseLoop.ts:55"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/profiles",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "Record<string, Omit<ProfileEntry, 'id'>> | MissionProfiles",
+      "responseTypeSources": [
+        "Record<string, Omit<ProfileEntry, 'id'>> (cast)",
+        "MissionProfiles (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "MissionProfiles": [
+          "frontend/src/net/types.ts:473"
+        ]
+      },
+      "urlTemplates": [
+        "/api/profiles"
+      ],
+      "callers": [
+        "frontend/src/api.ts:441",
+        "frontend/src/net/profiles.ts:12"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchMissionProfiles",
+          "consumers": [
+            "frontend/src/features/mission-setup/useMissionProfiles.ts:39"
+          ]
+        },
+        {
+          "name": "fetchProfiles",
+          "consumers": []
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/psr-validation",
+      "queryParams": [
+        "threshold"
+      ],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "PsrValidation",
+      "responseTypeSources": [
+        "PsrValidation (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "PsrValidation": [
+          "frontend/src/net/analysis.ts:22"
+        ]
+      },
+      "urlTemplates": [
+        "/api/psr-validation?threshold=${threshold}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:55"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchPsrValidation",
+          "consumers": [
+            "frontend/src/features/psr-validation/index.tsx:31"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/reference-missions",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "ReferenceMissions",
+      "responseTypeSources": [
+        "ReferenceMissions (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "ReferenceMissions": [
+          "frontend/src/net/types.ts:429"
+        ]
+      },
+      "urlTemplates": [
+        "/api/reference-missions"
+      ],
+      "callers": [
+        "frontend/src/net/missions.ts:7"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchReferenceMissions",
+          "consumers": [
+            "frontend/src/features/mission-validation/useMissionValidation.ts:15"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/replan",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "ReplanResponse",
+      "responseTypeSources": [
+        "ReplanResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "ReplanResponse": [
+          "frontend/src/net/types.ts:281"
+        ]
+      },
+      "urlTemplates": [
+        "/api/replan"
+      ],
+      "callers": [
+        "frontend/src/net/replan.ts:32"
+      ],
+      "wrappers": [
+        {
+          "name": "requestReplan",
+          "consumers": [
+            "frontend/src/App.tsx:698",
+            "frontend/src/features/replan/useReplan.ts:40"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/risk-sweep",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "RiskSweepResponse",
+      "responseTypeSources": [
+        "RiskSweepResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "RiskSweepResponse": [
+          "frontend/src/net/riskSweep.ts:25"
+        ]
+      },
+      "urlTemplates": [
+        "/api/risk-sweep"
+      ],
+      "callers": [
+        "frontend/src/net/riskSweep.ts:50"
+      ],
+      "wrappers": [
+        {
+          "name": "runRiskSweep",
+          "consumers": [
+            "frontend/src/features/risk-sweep/useRiskSweep.ts:26"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/rovers",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "RoverCatalogResponse",
+      "responseTypeSources": [
+        "RoverCatalogResponse (cast)"
+      ],
+      "responseTypeDeclaredAt": {
+        "RoverCatalogResponse": [
+          "frontend/src/api.ts:263"
+        ]
+      },
+      "urlTemplates": [
+        "/api/rovers"
+      ],
+      "callers": [
+        "frontend/src/api.ts:448"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchRovers",
+          "consumers": [
+            "frontend/src/App.tsx:349"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/safe-haven",
+      "queryParams": [
+        "downsample",
+        "rover_id",
+        "span_hours",
+        "start_utc",
+        "step_hours"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "SafeHavenManifest",
+      "responseTypeSources": [
+        "SafeHavenManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "SafeHavenManifest": [
+          "frontend/src/net/analysis.ts:69"
+        ]
+      },
+      "urlTemplates": [
+        "/api/safe-haven?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:127"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchSafeHaven",
+          "consumers": [
+            "frontend/src/features/safe-haven/useSafeHaven.ts:100"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/stress-test",
+      "queryParams": [],
+      "queryDynamic": false,
+      "binary": false,
+      "responseType": "StressTestResponse",
+      "responseTypeSources": [
+        "StressTestResponse (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "StressTestResponse": [
+          "frontend/src/net/stressTest.ts:61"
+        ]
+      },
+      "urlTemplates": [
+        "/api/stress-test"
+      ],
+      "callers": [
+        "frontend/src/net/stressTest.ts:83"
+      ],
+      "wrappers": [
+        {
+          "name": "runStressTest",
+          "consumers": [
+            "frontend/src/features/stress-test/useStressTest.ts:52"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/survival",
+      "queryParams": [
+        "coarsen",
+        "goal_col",
+        "goal_row",
+        "rover_id",
+        "soc_pct",
+        "start_utc",
+        "t_hours"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "SurvivalManifest",
+      "responseTypeSources": [
+        "SurvivalManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "SurvivalManifest": [
+          "frontend/src/net/analysis.ts:230"
+        ]
+      },
+      "urlTemplates": [
+        "/api/survival?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:292"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchSurvival",
+          "consumers": [
+            "frontend/src/features/coarse-fields/useCoarseFields.ts:87"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/terrain",
+      "queryParams": [
+        "rover_id",
+        "w_energy",
+        "w_shadow",
+        "w_slope",
+        "w_thermal"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "TerrainManifest",
+      "responseTypeSources": [
+        "TerrainManifest (cast)",
+        "TerrainManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "TerrainManifest": [
+          "frontend/src/TerrainCanvas3D.tsx:106",
+          "frontend/src/api.ts:174",
+          "frontend/src/net/types.ts:28"
+        ]
+      },
+      "urlTemplates": [
+        "/api/terrain",
+        "/api/terrain${suffix ? `?${suffix}` : ''}",
+        "/api/terrain${suffix}"
+      ],
+      "callers": [
+        "frontend/src/TerrainCanvas3D.tsx:1546",
+        "frontend/src/api.ts:368",
+        "frontend/src/net/terrain.ts:25"
+      ],
+      "wrappers": [
+        {
+          "name": "build",
+          "consumers": [
+            "frontend/src/TerrainCanvas3D.tsx:1722"
+          ]
+        },
+        {
+          "name": "fetchTerrain",
+          "consumers": [
+            "frontend/src/mission/useTerrainManifest.ts:48"
+          ]
+        },
+        {
+          "name": "fetchTerrainManifest",
+          "consumers": []
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/thermal-dwell",
+      "queryParams": [
+        "coarsen",
+        "lookahead_hours",
+        "rover_id",
+        "start_utc",
+        "t_hours"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "ThermalDwellManifest",
+      "responseTypeSources": [
+        "ThermalDwellManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "ThermalDwellManifest": [
+          "frontend/src/net/analysis.ts:305"
+        ]
+      },
+      "urlTemplates": [
+        "/api/thermal-dwell?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:362"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchThermalDwell",
+          "consumers": [
+            "frontend/src/features/coarse-fields/useCoarseFields.ts:119"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/thermal-envelope",
+      "queryParams": [
+        "heater_model",
+        "initial_inner_c",
+        "rover_id"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "ThermalEnvelope",
+      "responseTypeSources": [
+        "ThermalEnvelope (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "ThermalEnvelope": [
+          "frontend/src/net/analysis.ts:395"
+        ]
+      },
+      "urlTemplates": [
+        "/api/thermal-envelope${suffix ? `?${suffix}` : ''}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:436"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchThermalEnvelope",
+          "consumers": [
+            "frontend/src/features/thermal-envelope/index.tsx:37"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/uncertainty-series",
+      "queryParams": [
+        "n_clones",
+        "n_slices",
+        "slice_hours",
+        "start_utc"
+      ],
+      "queryDynamic": true,
+      "binary": false,
+      "responseType": "UncertaintySeriesManifest",
+      "responseTypeSources": [
+        "UncertaintySeriesManifest (generic)"
+      ],
+      "responseTypeDeclaredAt": {
+        "UncertaintySeriesManifest": [
+          "frontend/src/net/analysis.ts:549"
+        ]
+      },
+      "urlTemplates": [
+        "/api/uncertainty-series?${query}"
+      ],
+      "callers": [
+        "frontend/src/net/analysis.ts:606"
+      ],
+      "wrappers": [
+        {
+          "name": "fetchUncertaintySeries",
+          "consumers": [
+            "frontend/src/features/layer-provenance/UncertaintySeriesCard.tsx:52"
+          ]
+        }
+      ]
+    }
+  ],
+  "dynamicCalls": [
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "url",
+      "urlSource": "parameter \"url: string\" of fetchF32",
+      "prefixedWithApi": false,
+      "binary": true,
+      "responseType": "Float32Array",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/TerrainCanvas3D.tsx:192",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 192,
+      "function": "fetchF32"
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "url",
+      "urlSource": "parameter \"url: string\" of fetchRockGeometryTemplate",
+      "prefixedWithApi": false,
+      "binary": false,
+      "responseType": "THREE.BufferGeometry | null",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/TerrainCanvas3D.tsx:402",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 402,
+      "function": "fetchRockGeometryTemplate"
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "url",
+      "urlSource": "parameter \"url: string\" of fetchBinaryGrid",
+      "prefixedWithApi": false,
+      "binary": true,
+      "responseType": "Float32Array",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/api.ts:397",
+      "file": "frontend/src/api.ts",
+      "line": 397,
+      "function": "fetchBinaryGrid"
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "path",
+      "urlSource": "const path = binaryUrl.startsWith('/api/') ? binaryUrl.slice('/api'.length) : binaryUrl",
+      "prefixedWithApi": true,
+      "binary": true,
+      "responseType": null,
+      "responseTypeSource": null,
+      "site": "frontend/src/features/illumination-corridor/useIlluminationCorridor.ts:114",
+      "file": "frontend/src/features/illumination-corridor/useIlluminationCorridor.ts",
+      "line": 114,
+      "function": null
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "path",
+      "urlSource": "const path = binaryUrl.startsWith('/api/') ? binaryUrl.slice('/api'.length) : binaryUrl",
+      "prefixedWithApi": true,
+      "binary": true,
+      "responseType": "BinaryField",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/net/layers.ts:156",
+      "file": "frontend/src/net/layers.ts",
+      "line": 156,
+      "function": "fetchFieldByUrl"
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "path",
+      "urlSource": "const path = binaryUrl.startsWith('/api') ? binaryUrl.slice(4) : binaryUrl",
+      "prefixedWithApi": true,
+      "binary": true,
+      "responseType": "SeriesCube",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/net/series.ts:89",
+      "file": "frontend/src/net/series.ts",
+      "line": 89,
+      "function": "fetchSeriesCube"
+    },
+    {
+      "dynamic": true,
+      "method": "GET",
+      "urlExpression": "CATALOGUE_URL",
+      "urlSource": "CATALOGUE_URL",
+      "prefixedWithApi": false,
+      "binary": true,
+      "responseType": "Sky",
+      "responseTypeSource": "returnType",
+      "site": "frontend/src/sky.ts:296",
+      "file": "frontend/src/sky.ts",
+      "line": 296,
+      "function": "createSky"
+    }
+  ],
+  "literalMentions": [
+    {
+      "text": "'/api'",
+      "file": "frontend/src/api/client.ts",
+      "line": 12,
+      "function": "BASE"
+    },
+    {
+      "text": "'/api/'",
+      "file": "frontend/src/features/illumination-corridor/useIlluminationCorridor.ts",
+      "line": 112,
+      "function": "useIlluminationCorridor.path"
+    },
+    {
+      "text": "'/api'",
+      "file": "frontend/src/features/illumination-corridor/useIlluminationCorridor.ts",
+      "line": 112,
+      "function": "useIlluminationCorridor.path"
+    },
+    {
+      "text": "`/api/lidar-scan -> ${response.status}`",
+      "file": "frontend/src/lidarSimulation.ts",
+      "line": 840,
+      "function": "fetchBackendLidarScan"
+    },
+    {
+      "text": "'/api'",
+      "file": "frontend/src/net/client.ts",
+      "line": 1,
+      "function": "BASE"
+    },
+    {
+      "text": "'/api/'",
+      "file": "frontend/src/net/layers.ts",
+      "line": 155,
+      "function": "fetchFieldByUrl.path"
+    },
+    {
+      "text": "'/api'",
+      "file": "frontend/src/net/layers.ts",
+      "line": 155,
+      "function": "fetchFieldByUrl.path"
+    },
+    {
+      "text": "'/api'",
+      "file": "frontend/src/net/series.ts",
+      "line": 88,
+      "function": "fetchSeriesCube.path"
+    }
+  ],
+  "headers": {
+    "names": [
+      "X-Layer-Cols",
+      "X-Layer-Downsample",
+      "X-Layer-Max",
+      "X-Layer-Min",
+      "X-Layer-Name",
+      "X-Layer-Nodata",
+      "X-Layer-Resolution-M",
+      "X-Layer-Rows",
+      "X-Layer-Validity"
+    ],
+    "reads": [
+      {
+        "name": "X-Layer-Rows",
+        "file": "frontend/src/api.ts",
+        "line": 325,
+        "via": "r.headers.get",
+        "function": "fetchLayer.rows"
+      },
+      {
+        "name": "X-Layer-Cols",
+        "file": "frontend/src/api.ts",
+        "line": 326,
+        "via": "r.headers.get",
+        "function": "fetchLayer.cols"
+      },
+      {
+        "name": "X-Layer-Resolution-M",
+        "file": "frontend/src/api.ts",
+        "line": 342,
+        "via": "r.headers.get",
+        "function": "fetchLayer"
+      },
+      {
+        "name": "X-Layer-Validity",
+        "file": "frontend/src/api.ts",
+        "line": 343,
+        "via": "r.headers.get",
+        "function": "fetchLayer"
+      },
+      {
+        "name": "X-Layer-Min",
+        "file": "frontend/src/api.ts",
+        "line": 344,
+        "via": "r.headers.get",
+        "function": "fetchLayer"
+      },
+      {
+        "name": "X-Layer-Max",
+        "file": "frontend/src/api.ts",
+        "line": 345,
+        "via": "r.headers.get",
+        "function": "fetchLayer"
+      },
+      {
+        "name": "X-Layer-Nodata",
+        "file": "frontend/src/api.ts",
+        "line": 346,
+        "via": "r.headers.get",
+        "function": "fetchLayer"
+      },
+      {
+        "name": "X-Layer-Validity",
+        "file": "frontend/src/net/layers.ts",
+        "line": 61,
+        "via": "headers.get",
+        "function": "headerValidity.raw"
+      },
+      {
+        "name": "X-Layer-Rows",
+        "file": "frontend/src/net/layers.ts",
+        "line": 81,
+        "via": "headerNumber",
+        "function": "fieldFromResponse.rows"
+      },
+      {
+        "name": "X-Layer-Cols",
+        "file": "frontend/src/net/layers.ts",
+        "line": 82,
+        "via": "headerNumber",
+        "function": "fieldFromResponse.cols"
+      },
+      {
+        "name": "X-Layer-Min",
+        "file": "frontend/src/net/layers.ts",
+        "line": 93,
+        "via": "headers.get",
+        "function": "fieldFromResponse.minRaw"
+      },
+      {
+        "name": "X-Layer-Max",
+        "file": "frontend/src/net/layers.ts",
+        "line": 94,
+        "via": "headers.get",
+        "function": "fieldFromResponse.maxRaw"
+      },
+      {
+        "name": "X-Layer-Resolution-M",
+        "file": "frontend/src/net/layers.ts",
+        "line": 100,
+        "via": "headerNumber",
+        "function": "fieldFromResponse"
+      },
+      {
+        "name": "X-Layer-Downsample",
+        "file": "frontend/src/net/layers.ts",
+        "line": 101,
+        "via": "headerNumber",
+        "function": "fieldFromResponse"
+      },
+      {
+        "name": "X-Layer-Nodata",
+        "file": "frontend/src/net/layers.ts",
+        "line": 105,
+        "via": "headerNumber",
+        "function": "fieldFromResponse"
+      },
+      {
+        "name": "X-Layer-Name",
+        "file": "frontend/src/net/layers.ts",
+        "line": 106,
+        "via": "headers.get",
+        "function": "fieldFromResponse"
+      }
+    ]
+  },
+  "copies": [
+    {
+      "from": "frontend/src/net/types.ts",
+      "to": "design-export/api-contract/types/net-types.ts",
+      "sha256": "9d2049cb935d5b0580ce60108cb8e32a6421a8615d34c94941b7c3001ede80aa",
+      "bytes": 15321
+    },
+    {
+      "from": "frontend/src/api/assistant.ts",
+      "to": "design-export/api-contract/types/assistant.ts",
+      "sha256": "cc24e48450b146f7cf1175f82acdea7e2f3a0bc517e042d144e5e53a40f050e9",
+      "bytes": 3307
+    },
+    {
+      "from": "frontend/src/api/client.ts",
+      "to": "design-export/api-contract/types/client.ts",
+      "sha256": "8a94e6d0337921bda5794f833d638abc672234865d1c57b64e4d78a7f5563fe5",
+      "bytes": 1198
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/README.md",
+      "to": "design-export/api-contract/fixtures/README.md",
+      "sha256": "d051b18a27ddaeb3c851cf2c21e65781a3e6cb1aa0d2a4bc3894bf6ce5d51fb6",
+      "bytes": 5851
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/cell-telemetry.available.json",
+      "to": "design-export/api-contract/fixtures/cell-telemetry.available.json",
+      "sha256": "8ce6f87c47d067db6fcc854e7a4b672192466423723301c83e89c7a2e6d84fde",
+      "bytes": 1344
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/cell-telemetry.full.json",
+      "to": "design-export/api-contract/fixtures/cell-telemetry.full.json",
+      "sha256": "5d8c1b096e1b2cd3c87294bfcca08fbf3211d51d4dfecf2c5a4f0e3507e00798",
+      "bytes": 7229
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/cell-telemetry.safe-haven.json",
+      "to": "design-export/api-contract/fixtures/cell-telemetry.safe-haven.json",
+      "sha256": "101572f3f0f82621d526c0235a23ba2bac1ef572179d2e5aa800a779eb1c1896",
+      "bytes": 1964
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/comm-window.available.json",
+      "to": "design-export/api-contract/fixtures/comm-window.available.json",
+      "sha256": "92e93e538d91d10fbd68b87ae9420431e12f8ee129cb6e96ac58e0374ddccd31",
+      "bytes": 465
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/earth-series.available.json",
+      "to": "design-export/api-contract/fixtures/earth-series.available.json",
+      "sha256": "e8c0b1e9f215a21ab8d7e4a88ae4bdab4188e4ddea0c0bb6882aa22e7dbf4896",
+      "bytes": 1774
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/illumination-corridor.available.json",
+      "to": "design-export/api-contract/fixtures/illumination-corridor.available.json",
+      "sha256": "53a6c445a647fc908ace4d04463ab59f9962de879d94960d2a2ba1a567b53073",
+      "bytes": 4242
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-earth_visibility.available.json",
+      "to": "design-export/api-contract/fixtures/layers-earth_visibility.available.json",
+      "sha256": "d98a9a26dfe9789520e1ba347819462f8cc92b7a8ad7381410cd7d43737ee421",
+      "bytes": 24373
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-elevation_sigma.available.json",
+      "to": "design-export/api-contract/fixtures/layers-elevation_sigma.available.json",
+      "sha256": "24d1a74b9b56ef53274ec1512cfe8c1b73099ac3c0e16273f090d15fa5d3d448",
+      "bytes": 27961
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-p_traversable.available.json",
+      "to": "design-export/api-contract/fixtures/layers-p_traversable.available.json",
+      "sha256": "52ac131dcf6cea6582ce123da0db140a64174088c3ad72b0bb12468bf27634d2",
+      "bytes": 26969
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-psr.available.json",
+      "to": "design-export/api-contract/fixtures/layers-psr.available.json",
+      "sha256": "b286afcb1d4ef0f1acd530a98da87aeb2495e648d154be971dae41dcffa522cd",
+      "bytes": 24223
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-psr.unavailable.json",
+      "to": "design-export/api-contract/fixtures/layers-psr.unavailable.json",
+      "sha256": "9ca266a1eb7f298c7a22da59f3351cba6e388121f906902a24c1c8e3284704cd",
+      "bytes": 253
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-roughness.available.json",
+      "to": "design-export/api-contract/fixtures/layers-roughness.available.json",
+      "sha256": "6e240eceb78f610d3d7cc8ce58666b4d42258b5541e708ff9f45e5cf08c3b1cf",
+      "bytes": 25718
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-roughness.unavailable.json",
+      "to": "design-export/api-contract/fixtures/layers-roughness.unavailable.json",
+      "sha256": "fefbc0495668c3de88ba37128258dc065e780546b676d5566ca50ae632cdf634",
+      "bytes": 259
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-slope_sigma.available.json",
+      "to": "design-export/api-contract/fixtures/layers-slope_sigma.available.json",
+      "sha256": "3d5a35a979b76f148635c085d65500f3e0fbd25e1c5d5e864cec0e620f782bd4",
+      "bytes": 27905
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/layers-slope_sigma_nasa.available.json",
+      "to": "design-export/api-contract/fixtures/layers-slope_sigma_nasa.available.json",
+      "sha256": "e424b54f1b5997e9542d91f6d3933b9ad653068121dbefe5ec3ef88979a67d86",
+      "bytes": 27902
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/plan.available.json",
+      "to": "design-export/api-contract/fixtures/plan.available.json",
+      "sha256": "758c4e08a2d6b84d11f7359b190dbf2ac116b849ee231a3006d4439227caacc2",
+      "bytes": 67545
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/psr-validation.available.json",
+      "to": "design-export/api-contract/fixtures/psr-validation.available.json",
+      "sha256": "d14623d5eafbee5eaf226684e6aa4b17db4cecbc4c8bec9fb9da489ba7505e3d",
+      "bytes": 5849
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/psr-validation.unavailable.json",
+      "to": "design-export/api-contract/fixtures/psr-validation.unavailable.json",
+      "sha256": "e5961e2f52434777c96f43ada796b1cc9902922a3f763984511ba5ec240c1339",
+      "bytes": 183
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/safe-haven.available.json",
+      "to": "design-export/api-contract/fixtures/safe-haven.available.json",
+      "sha256": "e8fff21fcbaf1c1dbcc549dbeab510261eef14e97f68e68ae1f08a09f81f6d9c",
+      "bytes": 2462
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/survival.422-missing-goal.json",
+      "to": "design-export/api-contract/fixtures/survival.422-missing-goal.json",
+      "sha256": "5b1853ba28516771d54c7a8b6ed94d4d12f0bdfac67c0f6824b56257e41eae12",
+      "bytes": 63
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/survival.422-untraversable-goal.json",
+      "to": "design-export/api-contract/fixtures/survival.422-untraversable-goal.json",
+      "sha256": "85927e00c6b13f7c1f1df30a7f443cb9c4860f72f3ff984e329b7c3626861dbf",
+      "bytes": 105
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/survival.available.json",
+      "to": "design-export/api-contract/fixtures/survival.available.json",
+      "sha256": "6b7da10bce549b37c2edece335ace0ac1a2014b0442be631d68e2c6cad98433d",
+      "bytes": 4314
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/terrain.available.json",
+      "to": "design-export/api-contract/fixtures/terrain.available.json",
+      "sha256": "b8a138486f5d6d925056da4c9f61c1c1a541048bee9976799ca0dfd335fe2bcd",
+      "bytes": 8989
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/thermal-dwell.available.json",
+      "to": "design-export/api-contract/fixtures/thermal-dwell.available.json",
+      "sha256": "b41d0507e59ecd87a42644e8d62d21bfcfc3bece74f886b7a29481a6b8789d5f",
+      "bytes": 5381
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/thermal-envelope.422.json",
+      "to": "design-export/api-contract/fixtures/thermal-envelope.422.json",
+      "sha256": "7409dec7b4e3c38cb7c2a22e7830929fb5894300f22e622d9ba3de0b74b4a109",
+      "bytes": 210
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/thermal-envelope.available.json",
+      "to": "design-export/api-contract/fixtures/thermal-envelope.available.json",
+      "sha256": "bfdeb4f1dc8460f042d98c03b21d92751ba9f46526719142787d8c3d3277c93c",
+      "bytes": 106797
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/uncertainty-series.available.json",
+      "to": "design-export/api-contract/fixtures/uncertainty-series.available.json",
+      "sha256": "92f3e0268c0835ea2d1f863d411fcb2a3fc3263ca5866c052f46814d71e1ce1a",
+      "bytes": 3066
+    },
+    {
+      "from": "frontend/src/net/__fixtures__/uncertainty-series.unavailable.json",
+      "to": "design-export/api-contract/fixtures/uncertainty-series.unavailable.json",
+      "sha256": "5c96cb73932a92cc6e4bc5d3ed11badbc5b8e156e02aa34c1a30a701cfbb2425",
+      "bytes": 282
+    }
+  ]
+}

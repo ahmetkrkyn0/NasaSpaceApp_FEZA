@@ -1,0 +1,900 @@
+{
+  "source": {
+    "sha": "5aec750",
+    "branch": "berke/backend-review"
+  },
+  "file": "frontend/src/features/registry.ts",
+  "notes": [
+    "modes: null = property absent (every mode); [] = present and empty (no mode, retired). group/tab: null = absent.",
+    "modesText/groupText/tabText are the canonical spellings DESIGN.md uses for coverage check 4: modes \"(all)\" | \"(none)\" | \"plan, analyze\"; group absent -> \"primary\"; tab absent -> \"(none)\".",
+    "comment: the comment block directly above the entry, verbatim (from the first comment character to the last).",
+    "placement: derived with the selectFeatures / selectSystemsFeatures rules (registry.ts) for each MissionMode."
+  ],
+  "counts": {
+    "features": 33,
+    "reachable": 32,
+    "systems": 13,
+    "tabbed": 10
+  },
+  "featureSlot": {
+    "line": 51,
+    "members": [
+      "leftRail",
+      "rightRail",
+      "bottomDock",
+      "canvasOverlay",
+      "statusBar",
+      "globalOverlay"
+    ]
+  },
+  "featureGroup": {
+    "line": 71,
+    "members": [
+      "primary",
+      "systems"
+    ]
+  },
+  "railTab": {
+    "line": 88,
+    "members": [
+      "route",
+      "safety",
+      "analysis",
+      "compare"
+    ]
+  },
+  "missionMode": {
+    "file": "frontend/src/mission/types.ts",
+    "line": 53,
+    "members": [
+      "plan",
+      "analyze"
+    ]
+  },
+  "railTabs": {
+    "line": 90,
+    "tabs": [
+      {
+        "id": "route",
+        "label": "Route",
+        "icon": "route",
+        "line": 91
+      },
+      {
+        "id": "safety",
+        "label": "Safety",
+        "icon": "shield",
+        "line": 92
+      },
+      {
+        "id": "analysis",
+        "label": "Analysis",
+        "icon": "analytics",
+        "line": 93
+      },
+      {
+        "id": "compare",
+        "label": "Compare",
+        "icon": "balance",
+        "line": 94
+      }
+    ]
+  },
+  "featuresLine": 138,
+  "features": [
+    {
+      "order": 1,
+      "id": "mission-context",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "route",
+      "component": "MissionContextFeature",
+      "file": "frontend/src/features/registry.ts",
+      "line": 144,
+      "comment": "// Analyze only, though App.tsx once rendered it in both branches. It is a\n  // readout -- sector, resolution, extent, and whatever the pointer is over --\n  // and while a route is being placed the operator is looking at the map, not\n  // at a column describing it. Restricting it is what empties the right rail\n  // in plan, which is the point: plan gets the wider map.",
+      "commentLines": [
+        139,
+        143
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "route"
+    },
+    {
+      "order": 2,
+      "id": "mission-setup",
+      "slot": "leftRail",
+      "modes": [
+        "plan"
+      ],
+      "group": null,
+      "tab": null,
+      "component": "MissionSetup",
+      "file": "frontend/src/features/registry.ts",
+      "line": 146,
+      "comment": "// Plan only: meaningful after the hangar's rover selection is complete.",
+      "commentLines": [
+        145,
+        145
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "plan",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 3,
+      "id": "mission-snapshot",
+      "slot": "leftRail",
+      "modes": [],
+      "group": null,
+      "tab": null,
+      "component": "MissionSnapshot",
+      "file": "frontend/src/features/registry.ts",
+      "line": 156,
+      "comment": "// Registered for no mode, which is how a feature is retired without being\n  // deleted. It was analyze's left rail: a locked read-only echo of the rover,\n  // the two endpoints and the four weights -- all of it already reported by\n  // the right rail's analysis, and none of it editable here. Analyze now runs\n  // with the left rail gone entirely and the map that much wider.\n  //\n  // Its one control, \"Edit & Replan\", was `setMissionMode('plan')` and nothing\n  // else -- exactly what the top bar's PLAN tab does. That tab is enabled\n  // throughout analyze, so removing this panel takes no route back with it.",
+      "commentLines": [
+        147,
+        155
+      ],
+      "effectiveGroup": "primary",
+      "reachable": false,
+      "modesText": "(none)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 4,
+      "id": "route-analysis",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "route",
+      "component": "RouteAnalysis",
+      "file": "frontend/src/features/registry.ts",
+      "line": 157,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "route"
+    },
+    {
+      "order": 5,
+      "id": "safety-margins",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "safety",
+      "component": "SafetyMargins",
+      "file": "frontend/src/features/registry.ts",
+      "line": 163,
+      "comment": "// Analyze only, and NOT in the systems drawer: the twelve requirements are\n  // checked on every route whether anyone asks or not, and the plan is\n  // explicit that a result which exists must be visible rather than parked\n  // behind a control. It renders nothing when a response carries no block, so\n  // an older backend costs the rail nothing.",
+      "commentLines": [
+        158,
+        162
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "safety"
+    },
+    {
+      "order": 6,
+      "id": "route-model",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "safety",
+      "component": "RouteModel",
+      "file": "frontend/src/features/registry.ts",
+      "line": 174,
+      "comment": "// Slip, risk appetite, roughness, survival and thermal dwell -- five blocks\n  // that also arrive unasked, kept as ONE panel with labelled sections rather\n  // than five cards.\n  //\n  // In the drawer, unlike the safety margins above. This panel answers \"how\n  // was the cost arrived at, and under what model\", which is the drawer's own\n  // definition: it proves the stack is real without being part of the\n  // moment-to-moment task of reading a route. Keeping it in the primary rail\n  // took analyze from four permanent panels to six, which is the direction\n  // the theme-preservation gate exists to stop.",
+      "commentLines": [
+        164,
+        173
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "safety"
+    },
+    {
+      "order": 7,
+      "id": "playback",
+      "slot": "statusBar",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": null,
+      "component": "Playback",
+      "file": "frontend/src/features/registry.ts",
+      "line": 184,
+      "comment": "// analyze only, from App.tsx's `missionMode === 'analyze' && planResult`\n  // guard. Only the mode half becomes a registration: the bar already\n  // renders nothing without waypoints, so knowing what an empty route looks\n  // like stays inside the feature.\n  //\n  // statusBar, not canvasOverlay: it used to float over the terrain because\n  // the bottom dock was in-flow under the map and the two fought for the same\n  // space. The status strip is the design's home for the transport, beside the\n  // scale and the risk legend it reads against.",
+      "commentLines": [
+        175,
+        183
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 8,
+      "id": "time-axis",
+      "slot": "bottomDock",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": null,
+      "component": "TimeAxis",
+      "file": "frontend/src/features/registry.ts",
+      "line": 187,
+      "comment": "// The bottom dock's first in-flow occupant, and the reason it had to\n  // become a real strip under the map.",
+      "commentLines": [
+        185,
+        186
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 9,
+      "id": "layer-picker",
+      "slot": "canvasOverlay",
+      "modes": null,
+      "group": null,
+      "tab": null,
+      "component": "LayerPicker",
+      "file": "frontend/src/features/registry.ts",
+      "line": 193,
+      "comment": "// No modes: App.tsx rendered both of these inside the map stage, which the\n  // fleet branch replaces wholesale, so plan and analyze are every stage they\n  // could appear in. Registration order is paint order within a slot, and the\n  // solving indicator covers the map while a route is being solved, so it\n  // comes after the picker it may draw over.",
+      "commentLines": [
+        188,
+        192
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 10,
+      "id": "map-legend",
+      "slot": "canvasOverlay",
+      "modes": null,
+      "group": null,
+      "tab": null,
+      "component": "MapLegend",
+      "file": "frontend/src/features/registry.ts",
+      "line": 197,
+      "comment": "// Scale and risk key, over the terrain rather than under it: both describe\n  // what the map is showing, so they belong on the thing they describe rather\n  // than in a band the eye has to leave it to read.",
+      "commentLines": [
+        194,
+        196
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 11,
+      "id": "analysis-layers",
+      "slot": "canvasOverlay",
+      "modes": null,
+      "group": null,
+      "tab": null,
+      "component": "AnalysisLayers",
+      "file": "frontend/src/features/registry.ts",
+      "line": 203,
+      "comment": "// Additive overlays, beside the base-layer radio rather than inside it.\n  // A view mode replaces what the map is; these sit on top of whatever it\n  // already is, and several can be on at once -- which is also the only way\n  // to draw the PSR mask over our own shadow layer, the comparison the\n  // measured product exists to support.",
+      "commentLines": [
+        198,
+        202
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 12,
+      "id": "solving-indicator",
+      "slot": "canvasOverlay",
+      "modes": null,
+      "group": null,
+      "tab": null,
+      "component": "SolvingIndicator",
+      "file": "frontend/src/features/registry.ts",
+      "line": 204,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 13,
+      "id": "ros-showcase",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "RosShowcase",
+      "file": "frontend/src/features/registry.ts",
+      "line": 215,
+      "comment": "// The first two features to come back from the parking lot, and the only\n  // two that needed no retyping: neither draws an overlay and neither reads a\n  // mission field that changed name.\n  //\n  // These six are the \"Systems & Evidence\" set: they demonstrate the stack is\n  // real -- the ROS bridge, layer provenance, the reality-check against flown\n  // missions, the corridor, the pose loop, the replan triggers -- but none is\n  // part of the moment-to-moment task of placing and reading a route. group:\n  // 'systems' pulls them out of the rails and into the drawer, which is what\n  // takes the default cockpit from nine competing cards down to task+context.",
+      "commentLines": [
+        205,
+        214
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 14,
+      "id": "layer-provenance",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "LayerProvenance",
+      "file": "frontend/src/features/registry.ts",
+      "line": 216,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 15,
+      "id": "replan",
+      "slot": "leftRail",
+      "modes": [
+        "plan"
+      ],
+      "group": "systems",
+      "tab": null,
+      "component": "Replan",
+      "file": "frontend/src/features/registry.ts",
+      "line": 219,
+      "comment": "// Plan only: it asks what would force a new route from where the rover is,\n  // which is a question about a route still being decided.",
+      "commentLines": [
+        217,
+        218
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "plan",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 16,
+      "id": "mission-constraints",
+      "slot": "leftRail",
+      "modes": [
+        "plan"
+      ],
+      "group": "systems",
+      "tab": null,
+      "component": "MissionConstraints",
+      "file": "frontend/src/features/registry.ts",
+      "line": 224,
+      "comment": "// Plan only, and in the drawer: these change how a route is ranked and when\n  // it is feasible, but the moment-to-moment task is still a rover and two\n  // endpoints. An operator who never opens the drawer gets exactly the product\n  // that existed before the constraints did.",
+      "commentLines": [
+        220,
+        223
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "plan",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 17,
+      "id": "psr-validation",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "PsrValidationPanel",
+      "file": "frontend/src/features/registry.ts",
+      "line": 229,
+      "comment": "// Beside layer provenance, and read with it: one says where a layer came\n  // from, the other how far our own shadow model agrees with the measured\n  // product. The number it publishes is one it can fail, which is what\n  // makes the PSR overlay evidence rather than decoration.",
+      "commentLines": [
+        225,
+        228
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 18,
+      "id": "safe-haven",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "SafeHaven",
+      "file": "frontend/src/features/registry.ts",
+      "line": 239,
+      "comment": "// A1. In the drawer with the other evidence panels rather than in a rail:\n  // it owns a map overlay, but the survival rule behind it and the share of\n  // the window that can reach no haven are the parts worth reading, and\n  // neither belongs in the moment-to-moment work of placing a route.",
+      "commentLines": [
+        235,
+        238
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 19,
+      "id": "earth-visibility",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "EarthVisibility",
+      "file": "frontend/src/features/registry.ts",
+      "line": 243,
+      "comment": "// A4, next to A1 because they answer the same question from two sides:\n  // a haven is somewhere to wait out the dark, and the dark is defined by\n  // where the Earth is. Both read the one mission clock.",
+      "commentLines": [
+        240,
+        242
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 20,
+      "id": "coarse-fields",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "CoarseFields",
+      "file": "frontend/src/features/registry.ts",
+      "line": 253,
+      "comment": "// B1 and C6, together because they share a coarse grid and a legend\n  // slot, and because neither is a terrain layer: both are model output\n  // over a mission epoch and a rover state, and two of their four fields\n  // are categorical rather than scalar.",
+      "commentLines": [
+        249,
+        252
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 21,
+      "id": "thermal-envelope",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "ThermalEnvelopePanel",
+      "file": "frontend/src/features/registry.ts",
+      "line": 259,
+      "comment": "// C6's other half, and not a map: the axes are Sun elevation and slope\n  // along the Sun's azimuth, so a bin is a geometry rather than a place.\n  // It sits beside the dwell field because the two answer the same\n  // question from opposite ends -- where survivable, and what kind of\n  // ground is survivable at all.",
+      "commentLines": [
+        254,
+        258
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 22,
+      "id": "illumination-corridor",
+      "slot": "leftRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "IlluminationCorridor",
+      "file": "frontend/src/features/registry.ts",
+      "line": 268,
+      "comment": "// A2. NOT the `corridor` feature above -- that is the route corridor, a\n  // ribbon around a planned path. This is the lit-and-connected volume over\n  // time, and it is the layer half only: the planner is not gated on it.",
+      "commentLines": [
+        265,
+        267
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 23,
+      "id": "mission-validation",
+      "slot": "rightRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "MissionValidation",
+      "file": "frontend/src/features/registry.ts",
+      "line": 276,
+      "comment": "// Plan only: it asks what would force a new route from where the rover is,\n  // which is a question about a route still being decided.",
+      "commentLines": [
+        274,
+        275
+      ],
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 24,
+      "id": "corridor",
+      "slot": "rightRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "CorridorFeature",
+      "file": "frontend/src/features/registry.ts",
+      "line": 277,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 25,
+      "id": "pose-loop",
+      "slot": "rightRail",
+      "modes": null,
+      "group": "systems",
+      "tab": null,
+      "component": "PoseLoop",
+      "file": "frontend/src/features/registry.ts",
+      "line": 278,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "systems",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "systems",
+      "tabText": "(none)"
+    },
+    {
+      "order": 26,
+      "id": "uncertainty",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "analysis",
+      "component": "Uncertainty",
+      "file": "frontend/src/features/registry.ts",
+      "line": 283,
+      "comment": "// Analyze only, and in the drawer: a post-route analysis that takes seconds\n  // and needs a preprocessing cache many deployments will not have. It never\n  // blocks the route -- an unavailable ensemble costs this panel and nothing\n  // else.",
+      "commentLines": [
+        279,
+        282
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "analysis"
+    },
+    {
+      "order": 27,
+      "id": "stress-test",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "analysis",
+      "component": "StressTest",
+      "file": "frontend/src/features/registry.ts",
+      "line": 284,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "analysis"
+    },
+    {
+      "order": 28,
+      "id": "risk-sweep",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "analysis",
+      "component": "RiskSweep",
+      "file": "frontend/src/features/registry.ts",
+      "line": 285,
+      "comment": null,
+      "commentLines": null,
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "analysis"
+    },
+    {
+      "order": 29,
+      "id": "benchmark",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "compare",
+      "component": "Benchmark",
+      "file": "frontend/src/features/registry.ts",
+      "line": 289,
+      "comment": "// Offline evidence, so it belongs to no mission mode: the figures are the\n  // same in plan and analyze because an external validation result does not\n  // depend on the route on screen.",
+      "commentLines": [
+        286,
+        288
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "compare"
+    },
+    {
+      "order": 30,
+      "id": "cost-explain",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "route",
+      "component": "CostExplain",
+      "file": "frontend/src/features/registry.ts",
+      "line": 293,
+      "comment": "// Analyze only. The cost under the pointer is worth reading in both modes,\n  // but it is the last primary occupant of the right rail, and leaving it\n  // registered in plan would keep a 288px column open for one hover readout.",
+      "commentLines": [
+        290,
+        292
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "route"
+    },
+    {
+      "order": 31,
+      "id": "assistant",
+      "slot": "globalOverlay",
+      "modes": null,
+      "group": null,
+      "tab": null,
+      "component": "Assistant",
+      "file": "frontend/src/features/registry.ts",
+      "line": 296,
+      "comment": "// Floating, not railed: the assistant opens over the mission and has to\n  // keep working with both rails collapsed.",
+      "commentLines": [
+        294,
+        295
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "(all)",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 32,
+      "id": "mission-report",
+      "slot": "globalOverlay",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": null,
+      "component": "MissionReport",
+      "file": "frontend/src/features/registry.ts",
+      "line": 301,
+      "comment": "// Analyze only, and floating for the same reason the assistant is: the\n  // report covers the whole cockpit once the rover has arrived, so it is\n  // neither a rail panel nor a layer on the map. It renders nothing until a\n  // route exists, so the mode filter is the only guard it needs.",
+      "commentLines": [
+        297,
+        300
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "(none)"
+    },
+    {
+      "order": 33,
+      "id": "profile-compare",
+      "slot": "rightRail",
+      "modes": [
+        "analyze"
+      ],
+      "group": null,
+      "tab": "compare",
+      "component": "ProfileCompare",
+      "file": "frontend/src/features/registry.ts",
+      "line": 304,
+      "comment": "// Analyze only: it compares a route that already exists against alternative\n  // weightings, which is a question asked after one has been planned.",
+      "commentLines": [
+        302,
+        303
+      ],
+      "effectiveGroup": "primary",
+      "reachable": true,
+      "modesText": "analyze",
+      "groupText": "primary",
+      "tabText": "compare"
+    }
+  ],
+  "placement": {
+    "plan": {
+      "slots": {
+        "leftRail": [
+          "mission-setup"
+        ],
+        "rightRail": [],
+        "bottomDock": [],
+        "canvasOverlay": [
+          "layer-picker",
+          "map-legend",
+          "analysis-layers",
+          "solving-indicator"
+        ],
+        "statusBar": [],
+        "globalOverlay": [
+          "assistant"
+        ]
+      },
+      "systemsDrawer": [
+        "ros-showcase",
+        "layer-provenance",
+        "replan",
+        "mission-constraints",
+        "psr-validation",
+        "safe-haven",
+        "earth-visibility",
+        "coarse-fields",
+        "thermal-envelope",
+        "illumination-corridor",
+        "mission-validation",
+        "corridor",
+        "pose-loop"
+      ],
+      "railTabs": {
+        "route": [],
+        "safety": [],
+        "analysis": [],
+        "compare": [],
+        "(untabbed)": []
+      }
+    },
+    "analyze": {
+      "slots": {
+        "leftRail": [],
+        "rightRail": [
+          "mission-context",
+          "route-analysis",
+          "safety-margins",
+          "route-model",
+          "uncertainty",
+          "stress-test",
+          "risk-sweep",
+          "benchmark",
+          "cost-explain",
+          "profile-compare"
+        ],
+        "bottomDock": [
+          "time-axis"
+        ],
+        "canvasOverlay": [
+          "layer-picker",
+          "map-legend",
+          "analysis-layers",
+          "solving-indicator"
+        ],
+        "statusBar": [
+          "playback"
+        ],
+        "globalOverlay": [
+          "assistant",
+          "mission-report"
+        ]
+      },
+      "systemsDrawer": [
+        "ros-showcase",
+        "layer-provenance",
+        "psr-validation",
+        "safe-haven",
+        "earth-visibility",
+        "coarse-fields",
+        "thermal-envelope",
+        "illumination-corridor",
+        "mission-validation",
+        "corridor",
+        "pose-loop"
+      ],
+      "railTabs": {
+        "route": [
+          "mission-context",
+          "route-analysis",
+          "cost-explain"
+        ],
+        "safety": [
+          "safety-margins",
+          "route-model"
+        ],
+        "analysis": [
+          "uncertainty",
+          "stress-test",
+          "risk-sweep"
+        ],
+        "compare": [
+          "benchmark",
+          "profile-compare"
+        ],
+        "(untabbed)": []
+      }
+    }
+  }
+}
