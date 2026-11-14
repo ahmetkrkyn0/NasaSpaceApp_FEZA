@@ -18,7 +18,11 @@
     "mixed_horizon": "{a} and {b} were computed with different horizon models ({models}). The difference mixes the inputs with the horizon model, so it cannot be tied to a single input.",
     "mixed_validity": "{a} and {b} carry different reliability labels ({models}), so they were not computed the same way. The difference cannot be tied to a single input.",
     "mixed_caveat": "Not a like-for-like difference: the two scenarios were not computed the same way.",
-    "mixed_rows": "A row marked \"other model\" changed the way the result was computed along with the input, so it does not isolate that input."
+    "mixed_rows": "A row marked \"other horizon model\" changed the horizon model along with the input, so it does not isolate that input.",
+    "unknown_rows": "A row marked \"horizon model not known\" may have changed the horizon model along with the input, so it is not tied to that input.",
+    "model_loading": "Checking which horizon model {a} and {b} use before tying the difference to an input.",
+    "model_error": "The horizon model of {a} and {b} could not be read, so the difference is not tied to a single input.",
+    "model_unavailable": "The example data does not say which horizon model {a} and {b} use, so the difference is not tied to a single input."
   },
   "metrics": {
     "sunlit_fraction": {

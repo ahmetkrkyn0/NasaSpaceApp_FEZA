@@ -12,7 +12,7 @@
 
 import content from '../../content/why-cards.json';
 import { postCompare, type RequestOptions } from '../../api/client';
-import type { ModelMix } from '../compare/horizon-models';
+import { HORIZON_MODEL_LABEL, type HorizonModels, type ModelMix } from '../compare/horizon-models';
 import { COMPARE_METRICS, displayDifference, displayWithUnit, type MetricDef } from '../../api/compare-metrics';
 import {
   DEFAULT_EARTH_CRITERION,
@@ -200,21 +200,33 @@ export interface PlanRow {
   diff: number | null;
   validity: CompareScenarioResult['validity'] | null;
   /**
-   * The copy's reliability label differs from A's: changing this input also changed how the
-   * result was computed (for example a mast height without a terrain horizon), so the row does
-   * not isolate the input (issue #71).
+   * Horizon model of the row's scenario against A's (issue #71): `other` when changing this
+   * input also changed the horizon model (for example a mast height without a terrain horizon),
+   * so the row does not isolate the input; `unknown` when either model could not be read.
    */
-  otherModel: boolean;
+  model: 'same' | 'other' | 'unknown';
+  /** Name of the row's horizon model when it is `other`. */
+  modelLabel: string | null;
 }
 
-/** Plan level: the total difference, then one row per input changed alone. */
+function rowModel(models: HorizonModels, aId: string, rowId: string): Pick<PlanRow, 'model' | 'modelLabel'> {
+  const a = models[aId];
+  const row = models[rowId];
+  if (a === undefined || row === undefined) return { model: 'unknown', modelLabel: null };
+  return a === row ? { model: 'same', modelLabel: null } : { model: 'other', modelLabel: HORIZON_MODEL_LABEL[row] };
+}
+
+/**
+ * Plan level: the total difference, then one row per input changed alone. `models` holds the
+ * server's horizon model of A and of every copy; the reliability label cannot stand in for it.
+ */
 export function planRows(
   def: MetricDef,
   a: Named,
   b: Named,
   bLetter: string,
   counterfactuals: readonly Counterfactual[],
-  aValidity?: CompareScenarioResult['validity'],
+  models: HorizonModels,
 ): PlanRow[] {
   const rows: PlanRow[] = [
     {
@@ -222,7 +234,7 @@ export function planRows(
       value: displayWithUnit(def, b.value),
       diff: displayDifference(def, b.value, a.value),
       validity: null,
-      otherModel: false,
+      ...rowModel(models, a.scenario.scenario_id, b.scenario.scenario_id),
     },
   ];
   for (const cf of counterfactuals) {
@@ -232,19 +244,26 @@ export function planRows(
       value: displayWithUnit(def, value),
       diff: displayDifference(def, value, a.value),
       validity: cf.result?.validity ?? null,
-      otherModel: aValidity !== undefined && cf.result !== undefined && cf.result.validity !== aValidity,
+      ...rowModel(models, a.scenario.scenario_id, cf.scenario.scenario_id),
     });
   }
   return rows;
 }
 
+/** The copies of A a pair needs, one per differing input; empty when fewer than two inputs differ. */
+export function counterfactualScenarios(a: Scenario, b: Scenario, bLetter = 'B'): Scenario[] {
+  return counterfactualRequests(a, b, bLetter).flatMap((scenarios) => scenarios.slice(1));
+}
+
 /**
- * Sentence above the Plan rows, or the reason there are no rows. When A and B were not computed
- * the same way, the difference is never tied to a single input (issue #71).
+ * Sentence above the Plan rows, or the reason there are no rows. A difference is tied to an
+ * input only when A and B are known to use the same horizon model (issue #71): with different
+ * models, or while the model is not known, the sentence says that instead.
  */
-export function planIntro(a: Scenario, b: Scenario, aName: string, bName: string, mix: ModelMix = { kind: 'same' }): string {
+export function planIntro(a: Scenario, b: Scenario, aName: string, bName: string, mix: ModelMix): string {
   if (mix.kind === 'horizon') return fill(COMMON.mixed_horizon, { a: aName, b: bName, models: mix.text });
   if (mix.kind === 'validity') return fill(COMMON.mixed_validity, { a: aName, b: bName, models: mix.text });
+  if (mix.kind === 'unknown') return fill(COMMON[`model_${mix.reason}`], { a: aName, b: bName });
   const inputs = differingInputs(a, b);
   if (inputs.length === 0) return fill(COMMON.same_inputs, { a: aName, b: bName });
   if (inputs.length === 1) return fill(COMMON.one_input, { a: aName, b: bName, input: INPUT_LABEL[inputs[0]!] });
@@ -255,6 +274,7 @@ export const PLAN_NOTE = COMMON.counterfactual_note;
 /** Shown under a headline when the two scenarios were not computed the same way. */
 export const MIXED_CAVEAT = COMMON.mixed_caveat;
 export const MIXED_ROWS_NOTE = COMMON.mixed_rows;
+export const UNKNOWN_ROWS_NOTE = COMMON.unknown_rows;
 export const NONE_KNOWN = COMMON.none_known;
 
 /** Result of one scenario in a compare answer. */
