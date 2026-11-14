@@ -3,7 +3,7 @@ import type { EventList } from '../../api/types';
 import { SourcePopover } from '../../ui/SourcePopover';
 import { TERRAIN_NOT_INCLUDED } from '../sky/geometry';
 import { bandSegments, dayTicks, eventMarks, fractionOf, msAt, type BandSegment } from './bands';
-import type { ScenarioWindow } from './data';
+import { eventsRequest, type ScenarioWindow } from './data';
 import { EVENT_LABEL, HIGH_UNCERTAINTY, RANGE_MEANING, eventTimeText } from './event-range';
 import type { JumpKind } from './jumps';
 import { PLAYBACK_SPEEDS, type PlaybackSpeed } from './playback';
@@ -230,6 +230,9 @@ export function TimelineView(props: TimelineViewProps) {
         <span className="tl-key tl-key-earth_visible">Earth visible</span>
         <span className="tl-key tl-key-earth_hidden">Earth hidden (hatched)</span>
       </div>
+      {eventsRequest(window)?.capped ? (
+        <p className="tl-note">Events cover the first two months of the scenario, the longest range the server computes.</p>
+      ) : null}
       {anyRange ? <p className="tl-note">Event times with two values: {RANGE_MEANING}.</p> : null}
     </div>
   );

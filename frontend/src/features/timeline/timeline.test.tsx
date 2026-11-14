@@ -4,7 +4,7 @@ import { eventsExample, healthExample } from '../../api/examples';
 import type { Health, Scenario } from '../../api/types';
 import { createScenarioStore } from '../../state/scenario-store';
 import { bandSegments, dayTicks, eventMarks, fractionOf } from './bands';
-import { MAX_SKY_SERIES_HOURS, locationOf, mastOf, selectedMsOf, skySeriesRequest, windowOf } from './data';
+import { MAX_SKY_SERIES_HOURS, eventsRequest, locationOf, mastOf, selectedMsOf, skySeriesRequest, windowOf } from './data';
 import { jumpAllowed, planJump } from './jumps';
 import { PLAYBACK_TICK_MS, playbackStep } from './playback';
 import { LUNAR_DAY_MS, addCalendarMonths, formatHours, formatUtc, formatUtcRange, toUtc } from './time';
@@ -58,6 +58,13 @@ describe('scenario to request', () => {
     const long = skySeriesRequest({ startMs: window.startMs, endMs: window.startMs + 100 * 86_400_000 });
     expect(long.hours).toBe(MAX_SKY_SERIES_HOURS);
     expect(long.capped).toBe(true);
+  });
+
+  it('asks for events over the window, capped at two months and never empty', () => {
+    expect(eventsRequest(window)).toEqual({ end_utc: '2026-12-31T00:00:00Z', capped: false });
+    const long = eventsRequest({ startMs: window.startMs, endMs: window.startMs + 100 * 86_400_000 });
+    expect(long).toEqual({ end_utc: '2027-01-30T00:00:00Z', capped: true });
+    expect(eventsRequest({ startMs: window.startMs, endMs: window.startMs })).toBeNull();
   });
 
   it('keeps the selected moment inside the window and starts at the window start', () => {

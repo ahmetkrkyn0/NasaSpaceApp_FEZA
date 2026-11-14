@@ -19,10 +19,14 @@ import type {
 } from '../../api/types';
 import { useAsync, useStore, type AsyncState } from '../../lib/hooks';
 import { scenarioStore, type ScenarioState } from '../../state/scenario-store';
-import { MS_PER_HOUR, MS_PER_MINUTE, clamp, parseUtc } from './time';
+import { MS_PER_HOUR, MS_PER_MINUTE, clamp, parseUtc, toUtc } from './time';
 
-/** `/api/sky-series` accepts at most two months (ADR-0004, "Sınırlar"). */
-export const MAX_SKY_SERIES_HOURS = 24 * 60;
+/**
+ * `/api/sky-series`, `/api/events` and `/api/power` accept at most two months; the events range
+ * must also be longer than zero (ADR-0004, "Sınırlar").
+ */
+export const MAX_RANGE_HOURS = 24 * 60;
+export const MAX_SKY_SERIES_HOURS = MAX_RANGE_HOURS;
 
 /** Upper bound on the number of sky samples one request asks for. */
 const TARGET_SKY_SAMPLES = 600;
@@ -70,6 +74,17 @@ export function skySeriesRequest(window: ScenarioWindow): { hours: number; step_
   return { hours, step_minutes, capped: spanHours > MAX_SKY_SERIES_HOURS };
 }
 
+/**
+ * Events request for a window: the window itself, or its first two months when longer.
+ * `null` for an empty window, which the server refuses.
+ */
+export function eventsRequest(window: ScenarioWindow): { end_utc: UtcString; capped: boolean } | null {
+  if (!(window.endMs > window.startMs)) return null;
+  const limitMs = window.startMs + MAX_RANGE_HOURS * MS_PER_HOUR;
+  const capped = window.endMs > limitMs;
+  return { end_utc: toUtc(capped ? limitMs : window.endMs), capped };
+}
+
 export function useScenario(): { active: Scenario | null; window: ScenarioWindow | null; selectedMs: number | null } {
   const active = useStore(scenarioStore, (s) => s.active);
   const selectedMs = useStore(scenarioStore, selectedMsOf);
@@ -86,13 +101,15 @@ export function useEvents(scenario: Scenario | null): AsyncState<EventList | nul
   return useAsync<EventList | null>(
     (signal) => {
       const location = scenario && locationOf(scenario);
-      if (!scenario || !location) return idle();
+      const window = windowOf(scenario);
+      const request = window && eventsRequest(window);
+      if (!scenario || !location || !request) return idle();
       return getEvents(
         {
           ...location,
           ...mastOf(scenario),
           start_utc: scenario.start_utc,
-          end_utc: scenario.end_utc,
+          end_utc: request.end_utc,
           earth_criterion: scenario.earth_criterion,
         },
         { signal },
