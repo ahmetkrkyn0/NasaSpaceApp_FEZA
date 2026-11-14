@@ -32,7 +32,7 @@ Aynı içeriğin sayfa düzenli PDF sürümü: [rover-konumlama-arastirmasi.pdf]
 
 ### 1.1 Ufuk ve Güneş açısının zaman içindeki değişimi
 
-- Literatürdeki karşılığı **ufuk / siluet eşleştirme** (skyline matching). JPL'in LunarNav projesi bunu LOLA yükseklik haritalarıyla (DEM) yapıyor.
+- Literatürdeki karşılığı **ufuk / siluet eşleştirme** (skyline matching). Bu yöntem JSC ve GSFC'de araştırma düzeyinde çalışılıyor; uçuş geçmişi yok. (Düzeltme, 14 Kasım 2026: JPL'in LunarNav projesi ufuk eşleştirme değil, krater tabanlı konumlamadır.)
 - İki ölçüm arasındaki farka bakmak zayıf bir yöntem, çünkü uzak ufuk küçük hareketlerde neredeyse hiç değişmiyor. Daha iyisi, kameranın gördüğü ufku DEM'den hesaplanan ufukla **doğrudan karşılaştırmak**.
 - Doğruluk literatürde tipik olarak ~100 m, en iyi durumda ~10 m. Bu yöntem kaba konum ve **yön** bulmak için uygun.
 
@@ -41,7 +41,7 @@ Aynı içeriğin sayfa düzenli PDF sürümü: [rover-konumlama-arastirmasi.pdf]
 ### 1.2 Yıldız haritasıyla konum
 
 - Yıldız izleyici (star tracker) aracın uzaya göre yönünü verir. Buna yer çekimi yönü (eğim ölçer) ve kesin zaman eklenince enlem ve boylam bulunur.
-- Ay küçük olduğu için yöntem hassastır: 1 yay saniyesi eğim hatası ≈ 8 m. Doğruluğu sınırlayan şey eğim ölçer.
+- Ay küçük olduğu için yöntem hassastır: 1 yay saniyesi eğim hatası ≈ 8 m. Gösterilen JPL posterine göre doğruluğu sınırlayan şey yerçekimi haritasıdır. Yaklaşık 10 m doğruluk bir hedeftir; donanım denemesinde sonuç ±421 m, Ay için ölçeklenmiş tahmin ±125 m.
 - Atmosfer olmadığı için gündüz de çalışabilir. Şartlar: iyi bir gölgelik (baffle) olmalı ve kamera Güneş'e ya da aydınlık zemine bakmamalı.
 
 ### 1.3 Tekerlek dönüşüyle mesafe
@@ -62,7 +62,7 @@ Aynı içeriğin sayfa düzenli PDF sürümü: [rover-konumlama-arastirmasi.pdf]
 | **Güneş sensörü / kamerayla Güneş'i bulma** | Mutlak | Yön (azimut) | Mars rover'ları, Apollo LRV |
 | **Yıldız izleyici + eğim ölçer** | Mutlak | Yön; ayrıca enlem ve boylam | VIPER (yön için); CMU ve JPL konum çalışmaları |
 | **Zemini yörünge haritasıyla eşleştirme** | Mutlak | Konum, metre altı doğruluk | Perseverance: Mars Global Localization (2026) |
-| **Ufku DEM ile eşleştirme** | Mutlak | Kaba konum (~10–100 m) ve yön | JPL LunarNav (araştırma) |
+| **Ufku DEM ile eşleştirme** | Mutlak | Kaba konum (~10–100 m) ve yön | JSC ve GSFC araştırmaları (uçuş geçmişi yok) |
 | **Krater / kaya işaretleri** | Mutlak | Konum (belirgin işaretlerin olduğu arazide) | JPL araştırmaları |
 | **Dünya'dan takip**: mesafe ölçümü, Doppler, VLBI | Mutlak | Konum | Chang'e; Lunokhod (lazer yansıtıcı) |
 | **Ay seyrüsefer ağı** | Mutlak | Ay için GPS benzeri sistem | NASA LunaNet/LCRNS, ESA Moonlight. LuGRE 2025'te Ay'da GPS sinyali aldı. |

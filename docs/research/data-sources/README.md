@@ -77,7 +77,7 @@ Araştırma notlarında önerilen özellikler için internetteki veri kaynaklar�
 | Chang'e 6 | 01.06.2024 | 41,6385°G, 206,0148°D |
 | Blue Ghost 1 | 02.03.2025 | 18,562°K, 61,810°D |
 
-**Bulunamayanlar:** IM-2 Athena ve ispace Resilience bu tabloda yok. Bunlar için LROC görüntü sayfalarına bakılmalı.
+**Düzeltme (14 Kasım 2026):** IM-2 Athena ve ispace Resilience de bu tabloda var; görev adıyla yazılmışlar: "Intuitive Machines 2" (iniş, 06.03.2025, 84,7906°G, 29,1957°D) ve "Hakuto-R Mission 2" (çarpma, 05.06.2025, 60,4445°K, 4,588°B).
 
 ---
 
@@ -140,7 +140,7 @@ with rasterio.Env(**env), rasterio.open(url) as ds:
 
 | Kaynak | Ne zaman | Doğrulama |
 | --- | --- | --- |
-| [PGDA 78](https://pgda.gsfc.nasa.gov/products/78) – 5 m saha DEM'leri (Site 1, 4, 7, 11) | Yerel 5 m detay. Yatay konum belirsizliği ~10–20 cm, dikey ~2–4 cm. Piksellerin ~%90'ı ara değerlenmiş. | ✅ 200 (dosya listesi sayfa metninde yok) |
+| [PGDA 78](https://pgda.gsfc.nasa.gov/products/78) – 5 m saha DEM'leri (güncel sayfada yaklaşık 19 saha; Site 1, 4, 7, 11 ve diğerleri) | Yerel 5 m detay. Yatay konum belirsizliği ~10–20 cm, dikey ~2–4 cm. Piksellerin ~%90'ı ara değerlenmiş. | ✅ 200 (indirme bağlantıları sayfada listeli) |
 | [PGDA 104](https://pgda.gsfc.nasa.gov/products/104) – Shape-from-Shading 5 m | Aydınlık alanlarda daha gerçekçi detay; 13 Artemis III bölgesi | ✅ 200 |
 | [PDS LOLA kutup GDR](https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/polar/) | PGDA 90'ın eski PDS sürümü. `ldem_875s_5m`, `ldem_85s_10m`, `ldem_80s_20m` … (IMG ~1,8 GB, JP2 ~255 MB). Ölçek 0,5 m/DN, referans 1737,4 km. | ✅ 200 |
 | [USGS SLDEM2015](https://astrogeology.usgs.gov/search/map/moon_lro_lola_selene_kaguya_tc_dem_merge_60n60s_59m) | 60°K–60°G, 59 m; Apollo gibi kutup dışı sahalar | ✅ 200 |
@@ -165,7 +165,7 @@ Kök: [PDS lro_diviner_derived1](https://pds-geosciences.wustl.edu/lro/urn-nasa-
 
 | Klasör | İçerik | Kutup | Not |
 | --- | --- | --- | --- |
-| `data_derived_prp/dlre_prp_south.tab` | Polar Resource Product (Paige): yıllık ortalama ve maksimum yüzey sıcaklığı, buzun kararlı olduğu derinlik | ✅ | 2,88 milyon satırlık tablo, 605 MB |
+| `data_derived_prp/dlre_prp_south.tab` | Polar Resource Product (Paige): yıllık ortalama sıcaklık (2 cm derinlikte) ve maksimum yüzey sıcaklığı, buzun kararlı olduğu derinlik | ✅ | 2,88 milyon satırlık tablo, 605 MB |
 | `data_derived_pcp/` (`diurnal`, `seasonal`) | Polar Cumulative Products (Williams vd. 2019): günlük ve mevsimlik sıcaklıklar | ✅ | Ayrıntılar [UCLA duyurusunda](https://www.diviner.ucla.edu/single-post/2020/07/20/new-diviner-seasonal-polar-data-products) |
 | `data_derived_gdr_l2/` | Yıllara göre ızgaralanmış haritalar; kutuplar 240 m stereografik | ✅ | Gece ve gündüz ayrı |
 | `data_derived_ghrm/` | Kaya yoğunluğu, regolit sıcaklığı, H-parametresi | ❌ yalnızca 70°K–70°G | Kutup sahalarında kullanılamaz |
@@ -180,8 +180,8 @@ Kök: [PDS lro_diviner_derived1](https://pds-geosciences.wustl.edu/lro/urn-nasa-
 | Kaynak | Ne | Doğrulama |
 | --- | --- | --- |
 | PGDA 90 `LDRM_*_ROUGH_*`, `_SLP_*` | 100–1600 m ölçeklerinde pürüzlülük ve eğim. Kutupta kaya riskinin vekili. | ✅ 200 |
-| [Robbins krater veritabanı (USGS)](https://astrogeology.usgs.gov/search/map/moon_crater_database_v1_robbins) | ≥1 km kraterler, küresel | ✅ 200 |
-| Diviner kaya yoğunluğu (GHRM, GDR_L3) | Kaya oranı | ⚠️ kutupları kapsamıyor |
+| [Robbins krater veritabanı (USGS)](https://astrogeology.usgs.gov/search/map/moon_crater_database_v1_robbins) | Yaklaşık 1–2 km'den büyük kraterler, küresel | ✅ 200 |
+| Diviner kaya yoğunluğu (GHRM, GDR_L3) | Kaya oranı | ⚠️ GHRM kutupları kapsamıyor (70°K–70°G). GDR_L3'ün kutup klasöründe yalnızca sıcaklık ürünü var |
 
 ---
 
@@ -225,7 +225,7 @@ Kök: [PDS lro_diviner_derived1](https://pds-geosciences.wustl.edu/lro/urn-nasa-
 
 | Kaynak | Ne | Lisans / koşul | Doğrulama |
 | --- | --- | --- | --- |
-| [Cesium Moon Terrain](https://cesium.com/platform/cesium-ion/content/cesium-moon-terrain) | LOLA arazisi + LROC görüntüsü, 3D Tiles. Kutuplarda ~5 m, orta enlemlerde ~60 m. Asset ID 2684829. | Cesium ion hesabı gerekir; ikincil kaynağa göre ticari olmayan kullanım ücretsiz | ⚠️ Bir forum gönderisi araziyi LOLA'dan ~2,5 km yüksek bildiriyor (doğrulanmadı); ufuk hesabında LOLA kullanın |
+| [Cesium Moon Terrain](https://cesium.com/platform/cesium-ion/content/cesium-moon-terrain) | LOLA arazisi + LROC görüntüsü, 3D Tiles. 5 m yalnızca 87,5° enlemden kutba kadar; 85°'den 10 m, 80°'den 20 m, orta enlemlerde ~59 m. Ürünün güncel adı "Cesium Moon". Asset ID 2684829. | Cesium ion hesabı gerekir; ikincil kaynağa göre ticari olmayan kullanım ücretsiz | ⚠️ Bir forum gönderisi araziyi LOLA'dan ~2,5 km yüksek bildiriyor (doğrulanmadı); ufuk hesabında LOLA kullanın |
 | [Cesium for Unreal](https://github.com/CesiumGS/cesium-unreal) | Unreal eklentisi | Apache-2.0 | ✅ GitHub API |
 | [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) | Apollo Lunar Module, LRO modelleri, Apollo 11–17 iniş sahası 3B baskı modelleri. VIPER ve LRV yok. | NASA medya yönergesi | ✅ GitHub API |
 | [Moon Trek WMTS](https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml) | Küresel LROC WAC mozaiği karoları (2-B harita arka planı) | NASA | ✅ 200 (kutup projeksiyonlu katmanlar doğrulanmadı) |
@@ -261,7 +261,7 @@ Projenin lisansı Apache-2.0. MIT, BSD ve Apache lisansları bununla uyumlu.
 | Kutupta H-parametresi | Harita yok | Sabit H = 0,06 m |
 | Röle yörüngeleri | Veri seti yok | İdealize L2 halo / ELFO modeli |
 | Artemis III bölge poligonları | ScienceBase otomatik indirmeyi engelliyor | Bir ekip üyesi tarayıcıdan indirsin |
-| IM-2 Athena ve Resilience koordinatları | NSSDC tablosunda yok | LROC görüntü sayfaları |
+| IM-2 Athena ve Resilience koordinatları | NSSDC tablosunda var (görev adıyla: Intuitive Machines 2, Hakuto-R Mission 2) | Ek kaynak gerekmiyor |
 | Chandrayaan-2 OHRC (ISRO PRADAN) | Kayıt gerektiriyor, denenmedi | Gerekirse sonra |
 | Moon Trek kutup karoları | Doğrulanmadı | QuickMap ya da PGDA `_HILL` dosyaları |
 

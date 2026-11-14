@@ -21,7 +21,7 @@
    Böylece depolama $O(N_{site}\cdot N_t)$ yerine $O(N_{site}+N_t)$ olur.
 2. **Efemeris tablosu küçüktür.** 2026–2032 için saatlik Güneş birim vektörü ve Dünya konum vektörü toplam **≈1.7 MB** tutar. 6 saatlik düğümlerle doğrusal ara-değerleme yapılsa bile Güneş yönündeki hata **< 2″** kalır (hesaplandı).
 3. **Gölge, ufuk maskesiyle hesaplanır.** Her site için 720 azimutta ufuk yükseklik açısı saklanır (1.4 KB). "Güneş görünüyor mu?" sorusu tek bir karşılaştırmaya iner: $E_\odot(t) > h(A_\odot(t))$. Python'da site başına süre ~0.03 s (hesaplandı).
-4. **Kutupta belirleyici olan arazidir.** Arazisiz, pürüzsüz bir Ay'da 89.5°G'de Güneş −2.0° ile +2.0° arasında gezinir ve **144 gün** kesintisiz ufkun altında kalır (hesaplandı). Gerçek sırtlarda ise aydınlanma oranı **%92'ye** çıkar (Gläser et al. 2014).
+4. **Kutupta belirleyici olan arazidir.** Arazisiz, pürüzsüz bir Ay'da 89.5°G'de Güneş −2.0° ile +2.0° arasında gezinir ve Güneş'in merkezi **144 gün** kesintisiz ufkun altında kalır; diskin hiçbir parçasının görünmediği süre 138 gündür (hesaplandı). Gerçek sırtlardaki belirli noktalarda, zeminden 2 m yükseklikte aydınlanma oranı **%92'ye** çıkar (Gläser et al. 2014).
 5. **Kutupta zamanlama hassasiyeti saatlerle ölçülür.** Ufukta 0.057°'lik bir hata (1 km uzaklıkta 1 m yükseklik hatası) gün doğumunu ekvatorda ~7 dakika, kutupta ise **~2–10 saat** kaydırır.
 6. **Termal model tarayıcıda çalışabilir.** Hayne et al. (2017) 1-B regolit modeli ~18 katman ve 900 s adımla ekvatorda **385 K / 92 K** verir; bu, Diviner ölçümleriyle uyumludur. Bir yıllık site simülasyonu saniyeler sürer (hesaplandı).
 7. **Olaylar örneklemeyle değil, kök bulmayla hesaplanır.** Şubat 2027'de Apollo 11 sahasında Dünya, Güneş'in %34'ünü 2 sa 27 dk boyunca örtüyor. 2 saatlik örneklemede bu olay tek bir noktaya düştü (hesaplandı).
@@ -56,7 +56,7 @@
 | $S_0$ | Güneş sabiti (1 AU) | 1361 W m⁻² (Kopp & Lean 2011) |
 | $r_\odot$ | Ay'dan görülen Güneş'in açısal yarıçapı | 0.2615°–0.2717° (2027, hesaplandı) |
 | $r_\oplus$ | Ay'dan görülen Dünya'nın açısal yarıçapı | 0.899°–1.023° (2027, hesaplandı) |
-| $d_\oplus$ | Ay–Dünya merkez uzaklığı | 357 172–406 732 km (2027, hesaplandı) |
+| $d_\oplus$ | Sahadan (89.5°G) Dünya merkezine uzaklık | 357 172–406 732 km (2027, hesaplandı; Ay merkezinden ölçülürse 357 278–406 611 km) |
 | $P_{syn}$ | Sinodik ay (bir Ay günü) | 29.530589 gün |
 | $P_{drac}$ | Drakonik ay (enlem librasyonu) | 27.212221 gün |
 | $P_{anom}$ | Anomalistik ay (boylam librasyonu, mesafe) | 27.554550 gün |
@@ -81,7 +81,7 @@
 | Güç | Aydınlanma × panel geometrisi × mesafe | Yukarıdakiler | + panel modeli | W, Wh, batarya doluluk (SOC) |
 | Yüzey sıcaklığı | Soğurulan güneş akısının **geçmişi** | 29.53 g, mevsim | + eğim, albedo, termofizik | $T(t)$, min/maks |
 | Tutulma | Dünya'nın Güneş'i örtmesi | Yılda 0–3 olay, saatler | Efemeris | Güç düşüşü |
-| Ay–Dünya mesafesi | Yörünge eksantrisitesi | 27.55 g | Efemeris | Link bütçesi (±1.13 dB), gecikme 1.19–1.36 s |
+| Ay–Dünya mesafesi | Yörünge eksantrisitesi | 27.55 g | Efemeris | Link bütçesi (1.13 dB aralık, yani ±0.56 dB), gecikme 1.19–1.36 s |
 | Yer istasyonu (DSN) görünürlüğü | Dünya'nın dönüşü | 1 g | DSN koordinatları, Ay deklinasyonu | Kapsama |
 
 **Uzun dönem istatistik notu:** Kutup aydınlanma istatistikleri (ortalama aydınlanma, kalıcı gölge) tam bir 18.6 yıllık döngü üzerinden hesaplanır. Mazarico et al. (2011) ve Gläser et al. (2014) bu yaklaşımı izler. Tek bir yılın istatistiği yanıltıcı olabilir.
@@ -350,7 +350,7 @@ $$
 
 2 m direk için geometrik ufuk uzaklığı $\sqrt{2Rh}$ = **2.64 km** (Dünya'da 5.05 km). Ufuk dip açısı $\sqrt{2h/R} = 0.087°$ (hesaplandı).
 
-**$D_{max}$ seçimi:** Kutupta Güneş en fazla ~2° yükselir. 100–150 km uzaklıkta birkaç km yüksekliğindeki bir masif hâlâ ~1° ufuk oluşturabilir. Bu yüzden $D_{max}$ = **150–200 km** önerilir.
+**$D_{max}$ seçimi:** Kutupta Güneş en fazla ~2° yükselir. 100 km uzaklıkta 4–5 km yüksekliğindeki bir masif hâlâ ~1° ufuk oluşturabilir (150 km'de bunun için ~9 km gerekir). Bu yüzden $D_{max}$ = **150–200 km** önerilir.
 
 ### 5.2 Algoritma: azimut başına ışın yürütme
 
@@ -489,7 +489,7 @@ $W_T$, sıcaklığın limitler içinde olduğu aralıkları gösterir.
 | 89.5°G, 0°D | %52.0 | %57.1 | **143.8 gün** | %49.4 | 13.9 gün | %25.5 |
 | Apollo 11 | %48.7 | %48.9 | 14.8 gün | %100 (el 58°–73°) | 0 | %48.7 |
 
-**Okuma:** Arazi olmasaydı kutup ~5 ay karanlık kalırdı. Gerçekte aydınlanma tamamen ufuk maskesine bağlıdır: sırtlar %90'ın üzerinde, krater tabanları %0. Dünya, kutupta drakonik ay boyunca ±6.8° salınır ve ayın yaklaşık yarısında ufkun altındadır.
+**Okuma:** Arazi olmasaydı kutup ~5 ay karanlık kalırdı. Gerçekte aydınlanma tamamen ufuk maskesine bağlıdır: en iyi sırt noktaları zeminden 2 m yükseklikte %90'ın üzerinde, krater tabanları %0. Dünya, kutupta drakonik ay boyunca ±6.8° salınır ve ayın yaklaşık yarısında ufkun altındadır.
 
 ### 6.4 Tutulmalar (Dünya'nın Güneş'i örtmesi)
 
@@ -521,7 +521,7 @@ $$
 P(t) = \eta(T_c)\,A_p\,\frac{S_0}{r_{AU}(t)^2}\,F_\odot(t)\,\big[1-f_{occ}(t)\big]\,\max\big(0,\ \hat n_p\cdot\hat s(t)\big)\,(1-L)
 $$
 
-- **Uzaklık:** $r_{AU}$ 2027'de 0.9807–1.0190 aralığında (hesaplandı). Akı ±%3.4 oynar.
+- **Uzaklık:** $r_{AU}$ 2027'de 0.9807–1.0190 aralığında (hesaplandı). Akı bu aralıkta +%4.0 / −%3.7 oynar (yaklaşık ±%3.8).
 - **Sıcaklık katsayısı:** $\eta(T_c)=\eta_{ref}\,[1+\beta(T_c-T_{ref})]$. Tipik $\beta$: Si için ≈ −0.4…−0.5 %/K, üç eklemli GaAs için ≈ −0.2…−0.3 %/K. Hücre sıcaklığı Bölüm 8'deki modelle ya da basit bir denge modeliyle tahmin edilebilir.
 - **Kayıplar:** $L$ toz, kablo ve MPPT kayıplarını toplar.
 
@@ -567,7 +567,7 @@ $$
 z_s=\sqrt{\frac{\kappa P_{syn}}{\pi}},\qquad \kappa=\frac{K}{\rho c_p}
 $$
 
-Bu derinlik ~4–10 cm'dir (Hayne et al. 2017); bizim ızgarada 2.85 cm çıktı (hesaplandı). Yanal ısı iletimi, piksel boyutu (≥5 m) yanında ihmal edilir. Bu yüzden her piksel ya da site, bağımsız bir 1-B sütun olarak çözülür.
+Bu derinlik ~4–7 cm'dir (Hayne et al. 2017); bizim ızgarada 2.85 cm çıktı (hesaplandı). Yanal ısı iletimi, piksel boyutu (≥5 m) yanında ihmal edilir. Bu yüzden her piksel ya da site, bağımsız bir 1-B sütun olarak çözülür.
 
 ### 8.2 Denklemler (Hayne et al. 2017, Ek A)
 
@@ -649,7 +649,7 @@ $$
 T_{eq}=\Big[\frac{(1-A)S_0\cos i}{\varepsilon\sigma}\Big]^{1/4}
 $$
 
-Bu formülle Güneş tepedeyken 386 K, $\cos i=\sin1.5°$ iken 155 K bulunur.
+Bu formülle Güneş tepedeyken 386 K, $\cos i=\sin1.5°$ iken 155 K bulunur (sabit albedo 0.12 ile; Bölüm 8.2'deki açıya bağlı albedo yasası kullanılırsa yaklaşık 108 K).
 
 ### 8.6 Kutup için eklenmesi gerekenler
 
@@ -698,7 +698,7 @@ Zaman hatası $\Delta t=\Delta\theta/\lvert\dot g\rvert$ ile bulunur.
 | Aberasyon ihmali | ~20″ = 0.0057° | 40 s | ~11 dk |
 | DEM yükseklik hatası, 1 m @ 1 km | 0.057° | 6.7 dk | **1.9 sa** (düz ufukta ~10 sa) |
 | Güneşi nokta kaynak varsaymak | 0.267° | ±31 dk | **±9 sa** |
-| Ara-değerleme (1 sa düğüm, normalize) | <0.01″ | ihmal | ihmal |
+| Ara-değerleme (1 sa düğüm, normalize) | Gerçek veride Güneş ≤0.06″, Dünya ≤0.4″ | ihmal | ihmal |
 | ME / PA çerçeve karışıklığı | 663–875 m konum hatası | Sahaya bağlı | Sahaya bağlı, büyük olabilir (10.2) |
 
 ### 10.2 Konum hassasiyeti: "100 metre neden önemli?"
@@ -715,7 +715,7 @@ $$
 \Delta\theta = \frac{500\times100}{2000^2} = 0.0125\ \text{rad} = 0.72°
 $$
 
-Bu değer, 89.5°G'deki günlük Güneş salınımından (±0.5°) büyüktür. Yani sahayı 100 m kaydırmak, bir yönü "hep güneşli"den "hep gölge"ye çevirebilir. Mücadele metnindeki "küçük konum değişiklikleri büyük fark yaratır" vurgusunun matematiksel karşılığı budur.
+Bu değer, 89.5°G'deki günlük Güneş salınımından (±0.5°) büyüktür. Yani sahayı 100 m kaydırmak, bir yönü "hep güneşli"den "hep gölge"ye çevirebilir. (Düzeltme notu, 14 Kasım 2026: bu örnekteki sırt 2 km'den yaklaşık 14°'lik bir ufuk yapar; kutupta Güneş en fazla ~2° yükseldiği için o yön her durumda gölgededir. Formül doğrudur, ancak sonuç yalnızca ufka 0–2° katkı yapan engeller için geçerlidir. Örnek: 1 km'deki 30 m'lik bir engel 1.72° ufuk yapar; saha 100 m yaklaşınca bu 1.91° olur.) Mücadele metnindeki "küçük konum değişiklikleri büyük fark yaratır" vurgusunun matematiksel karşılığı budur.
 
 ---
 
