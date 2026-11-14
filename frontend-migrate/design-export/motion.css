@@ -1,0 +1,223 @@
+/* LunaPath motion: every @keyframes and every prefers-reduced-motion block,
+   extracted verbatim from source.
+   Source: berke/backend-review @ 5aec750
+   Each block is preceded by "@src <file>:<from>-<to>"; the block is a byte-exact
+   copy of those source lines. Keyframes that no animation / animation-name
+   declaration (CSS) or inline TSX animation style references carry /* UNUSED */.
+   Regenerate: node design-export/extract/run-all.mjs */
+
+/* ===== @keyframes (14: 10 used, 4 unused) ===== */
+
+/* @src frontend/src/App.css:762-771 */
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* @src frontend/src/App.css:4290-4293 */
+/* UNUSED */
+@keyframes lp-pulse {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* @src frontend/src/App.css:4295-4298 */
+@keyframes lp-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* @src frontend/src/App.css:4300-4304 */
+@keyframes lp-scan-motion {
+  0% { top: 0%; opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0.4; }
+}
+
+/* @src frontend/src/App.css:4306-4315 */
+/* UNUSED */
+@keyframes lpSlideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* @src frontend/src/App.css:4317-4326 */
+/* UNUSED */
+@keyframes lpPulseBorderStart {
+  0%, 100% {
+    border-color: var(--mint);
+    box-shadow: 0 0 0 0 rgba(95, 227, 176, 0.4);
+  }
+  50% {
+    border-color: var(--mint);
+    box-shadow: 0 0 0 4px rgba(95, 227, 176, 0.15);
+  }
+}
+
+/* @src frontend/src/App.css:4328-4337 */
+/* UNUSED */
+@keyframes lpPulseBorderGoal {
+  0%, 100% {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 0 rgba(237, 133, 110, 0.4);
+  }
+  50% {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 4px rgba(237, 133, 110, 0.15);
+  }
+}
+
+/* @src frontend/src/App.css:5915-5922 */
+@keyframes splash-draw {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* @src frontend/src/App.css:5930-5937 */
+@keyframes splash-timed-bar {
+  from {
+    width: 4%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* @src frontend/src/App.css:6012-6021 */
+@keyframes splash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* @src frontend/src/App.css:6279-6281 */
+@keyframes terrain3d-radar-sweep {
+  to { transform: rotate(360deg); }
+}
+
+/* @src frontend/src/features/analysis-job/analysis-job.css:58-58 */
+@keyframes lp-job-spin { to { transform: rotate(360deg); } }
+
+/* @src frontend/src/features/assistant/assistant.css:900-911 */
+@keyframes chat-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* @src frontend/src/features/mission-report/report.css:61-69 */
+@keyframes lp-report-waiting {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(186, 175, 245, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(186, 175, 245, 0.06);
+  }
+}
+
+/* ===== @media (prefers-reduced-motion: reduce) (10) ===== */
+
+/* @src frontend/src/App.css:805-811 */
+@media (prefers-reduced-motion: reduce) {
+  .landing-topline,
+  .landing-copy > *,
+  .landing-footline {
+    animation: none;
+  }
+}
+
+/* @src frontend/src/App.css:5944-5952 */
+@media (prefers-reduced-motion: reduce) {
+  .splash-screen.is-entering {
+    animation: none;
+  }
+
+  .loading-bar-fill.is-timed {
+    animation: none;
+  }
+}
+
+/* @src frontend/src/App.css:6032-6037 */
+@media (prefers-reduced-motion: reduce) {
+  .splash-identity,
+  .splash-progress {
+    animation: none;
+  }
+}
+
+/* @src frontend/src/App.css:6283-6287 */
+@media (prefers-reduced-motion: reduce) {
+  .terrain3d-radar-icon span {
+    animation: none;
+  }
+}
+
+/* @src frontend/src/features/analysis-job/analysis-job.css:109-109 */
+@media (prefers-reduced-motion: reduce) { .lp-job-spinner { animation: none; } }
+
+/* @src frontend/src/features/assistant/assistant.css:147-153 */
+@media (prefers-reduced-motion: reduce) {
+  .chat-window,
+  .chat-window.is-open {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* @src frontend/src/features/assistant/assistant.css:913-918 */
+@media (prefers-reduced-motion: reduce) {
+  .chat-dots i {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* @src frontend/src/features/mission-constraints/mission-constraints.css:146-149 */
+@media (prefers-reduced-motion: reduce) {
+  .lp-mc-switch,
+  .lp-mc-switch::after { transition: none; }
+}
+
+/* @src frontend/src/features/mission-report/report.css:80-85 */
+@media (prefers-reduced-motion: reduce) {
+  .lp-report-launcher.is-waiting {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(186, 175, 245, 0.18);
+  }
+}
+
+/* @src frontend/src/features/mission-report/report.css:756-760 */
+@media (prefers-reduced-motion: reduce) {
+  .lp-report-toggle-icon {
+    transition: none;
+  }
+}

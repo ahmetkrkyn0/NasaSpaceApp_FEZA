@@ -1,0 +1,2334 @@
+{
+  "source": {
+    "sha": "5aec750",
+    "branch": "berke/backend-review"
+  },
+  "notes": [
+    "kind ramp: stops (parsed numbers) and stopsText (exactly as written). TerrainCanvas3D ramps carry values as written hex numbers (0x......).",
+    "kind color: format rgb (triple), hex (string) or hex-number (0x...... THREE.Color argument).",
+    "kind table: tableKind color|dash (switch tables), threshold (batteryToHex), ramp-by-key (object of ramps; an alias row references another ramp by name and is not inlined).",
+    "hexLiterals: every #hex in a TS/TSX string and every 0x literal with exactly six hex digits (8-digit hash seeds and 7-digit constants are excluded), with the nearest named binding and a path from the literal to it.",
+    "otherRampLiterals: arrays of >= 2 numeric triples outside the files parsed above; rgbRange=false means they are probably geometry, not colour."
+  ],
+  "counts": {
+    "ramps": 15,
+    "colors": 22,
+    "tables": 5,
+    "hexLiterals": 79,
+    "uniqueHexLiterals": 46,
+    "uniqueHexStrings": 17,
+    "uniqueHexNumbers": 29,
+    "cssColorStrings": 32,
+    "otherRampLiterals": 0
+  },
+  "anomalies": [],
+  "entries": [
+    {
+      "name": "COOLWARM_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          59,
+          76,
+          192
+        ],
+        [
+          98,
+          130,
+          234
+        ],
+        [
+          141,
+          176,
+          254
+        ],
+        [
+          184,
+          208,
+          249
+        ],
+        [
+          221,
+          221,
+          221
+        ],
+        [
+          243,
+          199,
+          166
+        ],
+        [
+          237,
+          156,
+          122
+        ],
+        [
+          214,
+          96,
+          77
+        ],
+        [
+          180,
+          4,
+          38
+        ]
+      ],
+      "stopsText": [
+        "[59, 76, 192]",
+        "[98, 130, 234]",
+        "[141, 176, 254]",
+        "[184, 208, 249]",
+        "[221, 221, 221]",
+        "[243, 199, 166]",
+        "[237, 156, 122]",
+        "[214, 96, 77]",
+        "[180, 4, 38]"
+      ],
+      "stopLines": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "MAGMA_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          0,
+          0,
+          4
+        ],
+        [
+          27,
+          16,
+          69
+        ],
+        [
+          80,
+          18,
+          123
+        ],
+        [
+          129,
+          37,
+          129
+        ],
+        [
+          181,
+          54,
+          122
+        ],
+        [
+          229,
+          80,
+          100
+        ],
+        [
+          251,
+          135,
+          97
+        ],
+        [
+          254,
+          194,
+          135
+        ],
+        [
+          252,
+          253,
+          191
+        ]
+      ],
+      "stopsText": [
+        "[0, 0, 4]",
+        "[27, 16, 69]",
+        "[80, 18, 123]",
+        "[129, 37, 129]",
+        "[181, 54, 122]",
+        "[229, 80, 100]",
+        "[251, 135, 97]",
+        "[254, 194, 135]",
+        "[252, 253, 191]"
+      ],
+      "stopLines": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 16,
+      "exported": false
+    },
+    {
+      "name": "VIRIDIS_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          68,
+          1,
+          84
+        ],
+        [
+          71,
+          44,
+          122
+        ],
+        [
+          59,
+          81,
+          139
+        ],
+        [
+          44,
+          113,
+          142
+        ],
+        [
+          33,
+          144,
+          141
+        ],
+        [
+          39,
+          173,
+          129
+        ],
+        [
+          92,
+          200,
+          99
+        ],
+        [
+          170,
+          220,
+          50
+        ],
+        [
+          253,
+          231,
+          37
+        ]
+      ],
+      "stopsText": [
+        "[68, 1, 84]",
+        "[71, 44, 122]",
+        "[59, 81, 139]",
+        "[44, 113, 142]",
+        "[33, 144, 141]",
+        "[39, 173, 129]",
+        "[92, 200, 99]",
+        "[170, 220, 50]",
+        "[253, 231, 37]"
+      ],
+      "stopLines": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 28,
+      "exported": false
+    },
+    {
+      "name": "RDYLGN_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          165,
+          0,
+          38
+        ],
+        [
+          215,
+          48,
+          39
+        ],
+        [
+          244,
+          109,
+          67
+        ],
+        [
+          253,
+          174,
+          97
+        ],
+        [
+          254,
+          224,
+          139
+        ],
+        [
+          217,
+          239,
+          139
+        ],
+        [
+          166,
+          217,
+          106
+        ],
+        [
+          102,
+          189,
+          99
+        ],
+        [
+          26,
+          150,
+          65
+        ]
+      ],
+      "stopsText": [
+        "[165, 0, 38]",
+        "[215, 48, 39]",
+        "[244, 109, 67]",
+        "[253, 174, 97]",
+        "[254, 224, 139]",
+        "[217, 239, 139]",
+        "[166, 217, 106]",
+        "[102, 189, 99]",
+        "[26, 150, 65]"
+      ],
+      "stopLines": [
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 40,
+      "exported": false
+    },
+    {
+      "name": "REGOLITH_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          5,
+          5,
+          6
+        ],
+        [
+          21,
+          21,
+          23
+        ],
+        [
+          42,
+          41,
+          40
+        ],
+        [
+          69,
+          66,
+          62
+        ],
+        [
+          92,
+          88,
+          82
+        ],
+        [
+          122,
+          116,
+          108
+        ],
+        [
+          154,
+          146,
+          136
+        ],
+        [
+          184,
+          175,
+          164
+        ],
+        [
+          212,
+          205,
+          195
+        ]
+      ],
+      "stopsText": [
+        "[5, 5, 6]",
+        "[21, 21, 23]",
+        "[42, 41, 40]",
+        "[69, 66, 62]",
+        "[92, 88, 82]",
+        "[122, 116, 108]",
+        "[154, 146, 136]",
+        "[184, 175, 164]",
+        "[212, 205, 195]"
+      ],
+      "stopLines": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 52,
+      "exported": false
+    },
+    {
+      "name": "START_MINT",
+      "kind": "color",
+      "format": "hex",
+      "value": "#5fe3b0",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 69
+    },
+    {
+      "name": "GOAL_CORAL",
+      "kind": "color",
+      "format": "hex",
+      "value": "#ed856e",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 70
+    },
+    {
+      "name": "ROUTE_CYAN",
+      "kind": "color",
+      "format": "hex",
+      "value": "#4fd8f0",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 72
+    },
+    {
+      "name": "LAVENDER_ACCENT",
+      "kind": "color",
+      "format": "hex",
+      "value": "#baaff5",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 73
+    },
+    {
+      "name": "riskToHex",
+      "kind": "table",
+      "tableKind": "color",
+      "rows": [
+        {
+          "case": "LOW",
+          "value": "#4a8fd8",
+          "valueText": "'#4a8fd8'",
+          "line": 84
+        },
+        {
+          "case": "MEDIUM",
+          "value": "#e3d548",
+          "valueText": "'#e3d548'",
+          "line": 86
+        },
+        {
+          "case": "HIGH",
+          "value": "#d69770",
+          "valueText": "'#d69770'",
+          "line": 88
+        },
+        {
+          "case": "CRITICAL",
+          "value": "#ed4b3d",
+          "valueText": "'#ed4b3d'",
+          "line": 90
+        }
+      ],
+      "default": "#8b94a6",
+      "defaultLine": 92,
+      "file": "frontend/src/colormap.ts",
+      "line": 82
+    },
+    {
+      "name": "riskToDash",
+      "kind": "table",
+      "tableKind": "dash",
+      "rows": [
+        {
+          "case": "LOW",
+          "value": [],
+          "valueText": "[]",
+          "line": 116
+        },
+        {
+          "case": "MEDIUM",
+          "value": [
+            10,
+            5
+          ],
+          "valueText": "[10, 5]",
+          "line": 118
+        },
+        {
+          "case": "HIGH",
+          "value": [
+            4,
+            4
+          ],
+          "valueText": "[4, 4]",
+          "line": 120
+        },
+        {
+          "case": "CRITICAL",
+          "value": [
+            1.5,
+            3.5
+          ],
+          "valueText": "[1.5, 3.5]",
+          "line": 122
+        }
+      ],
+      "default": [],
+      "defaultLine": 124,
+      "file": "frontend/src/colormap.ts",
+      "line": 114
+    },
+    {
+      "name": "batteryToHex",
+      "kind": "table",
+      "tableKind": "threshold",
+      "rows": [
+        {
+          "condition": "percent > 50",
+          "returns": "riskToHex('LOW')",
+          "level": "LOW",
+          "line": 145,
+          "resolved": "#4a8fd8"
+        },
+        {
+          "condition": "percent > 25",
+          "returns": "riskToHex('MEDIUM')",
+          "level": "MEDIUM",
+          "line": 148,
+          "resolved": "#e3d548"
+        },
+        {
+          "condition": "percent > 10",
+          "returns": "riskToHex('HIGH')",
+          "level": "HIGH",
+          "line": 151,
+          "resolved": "#d69770"
+        },
+        {
+          "condition": "otherwise",
+          "returns": "riskToHex('CRITICAL')",
+          "level": "CRITICAL",
+          "line": 154,
+          "resolved": "#ed4b3d"
+        }
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 144
+    },
+    {
+      "name": "thermalToRgb#return@159",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        12,
+        14,
+        20
+      ],
+      "valueText": "[12, 14, 20]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 159
+    },
+    {
+      "name": "lunarRegolithToRgb#return@196",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 196
+    },
+    {
+      "name": "magmaToRgb#return@203",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 203
+    },
+    {
+      "name": "viridisToRgb#return@210",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 210
+    },
+    {
+      "name": "rdYlGnToRgb#return@217",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 217
+    },
+    {
+      "name": "grayReverseToRgb#return@224",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 224
+    },
+    {
+      "name": "ROUGHNESS_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          26,
+          42,
+          58
+        ],
+        [
+          37,
+          92,
+          112
+        ],
+        [
+          88,
+          148,
+          130
+        ],
+        [
+          176,
+          178,
+          106
+        ],
+        [
+          226,
+          160,
+          74
+        ],
+        [
+          232,
+          118,
+          62
+        ]
+      ],
+      "stopsText": [
+        "[26, 42, 58]",
+        "[37, 92, 112]",
+        "[88, 148, 130]",
+        "[176, 178, 106]",
+        "[226, 160, 74]",
+        "[232, 118, 62]"
+      ],
+      "stopLines": [
+        247,
+        248,
+        249,
+        250,
+        251,
+        252
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 246,
+      "exported": true
+    },
+    {
+      "name": "EARTH_VISIBILITY_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          14,
+          18,
+          28
+        ],
+        [
+          24,
+          54,
+          78
+        ],
+        [
+          34,
+          104,
+          132
+        ],
+        [
+          58,
+          164,
+          186
+        ],
+        [
+          110,
+          216,
+          232
+        ]
+      ],
+      "stopsText": [
+        "[14, 18, 28]",
+        "[24, 54, 78]",
+        "[34, 104, 132]",
+        "[58, 164, 186]",
+        "[110, 216, 232]"
+      ],
+      "stopLines": [
+        263,
+        264,
+        265,
+        266,
+        267
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 262,
+      "exported": true
+    },
+    {
+      "name": "TIME_TO_HAVEN_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          95,
+          227,
+          176
+        ],
+        [
+          140,
+          208,
+          140
+        ],
+        [
+          206,
+          200,
+          104
+        ],
+        [
+          226,
+          150,
+          84
+        ],
+        [
+          214,
+          96,
+          77
+        ]
+      ],
+      "stopsText": [
+        "[95, 227, 176]",
+        "[140, 208, 140]",
+        "[206, 200, 104]",
+        "[226, 150, 84]",
+        "[214, 96, 77]"
+      ],
+      "stopLines": [
+        280,
+        281,
+        282,
+        283,
+        284
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 279,
+      "exported": true
+    },
+    {
+      "name": "P_TRAVERSABLE_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          70,
+          32,
+          44
+        ],
+        [
+          140,
+          70,
+          62
+        ],
+        [
+          214,
+          158,
+          84
+        ],
+        [
+          140,
+          152,
+          96
+        ],
+        [
+          58,
+          122,
+          96
+        ]
+      ],
+      "stopsText": [
+        "[70, 32, 44]",
+        "[140, 70, 62]",
+        "[214, 158, 84]",
+        "[140, 152, 96]",
+        "[58, 122, 96]"
+      ],
+      "stopLines": [
+        297,
+        298,
+        299,
+        300,
+        301
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 296,
+      "exported": true
+    },
+    {
+      "name": "SIGMA_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          18,
+          24,
+          36
+        ],
+        [
+          40,
+          66,
+          96
+        ],
+        [
+          92,
+          106,
+          140
+        ],
+        [
+          168,
+          142,
+          148
+        ],
+        [
+          232,
+          196,
+          140
+        ]
+      ],
+      "stopsText": [
+        "[18, 24, 36]",
+        "[40, 66, 96]",
+        "[92, 106, 140]",
+        "[168, 142, 148]",
+        "[232, 196, 140]"
+      ],
+      "stopLines": [
+        315,
+        316,
+        317,
+        318,
+        319
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 314,
+      "exported": true
+    },
+    {
+      "name": "P_SAFE_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          214,
+          76,
+          66
+        ],
+        [
+          222,
+          132,
+          78
+        ],
+        [
+          216,
+          186,
+          96
+        ],
+        [
+          150,
+          180,
+          112
+        ],
+        [
+          88,
+          176,
+          132
+        ]
+      ],
+      "stopsText": [
+        "[214, 76, 66]",
+        "[222, 132, 78]",
+        "[216, 186, 96]",
+        "[150, 180, 112]",
+        "[88, 176, 132]"
+      ],
+      "stopLines": [
+        330,
+        331,
+        332,
+        333,
+        334
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 329,
+      "exported": true
+    },
+    {
+      "name": "DWELL_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          206,
+          86,
+          74
+        ],
+        [
+          220,
+          146,
+          84
+        ],
+        [
+          200,
+          190,
+          108
+        ],
+        [
+          128,
+          176,
+          148
+        ],
+        [
+          78,
+          150,
+          186
+        ]
+      ],
+      "stopsText": [
+        "[206, 86, 74]",
+        "[220, 146, 84]",
+        "[200, 190, 108]",
+        "[128, 176, 148]",
+        "[78, 150, 186]"
+      ],
+      "stopLines": [
+        339,
+        340,
+        341,
+        342,
+        343
+      ],
+      "file": "frontend/src/colormap.ts",
+      "line": 338,
+      "exported": true
+    },
+    {
+      "name": "ACTION_SAFE_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        95,
+        227,
+        176
+      ],
+      "valueText": "[95, 227, 176]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 356
+    },
+    {
+      "name": "ACTION_DRIVE_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        79,
+        216,
+        240
+      ],
+      "valueText": "[79, 216, 240]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 358
+    },
+    {
+      "name": "ACTION_WAIT_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        186,
+        175,
+        245
+      ],
+      "valueText": "[186, 175, 245]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 360
+    },
+    {
+      "name": "ACTION_NONE_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        196,
+        88,
+        82
+      ],
+      "valueText": "[196, 88, 82]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 362
+    },
+    {
+      "name": "SIDE_INSIDE_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        110,
+        186,
+        150
+      ],
+      "valueText": "[110, 186, 150]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 365
+    },
+    {
+      "name": "SIDE_COLD_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        92,
+        152,
+        226
+      ],
+      "valueText": "[92, 152, 226]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 367
+    },
+    {
+      "name": "SIDE_HOT_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        226,
+        128,
+        76
+      ],
+      "valueText": "[226, 128, 76]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 369
+    },
+    {
+      "name": "CORRIDOR_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        120,
+        214,
+        196
+      ],
+      "valueText": "[120, 214, 196]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 379
+    },
+    {
+      "name": "LIT_SAFE_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        72,
+        138,
+        132
+      ],
+      "valueText": "[72, 138, 132]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 380
+    },
+    {
+      "name": "PSR_MASK_RGB",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        126,
+        122,
+        214
+      ],
+      "valueText": "[126, 122, 214]",
+      "exported": true,
+      "file": "frontend/src/colormap.ts",
+      "line": 391
+    },
+    {
+      "name": "aspectToRgb#return@395",
+      "kind": "color",
+      "format": "rgb",
+      "value": [
+        8,
+        8,
+        11
+      ],
+      "valueText": "[8, 8, 11]",
+      "note": "inline return value inside the function (e.g. the colour for a null / non-finite reading)",
+      "condition": "value === null || !Number.isFinite(value)",
+      "file": "frontend/src/colormap.ts",
+      "line": 395
+    },
+    {
+      "name": "DARK_HOURS_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          24,
+          40,
+          58
+        ],
+        [
+          42,
+          92,
+          116
+        ],
+        [
+          104,
+          138,
+          132
+        ],
+        [
+          196,
+          168,
+          96
+        ],
+        [
+          214,
+          120,
+          78
+        ]
+      ],
+      "stopsText": [
+        "[24, 40, 58]",
+        "[42, 92, 116]",
+        "[104, 138, 132]",
+        "[196, 168, 96]",
+        "[214, 120, 78]"
+      ],
+      "stopLines": [
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "file": "frontend/src/features/safe-haven/overlays.ts",
+      "line": 15
+    },
+    {
+      "name": "RAMP_STOPS",
+      "kind": "table",
+      "tableKind": "ramp-by-key",
+      "rows": [
+        {
+          "key": "shadow",
+          "kind": "ramp",
+          "stops": [
+            [
+              255,
+              255,
+              255
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "stopsText": [
+            "[255, 255, 255]",
+            "[0, 0, 0]"
+          ],
+          "line": 16
+        },
+        {
+          "key": "surface_temp_c",
+          "kind": "alias",
+          "aliasOf": "COOLWARM_STOPS",
+          "line": 20
+        }
+      ],
+      "file": "frontend/src/features/time-axis/overlays.ts",
+      "line": 15
+    },
+    {
+      "name": "SURFACE_ALBEDO",
+      "kind": "color",
+      "format": "hex-number",
+      "value": "0x7a746c",
+      "valueText": "new THREE.Color(0x7a746c)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 85
+    },
+    {
+      "name": "RAMP",
+      "kind": "table",
+      "tableKind": "ramp-by-key",
+      "note": "two-stop [low, high] THREE.Color ramps",
+      "rows": [
+        {
+          "key": "slope",
+          "values": [
+            "0x1d3a1f",
+            "0xd94f3d"
+          ],
+          "valueText": "[new THREE.Color(0x1d3a1f), new THREE.Color(0xd94f3d)]",
+          "line": 93
+        },
+        {
+          "key": "thermal",
+          "values": [
+            "0x2b4a99",
+            "0xd94f3d"
+          ],
+          "valueText": "[new THREE.Color(0x2b4a99), new THREE.Color(0xd94f3d)]",
+          "line": 94
+        },
+        {
+          "key": "shadow_ratio",
+          "values": [
+            "0xe8e4dc",
+            "0x0a0a0c"
+          ],
+          "valueText": "[new THREE.Color(0xe8e4dc), new THREE.Color(0x0a0a0c)]",
+          "line": 95
+        },
+        {
+          "key": "cost",
+          "values": [
+            "0x243b6b",
+            "0xe8d54a"
+          ],
+          "valueText": "[new THREE.Color(0x243b6b), new THREE.Color(0xe8d54a)]",
+          "line": 96
+        },
+        {
+          "key": "traversable",
+          "values": [
+            "0x8a2c22",
+            "0x2f7d46"
+          ],
+          "valueText": "[new THREE.Color(0x8a2c22), new THREE.Color(0x2f7d46)]",
+          "line": 97
+        },
+        {
+          "key": "aspect",
+          "values": [
+            "0x3b2f6b",
+            "0xe0c060"
+          ],
+          "valueText": "[new THREE.Color(0x3b2f6b), new THREE.Color(0xe0c060)]",
+          "line": 98
+        }
+      ],
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 92
+    },
+    {
+      "name": "FALLBACK_RAMP",
+      "kind": "ramp",
+      "values": [
+        "0x2c2a26",
+        "0xe8e4dc"
+      ],
+      "valueText": "[\n  new THREE.Color(0x2c2a26),\n  new THREE.Color(0xe8e4dc),\n]",
+      "stopLines": [
+        102,
+        103
+      ],
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 101
+    },
+    {
+      "name": "ROCK_DISTANCE_STOPS",
+      "kind": "ramp",
+      "stops": [
+        [
+          238,
+          90,
+          82
+        ],
+        [
+          240,
+          154,
+          74
+        ],
+        [
+          232,
+          200,
+          90
+        ],
+        [
+          79,
+          208,
+          138
+        ]
+      ],
+      "stopsText": [
+        "[0xee, 0x5a, 0x52]",
+        "[0xf0, 0x9a, 0x4a]",
+        "[0xe8, 0xc8, 0x5a]",
+        "[0x4f, 0xd0, 0x8a]"
+      ],
+      "stopLines": [
+        743,
+        744,
+        745,
+        746
+      ],
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 742,
+      "enclosingFunction": null
+    }
+  ],
+  "hexLiterals": [
+    {
+      "value": "#05070d",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 367,
+      "identifier": "background",
+      "path": "style= .background",
+      "enclosingFunction": "MapCanvas"
+    },
+    {
+      "value": "#c8cddb",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 386,
+      "identifier": "color",
+      "path": "style= .color",
+      "enclosingFunction": "MapCanvas"
+    },
+    {
+      "value": "#05070d",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 420,
+      "identifier": "ctx.fillStyle",
+      "path": "ctx.fillStyle =",
+      "enclosingFunction": "redraw"
+    },
+    {
+      "value": "#05070d",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 487,
+      "identifier": "ctx.strokeStyle",
+      "path": "ctx.strokeStyle =",
+      "enclosingFunction": "redraw"
+    },
+    {
+      "value": "#e7eaf1",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 517,
+      "identifier": "ctx.fillStyle",
+      "path": "ctx.fillStyle =",
+      "enclosingFunction": "redraw"
+    },
+    {
+      "value": "#e7eaf1",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 585,
+      "identifier": "ctx.fillStyle",
+      "path": "ctx.fillStyle =",
+      "enclosingFunction": "drawHoverCrosshair"
+    },
+    {
+      "value": "#05070d",
+      "form": "string",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 786,
+      "identifier": "ctx.fillStyle",
+      "path": "ctx.fillStyle =",
+      "enclosingFunction": "drawMarker"
+    },
+    {
+      "value": "0x7a746c",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 85,
+      "identifier": "SURFACE_ALBEDO",
+      "path": "SURFACE_ALBEDO new THREE.Color(…)",
+      "enclosingFunction": "SURFACE_ALBEDO"
+    },
+    {
+      "value": "0x1d3a1f",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 93,
+      "identifier": "RAMP",
+      "path": "RAMP .slope [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0xd94f3d",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 93,
+      "identifier": "RAMP",
+      "path": "RAMP .slope [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x2b4a99",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 94,
+      "identifier": "RAMP",
+      "path": "RAMP .thermal [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0xd94f3d",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 94,
+      "identifier": "RAMP",
+      "path": "RAMP .thermal [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0xe8e4dc",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 95,
+      "identifier": "RAMP",
+      "path": "RAMP .shadow_ratio [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x0a0a0c",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 95,
+      "identifier": "RAMP",
+      "path": "RAMP .shadow_ratio [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x243b6b",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 96,
+      "identifier": "RAMP",
+      "path": "RAMP .cost [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0xe8d54a",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 96,
+      "identifier": "RAMP",
+      "path": "RAMP .cost [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x8a2c22",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 97,
+      "identifier": "RAMP",
+      "path": "RAMP .traversable [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x2f7d46",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 97,
+      "identifier": "RAMP",
+      "path": "RAMP .traversable [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x3b2f6b",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 98,
+      "identifier": "RAMP",
+      "path": "RAMP .aspect [0] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0xe0c060",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 98,
+      "identifier": "RAMP",
+      "path": "RAMP .aspect [1] new THREE.Color(…)",
+      "enclosingFunction": "RAMP"
+    },
+    {
+      "value": "0x2c2a26",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 102,
+      "identifier": "FALLBACK_RAMP",
+      "path": "FALLBACK_RAMP [0] new THREE.Color(…)",
+      "enclosingFunction": "FALLBACK_RAMP"
+    },
+    {
+      "value": "0xe8e4dc",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 103,
+      "identifier": "FALLBACK_RAMP",
+      "path": "FALLBACK_RAMP [1] new THREE.Color(…)",
+      "enclosingFunction": "FALLBACK_RAMP"
+    },
+    {
+      "value": "0xd5d9dc",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 864,
+      "identifier": "chassisMaterial",
+      "path": "chassisMaterial new THREE.MeshStandardMaterial(…) .color",
+      "enclosingFunction": "createRoverModel.chassisMaterial"
+    },
+    {
+      "value": "0xa7b0b8",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 869,
+      "identifier": "metalMaterial",
+      "path": "metalMaterial new THREE.MeshStandardMaterial(…) .color",
+      "enclosingFunction": "createRoverModel.metalMaterial"
+    },
+    {
+      "value": "0x171717",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 874,
+      "identifier": "tireMaterial",
+      "path": "tireMaterial new THREE.MeshStandardMaterial(…) .color",
+      "enclosingFunction": "createRoverModel.tireMaterial"
+    },
+    {
+      "value": "0x44ddff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 901,
+      "identifier": "apertureMaterial",
+      "path": "apertureMaterial new THREE.MeshBasicMaterial(…) .color",
+      "enclosingFunction": "createRoverModel.apertureMaterial"
+    },
+    {
+      "value": "0x020308",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1119,
+      "identifier": "scene.background",
+      "path": "scene.background = new THREE.Color(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xc8cede",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1151,
+      "identifier": null,
+      "path": "scene.add(…) new THREE.AmbientLight(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xfff6ee",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1164,
+      "identifier": "sun",
+      "path": "sun new THREE.DirectionalLight(…)",
+      "enclosingFunction": "TerrainCanvas3D.sun"
+    },
+    {
+      "value": "0x9a938a",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1177,
+      "identifier": "rockMaterial",
+      "path": "rockMaterial new THREE.MeshStandardMaterial(…) .color",
+      "enclosingFunction": "TerrainCanvas3D.rockMaterial"
+    },
+    {
+      "value": "0x8fd8ff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1496,
+      "identifier": "terrainNetMaterial",
+      "path": "terrainNetMaterial new THREE.LineBasicMaterial(…) .color",
+      "enclosingFunction": "TerrainCanvas3D.terrainNetMaterial"
+    },
+    {
+      "value": "0x5ff4ff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1524,
+      "identifier": "lidarSweep",
+      "path": "lidarSweep new THREE.LineSegments(…) new THREE.LineBasicMaterial(…) .color",
+      "enclosingFunction": "TerrainCanvas3D.lidarSweep"
+    },
+    {
+      "value": "0x000000",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1923,
+      "identifier": null,
+      "path": "state.material.emissive.set(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xffffff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1924,
+      "identifier": null,
+      "path": "state.material.color.set(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0x000000",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1934,
+      "identifier": null,
+      "path": "state.material.emissive.set(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xffffff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1935,
+      "identifier": null,
+      "path": "state.material.color.set(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0x000000",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1966,
+      "identifier": null,
+      "path": "state.material.color.set(…)",
+      "enclosingFunction": "apply"
+    },
+    {
+      "value": "0xffffff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1968,
+      "identifier": null,
+      "path": "state.material.emissive.set(…)",
+      "enclosingFunction": "apply"
+    },
+    {
+      "value": "0xffffff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2021,
+      "identifier": null,
+      "path": "state.material.color.set(…)",
+      "enclosingFunction": "applyDetail"
+    },
+    {
+      "value": "0xffffff",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2038,
+      "identifier": null,
+      "path": "state.material.color.set(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0x39ff6a",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2732,
+      "identifier": "color",
+      "path": "routeGroup.add(…) new THREE.Mesh(…) new THREE.MeshBasicMaterial(…) .color",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xd6ffde",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2743,
+      "identifier": "centerline",
+      "path": "centerline new THREE.Line(…) new THREE.LineDashedMaterial(…) .color",
+      "enclosingFunction": "TerrainCanvas3D.centerline"
+    },
+    {
+      "value": "0x2ee59d",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2757,
+      "identifier": null,
+      "path": "routeGroup.add(…) marker(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "0xff5252",
+      "form": "number",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 2758,
+      "identifier": null,
+      "path": "routeGroup.add(…) marker(…)",
+      "enclosingFunction": "TerrainCanvas3D"
+    },
+    {
+      "value": "#5fe3b0",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 69,
+      "identifier": "START_MINT",
+      "path": "START_MINT",
+      "enclosingFunction": "START_MINT"
+    },
+    {
+      "value": "#ed856e",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 70,
+      "identifier": "GOAL_CORAL",
+      "path": "GOAL_CORAL",
+      "enclosingFunction": "GOAL_CORAL"
+    },
+    {
+      "value": "#4fd8f0",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 72,
+      "identifier": "ROUTE_CYAN",
+      "path": "ROUTE_CYAN",
+      "enclosingFunction": "ROUTE_CYAN"
+    },
+    {
+      "value": "#baaff5",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 73,
+      "identifier": "LAVENDER_ACCENT",
+      "path": "LAVENDER_ACCENT",
+      "enclosingFunction": "LAVENDER_ACCENT"
+    },
+    {
+      "value": "#4a8fd8",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 85,
+      "identifier": null,
+      "path": "return",
+      "enclosingFunction": "riskToHex"
+    },
+    {
+      "value": "#e3d548",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 87,
+      "identifier": null,
+      "path": "return",
+      "enclosingFunction": "riskToHex"
+    },
+    {
+      "value": "#d69770",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 89,
+      "identifier": null,
+      "path": "return",
+      "enclosingFunction": "riskToHex"
+    },
+    {
+      "value": "#ed4b3d",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 91,
+      "identifier": null,
+      "path": "return",
+      "enclosingFunction": "riskToHex"
+    },
+    {
+      "value": "#8b94a6",
+      "form": "string",
+      "file": "frontend/src/colormap.ts",
+      "line": 93,
+      "identifier": null,
+      "path": "return",
+      "enclosingFunction": "riskToHex"
+    },
+    {
+      "value": "#4fd8f0",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 28,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .lpr_1 .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#b3a5ff",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 38,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .luvmi_m .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#b3a5ff",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 48,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .luvm_m .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#e8c85a",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 58,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .nasa_viper .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#e8c85a",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 68,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .viper .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#ee5a52",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 78,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .cnsa_yutu_2 .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#ee5a52",
+      "form": "string",
+      "file": "frontend/src/components/Fleet/roverMeta.ts",
+      "line": 88,
+      "identifier": "ROVER_META",
+      "path": "ROVER_META .yutu_2 .agencyColor",
+      "enclosingFunction": "ROVER_META"
+    },
+    {
+      "value": "#fff",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 49,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 62,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 63,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 67,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 68,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 69,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 70,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 71,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 72,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 73,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#000",
+      "form": "string",
+      "file": "frontend/src/components/LunaPathMark.tsx",
+      "line": 74,
+      "identifier": "fill",
+      "path": "fill=",
+      "enclosingFunction": "LunaPathMark"
+    },
+    {
+      "value": "#4fd8f0",
+      "form": "string",
+      "file": "frontend/src/features/corridor/overlays.ts",
+      "line": 50,
+      "identifier": "color",
+      "path": "return [0] .style .color",
+      "enclosingFunction": "corridorOverlays"
+    },
+    {
+      "value": "#4a8fd8",
+      "form": "string",
+      "file": "frontend/src/features/corridor/overlays.ts",
+      "line": 58,
+      "identifier": "color",
+      "path": "return [1] .style .color",
+      "enclosingFunction": "corridorOverlays"
+    },
+    {
+      "value": "#e7eaf1",
+      "form": "string",
+      "file": "frontend/src/features/cost-explain/overlays.ts",
+      "line": 11,
+      "identifier": "color",
+      "path": "return [0] .style .color",
+      "enclosingFunction": "hoverCellOverlay"
+    },
+    {
+      "value": "#e3d548",
+      "form": "string",
+      "file": "frontend/src/features/pose-loop/overlays.ts",
+      "line": 33,
+      "identifier": "commands",
+      "path": "commands [0] .style .color",
+      "enclosingFunction": "poseOverlays.commands"
+    },
+    {
+      "value": "#ed4b3d",
+      "form": "string",
+      "file": "frontend/src/features/pose-loop/overlays.ts",
+      "line": 35,
+      "identifier": "commands",
+      "path": "commands [0] .style .color",
+      "enclosingFunction": "poseOverlays.commands"
+    },
+    {
+      "value": "#e7eaf1",
+      "form": "string",
+      "file": "frontend/src/features/pose-loop/overlays.ts",
+      "line": 36,
+      "identifier": "commands",
+      "path": "commands [0] .style .color",
+      "enclosingFunction": "poseOverlays.commands"
+    },
+    {
+      "value": "#e3d548",
+      "form": "string",
+      "file": "frontend/src/features/pose-loop/overlays.ts",
+      "line": 58,
+      "identifier": "color",
+      "path": "commands.push(…) .style .color",
+      "enclosingFunction": "poseOverlays"
+    },
+    {
+      "value": "#baaff5",
+      "form": "string",
+      "file": "frontend/src/features/time-axis/overlays.ts",
+      "line": 82,
+      "identifier": "color",
+      "path": "commands.push(…) .style .color",
+      "enclosingFunction": "timeAxisOverlays"
+    }
+  ],
+  "cssColorStrings": [
+    {
+      "value": "rgba(186, 175, 245, 0.2)",
+      "string": "1px solid rgba(186, 175, 245, 0.2)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 366,
+      "identifier": "border",
+      "path": "style= .border",
+      "enclosingFunction": "MapCanvas"
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.45)",
+      "string": "0 24px 64px rgba(0, 0, 0, 0.45)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 368,
+      "identifier": "boxShadow",
+      "path": "style= .boxShadow",
+      "enclosingFunction": "MapCanvas"
+    },
+    {
+      "value": "rgba(5, 7, 13, 0.86)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 385,
+      "identifier": "background",
+      "path": "style= .background",
+      "enclosingFunction": "MapCanvas"
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.55)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 436,
+      "identifier": "ctx.shadowColor",
+      "path": "ctx.shadowColor =",
+      "enclosingFunction": "redraw"
+    },
+    {
+      "value": "rgba(186, 175, 245, 0.18)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 567,
+      "identifier": "ctx.strokeStyle",
+      "path": "ctx.strokeStyle =",
+      "enclosingFunction": "drawHoverCrosshair"
+    },
+    {
+      "value": "rgba(231, 234, 241, 0.92)",
+      "file": "frontend/src/MapCanvas.tsx",
+      "line": 576,
+      "identifier": "ctx.strokeStyle",
+      "path": "ctx.strokeStyle =",
+      "enclosingFunction": "drawHoverCrosshair"
+    },
+    {
+      "value": "rgba(0, 0, 0, 1)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 230,
+      "identifier": null,
+      "path": "alpha.addColorStop(…)",
+      "enclosingFunction": "createEarth"
+    },
+    {
+      "value": "rgba(0, 0, 0, 0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 231,
+      "identifier": null,
+      "path": "alpha.addColorStop(…)",
+      "enclosingFunction": "createEarth"
+    },
+    {
+      "value": "rgba(255, 255, 255, 1.0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 266,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSunFlareSprite"
+    },
+    {
+      "value": "rgba(254, 240, 138, 0.95)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 267,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSunFlareSprite"
+    },
+    {
+      "value": "rgba(251, 146, 60, 0.4)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 268,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSunFlareSprite"
+    },
+    {
+      "value": "rgba(244, 63, 94, 0.1)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 269,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSunFlareSprite"
+    },
+    {
+      "value": "rgba(0, 0, 0, 0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 270,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSunFlareSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 1.0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 369,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSolidDotTexture"
+    },
+    {
+      "value": "rgba(255, 255, 255, 1.0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 370,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSolidDotTexture"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0)",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 371,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createSolidDotTexture"
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.4)",
+      "string": "0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 8px ",
+      "file": "frontend/src/TerrainCanvas3D.tsx",
+      "line": 1816,
+      "identifier": null,
+      "path": "",
+      "enclosingFunction": "updateRockBoxes"
+    },
+    {
+      "value": "rgba(255, 255, 255, 1)",
+      "file": "frontend/src/sky.ts",
+      "line": 136,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.95)",
+      "file": "frontend/src/sky.ts",
+      "line": 137,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.45)",
+      "file": "frontend/src/sky.ts",
+      "line": 138,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.14)",
+      "file": "frontend/src/sky.ts",
+      "line": 139,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0)",
+      "file": "frontend/src/sky.ts",
+      "line": 140,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.50)",
+      "file": "frontend/src/sky.ts",
+      "line": 170,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.26)",
+      "file": "frontend/src/sky.ts",
+      "line": 171,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.09)",
+      "file": "frontend/src/sky.ts",
+      "line": 172,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.02)",
+      "file": "frontend/src/sky.ts",
+      "line": 173,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0)",
+      "file": "frontend/src/sky.ts",
+      "line": 174,
+      "identifier": null,
+      "path": "grad.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0)",
+      "file": "frontend/src/sky.ts",
+      "line": 186,
+      "identifier": null,
+      "path": "spike.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.05)",
+      "file": "frontend/src/sky.ts",
+      "line": 187,
+      "identifier": null,
+      "path": "spike.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.30)",
+      "file": "frontend/src/sky.ts",
+      "line": 188,
+      "identifier": null,
+      "path": "spike.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0.05)",
+      "file": "frontend/src/sky.ts",
+      "line": 189,
+      "identifier": null,
+      "path": "spike.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    },
+    {
+      "value": "rgba(255, 255, 255, 0)",
+      "file": "frontend/src/sky.ts",
+      "line": 190,
+      "identifier": null,
+      "path": "spike.addColorStop(…)",
+      "enclosingFunction": "createStarGlowSprite"
+    }
+  ],
+  "otherRampLiterals": []
+}

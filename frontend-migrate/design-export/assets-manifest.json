@@ -1,0 +1,535 @@
+{
+  "source": {
+    "sha": "5aec750",
+    "branch": "berke/backend-review"
+  },
+  "notes": [
+    "used: the public URL path (e.g. /rovers/lpr_1.jpg) appears in a string of a non-test TS/TSX file, in comment-stripped CSS, or in comment-stripped frontend/index.html, followed by a non-path character.",
+    "matchesIgnoreRule/ignoreRule: git check-ignore --no-index, so tracked files are checked against the rules too. The copies under design-export/assets/ match the same extension rules (*.mp4, *.glb, ...).",
+    "identicalTo: other public files with the same sha256 (byte-identical duplicates).",
+    "copiedAs \"provenance\": not referenced by the app; copied because it documents where the assets came from.",
+    "dynamicReferences: template literals that build a public path at run time; files matching them would be used without appearing verbatim."
+  ],
+  "counts": {
+    "files": 32,
+    "used": 22,
+    "unused": 10,
+    "usedBytes": 31402177,
+    "copiedFiles": 25,
+    "copiedBytes": 31411855,
+    "cesiumFiles": 372,
+    "cesiumBytes": 6682446
+  },
+  "aggregates": [
+    {
+      "path": "frontend/public/cesium/",
+      "files": 372,
+      "bytes": 6682446,
+      "used": false,
+      "usedAt": [],
+      "ignoreRule": ".gitignore:83:frontend/public/cesium/",
+      "note": "Cesium static build output, not hashed per file. No frontend source references /cesium/; nothing in the current UI loads it."
+    }
+  ],
+  "dynamicReferences": [],
+  "files": [
+    {
+      "path": "frontend/public/data/bsc5.bin",
+      "url": "/data/bsc5.bin",
+      "bytes": 145536,
+      "sha256": "f0bbf20f93b9c233e10830f9386bf3a858bad035c1e3964993ba9d8a3d9e2a22",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/sky.ts:27"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/data/bsc5.bin",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/README.md",
+      "url": "/fonts/README.md",
+      "bytes": 3079,
+      "sha256": "5f17caa8a56b5804e37a44ceb1a470ca3d2eebb0ba7de7253e0849298eb3412d",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/README.md",
+      "copySha256Match": true,
+      "copiedAs": "provenance"
+    },
+    {
+      "path": "frontend/public/fonts/archivo-latin-ext.woff2",
+      "url": "/fonts/archivo-latin-ext.woff2",
+      "bytes": 32608,
+      "sha256": "ff4f17d21930e36d6d93baba663e624cb767afc3feebf7adaebd82242638de05",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:48"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/archivo-latin-ext.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/archivo-latin.woff2",
+      "url": "/fonts/archivo-latin.woff2",
+      "bytes": 34928,
+      "sha256": "8f704806dbedeaaeca334b11ec348bc3ac3a439d6431544b3afb54f534ee4967",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:38"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/archivo-latin.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/archivo-narrow-latin-ext.woff2",
+      "url": "/fonts/archivo-narrow-latin-ext.woff2",
+      "bytes": 16536,
+      "sha256": "2eaf4bd71b5467c7423838b3e255c3736f6af0203bb81c0ff4b655608a59c209",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:68"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/archivo-narrow-latin-ext.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/archivo-narrow-latin.woff2",
+      "url": "/fonts/archivo-narrow-latin.woff2",
+      "bytes": 18692,
+      "sha256": "e1097881272dd16039ffb9f8b5108332926750842d1fea1dd059d5396bb83ef2",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:58"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/archivo-narrow-latin.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/azeret-mono-latin-ext.woff2",
+      "url": "/fonts/azeret-mono-latin-ext.woff2",
+      "bytes": 14844,
+      "sha256": "9ac48256740a816c4eaf6323f67ca06a5b38bda1098c2c1526044635fb812485",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:88"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/azeret-mono-latin-ext.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/fonts/azeret-mono-latin.woff2",
+      "url": "/fonts/azeret-mono-latin.woff2",
+      "bytes": 26164,
+      "sha256": "d090ca8b9080094d42b06c43f2987bfa8b36fd5565611fd59db84db53c5f74bb",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/App.css:78"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/fonts/azeret-mono-latin.woff2",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/models/nasa_rocks/rock-15016.json",
+      "url": "/models/nasa_rocks/rock-15016.json",
+      "bytes": 86254,
+      "sha256": "500f86761a315a881569813813c1afbb6d54d884216be3ae25d5acad06886d91",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:421"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/models/nasa_rocks/rock-15016.json",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/models/nasa_rocks/rock-15556.json",
+      "url": "/models/nasa_rocks/rock-15556.json",
+      "bytes": 81454,
+      "sha256": "a845292264ad9537cef2d100e17a2fe90e03621840f93ba780b8c3e92628005c",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:422"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/models/nasa_rocks/rock-15556.json",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/models/space-exploration-vehicle.glb",
+      "url": "/models/space-exploration-vehicle.glb",
+      "bytes": 22431576,
+      "sha256": "09dcfbd45a475440de4ca2405fe3be4f784dee6f12e752bad5faa9f6db6c4a8d",
+      "tracked": false,
+      "matchesIgnoreRule": true,
+      "ignoreRule": ".gitignore:82:*.glb",
+      "used": false,
+      "usedAt": [],
+      "identicalTo": []
+    },
+    {
+      "path": "frontend/public/models/viper-rover-textured.glb",
+      "url": "/models/viper-rover-textured.glb",
+      "bytes": 10062376,
+      "sha256": "78c49e796a3bcc29dd444207626b7a10c00e26f924c96917c64c16a56cf49e8c",
+      "tracked": true,
+      "matchesIgnoreRule": true,
+      "ignoreRule": ".gitignore:82:*.glb",
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:1445"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/models/viper-rover-textured.glb",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/models/viper-rover.glb",
+      "url": "/models/viper-rover.glb",
+      "bytes": 9770808,
+      "sha256": "8640e66b45dee1f2c5b9e8a546497acae6ec6fca58ca43b367e3af3d843ec257",
+      "tracked": true,
+      "matchesIgnoreRule": true,
+      "ignoreRule": ".gitignore:82:*.glb",
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:1445"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/models/viper-rover.glb",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/models/yutu-rover.glb",
+      "url": "/models/yutu-rover.glb",
+      "bytes": 21686960,
+      "sha256": "66e3804c3db2a7be250f45bf4781d5af5414b5d549def64eaf90b30de3c791e9",
+      "tracked": true,
+      "matchesIgnoreRule": true,
+      "ignoreRule": ".gitignore:82:*.glb",
+      "used": false,
+      "usedAt": [],
+      "identicalTo": []
+    },
+    {
+      "path": "frontend/public/rovers/cnsa_yutu_2.jpg",
+      "url": "/rovers/cnsa_yutu_2.jpg",
+      "bytes": 953095,
+      "sha256": "40a15315c3c608b0143ba3be0905d51805d0043123bf7f7ea5ebd26fe6000e06",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/components/Fleet/roverMeta.ts:82",
+        "frontend/src/components/Fleet/roverMeta.ts:92"
+      ],
+      "identicalTo": [
+        "frontend/public/rovers/yutu_2.jpg"
+      ],
+      "copiedTo": "design-export/assets/rovers/cnsa_yutu_2.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/rovers/lpr_1.jpg",
+      "url": "/rovers/lpr_1.jpg",
+      "bytes": 1005035,
+      "sha256": "769990ee9f520bcc580c0cb536d83f8344cf69639add4b09451f31d5ac31e540",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/components/Fleet/roverMeta.ts:32"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/rovers/lpr_1.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/rovers/luvm_m.jpg",
+      "url": "/rovers/luvm_m.jpg",
+      "bytes": 950987,
+      "sha256": "cbca40528bea5118566781f904819efd1045010cb3e3d7a16804dbb1e8f14b1e",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [
+        "frontend/public/rovers/luvmi_m.jpg"
+      ]
+    },
+    {
+      "path": "frontend/public/rovers/luvmi_m.jpg",
+      "url": "/rovers/luvmi_m.jpg",
+      "bytes": 950987,
+      "sha256": "cbca40528bea5118566781f904819efd1045010cb3e3d7a16804dbb1e8f14b1e",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/components/Fleet/roverMeta.ts:42",
+        "frontend/src/components/Fleet/roverMeta.ts:52"
+      ],
+      "identicalTo": [
+        "frontend/public/rovers/luvm_m.jpg"
+      ],
+      "copiedTo": "design-export/assets/rovers/luvmi_m.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/rovers/nasa_viper.jpg",
+      "url": "/rovers/nasa_viper.jpg",
+      "bytes": 1005798,
+      "sha256": "0d65a842281df7ca3785645dc2ee8b1cb5de5788b425ef6b6487f2e61e146c0a",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/components/Fleet/roverMeta.ts:62",
+        "frontend/src/components/Fleet/roverMeta.ts:72"
+      ],
+      "identicalTo": [
+        "frontend/public/rovers/viper.jpg"
+      ],
+      "copiedTo": "design-export/assets/rovers/nasa_viper.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/rovers/viper.jpg",
+      "url": "/rovers/viper.jpg",
+      "bytes": 1005798,
+      "sha256": "0d65a842281df7ca3785645dc2ee8b1cb5de5788b425ef6b6487f2e61e146c0a",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [
+        "frontend/public/rovers/nasa_viper.jpg"
+      ]
+    },
+    {
+      "path": "frontend/public/rovers/yutu_2.jpg",
+      "url": "/rovers/yutu_2.jpg",
+      "bytes": 953095,
+      "sha256": "40a15315c3c608b0143ba3be0905d51805d0043123bf7f7ea5ebd26fe6000e06",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [
+        "frontend/public/rovers/cnsa_yutu_2.jpg"
+      ]
+    },
+    {
+      "path": "frontend/public/starimg.jpeg",
+      "url": "/starimg.jpeg",
+      "bytes": 91669,
+      "sha256": "6dfd536e7bf82561aa477ae2bc1a74069787bffbc83a9a8a76b560335790904a",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/SpaceBackdrop.tsx:79",
+        "frontend/src/SpaceBackdrop.tsx:90"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/starimg.jpeg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/textures/NAC_SITE11_PROVENANCE.md",
+      "url": "/textures/NAC_SITE11_PROVENANCE.md",
+      "bytes": 3672,
+      "sha256": "c1e5a13270c377c4a3394c74ff5286a00877a50c7e774649cbc69884b312f897",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/textures/NAC_SITE11_PROVENANCE.md",
+      "copySha256Match": true,
+      "copiedAs": "provenance"
+    },
+    {
+      "path": "frontend/public/textures/earth_disc.jpg",
+      "url": "/textures/earth_disc.jpg",
+      "bytes": 928457,
+      "sha256": "eea0fb82e4324d3b7eab74f24cf30be87c51de62c532804459aadcbf62b840eb",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:222"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/textures/earth_disc.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/textures/moon-lroc-wac-global-1024.jpg",
+      "url": "/textures/moon-lroc-wac-global-1024.jpg",
+      "bytes": 151314,
+      "sha256": "ac9df8ecbab36b661ae1dcc9186834c6a8bcf6a6c185c21b9655e9efccc07336",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": []
+    },
+    {
+      "path": "frontend/public/textures/nac-site11-2048.jpg",
+      "url": "/textures/nac-site11-2048.jpg",
+      "bytes": 1049139,
+      "sha256": "604596a24e823c08a1e04dc379abdf1b5eca9fc37764e54502141d0fae3b1839",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:145",
+        "frontend/src/App.css:4788"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/textures/nac-site11-2048.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/textures/nac-site11-detail-2048.jpg",
+      "url": "/textures/nac-site11-detail-2048.jpg",
+      "bytes": 799465,
+      "sha256": "a08b11f59a7647af17285ccab686ff1b088bc276d8e9a86a3000fd2b698fd58d",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/TerrainCanvas3D.tsx:170"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/textures/nac-site11-detail-2048.jpg",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/textures/rover_cockpit_overlay.png",
+      "url": "/textures/rover_cockpit_overlay.png",
+      "bytes": 928707,
+      "sha256": "3559c99336aa923fb951dea78f8233bbe9c678d584079c631d1bea87a8cbcb79",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": []
+    },
+    {
+      "path": "frontend/public/ui/chatbot_hero.png",
+      "url": "/ui/chatbot_hero.png",
+      "bytes": 250224,
+      "sha256": "c4c72adc178cde9c129375a57eef99c2c90cb0ade06bd727b6794896fb2bc851",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/features/assistant/ChatPanel.tsx:830"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/ui/chatbot_hero.png",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/ui/chatbot_logo.png",
+      "url": "/ui/chatbot_logo.png",
+      "bytes": 49667,
+      "sha256": "11a1f1d92ccba699302a4d0b205f48d805058a1278527c08bacb0cf1516df532",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": true,
+      "usedAt": [
+        "frontend/src/features/assistant/index.tsx:116"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/ui/chatbot_logo.png",
+      "copySha256Match": true
+    },
+    {
+      "path": "frontend/public/videos/README.md",
+      "url": "/videos/README.md",
+      "bytes": 2927,
+      "sha256": "20ca34c29dbbb4f94daa2941b8c10c80c55ad96d2825a5209673440951878818",
+      "tracked": true,
+      "matchesIgnoreRule": false,
+      "ignoreRule": null,
+      "used": false,
+      "usedAt": [],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/videos/README.md",
+      "copySha256Match": true,
+      "copiedAs": "provenance"
+    },
+    {
+      "path": "frontend/public/videos/moon-backdrop-1080.mp4",
+      "url": "/videos/moon-backdrop-1080.mp4",
+      "bytes": 4028441,
+      "sha256": "3fc297e188165f683ac1127eb52842d5f5ea3a43f88c1062899b3095f5468da4",
+      "tracked": false,
+      "matchesIgnoreRule": true,
+      "ignoreRule": ".gitignore:29:*.mp4",
+      "used": true,
+      "usedAt": [
+        "frontend/src/SpaceBackdrop.tsx:21"
+      ],
+      "identicalTo": [],
+      "copiedTo": "design-export/assets/videos/moon-backdrop-1080.mp4",
+      "copySha256Match": true
+    }
+  ]
+}

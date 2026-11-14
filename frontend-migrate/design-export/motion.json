@@ -1,0 +1,1692 @@
+{
+  "source": {
+    "sha": "5aec750",
+    "branch": "berke/backend-review"
+  },
+  "counts": {
+    "keyframes": 14,
+    "keyframesUsed": 10,
+    "keyframesUnused": 4,
+    "reducedMotionBlocks": 10,
+    "transitions": 79,
+    "animations": 27,
+    "inlineTsxTransitions": 0,
+    "inlineTsxAnimations": 0
+  },
+  "notes": [
+    "usedBy: CSS animation/animation-name declarations (outside @keyframes) and TSX inline animation styles whose value names the keyframe as a whole identifier.",
+    "selectorClassStatus: whether each class in the using selector is referenced from TS/TSX strings (referenced | dynamicMaybe | unreferenced); see css-inventory.json classes.",
+    "onlyUnreferencedSelectors: every user selector contains a class never referenced from TS/TSX, so the animation may never render.",
+    "tsMentions: informational whole-identifier mentions in TS strings; not counted as usage."
+  ],
+  "anomalies": [],
+  "keyframes": [
+    {
+      "name": "landing-rise",
+      "file": "frontend/src/App.css",
+      "line": 762,
+      "endLine": 771,
+      "stops": [
+        {
+          "selector": "from",
+          "line": 763,
+          "declarations": [
+            "opacity: 0",
+            "transform: translateY(14px)"
+          ]
+        },
+        {
+          "selector": "to",
+          "line": 767,
+          "declarations": [
+            "opacity: 1",
+            "transform: translateY(0)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".landing-topline, .landing-copy > *, .landing-footline",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 776,
+          "declaration": "animation: landing-rise 0.72s cubic-bezier(0.22, 0.61, 0.36, 1) both",
+          "selectorClassStatus": {
+            "landing-topline": "referenced",
+            "landing-copy": "referenced",
+            "landing-footline": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "lp-pulse",
+      "file": "frontend/src/App.css",
+      "line": 4290,
+      "endLine": 4293,
+      "stops": [
+        {
+          "selector": "0%",
+          "line": 4291,
+          "declarations": [
+            "opacity: 0.4"
+          ]
+        },
+        {
+          "selector": "100%",
+          "line": 4292,
+          "declarations": [
+            "opacity: 1"
+          ]
+        }
+      ],
+      "usedBy": [],
+      "tsMentions": [],
+      "used": false,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": false
+    },
+    {
+      "name": "lp-spin",
+      "file": "frontend/src/App.css",
+      "line": 4295,
+      "endLine": 4298,
+      "stops": [
+        {
+          "selector": "0%",
+          "line": 4296,
+          "declarations": [
+            "transform: rotate(0deg)"
+          ]
+        },
+        {
+          "selector": "100%",
+          "line": 4297,
+          "declarations": [
+            "transform: rotate(360deg)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".lp-radar-spinner",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 2855,
+          "declaration": "animation: lp-spin 0.8s linear infinite",
+          "selectorClassStatus": {
+            "lp-radar-spinner": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "lp-scan-motion",
+      "file": "frontend/src/App.css",
+      "line": 4300,
+      "endLine": 4304,
+      "stops": [
+        {
+          "selector": "0%",
+          "line": 4301,
+          "declarations": [
+            "top: 0%",
+            "opacity: 0.8"
+          ]
+        },
+        {
+          "selector": "50%",
+          "line": 4302,
+          "declarations": [
+            "opacity: 1"
+          ]
+        },
+        {
+          "selector": "100%",
+          "line": 4303,
+          "declarations": [
+            "top: 100%",
+            "opacity: 0.4"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".lp-scan-sweep",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 2828,
+          "declaration": "animation: lp-scan-motion 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+          "selectorClassStatus": {
+            "lp-scan-sweep": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "lpSlideInLeft",
+      "file": "frontend/src/App.css",
+      "line": 4306,
+      "endLine": 4315,
+      "stops": [
+        {
+          "selector": "from",
+          "line": 4307,
+          "declarations": [
+            "transform: translateX(-100%)",
+            "opacity: 0"
+          ]
+        },
+        {
+          "selector": "to",
+          "line": 4311,
+          "declarations": [
+            "transform: translateX(0)",
+            "opacity: 1"
+          ]
+        }
+      ],
+      "usedBy": [],
+      "tsMentions": [],
+      "used": false,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": false
+    },
+    {
+      "name": "lpPulseBorderStart",
+      "file": "frontend/src/App.css",
+      "line": 4317,
+      "endLine": 4326,
+      "stops": [
+        {
+          "selector": "0%, 100%",
+          "line": 4318,
+          "declarations": [
+            "border-color: var(--mint)",
+            "box-shadow: 0 0 0 0 rgba(95, 227, 176, 0.4)"
+          ]
+        },
+        {
+          "selector": "50%",
+          "line": 4322,
+          "declarations": [
+            "border-color: var(--mint)",
+            "box-shadow: 0 0 0 4px rgba(95, 227, 176, 0.15)"
+          ]
+        }
+      ],
+      "usedBy": [],
+      "tsMentions": [],
+      "used": false,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": false
+    },
+    {
+      "name": "lpPulseBorderGoal",
+      "file": "frontend/src/App.css",
+      "line": 4328,
+      "endLine": 4337,
+      "stops": [
+        {
+          "selector": "0%, 100%",
+          "line": 4329,
+          "declarations": [
+            "border-color: var(--coral)",
+            "box-shadow: 0 0 0 0 rgba(237, 133, 110, 0.4)"
+          ]
+        },
+        {
+          "selector": "50%",
+          "line": 4333,
+          "declarations": [
+            "border-color: var(--coral)",
+            "box-shadow: 0 0 0 4px rgba(237, 133, 110, 0.15)"
+          ]
+        }
+      ],
+      "usedBy": [],
+      "tsMentions": [],
+      "used": false,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": false
+    },
+    {
+      "name": "splash-draw",
+      "file": "frontend/src/App.css",
+      "line": 5915,
+      "endLine": 5922,
+      "stops": [
+        {
+          "selector": "from",
+          "line": 5916,
+          "declarations": [
+            "opacity: 0"
+          ]
+        },
+        {
+          "selector": "to",
+          "line": 5919,
+          "declarations": [
+            "opacity: 1"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".splash-screen.is-entering",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 5925,
+          "declaration": "animation: splash-draw 0.3s ease both",
+          "selectorClassStatus": {
+            "splash-screen": "referenced",
+            "is-entering": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "splash-timed-bar",
+      "file": "frontend/src/App.css",
+      "line": 5930,
+      "endLine": 5937,
+      "stops": [
+        {
+          "selector": "from",
+          "line": 5931,
+          "declarations": [
+            "width: 4%"
+          ]
+        },
+        {
+          "selector": "to",
+          "line": 5934,
+          "declarations": [
+            "width: 100%"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".loading-bar-fill.is-timed",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 5941,
+          "declaration": "animation: splash-timed-bar 1.5s cubic-bezier(0.33, 0.9, 0.5, 1) both",
+          "selectorClassStatus": {
+            "loading-bar-fill": "referenced",
+            "is-timed": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "splash-rise",
+      "file": "frontend/src/App.css",
+      "line": 6012,
+      "endLine": 6021,
+      "stops": [
+        {
+          "selector": "from",
+          "line": 6013,
+          "declarations": [
+            "opacity: 0",
+            "transform: translateY(10px)"
+          ]
+        },
+        {
+          "selector": "to",
+          "line": 6017,
+          "declarations": [
+            "opacity: 1",
+            "transform: translateY(0)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".splash-identity, .splash-progress",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 6025,
+          "declaration": "animation: splash-rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both",
+          "selectorClassStatus": {
+            "splash-identity": "referenced",
+            "splash-progress": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "terrain3d-radar-sweep",
+      "file": "frontend/src/App.css",
+      "line": 6279,
+      "endLine": 6281,
+      "stops": [
+        {
+          "selector": "to",
+          "line": 6280,
+          "declarations": [
+            "transform: rotate(360deg)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".terrain3d-radar-icon span",
+          "atRules": [],
+          "file": "frontend/src/App.css",
+          "line": 6276,
+          "declaration": "animation: terrain3d-radar-sweep 2s linear infinite",
+          "selectorClassStatus": {
+            "terrain3d-radar-icon": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "lp-job-spin",
+      "file": "frontend/src/features/analysis-job/analysis-job.css",
+      "line": 58,
+      "endLine": 58,
+      "stops": [
+        {
+          "selector": "to",
+          "line": 58,
+          "declarations": [
+            "transform: rotate(360deg)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".lp-job-spinner",
+          "atRules": [],
+          "file": "frontend/src/features/analysis-job/analysis-job.css",
+          "line": 55,
+          "declaration": "animation: lp-job-spin 900ms linear infinite",
+          "selectorClassStatus": {
+            "lp-job-spinner": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "chat-dot",
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 900,
+      "endLine": 911,
+      "stops": [
+        {
+          "selector": "0%, 80%, 100%",
+          "line": 901,
+          "declarations": [
+            "opacity: 0.25",
+            "transform: translateY(0)"
+          ]
+        },
+        {
+          "selector": "40%",
+          "line": 907,
+          "declarations": [
+            "opacity: 1",
+            "transform: translateY(-2px)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".chat-dots i",
+          "atRules": [],
+          "file": "frontend/src/features/assistant/assistant.css",
+          "line": 889,
+          "declaration": "animation: chat-dot 1.1s infinite ease-in-out",
+          "selectorClassStatus": {
+            "chat-dots": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    },
+    {
+      "name": "lp-report-waiting",
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 61,
+      "endLine": 69,
+      "stops": [
+        {
+          "selector": "0%, 100%",
+          "line": 62,
+          "declarations": [
+            "box-shadow: 0 0 0 0 rgba(186, 175, 245, 0.45)"
+          ]
+        },
+        {
+          "selector": "50%",
+          "line": 66,
+          "declarations": [
+            "box-shadow: 0 0 0 5px rgba(186, 175, 245, 0.06)"
+          ]
+        }
+      ],
+      "usedBy": [
+        {
+          "kind": "css",
+          "selector": ".lp-report-launcher.is-waiting",
+          "atRules": [],
+          "file": "frontend/src/features/mission-report/report.css",
+          "line": 74,
+          "declaration": "animation: lp-report-waiting 1.6s ease-in-out infinite",
+          "selectorClassStatus": {
+            "lp-report-launcher": "referenced",
+            "is-waiting": "referenced"
+          }
+        }
+      ],
+      "tsMentions": [],
+      "used": true,
+      "onlyUnreferencedSelectors": false,
+      "usedOutsideReducedMotion": true
+    }
+  ],
+  "reducedMotion": [
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/App.css",
+      "line": 805,
+      "endLine": 811,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".landing-topline, .landing-copy > *, .landing-footline",
+          "line": 806,
+          "declarations": [
+            "animation: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/App.css",
+      "line": 5944,
+      "endLine": 5952,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".splash-screen.is-entering",
+          "line": 5945,
+          "declarations": [
+            "animation: none"
+          ]
+        },
+        {
+          "selector": ".loading-bar-fill.is-timed",
+          "line": 5949,
+          "declarations": [
+            "animation: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/App.css",
+      "line": 6032,
+      "endLine": 6037,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".splash-identity, .splash-progress",
+          "line": 6033,
+          "declarations": [
+            "animation: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/App.css",
+      "line": 6283,
+      "endLine": 6287,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".terrain3d-radar-icon span",
+          "line": 6284,
+          "declarations": [
+            "animation: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/analysis-job/analysis-job.css",
+      "line": 109,
+      "endLine": 109,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".lp-job-spinner",
+          "line": 109,
+          "declarations": [
+            "animation: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 147,
+      "endLine": 153,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".chat-window, .chat-window.is-open",
+          "line": 148,
+          "declarations": [
+            "transition: none",
+            "transform: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 913,
+      "endLine": 918,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".chat-dots i",
+          "line": 914,
+          "declarations": [
+            "animation: none",
+            "opacity: 0.6"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/mission-constraints/mission-constraints.css",
+      "line": 146,
+      "endLine": 149,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".lp-mc-switch, .lp-mc-switch::after",
+          "line": 147,
+          "declarations": [
+            "transition: none"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 80,
+      "endLine": 85,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".lp-report-launcher.is-waiting",
+          "line": 81,
+          "declarations": [
+            "animation: none",
+            "box-shadow: 0 0 0 3px rgba(186, 175, 245, 0.18)"
+          ]
+        }
+      ]
+    },
+    {
+      "query": "(prefers-reduced-motion: reduce)",
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 756,
+      "endLine": 760,
+      "atRules": [],
+      "rules": [
+        {
+          "selector": ".lp-report-toggle-icon",
+          "line": 757,
+          "declarations": [
+            "transition: none"
+          ]
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "selector": ".space-backdrop-media",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.75s ease, transform 1.2s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 443
+    },
+    {
+      "selector": ".space-backdrop-vignette",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.75s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 457
+    },
+    {
+      "selector": ".app-shell",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 520
+    },
+    {
+      "selector": ".landing-screen",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.75s ease, transform 0.75s ease, filter 0.75s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 547
+    },
+    {
+      "selector": ".landing-explore-button",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 721
+    },
+    {
+      "selector": ".cinematic-screen",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.45s ease, visibility 0.45s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 825
+    },
+    {
+      "selector": ".cinematic-cta",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 0.2s ease, opacity 0.2s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 859
+    },
+    {
+      "selector": ".loading-bar-fill",
+      "atRules": [],
+      "property": "transition",
+      "value": "width 0.45s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 883
+    },
+    {
+      "selector": ".rover-card",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.18s ease, background 0.18s ease, transform 0.18s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 1188
+    },
+    {
+      "selector": ".profile-button",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 0.18s ease, color 0.18s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 1250
+    },
+    {
+      "selector": ".battery-progress",
+      "atRules": [],
+      "property": "transition",
+      "value": "stroke-dashoffset 0.25s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 1830
+    },
+    {
+      "selector": ".lp-mode-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2500
+    },
+    {
+      "selector": ".lp-systems-toggle",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease, border-color 140ms ease, background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2592
+    },
+    {
+      "selector": ".lp-dim-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2660
+    },
+    {
+      "selector": ".lp-layer-trigger",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 160ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2683
+    },
+    {
+      "selector": ".lp-layer-item",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2752
+    },
+    {
+      "selector": ".lp-profile-card",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3118
+    },
+    {
+      "selector": ".lp-info-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3280
+    },
+    {
+      "selector": ".lp-weight-input",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3319
+    },
+    {
+      "selector": ".lp-range-input::-webkit-slider-thumb",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 120ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3354
+    },
+    {
+      "selector": ".lp-coord-field",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3438
+    },
+    {
+      "selector": ".lp-pick-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease, background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3492
+    },
+    {
+      "selector": ".lp-pick-btn .lp-icon",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3501
+    },
+    {
+      "selector": ".lp-rover-select-card",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 160ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3644
+    },
+    {
+      "selector": ".lp-select-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3739
+    },
+    {
+      "selector": ".lp-replan-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 160ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 3793
+    },
+    {
+      "selector": ".lp-play-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4185
+    },
+    {
+      "selector": ".lp-systems-backdrop",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.25s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4347
+    },
+    {
+      "selector": ".lp-systems-drawer",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4374
+    },
+    {
+      "selector": ".lp-systems-close",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4424
+    },
+    {
+      "selector": ".lp-rover-tab",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4488
+    },
+    {
+      "selector": ".lp-panel-clear-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4566
+    },
+    {
+      "selector": ".lp-change-vehicle-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease, border-color 140ms ease, background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4597
+    },
+    {
+      "selector": ".lp-panel-plan-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease, opacity 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4618
+    },
+    {
+      "selector": ".lp-hud-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4693
+    },
+    {
+      "selector": ".lp-hud-minimized",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.2s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4711
+    },
+    {
+      "selector": ".lp-hud-dock-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4755
+    },
+    {
+      "selector": ".lp-carousel-arrow",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease, border-color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4884
+    },
+    {
+      "selector": ".lp-fleet-thumb",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease, border-color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4926
+    },
+    {
+      "selector": ".lp-fleet-thumb img",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 4935
+    },
+    {
+      "selector": ".lp-fleet-card",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5004
+    },
+    {
+      "selector": ".lp-card-photo",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 0.4s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5044
+    },
+    {
+      "selector": ".lp-card-select-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5230
+    },
+    {
+      "selector": ".lp-deploy-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5538
+    },
+    {
+      "selector": ".lp-deploy-arrow",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 0.2s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5557
+    },
+    {
+      "selector": ".splash-screen",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.52s ease, visibility 0.52s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5864
+    },
+    {
+      "selector": ".lp-scale-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6109
+    },
+    {
+      "selector": ".terrain3d-cam-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6165
+    },
+    {
+      "selector": ".lp-job-run",
+      "atRules": [],
+      "property": "transition",
+      "value": "all 0.15s ease",
+      "important": false,
+      "file": "frontend/src/features/analysis-job/analysis-job.css",
+      "line": 25
+    },
+    {
+      "selector": ".lp-analysis-trigger",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 160ms ease",
+      "important": false,
+      "file": "frontend/src/features/analysis-layers/analysis-layers.css",
+      "line": 33
+    },
+    {
+      "selector": ".lp-analysis-item",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/analysis-layers/analysis-layers.css",
+      "line": 74
+    },
+    {
+      "selector": ".chat-launcher",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.16s ease, color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 35
+    },
+    {
+      "selector": ".chat-launcher.is-dragging",
+      "atRules": [],
+      "property": "transition",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 43
+    },
+    {
+      "selector": ".chat-launcher.is-open",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.15s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 90
+    },
+    {
+      "selector": ".chat-window",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 130
+    },
+    {
+      "selector": ".chat-window.is-open",
+      "atRules": [],
+      "property": "transition",
+      "value": "opacity 0.15s ease, transform 0.15s ease, visibility 0s",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 141
+    },
+    {
+      "selector": ".chat-window, .chat-window.is-open",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "transition",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 150
+    },
+    {
+      "selector": ".chat-window.is-dragging",
+      "atRules": [],
+      "property": "transition",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 202
+    },
+    {
+      "selector": ".chat-reset-position",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.16s ease, background 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 228
+    },
+    {
+      "selector": ".chat-minimize",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.16s ease, color 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 253
+    },
+    {
+      "selector": ".chat-new",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.16s ease, color 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 305
+    },
+    {
+      "selector": ".chat-level-option",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 0.14s ease, color 0.14s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 369
+    },
+    {
+      "selector": ".chat-suggestion",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 0.14s ease, color 0.14s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 493
+    },
+    {
+      "selector": ".lp-assistant-field",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 0.16s ease, box-shadow 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 958
+    },
+    {
+      "selector": ".chat-send",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 0.16s ease, border-color 0.16s ease",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 1034
+    },
+    {
+      "selector": ".cf-field-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/coarse-fields/coarse-fields.css",
+      "line": 64
+    },
+    {
+      "selector": ".ev-bar",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/earth-visibility/earth-visibility.css",
+      "line": 91
+    },
+    {
+      "selector": ".ic-field-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/illumination-corridor/illumination-corridor.css",
+      "line": 39
+    },
+    {
+      "selector": ".lp-mc-switch",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 120ms linear, background 120ms linear",
+      "important": false,
+      "file": "frontend/src/features/mission-constraints/mission-constraints.css",
+      "line": 50
+    },
+    {
+      "selector": ".lp-mc-switch::after",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 120ms linear, background 120ms linear",
+      "important": false,
+      "file": "frontend/src/features/mission-constraints/mission-constraints.css",
+      "line": 62
+    },
+    {
+      "selector": ".lp-mc-switch, .lp-mc-switch::after",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "transition",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/mission-constraints/mission-constraints.css",
+      "line": 148
+    },
+    {
+      "selector": ".lp-report-launcher",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease, border-color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 34
+    },
+    {
+      "selector": ".lp-report-lang",
+      "atRules": [],
+      "property": "transition",
+      "value": "background 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 219
+    },
+    {
+      "selector": ".lp-hbar-fill",
+      "atRules": [],
+      "property": "transition",
+      "value": "width 160ms ease-out",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 582
+    },
+    {
+      "selector": ".lp-report-toggle-icon",
+      "atRules": [],
+      "property": "transition",
+      "value": "transform 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 749
+    },
+    {
+      "selector": ".lp-report-toggle-icon",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "transition",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 758
+    },
+    {
+      "selector": ".sh-view-btn",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/safe-haven/safe-haven.css",
+      "line": 39
+    },
+    {
+      "selector": ".lp-time-constraint",
+      "atRules": [],
+      "property": "transition",
+      "value": "border-color 140ms ease, color 140ms ease",
+      "important": false,
+      "file": "frontend/src/features/time-axis/time-axis.css",
+      "line": 104
+    },
+    {
+      "selector": ".lp-rail-tab",
+      "atRules": [],
+      "property": "transition",
+      "value": "color 140ms ease, background 140ms ease",
+      "important": false,
+      "file": "frontend/src/shell/shell.css",
+      "line": 84
+    }
+  ],
+  "animations": [
+    {
+      "selector": ".landing-topline, .landing-copy > *, .landing-footline",
+      "atRules": [],
+      "property": "animation",
+      "value": "landing-rise 0.72s cubic-bezier(0.22, 0.61, 0.36, 1) both",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 776
+    },
+    {
+      "selector": ".landing-topline",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.05s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 780
+    },
+    {
+      "selector": ".landing-copy > .landing-kicker",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.24s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 784
+    },
+    {
+      "selector": ".landing-copy > h1",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.34s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 788
+    },
+    {
+      "selector": ".landing-copy > .landing-description",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.46s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 792
+    },
+    {
+      "selector": ".landing-copy > .landing-actions",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.58s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 796
+    },
+    {
+      "selector": ".landing-footline",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.7s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 800
+    },
+    {
+      "selector": ".landing-topline, .landing-copy > *, .landing-footline",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 809
+    },
+    {
+      "selector": ".lp-scan-sweep",
+      "atRules": [],
+      "property": "animation",
+      "value": "lp-scan-motion 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2828
+    },
+    {
+      "selector": ".lp-radar-spinner",
+      "atRules": [],
+      "property": "animation",
+      "value": "lp-spin 0.8s linear infinite",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 2855
+    },
+    {
+      "selector": ".splash-screen.is-entering",
+      "atRules": [],
+      "property": "animation",
+      "value": "splash-draw 0.3s ease both",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5925
+    },
+    {
+      "selector": ".loading-bar-fill.is-timed",
+      "atRules": [],
+      "property": "animation",
+      "value": "splash-timed-bar 1.5s cubic-bezier(0.33, 0.9, 0.5, 1) both",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5941
+    },
+    {
+      "selector": ".splash-screen.is-entering",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5946
+    },
+    {
+      "selector": ".loading-bar-fill.is-timed",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 5950
+    },
+    {
+      "selector": ".splash-identity, .splash-progress",
+      "atRules": [],
+      "property": "animation",
+      "value": "splash-rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6025
+    },
+    {
+      "selector": ".splash-progress",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.16s",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6029
+    },
+    {
+      "selector": ".splash-identity, .splash-progress",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6035
+    },
+    {
+      "selector": ".terrain3d-radar-icon span",
+      "atRules": [],
+      "property": "animation",
+      "value": "terrain3d-radar-sweep 2s linear infinite",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6276
+    },
+    {
+      "selector": ".terrain3d-radar-icon span",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/App.css",
+      "line": 6285
+    },
+    {
+      "selector": ".lp-job-spinner",
+      "atRules": [],
+      "property": "animation",
+      "value": "lp-job-spin 900ms linear infinite",
+      "important": false,
+      "file": "frontend/src/features/analysis-job/analysis-job.css",
+      "line": 55
+    },
+    {
+      "selector": ".lp-job-spinner",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/analysis-job/analysis-job.css",
+      "line": 109
+    },
+    {
+      "selector": ".chat-dots i",
+      "atRules": [],
+      "property": "animation",
+      "value": "chat-dot 1.1s infinite ease-in-out",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 889
+    },
+    {
+      "selector": ".chat-dots i:nth-child(2)",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.18s",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 893
+    },
+    {
+      "selector": ".chat-dots i:nth-child(3)",
+      "atRules": [],
+      "property": "animation-delay",
+      "value": "0.36s",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 897
+    },
+    {
+      "selector": ".chat-dots i",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/assistant/assistant.css",
+      "line": 915
+    },
+    {
+      "selector": ".lp-report-launcher.is-waiting",
+      "atRules": [],
+      "property": "animation",
+      "value": "lp-report-waiting 1.6s ease-in-out infinite",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 74
+    },
+    {
+      "selector": ".lp-report-launcher.is-waiting",
+      "atRules": [
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "property": "animation",
+      "value": "none",
+      "important": false,
+      "file": "frontend/src/features/mission-report/report.css",
+      "line": 82
+    }
+  ],
+  "inlineTsx": {
+    "animations": [],
+    "transitions": []
+  }
+}
