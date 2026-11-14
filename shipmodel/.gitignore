@@ -1,4 +1,5 @@
 source/
 converted/
 renders/
+build/
 *.blend1
