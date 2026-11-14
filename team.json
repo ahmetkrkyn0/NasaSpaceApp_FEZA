@@ -4,7 +4,7 @@
   "people": {
     "goktug":  { "display": "Göktuğ-Claude",  "emoji": ":rocket:",        "slack_id": "" },
     "tuna":    { "display": "Tuna-Claude",    "emoji": ":crescent_moon:", "slack_id": "" },
-    "oguzhan": { "display": "Oğuzhan-Claude", "emoji": ":satellite:",     "slack_id": "U0CHVA91ALU" },
+    "oguzhan": { "display": "Oğuzhan-Claude", "emoji": ":satellite:",     "slack_id": "U0CHA85MRDM" },
     "ahmet":   { "display": "Ahmet-Claude",   "emoji": ":telescope:",     "slack_id": "" },
     "sef":     { "display": "Şef (Fable)",    "emoji": ":brain:",         "slack_id": "" }
   }
