@@ -75,9 +75,12 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 ### Prerequisites
 
 - Python 3.11 or newer, with `pip`
-- Node.js 20 or newer, with npm
+- Node.js 20.19 or newer (or 22.12 or newer), with npm
 - Git
 - Internet access for the first set-up (SPICE kernels, about 46 MB)
+
+> [!IMPORTANT]
+> Clone into a folder whose full path has only ASCII characters (for example `C:\projects\NasaSpaceApp_FEZA`, not under a user folder such as `C:\Users\Oğuzhan\...`). The SPICE library cannot open kernel files on a path with non-ASCII characters: the kernels download, but `/api/health` reports `kernels_loaded: false` and the ephemeris tests fail.
 
 ### Installation
 
@@ -97,10 +100,10 @@ python backend/scripts/download_kernels.py
 ```
 
 ```bash
-npm --prefix frontend install
+npm ci --prefix frontend
 ```
 
-The kernel script downloads five SPICE files into `data/raw/kernels/` and skips files that are already there (`--force` downloads them again). A virtual environment (`python -m venv .venv`) is recommended but not required.
+`npm ci` installs the exact versions from `frontend/package-lock.json`. The kernel script downloads five SPICE files into `data/raw/kernels/` and skips files that are already there (`--force` downloads them again). A virtual environment (`python -m venv .venv`) is recommended but not required.
 
 Optional, for the map layers: `python backend/scripts/make_layers.py` reads the layer windows from the PGDA 90 maps over the network and stores them in `data/raw/layers/`. Without them the map shows no layer and `/api/layers/<name>` answers 503; everything else works.
 
