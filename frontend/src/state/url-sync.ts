@@ -31,6 +31,21 @@ export const SCENARIO_PARAMS = {
 
 const OWN_KEYS: readonly string[] = Object.values(SCENARIO_PARAMS);
 
+/** Keys of the active scenario only (not the selected moment, not the comparison list). */
+const ACTIVE_KEYS: readonly string[] = [
+  SCENARIO_PARAMS.scenarioId,
+  SCENARIO_PARAMS.label,
+  SCENARIO_PARAMS.site,
+  SCENARIO_PARAMS.lat,
+  SCENARIO_PARAMS.lon,
+  SCENARIO_PARAMS.start,
+  SCENARIO_PARAMS.end,
+  SCENARIO_PARAMS.mast,
+  SCENARIO_PARAMS.panel,
+  SCENARIO_PARAMS.azimuth,
+  SCENARIO_PARAMS.criterion,
+];
+
 /** Used when a hand-written link names a scenario without an id. */
 export const DEFAULT_SCENARIO_ID = 'a';
 
@@ -140,6 +155,51 @@ export function hasScenarioParams(params: URLSearchParams): boolean {
   return OWN_KEYS.some((key) => params.has(key));
 }
 
+/**
+ * True when the address bar names an active scenario that could not be read, for example a
+ * hand-written link without `panel`. Such keys are kept until the user sets a valid scenario.
+ */
+export function hasUnreadableActiveScenario(params: URLSearchParams): boolean {
+  return ACTIVE_KEYS.some((key) => params.has(key)) && activeFromParams(params) === null;
+}
+
+/**
+ * The valid fields of an active scenario in the address bar, even when the scenario as a whole
+ * is incomplete. The setup panel can use them to pre-fill its form. Invalid values are left out.
+ */
+export function readScenarioDraft(params: URLSearchParams): Partial<Scenario> {
+  const P = SCENARIO_PARAMS;
+  const draft: Partial<Scenario> = {};
+  const sid = params.get(P.scenarioId);
+  if (sid) draft.scenario_id = sid;
+  const label = params.get(P.label);
+  if (label !== null) draft.label = label;
+  const site = params.get(P.site);
+  if (site) {
+    draft.site_id = site;
+  } else {
+    const lat = finite(params.get(P.lat));
+    const lon = finite(params.get(P.lon));
+    if (lat !== null && lon !== null && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 360) {
+      draft.lat_deg = lat;
+      draft.lon_deg = lon;
+    }
+  }
+  const start = params.get(P.start);
+  if (isUtc(start)) draft.start_utc = start;
+  const end = params.get(P.end);
+  if (isUtc(end)) draft.end_utc = end;
+  const mast = finite(params.get(P.mast));
+  if (mast !== null && mast >= 0) draft.mast_height_m = mast;
+  const panel = params.get(P.panel);
+  if (panel) draft.panel_profile_id = panel;
+  const azimuth = finite(params.get(P.azimuth));
+  if (azimuth !== null) draft.fixed_azimuth_deg = azimuth;
+  const criterion = params.get(P.criterion);
+  if (isCriterion(criterion)) draft.earth_criterion = criterion;
+  return draft;
+}
+
 function compareEntry(s: Scenario): string {
   const entry: Record<string, unknown> = {
     scenario_id: s.scenario_id,
@@ -157,14 +217,29 @@ function compareEntry(s: Scenario): string {
   return JSON.stringify(entry);
 }
 
+export interface WriteOptions {
+  /**
+   * Leave the active-scenario keys in `existing` untouched when `state.active` is `null`.
+   * Used while the address bar holds an incomplete scenario the user has not replaced yet.
+   */
+  keepActiveParams?: boolean;
+}
+
 /**
  * Writes the state into a copy of `existing`. Only this file's keys are replaced; every other
  * parameter keeps its value and position.
  */
-export function writeScenarioParams(state: ScenarioState, existing: URLSearchParams): URLSearchParams {
+export function writeScenarioParams(
+  state: ScenarioState,
+  existing: URLSearchParams,
+  options: WriteOptions = {},
+): URLSearchParams {
   const P = SCENARIO_PARAMS;
   const params = new URLSearchParams(existing);
-  for (const key of OWN_KEYS) params.delete(key);
+  const keepActive = options.keepActiveParams === true && state.active === null;
+  for (const key of OWN_KEYS) {
+    if (!(keepActive && ACTIVE_KEYS.includes(key))) params.delete(key);
+  }
 
   const a = state.active;
   if (a) {
@@ -218,21 +293,39 @@ function browserEnvironment(): UrlEnvironment | null {
  * every change with `history.replaceState` (scrubbing the timeline must not fill the history),
  * and re-reads on back and forward. Returns a function that disconnects. Does nothing outside a
  * browser unless an environment is passed in.
+ *
+ * An incomplete active scenario in the address bar (for example no `panel`) is not loaded, but
+ * its keys stay in the address bar until the user sets a scenario, so a hand-written link is not
+ * lost on the first state change. `readScenarioDraft` gives its valid fields.
  */
 export function bindScenarioUrl(store: ScenarioStore, env: UrlEnvironment | null = browserEnvironment()): () => void {
   if (!env) return () => {};
 
-  const readUrl = (): void => {
-    const params = new URLSearchParams(env.location.search);
-    store.replaceState(hasScenarioParams(params) ? readScenarioParams(params) : EMPTY_SCENARIO_STATE);
+  // Kept while the active scenario is still the one read from the address bar.
+  let keepPartial = false;
+  let activeAtRead: ScenarioState['active'] = null;
+
+  const load = (params: URLSearchParams, clearWhenEmpty: boolean): void => {
+    // Set before replaceState: the store notifies the writer below synchronously, and an
+    // unreadable scenario always reads as `active: null`.
+    keepPartial = hasUnreadableActiveScenario(params);
+    activeAtRead = null;
+    if (hasScenarioParams(params)) {
+      store.replaceState(readScenarioParams(params));
+    } else if (clearWhenEmpty) {
+      store.replaceState(EMPTY_SCENARIO_STATE);
+    }
+    activeAtRead = store.getState().active;
   };
 
-  const initial = new URLSearchParams(env.location.search);
-  if (hasScenarioParams(initial)) store.replaceState(readScenarioParams(initial));
+  const readUrl = (): void => load(new URLSearchParams(env.location.search), true);
+
+  load(new URLSearchParams(env.location.search), false);
 
   const unsubscribe = store.subscribe((state) => {
+    if (keepPartial && state.active !== activeAtRead) keepPartial = false;
     const current = new URLSearchParams(env.location.search);
-    const next = writeScenarioParams(state, current).toString();
+    const next = writeScenarioParams(state, current, { keepActiveParams: keepPartial }).toString();
     if (next === current.toString()) return;
     const url = `${env.location.pathname}${next ? `?${next}` : ''}${env.location.hash}`;
     env.history.replaceState(env.history.state, '', url);
