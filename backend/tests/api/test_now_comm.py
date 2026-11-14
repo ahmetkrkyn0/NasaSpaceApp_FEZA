@@ -53,6 +53,8 @@ def test_comm_window_on_5_december(client: TestClient) -> None:
     )
     assert body["lat_deg"] == pytest.approx(-84.78)
     assert body["search_limited"] is False
+    assert body["relay_status"] == "intermittent"
+    assert body["relay_required"] is False
     assert_matches_example(body, "comm-window")
 
 
@@ -63,6 +65,16 @@ def test_comm_window_without_earthrise_is_search_limited(client: TestClient) -> 
     assert body["next_change_utc"] is None
     assert body["minutes_until_visible"] is None
     assert body["search_limited"] is True
+
+
+def test_comm_window_at_change_4_landing_requires_a_relay(client: TestClient) -> None:
+    params = {"site_id": "change-4", "mast_height_m": 0, "utc": "2019-01-03T02:26:00Z"}
+    body = client.get("/api/comm-window", params=params).json()
+
+    assert body["visible_now"] is False
+    assert body["relay_status"] == "required"
+    assert body["relay_required"] is True
+    assert_matches_example(body, "comm-window-relay")
 
 
 @pytest.mark.parametrize("path", ["/api/now", "/api/comm-window"])

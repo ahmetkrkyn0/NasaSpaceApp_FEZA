@@ -73,3 +73,20 @@ def test_negative_mast_returns_422(client: TestClient) -> None:
 
     assert response.status_code == 422
     assert_matches_example(response.json(), "error")
+
+
+def test_eclipse_lowers_power(client: TestClient) -> None:
+    """S-09 through the API: Apollo 11 site during the 20 and 21 February 2027 eclipse."""
+
+    params = {
+        "lat_deg": 0.67416,
+        "lon_deg": 23.47314,
+        "mast_height_m": 0,
+        "start_utc": "2027-02-20T20:00:00Z",
+        "end_utc": "2027-02-21T02:00:00Z",
+        "panel_profile_id": "vertical_tracking",
+    }
+    body = client.get("/api/power", params=params).json()
+    power = {s["utc"]: s["power_w"] for s in body["samples"]}
+
+    assert power["2027-02-21T00:00:00Z"] < power["2027-02-20T21:00:00Z"]

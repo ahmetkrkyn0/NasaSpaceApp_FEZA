@@ -10,6 +10,10 @@ second, so short events between grid points are not reported at grid times.
 Each event is computed twice more with the horizon lowered and raised by one
 arcminute; the two instants give ``utc_earliest`` and ``utc_latest``. This is a
 sensitivity indicator, not a confidence interval (PLAN.md, section 12, decision 4).
+
+Eclipses (Earth covering the Sun, ``app.core.eclipse``) are added to the event
+list, and the relay label (``app.core.relay``) is derived from the share of
+the range with Earth visible.
 """
 
 from __future__ import annotations
@@ -227,13 +231,19 @@ def compute_events(
     Times are datetimes and durations unrounded; the API layer formats them.
     """
 
+    from app.core import eclipse, relay  # eclipse imports this module
+
     times = grid(start, end, step_minutes)
     sun = BodyTrack(observer, "SUN", SUN_CRITERION, times)
     earth = BodyTrack(observer, "EARTH", earth_criterion, times)
     sun_crossings = sun.crossings()
     earth_crossings = earth.crossings()
 
+    eclipses = eclipse.find_eclipses(
+        observer, start, end, times=times, sun=sun.positions, earth=earth.positions, step_minutes=step_minutes
+    )
     events = _event_dicts(sun, sun_crossings) + _event_dicts(earth, earth_crossings)
+    events += eclipse.eclipse_events(eclipses)
     events.sort(key=lambda event: event["utc"])
     sun_windows = _windows(sun, sun_crossings, start, end)
     earth_windows = _windows(earth, earth_crossings, start, end)
@@ -247,4 +257,12 @@ def compute_events(
         "earth_visible_fraction": _fraction(earth_windows, "earth_visible", total),
         "longest_earth_hidden_hours": _longest(earth_windows, "earth_hidden"),
     }
-    return {"events": events, "windows": windows, "metrics": metrics, "validity": observer.validity}
+    status = relay.relay_status(metrics["earth_visible_fraction"], total)
+    return {
+        "events": events,
+        "windows": windows,
+        "metrics": metrics,
+        "relay_status": status,
+        "relay_required": relay.relay_required(status),
+        "validity": observer.validity,
+    }

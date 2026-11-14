@@ -107,6 +107,8 @@ def test_earth_never_visible_at_change_4_in_2019() -> None:
     assert result["metrics"]["earth_visible_fraction"] == 0.0
     assert not [e for e in result["events"] if e["type"].startswith("earth")]
     assert result["metrics"]["longest_earth_hidden_hours"] == pytest.approx(365 * 24)
+    assert result["relay_status"] == "required"
+    assert result["relay_required"] is True
 
 
 def test_raised_horizon_hides_earth_longer() -> None:
@@ -115,3 +117,34 @@ def test_raised_horizon_hides_earth_longer() -> None:
     flat = compute_events(_flat_observer(lat, lon), _utc(2026, 12, 1), _utc(2026, 12, 31))
     high = compute_events(raised, _utc(2026, 12, 1), _utc(2026, 12, 31))
     assert high["metrics"]["earth_visible_fraction"] < flat["metrics"]["earth_visible_fraction"]
+
+
+def test_relay_is_intermittent_at_mons_mouton_in_december(mons_mouton_december: dict) -> None:
+    assert mons_mouton_december["relay_status"] == "intermittent"
+    assert mons_mouton_december["relay_required"] is False
+
+
+def test_relay_is_unknown_for_a_short_range_without_earth() -> None:
+    result = compute_events(_flat_observer(*MONS_MOUTON), _utc(2026, 12, 5), _utc(2026, 12, 9))
+    assert result["metrics"]["earth_visible_fraction"] == 0.0
+    assert result["relay_status"] == "unknown"
+    assert result["relay_required"] is False
+
+
+def test_t5_eclipse_events_at_apollo_11() -> None:
+    result = compute_events(_flat_observer(*APOLLO_11), _utc(2027, 2, 20), _utc(2027, 2, 22))
+    eclipse = [e for e in result["events"] if e["type"].startswith("eclipse")]
+
+    assert [e["type"] for e in eclipse] == ["eclipse_start", "eclipse_end"]
+    assert abs(eclipse[0]["utc"] - _utc(2027, 2, 20, 22, 9)) <= TWO_MINUTES
+    assert abs(eclipse[1]["utc"] - _utc(2027, 2, 21, 0, 36)) <= TWO_MINUTES
+    for event in eclipse:
+        assert event["criterion"] == "first_limb"
+        assert event["utc_earliest"] is None and event["utc_latest"] is None
+        assert event["max_obscured_fraction"] == pytest.approx(0.343, abs=0.005)
+    times = [e["utc"] for e in result["events"]]
+    assert times == sorted(times)
+
+
+def test_rise_and_set_events_carry_no_obscured_fraction(mons_mouton_december: dict) -> None:
+    assert all("max_obscured_fraction" not in e for e in mons_mouton_december["events"])

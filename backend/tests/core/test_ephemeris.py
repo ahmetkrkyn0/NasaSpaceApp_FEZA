@@ -194,6 +194,24 @@ def test_corrupt_kernels_raise_data_unavailable(
     assert ephemeris.kernels_loaded() is True
 
 
+def test_kernels_that_load_silently_but_hold_no_data_raise_data_unavailable(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from app.settings import KERNEL_FILES
+
+    for name in KERNEL_FILES:
+        (tmp_path / name).write_bytes(b"not a SPICE kernel\n")
+    monkeypatch.setattr(ephemeris.spiceypy, "furnsh", lambda path: None)
+    monkeypatch.setenv("FEZA_KERNEL_DIR", str(tmp_path))
+
+    with pytest.raises(DataUnavailable):
+        ephemeris.ensure_loaded()
+    assert ephemeris.kernels_loaded() is False
+
+    monkeypatch.undo()
+    assert ephemeris.kernels_loaded() is True
+
+
 def test_missing_kernels_raise_and_real_kernels_reload(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

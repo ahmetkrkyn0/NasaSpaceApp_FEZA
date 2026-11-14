@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from app.models.common import Validity
 
 Criterion = Literal["center", "first_limb", "full_disk"]
+RelayStatus = Literal["not_required", "intermittent", "required", "unknown"]
 
 
 class SkyEvent(BaseModel):
@@ -19,6 +20,8 @@ class SkyEvent(BaseModel):
     utc_earliest: str | None
     utc_latest: str | None
     criterion: Criterion
+    max_obscured_fraction: float | None = None
+    """Eclipse events only: the largest covered share of the Sun's disk (ADR-0003, extra field)."""
 
 
 class EventWindow(BaseModel):
@@ -47,6 +50,9 @@ class EventList(BaseModel):
     windows: list[EventWindow]
     metrics: EventMetrics
     mast_height_m: float
+    relay_status: RelayStatus | None = None
+    """Extra field of ADR-0003 (role-etiketi.md); left out of ``/api/eclipses``."""
+    relay_required: bool | None = None
     validity: Validity
 
 
@@ -84,4 +90,7 @@ class CommWindow(BaseModel):
     earth_azimuth_true_deg: float | None
     horizon_deg: float
     criterion: Criterion
+    relay_status: RelayStatus | None = None
+    """Extra field of ADR-0003 (role-etiketi.md)."""
+    relay_required: bool | None = None
     validity: Validity

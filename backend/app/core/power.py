@@ -2,6 +2,8 @@
 
 For every sample: P = efficiency x area x 1361 / r_au^2 x incidence x visible fraction,
 where incidence depends on how the panel stands (solar-panel-model, section 4).
+The visible fraction is the part of the Sun's disk above the horizon times the
+part not covered by Earth during an eclipse (tutulmalar.md, step 5).
 """
 
 from __future__ import annotations
@@ -11,7 +13,7 @@ from typing import Any
 
 import numpy as np
 
-from app.core import catalog, ephemeris
+from app.core import catalog, eclipse, ephemeris
 from app.core.events import Observer, grid
 from app.errors import InvalidParameter
 from app.models.common import lowest_validity
@@ -121,8 +123,16 @@ def compute_power(
     range_au = np.array([p.range_km for p in positions]) / ephemeris.AU_KM
     horizon = np.array([horizon_at(observer.profile, a) for a in az])
 
+    earth = ephemeris.body_positions(observer.lat_deg, observer.lon_deg, observer.height_m, times, "EARTH")
+    separation = eclipse.angular_separation_deg(
+        az, el, np.array([p.azimuth_true_deg for p in earth]), np.array([p.elevation_deg for p in earth])
+    )
+    covered = eclipse.obscured_fraction(
+        separation, np.array([p.radius_deg for p in positions]), np.array([p.radius_deg for p in earth])
+    )
+
     irradiance = SOLAR_CONSTANT_W_M2 / range_au**2
-    fraction = disk_fraction(el, horizon, radius, disk_model)
+    fraction = disk_fraction(el, horizon, radius, disk_model) * (1.0 - covered)
 
     used_azimuth = None
     if panel_type == "vertical_fixed":
