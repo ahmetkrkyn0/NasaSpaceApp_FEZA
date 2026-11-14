@@ -7,7 +7,7 @@ import { formatDate, parseUtc } from '../../features/timeline/time';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { DEFAULT_DURATION_DAYS } from '../../state/scenario-tools';
-import { CUSTOM_POINT, pickerValue, scenarioForPick } from './site-pick';
+import { CUSTOM_POINT, applyPick, pickerValue } from './site-pick';
 
 export interface SitePickerViewProps {
   sites: readonly Site[];
@@ -64,19 +64,23 @@ export function SitePickerView({ sites, active, onPick, note }: SitePickerViewPr
 export function SitePicker() {
   const active = useStore(scenarioStore, (s) => s.active);
   const sites = useAsync((signal) => getSites({}, { signal }), [getDataMode()]).state;
-  const list = sites.data ?? [];
+  // Only a list from a finished request can be picked from; a reload or a failed request
+  // never leaves the previous list selectable.
+  const list = sites.status === 'success' ? sites.data : [];
   const note =
     sites.status === 'error'
       ? `Sites could not be loaded: ${describeError(sites.error)}`
-      : list.length === 0
+      : sites.status !== 'success'
         ? 'Loading sites…'
-        : null;
+        : list.length === 0
+          ? 'No sites in the catalogue.'
+          : null;
   return (
     <SitePickerView
       sites={list}
       active={active}
       note={note}
-      onPick={(site) => scenarioStore.setScenario(scenarioForPick(active, site, list, Date.now()))}
+      onPick={(site) => applyPick(scenarioStore, site, list, Date.now())}
     />
   );
 }
