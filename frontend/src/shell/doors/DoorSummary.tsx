@@ -25,7 +25,7 @@ export function SummaryView({ scenario, window, events, sites = [], note }: Summ
     return (
       <section className="door-summary" aria-label="Result">
         <p className="door-summary-text">
-          No site chosen yet. Choose a site and dates in the Plan door; every door shows the same scenario.
+          No site chosen yet. Pick one above; every door shows the same scenario.
         </p>
       </section>
     );

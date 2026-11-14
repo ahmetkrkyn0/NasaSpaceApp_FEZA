@@ -17,13 +17,16 @@ export interface SummaryInput {
 }
 
 /**
- * Name of the scenario's place: its label, else the catalogue name of its site, else the site
- * id or the coordinates as written in the scenario. A link may carry no label.
+ * Name of the scenario's place: the catalogue name of its site, else its label, else the site id
+ * or the coordinates as written in the scenario. The catalogue name comes first because scenario
+ * labels also carry the start date, which the sentence already gives; a link may carry no label.
  */
 export function placeName(scenario: Scenario, sites: readonly Site[]): string {
+  const catalogue = scenario.site_id ? sites.find((s) => s.id === scenario.site_id)?.name : undefined;
+  if (catalogue) return catalogue;
   const label = scenario.label.trim();
   if (label) return label;
-  if (scenario.site_id) return sites.find((s) => s.id === scenario.site_id)?.name ?? scenario.site_id;
+  if (scenario.site_id) return scenario.site_id;
   if (scenario.lat_deg !== null && scenario.lon_deg !== null) return `${scenario.lat_deg}°, ${scenario.lon_deg}°`;
   return 'the chosen point';
 }
