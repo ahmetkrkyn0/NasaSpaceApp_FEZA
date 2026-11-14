@@ -54,7 +54,7 @@ Karşılaştırılan ölçüler:
 Ekibin kitle stratejisi mühendis kapısı için üç ek gösterim istiyor (Kaynak: [kitle stratejisi](../product/audience-strategy.md), bölüm 2):
 
 1. **"Fırlatma N gün kayarsa" kaydırıcısı.** Aynı saha için başlangıç tarihi kaydırılır ve karşılaştırma yinelenir. Yeni bir hesap türü gerekmez; `start_utc` ve `end_utc` değişir.
-2. **Tarih çarpı saha ısı haritası.** Çok sayıda senaryonun tek bir ölçüsünü (örneğin güneşli zaman oranı) renkli bir ızgarada gösterir. Çok sayıda hesap gerektirir (8. bölüm).
+2. **Tarih çarpı saha ısı haritası.** Çok sayıda senaryonun tek bir ölçüsünü (örneğin güneşli zaman oranı) renkli bir ızgarada gösterir. İlk sürüme girmez; ekip isterse sonradan eklenir (8. bölüm).
 3. **Dışa aktarma ve bağlantı.** Karşılaştırma tablosu CSV ya da JSON olarak indirilir; senaryo adres çubuğuna yazılır ki bağlantı olarak paylaşılabilsin.
 
 ### Üç düzeyde anlatım
@@ -128,7 +128,7 @@ Olay anları tek saat olarak değil, saat aralığı olarak gösterilir. Aralık
 - Öneri: Bir seferde en fazla 4 senaryo ([ADR-0004](../adr/0004-api-uc-noktalari.md)).
 - Öneri: Karmaşık katkı paylaştırma yöntemi (Shapley) kullanılmaz. Beş girdi için 32 ayrı hesap gerektirir (doğrulama: [dogrulama/aciklanabilirlik.md](../research/dogrulama/aciklanabilirlik.md), No 19) ve kaynak rapor da ilk sürüme girmemesini öneriyor.
 - Açık karar: Üç kapı ayrı sayfalar mı, tek sayfada bir anahtar mı olacak. Kitle stratejisi de bunu açık soru olarak bırakıyor. Öneri: üst çubukta üç seçenekli bir anahtar.
-- Açık karar: Isı haritası için çok sayıda senaryo gerekir; `/api/compare` en fazla 4 senaryo alıyor ([ADR-0004](../adr/0004-api-uc-noktalari.md)). Öneri: ısı haritası ilk sürüme girmez; girerse toplu hesap için ayrı bir uç nokta tanımlanır.
+- Karar (14 Kasım 2026): Isı haritası ilk sürüme girmez. Kullanıcı planı da (PR #28, `docs/product/use-cases-and-scenarios.md`, bölüm 11) onu onaylı kapsamda saymıyor. Çok sayıda senaryo gerektirir; `/api/compare` en fazla 4 senaryo alıyor ([ADR-0004](../adr/0004-api-uc-noktalari.md)). Sonradan eklenirse toplu hesap için ayrı bir uç nokta tanımlanır.
 - Çelişki: Kitle stratejisindeki "Lander'ın hayatta kalır mı" mini oyunu bir batarya modeline dayanıyor. Batarya 14 Kasım 2026 kararıyla kapsamdan çıkarıldı ([ANALIZ-OZETI.md, bölüm 7.5](../research/ANALIZ-OZETI.md)). Oyun yapılacaksa bu karar yeniden ele alınmalı; yapılmayacaksa kitle stratejisinden çıkarılmalı.
 - Varsayım: Örnek cümleler ve kart metinleri ekibin taslağıdır; sayıları gerçek hesaptan gelmelidir.
 
