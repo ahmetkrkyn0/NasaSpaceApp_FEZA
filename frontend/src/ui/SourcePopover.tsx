@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { VALIDITY_DESCRIPTION, ValidityBadge, type Validity } from './ValidityBadge';
+import './source-popover.css';
 
 export interface SourceReference {
   /** Human-readable source name, e.g. "NASA PGDA product 69". */
@@ -7,9 +8,17 @@ export interface SourceReference {
   url?: string;
 }
 
+/** One fact about how a value was produced, read from the response, e.g. "Horizon method". */
+export interface SourceDetail {
+  label: string;
+  value: string;
+}
+
 export interface SourcePopoverProps {
   validity: Validity;
   sources: readonly SourceReference[];
+  /** Optional rows listed above the sources: horizon method, elevation map, ephemeris, criterion. */
+  details?: readonly SourceDetail[];
   /** Optional qualifier passed to the badge, e.g. "terrain not included". */
   note?: string;
 }
@@ -18,7 +27,7 @@ export interface SourcePopoverProps {
  * Validity badge that opens a small panel listing where a value comes from.
  * Closes on Escape, on a click outside, or on the toggle.
  */
-export function SourcePopover({ validity, sources, note }: SourcePopoverProps) {
+export function SourcePopover({ validity, sources, details = [], note }: SourcePopoverProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLSpanElement>(null);
   const panelId = useId();
@@ -53,6 +62,16 @@ export function SourcePopover({ validity, sources, note }: SourcePopoverProps) {
       </button>
       <span id={panelId} className="source-panel" role="dialog" aria-label="Data source" hidden={!open}>
         <span className="source-panel-text">{VALIDITY_DESCRIPTION[validity]}</span>
+        {details.length > 0 ? (
+          <dl className="source-details">
+            {details.map((detail) => (
+              <div key={detail.label} className="source-detail">
+                <dt>{detail.label}</dt>
+                <dd>{detail.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
         {sources.length === 0 ? (
           <span className="source-panel-text">No source listed.</span>
         ) : (
