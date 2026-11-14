@@ -13,7 +13,7 @@ Plan, Göktuğ'un ayrı bir planlama oturumunda yazıldı. O oturumun bıraktı�
 | Konu | Durum |
 |---|---|
 | Plan belgeleri | `docs/implementation-plan` dalında, push edildi. İçinde: `docs/PLAN.md`, `docs/design/mini-oyun.md`, ADR-0003 ve ADR-0004 ekleri, ürün belgelerinde `UC-17`, bu el kitabı |
-| Plan PR'ı | 2. bölümdeki ilk adıma bak |
+| Plan PR'ı | #49 açık; Göktuğ'un onayıyla açıldı. Review ve merge bekliyor (2. bölüm, adım 1) |
 | Issue'lar | 15 iş issue'su (#33 ile #47 arası) ve takip issue'su (#48) açıldı; kişilere atandı; `phase: 1`, `phase: 2`, `phase: 3` etiketleri verildi |
 | Slack | Bu plan için henüz hiçbir mesaj gönderilmedi. Dağıtım şefindir (2. bölüm) |
 | Kod | Yok. `backend/`, `frontend/` ve `data/` klasörleri Faz 1 ile oluşacak |
@@ -58,10 +58,13 @@ Sırayla uygula. Komutlardaki `--as sef` her zaman sonda durur.
 
 ### Adım 1: Plan PR'ı
 
-`gh pr list --head docs/implementation-plan` ile bak.
+Plan PR'ı #49'dur (`docs/implementation-plan` dalı). Bu bir belge PR'ıdır; herkesin sözleşme eklerine `main` üzerinden ulaşması için önceliklidir. Tek tur yeter: CI geçiyor mu (`gh pr checks 49`), başlık kurala uyuyor mu, yapay zekâ atfı var mı. Temizse hazır olduğunu bildir ve Tuna'dan öncelikli merge iste:
 
-- **PR varsa:** Bu bir belge PR'ıdır; herkesin sözleşme eklerine `main` üzerinden ulaşması için öncelikli. Tek tur yeter: CI geçiyor mu, başlık kurala uyuyor mu, yapay zekâ atfı var mı. Temizse `READY` gönder ve Tuna'dan öncelikli merge iste. Codex ile uzun inceleme döngüsüne girme.
-- **PR yoksa:** Göktuğ'a sor; onay verirse aç. Başlık: `docs(plan): add implementation plan, mini game and contract alignment`.
+```bash
+python agent_chat.py send READY 48 "PR #49 (uygulama planı ve sözleşme ekleri) merge'e hazır; Faz 1 işleri bu belgelere dayanıyor, öncelikli @tuna" --as sef
+```
+
+Codex ile uzun inceleme döngüsüne girme.
 
 Plan dalı birleşmeden de iş başlayabilir: issue'lardaki bağlantılar kalıcı sürüm bağlantılarıdır.
 
