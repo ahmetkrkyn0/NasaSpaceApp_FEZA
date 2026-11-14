@@ -91,7 +91,7 @@ NASA'nın üç istasyonu (Goldstone, Canberra, Madrid) Ay'ı her an göremiyor. 
 }
 ```
 
-`minutes_until_visible` iki andan hesaplandı (hesap). `relay_required` alanı [role-etiketi.md](role-etiketi.md) içinde tanımlı.
+`minutes_until_visible` iki andan hesaplandı (hesap). `relay_required` ek alandır; yalnızca röle etiketi yapılırsa `relay_status` ile birlikte gelir ([role-etiketi.md](role-etiketi.md)).
 
 ## 6. Arayüzde nerede görünür
 
@@ -108,7 +108,7 @@ NASA'nın üç istasyonu (Goldstone, Canberra, Madrid) Ay'ı her an göremiyor. 
 
 ## 8. Varsayımlar ve açık kararlar
 
-- Açık karar: Varsayılan `earth_criterion` değeri. Öneri yukarıda (`center`).
+- Karar (14 Kasım 2026): Varsayılan `earth_criterion` değeri `center` ([ADR-0004](../adr/0004-api-uc-noktalari.md)).
 - Açık karar: Yer istasyonu katmanında alım sınırı mı gönderim sınırı mı kullanılacak. Öneri: alım (6 derece), çünkü daha yaygın durum veri indirmedir.
 - Varsayım: ESA istasyonlarının en düşük bakış açısı için sayı içeren kaynak açılamadı (aynı doğrulama dosyasında No 64 doğrulanamadı). ESA istasyonları için 10 derece kullanılması ekibin tercihidir; bir ESA planlama makalesi 10 dereceyi olay eşiği olarak kullanıyor (doğrulama: [dogrulama/efemeris-ve-yer-istasyonlari.md](../research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 65).
 

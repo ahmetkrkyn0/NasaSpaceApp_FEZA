@@ -50,3 +50,7 @@ Yapılacaklar:
 - `README.md` içindeki "Tech Stack" tablosu ve `AGENTS.md` içindeki "Commands" tablosu doldurulmalı.
 - Barındırma ve sunucusuz yedek (tarayıcıda hesap) kararı ayrıca verilmeli.
 - 3B görünümün web arayüzüyle nasıl birleşeceği kararlaştırılmalı.
+
+## Değişiklik notu
+
+- 2026-11-14: 5. maddedeki özel koordinat cümlesi `ufuk-hesabi.md` ile tutarlı olacak şekilde daraltıldı (ilk sürümde düz ufuk). Karar değişmedi, sözleşme belgeleri arasındaki çelişki giderildi (PR #31).

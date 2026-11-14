@@ -21,7 +21,7 @@ Saha isteyen her uç nokta şu iki biçimden birini kabul eder:
 - `site_id`: hazır saha listesinden bir kimlik.
 - `lat_deg` ve `lon_deg`: özel koordinat. Sınırlar: enlem eksi 90 ile artı 90, boylam eksi 180 ile artı 360 arası.
 
-İsteğe bağlı `mast_height_m` gözlem noktasının zeminden yüksekliğidir. İlk sürümde 2 ya da 10 olabilir; öncelik kuralı [ADR-0003](0003-veri-sozlesmesi.md), "Direk yüksekliği kuralı".
+İsteğe bağlı `mast_height_m` gözlem noktasının zeminden yüksekliğidir. Sıfır ya da daha büyük olmalı; arazi ufku yalnızca 2 ve 10 m için kullanılır, diğer değerlerde düz ufuk. Ayrıntı ve öncelik kuralı [ADR-0003](0003-veri-sozlesmesi.md), "Direk yüksekliği kuralı".
 
 İsteğe bağlı `earth_criterion` (`center`, `first_limb` ya da `full_disk`; varsayılan `center`) Dünya'nın görünür sayılma ölçütüdür. Dünya bilgisi döndüren her uç nokta (`events`, `now`, `comm-window`) bu parametreyi aynı anlamla alır.
 
@@ -64,7 +64,7 @@ Referans arayüz de doğrulama hataları için 422 kullanıyor ([frontend-migrat
 
 ### Veri yoksa davranış
 
-Özel bir koordinat için yükseklik haritası yoksa uç nokta hata vermez. Düz ufukla hesap yapar, yanıtta `validity` alanını `SYNTHETIC` ve ufuk `method` alanını `sphere` olarak döndürür. Arayüz bunu "arazi hesaba katılmadı" diye gösterir.
+Özel koordinatlarda ilk sürüm her zaman düz ufukla hesap yapar ([ADR-0001](0001-uygulama-mimarisi-ve-stack.md), madde 5); hazır sahalarda da 2 ve 10 m dışındaki yüksekliklerde aynısı olur. Uç nokta hata vermez, yanıtta `validity` alanını `SYNTHETIC` ve ufuk `method` alanını `sphere` olarak döndürür. Arayüz bunu "arazi hesaba katılmadı" diye gösterir.
 
 ## Consequences
 

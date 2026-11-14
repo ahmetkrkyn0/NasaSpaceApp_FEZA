@@ -93,6 +93,7 @@ Her örnek:
 | `events` | dizi | `type`, `utc`, `utc_earliest`, `utc_latest`, `criterion` |
 | `windows` | dizi | `kind`, `start_utc`, `end_utc`, `duration_hours` |
 | `metrics` | nesne | Aralığın özeti (aşağıda) |
+| `mast_height_m` | sayı | Hesapta kullanılan gözlem yüksekliği |
 | `validity` | metin | Ufuk profilinden devralınır |
 
 - `type` değerleri: `sunrise`, `sunset`, `earthrise`, `earthset`, `eclipse_start`, `eclipse_end`.
@@ -101,7 +102,7 @@ Her örnek:
 - `criterion` olayın hangi ölçüte göre sayıldığını söyler: `center`, `first_limb` ya da `full_disk`.
 - `metrics` alanları: `sunlit_fraction`, `longest_dark_hours`, `max_sun_elevation_deg`, `earth_visible_fraction`, `longest_earth_hidden_hours`.
 
-Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`, `criterion`, `search_limited`, `validity`. Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)). `criterion` Dünya alanlarının hangi ölçüte göre sayıldığını söyler (`EventList` ile aynı değerler).
+Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun_up`, `hours_to_sunset`, `hours_to_sunrise`, `earth_up`, `hours_to_earthset`, `hours_to_earthrise`, `criterion`, `mast_height_m`, `search_limited`, `validity` (ufuk profilinden devralınır). Aranan süre içinde olay bulunamazsa değer `null` olur ve `search_limited` alanı `true` döner. Bu desen referans arayüzün iletişim penceresi yanıtından alındı ([comm-window.available.json](../../frontend-migrate/design-export/api-contract/fixtures/comm-window.available.json)). `criterion` Dünya alanlarının hangi ölçüte göre sayıldığını söyler (`EventList` ile aynı değerler).
 
 ### İletişim penceresi (`CommWindow`)
 
@@ -110,7 +111,7 @@ Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `utc` | metin | Sorgu anı |
-| `lat_deg`, `lon_deg` | sayı | Gözlem noktası |
+| `lat_deg`, `lon_deg`, `mast_height_m` | sayı | Gözlem noktası |
 | `visible_now` | mantıksal | Dünya o anda görünüyor mu |
 | `minutes_remaining` | sayı ya da `null` | Görünüyorsa batışa kalan süre |
 | `minutes_until_visible` | sayı ya da `null` | Görünmüyorsa doğuşa kalan süre |
@@ -120,10 +121,9 @@ Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun
 | `earth_elevation_deg`, `earth_azimuth_true_deg` | sayı ya da `null` | Dünya'nın o andaki açıları |
 | `horizon_deg` | sayı | Dünya yönündeki ufuk açısı |
 | `criterion` | metin | `center`, `first_limb` ya da `full_disk` |
-| `relay_required` | mantıksal | [role-etiketi.md](../design/role-etiketi.md) içinde tanımlı |
 | `validity` | metin | Ufuk profilinden devralınır |
 
-`NowStatus` içindeki Dünya alanları aynı hesaptan gelir; yalnızca birim saattir ve ayrıntı alanları yoktur.
+`NowStatus` içindeki Dünya alanları aynı hesaptan gelir; yalnızca birim saattir ve ayrıntı alanları yoktur. Röle alanları (`relay_status`, `relay_required`) ek alandır ve yalnızca röle etiketi yapılırsa gelir (aşağıda, "Ekstra özelliklerin ek alanları").
 
 ### Panel profili (`PanelProfile`) ve güç serisi (`PowerSeries`)
 
@@ -141,7 +141,12 @@ Arayüzün "şu an" göstergesi için ayrı bir yapı (`NowStatus`): `utc`, `sun
 
 ### Direk yüksekliği kuralı
 
-`mast_height_m` şu sırayla belirlenir: istekteki ya da senaryodaki (`Scenario`) değer, yoksa panel profilindeki değer, o da yoksa 2. İlk sürümde yalnızca 2 ve 10 kabul edilir, çünkü ufuk profilleri bu iki yükseklik için önceden hesaplanıyor ([ufuk-hesabi.md](../design/ufuk-hesabi.md)). Başka bir değer HTTP 422 ile reddedilir. Kullanılan değer yanıtta `mast_height_m` alanında döner.
+`mast_height_m` şu sırayla belirlenir: istekteki ya da senaryodaki (`Scenario`) değer, yoksa panel profilindeki değer, o da yoksa 2. Değer sıfır ya da daha büyük olmalıdır; eksi değer HTTP 422 ile reddedilir.
+
+- Arazi ufku (`method: terrain`) yalnızca 2 ve 10 m için kullanılır, çünkü hazır sahaların profilleri bu iki yükseklik için önceden hesaplanıyor ([ufuk-hesabi.md](../design/ufuk-hesabi.md)).
+- Başka her yükseklikte (sıfır dahil) ve özel koordinatlarda hesap düz ufukla (`method: sphere`) yapılır ve sonuç `SYNTHETIC` etiketi alır. Doğrulama testleri ve Athena demosu bu yolla sıfır yükseklik kullanır ([dogrulama-plani.md](../design/dogrulama-plani.md), [athena-demosu.md](../design/athena-demosu.md)).
+
+Kullanılan değer yanıtta `mast_height_m` alanında döner.
 
 ### Senaryo ve karşılaştırma
 
@@ -160,7 +165,6 @@ Aşağıdaki alanlar yalnızca ilgili özellik yapılırsa kullanılır. Ayrınt
 | Yapı | Ek alan | Açıklama | Doküman |
 |---|---|---|---|
 | `EventList` ve `comm-window` yanıtı | `relay_status`, `relay_required` | Dünya hiç görünmüyorsa röle gerektiğini söyler | [role-etiketi.md](../design/role-etiketi.md) |
-| `comm-window` yanıtı | `criterion` | Kullanılan "Dünya görünüyor" ölçütü | [iletisim-penceresi.md](../design/iletisim-penceresi.md) |
 | Tutulma olayları | `max_obscured_fraction` | Güneş diskinin en çok ne kadarının örtüldüğü | [tutulmalar.md](../design/tutulmalar.md) |
 | `Site` | `cards` | Sahaya bağlı bilgi kartları | [csa-bilgi-kartlari.md](../design/csa-bilgi-kartlari.md) |
 | Geçmiş görev kaydı | `expected`, `facts`, `evidence`, `landing_utc_validity` | Beklenen açılar, doğrulanmış olgular ve kanıt düzeyi | [gecmis-gorev-vakalari.md](../design/gecmis-gorev-vakalari.md) |

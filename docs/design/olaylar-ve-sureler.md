@@ -70,7 +70,7 @@ Bilinen diğer hata kaynakları ve büyüklükleri (doğrulama: [dogrulama/zaman
 ### Girdi
 
 - `GET /api/events`: konum, `mast_height_m`, `start_utc`, `end_utc`, `earth_criterion`.
-- `GET /api/now`: konum, `mast_height_m`, `utc`.
+- `GET /api/now`: konum, `mast_height_m`, `utc`, `earth_criterion`.
 
 ### Çıktı
 
