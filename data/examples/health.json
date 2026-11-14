@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "kernels_loaded": true,
+  "dem_available": true,
+  "ephemeris_range": {
+    "start_utc": null,
+    "end_utc": null
+  }
+}

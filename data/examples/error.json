@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "site_not_found",
+    "message": "No site with id 'x'."
+  }
+}
