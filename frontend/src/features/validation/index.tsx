@@ -73,11 +73,12 @@ export function ValidationSummary({ report }: { report: ValidationReport }) {
           <h3 className="d-section-title">Needs attention</h3>
           <RowTable rows={attention} caption="Rows that failed, gave a warning or were skipped." />
         </div>
-      ) : (
+      ) : report.rows.length > 0 ? (
         <p className="d-muted">No row failed, gave a warning or was skipped.</p>
-      )}
+      ) : null}
       <div className="d-section">
         <h3 className="d-section-title">All checks by test</h3>
+        {report.rows.length === 0 ? <p className="d-muted">The report has no rows.</p> : null}
         {groupByTest(report).map((group) => (
           <details key={group.test} className="d-details" open={group.rows.some((r) => r.status === 'fail' || r.status === 'warn')}>
             <summary>
