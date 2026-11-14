@@ -26,7 +26,7 @@ import numpy as np
 PGDA90_BASE_URL = "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp"
 
 LAYER_NAMES: tuple[str, ...] = ("hillshade", "elevation", "slope", "psr")
-"""Layer names of ADR-0004. ``psr`` is added by F3-B; until then it is missing."""
+"""Layer names of ADR-0004."""
 
 LAYER_SOURCES: dict[str, tuple[str, str]] = {
     "elevation": ("PGDA 90 LDEM_80S_20MPP_ADJ", f"{PGDA90_BASE_URL}/LDEM_80S_20MPP_ADJ.TIF"),
@@ -35,9 +35,30 @@ LAYER_SOURCES: dict[str, tuple[str, str]] = {
         f"{PGDA90_BASE_URL}/LDEM_80S_20MPP_ADJ_HILL.TIF",
     ),
     "slope": ("PGDA 90 LDSM_80S_20MPP_ADJ", f"{PGDA90_BASE_URL}/LDSM_80S_20MPP_ADJ.TIF"),
+    "psr": ("PGDA 90 LPSR_80S_20MPP_ADJ", f"{PGDA90_BASE_URL}/LPSR_80S_20MPP_ADJ.TIF"),
 }
-"""Source map per layer; all three share the 20 m south polar grid
-(dogrulama/veri-kaynaklari.md, No 17, 20 and 22)."""
+"""Source map per layer; all four share the 20 m south polar grid
+(dogrulama/veri-kaynaklari.md, No 17, 20, 22 and 23). ``psr`` is the
+permanent shadow mask: 1 permanently shadowed, 0 not, NaN no data."""
+
+LAYER_TITLES: dict[str, str] = {
+    "elevation": "Elevation",
+    "hillshade": "Hillshade",
+    "slope": "Slope",
+    "psr": "Permanent shadow",
+}
+
+LAYER_DESCRIPTIONS: dict[str, str] = {
+    "elevation": "Height above the 1737.4 km reference sphere, from the LOLA 20 m map.",
+    "hillshade": "Shaded relief of the LOLA 20 m map.",
+    "slope": "Surface slope of the LOLA 20 m map.",
+    "psr": (
+        "Areas that receive no direct sunlight over the long term (NASA LOLA 20 m mask): "
+        "1 permanently shadowed, 0 not. Shadow only. Ice presence is uncertain."
+    ),
+}
+"""Name and description shown with a layer (kalici-golge-katmani.md, 6: the
+``psr`` text makes no ice claim)."""
 
 LAYER_UNITS: dict[str, str] = {
     "elevation": "m",
@@ -89,6 +110,8 @@ class LayerMeta:
     url: str | None
     validity: str = "MEASURED"
     downsample: int = 1
+    title: str = ""
+    description: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)

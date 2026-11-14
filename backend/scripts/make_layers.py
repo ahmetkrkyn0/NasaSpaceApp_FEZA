@@ -25,7 +25,9 @@ sys.path.insert(0, str(BACKEND_DIR))
 from app.settings import get_settings  # noqa: E402
 from app.terrain.dem import read_window  # noqa: E402
 from app.terrain.layers import (  # noqa: E402
+    LAYER_DESCRIPTIONS,
     LAYER_SOURCES,
+    LAYER_TITLES,
     LAYER_UNITS,
     REGIONS,
     LayerMeta,
@@ -34,7 +36,7 @@ from app.terrain.layers import (  # noqa: E402
 )
 from app.terrain.projection import latlon_to_xy  # noqa: E402
 
-DEFAULT_LAYERS = ["elevation", "hillshade", "slope"]
+DEFAULT_LAYERS = ["elevation", "hillshade", "slope", "psr"]
 
 
 def make_region(region_id: str, names: list[str], out_dir: Path) -> None:
@@ -66,6 +68,8 @@ def make_region(region_id: str, names: list[str], out_dir: Path) -> None:
             product=product,
             url=url,
             validity="MEASURED",
+            title=LAYER_TITLES[name],
+            description=LAYER_DESCRIPTIONS[name],
         )
         save_layer(out_dir, meta, window.data.astype(np.float32))
         finite = window.data[np.isfinite(window.data)]
