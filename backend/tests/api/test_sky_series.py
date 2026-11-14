@@ -44,6 +44,16 @@ def test_sky_series_single_sample(client: TestClient) -> None:
     assert_matches_example(body, "sky-series")
 
 
+def test_sky_series_keeps_fractional_seconds(client: TestClient) -> None:
+    params = dict(BASE_PARAMS, start_utc="2025-03-06T17:30:00.5Z")
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["start_utc"] == "2025-03-06T17:30:00.5Z"
+    assert body["samples"][0]["utc"] == "2025-03-06T17:30:00.5Z"
+
+
 def test_sky_series_hourly_samples(client: TestClient) -> None:
     params = dict(BASE_PARAMS, hours=24, step_minutes=60)
     response = client.get("/api/sky-series", params=params)
@@ -53,6 +63,19 @@ def test_sky_series_hourly_samples(client: TestClient) -> None:
     assert len(body["samples"]) == 25
     assert body["samples"][0]["utc"] == "2025-03-06T17:30:00Z"
     assert body["samples"][-1]["utc"] == "2025-03-07T17:30:00Z"
+
+
+def test_sky_series_ends_at_range_end_for_partial_step(client: TestClient) -> None:
+    params = dict(BASE_PARAMS, hours=1.5, step_minutes=60)
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    utcs = [sample["utc"] for sample in response.json()["samples"]]
+    assert utcs == [
+        "2025-03-06T17:30:00Z",
+        "2025-03-06T18:30:00Z",
+        "2025-03-06T19:00:00Z",
+    ]
 
 
 def test_sky_series_default_mast_height(client: TestClient) -> None:
@@ -77,6 +100,27 @@ def test_sky_series_by_site_id(client: TestClient) -> None:
     body = response.json()
     assert body["lat_deg"] == pytest.approx(-45.4446)
     assert body["lon_deg"] == pytest.approx(177.5991)
+
+
+@pytest.mark.parametrize(
+    ("mast_height_m", "method", "validity"),
+    [(2, "terrain", "DERIVED"), (10, "terrain", "DERIVED"), (5, "sphere", "SYNTHETIC"), (20, "sphere", "SYNTHETIC")],
+)
+def test_sky_series_horizon_follows_the_mast_rule(
+    client: TestClient, mast_height_m: float, method: str, validity: str
+) -> None:
+    params = {
+        "site_id": "mons-mouton-im2-target",
+        "mast_height_m": mast_height_m,
+        "start_utc": "2026-12-01T00:00:00Z",
+        "hours": 0,
+    }
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["horizon"] == {"method": method, "validity": validity}
+    assert body["validity"] == validity
 
 
 def test_sky_series_normalizes_longitude(client: TestClient) -> None:

@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import math
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Query
 
-from app.core import ephemeris, location, sphere_horizon, visibility
+from app.core import ephemeris, events, location, visibility
 from app.errors import InvalidParameter
-from app.models.common import lowest_validity
 from app.models.sky import (
     EarthSample,
     EphemerisInfo,
@@ -18,6 +17,7 @@ from app.models.sky import (
     SkySeries,
     SunSample,
 )
+from app.terrain.horizon import horizon_at
 
 router = APIRouter(tags=["sky"])
 
@@ -50,6 +50,23 @@ def _validate_bounds(mast_height_m: float, hours: float, step_minutes: int) -> N
         )
 
 
+def _sample_times(start: datetime, hours: float, step_minutes: int) -> list[datetime]:
+    """Every ``step_minutes`` from ``start``; the range end is always the last sample (ADR-0004).
+
+    When ``hours`` is not a whole number of steps the last interval is shorter,
+    e.g. ``hours=1.5``, ``step_minutes=60`` gives 0, 60 and 90 minutes.
+    """
+
+    end = start + timedelta(hours=hours)
+    step = timedelta(minutes=step_minutes)
+    times = [start]
+    while times[-1] + step < end - timedelta(microseconds=1):
+        times.append(times[-1] + step)
+    if end > times[-1]:
+        times.append(end)
+    return times
+
+
 def _round(value: float) -> float:
     return round(value, ANGLE_DECIMALS)
 
@@ -71,28 +88,19 @@ def sky_series(
 
     if start_utc is None:
         raise InvalidParameter("Invalid parameter 'start_utc': required.")
-    try:
-        start = ephemeris.parse_utc(start_utc)
-    except InvalidParameter:
-        raise InvalidParameter(
-            f"Invalid parameter 'start_utc': cannot parse '{start_utc}' as an ISO 8601 timestamp."
-        ) from None
+    start = ephemeris.parse_utc(start_utc, "start_utc")
 
-    count = math.floor(hours * 60 / step_minutes + 1e-9) + 1
-    times = [start + timedelta(minutes=k * step_minutes) for k in range(count)]
+    times = _sample_times(start, hours, step_minutes)
 
-    height_m = (place.elevation_m or 0.0) + mast_height_m
-    suns = ephemeris.body_positions(place.lat_deg, place.lon_deg, height_m, times, "SUN")
-    earths = ephemeris.body_positions(place.lat_deg, place.lon_deg, height_m, times, "EARTH")
-
-    profile = sphere_horizon.get_horizon_profile(
-        place.lat_deg, place.lon_deg, mast_height_m, place.site_id
-    )
+    observer = events.observer_for(place, mast_height_m)
+    profile = observer.profile
+    suns = ephemeris.body_positions(observer.lat_deg, observer.lon_deg, observer.height_m, times, "SUN")
+    earths = ephemeris.body_positions(observer.lat_deg, observer.lon_deg, observer.height_m, times, "EARTH")
 
     samples: list[SkySample] = []
     for moment, sun, earth in zip(times, suns, earths):
-        sun_horizon = sphere_horizon.horizon_at(profile, sun.azimuth_true_deg)
-        earth_horizon = sphere_horizon.horizon_at(profile, earth.azimuth_true_deg)
+        sun_horizon = horizon_at(profile, sun.azimuth_true_deg)
+        earth_horizon = horizon_at(profile, earth.azimuth_true_deg)
         samples.append(
             SkySample(
                 utc=ephemeris.format_utc(moment),
@@ -129,6 +137,6 @@ def sky_series(
         step_minutes=step_minutes,
         samples=samples,
         ephemeris=EphemerisInfo(**ephemeris.EPHEMERIS_INFO),
-        horizon=HorizonInfo(method=profile["method"], validity=profile["validity"]),
-        validity=lowest_validity("MODEL", profile["validity"]),
+        horizon=HorizonInfo(method=profile.method, validity=profile.validity),
+        validity=observer.validity,
     )

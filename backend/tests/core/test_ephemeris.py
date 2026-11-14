@@ -129,16 +129,36 @@ def test_to_spice_utc_has_no_suffix() -> None:
     assert "Z" not in text
 
 
-def test_parse_utc_accepts_z_suffix_and_naive_text() -> None:
+def test_fractional_seconds_are_kept() -> None:
+    moment = _utc("2025-03-06T17:30:00.25Z")
+
+    assert ephemeris.to_spice_utc(moment) == "2025-03-06T17:30:00.25"
+    assert ephemeris.format_utc(moment) == "2025-03-06T17:30:00.25Z"
+    assert ephemeris.format_utc(_utc("2025-03-06T17:30:00Z")) == "2025-03-06T17:30:00Z"
+
+    whole, fraction = (
+        ephemeris.body_positions(-84.7906, 29.1957, 0.0, [t], "EARTH")[0]
+        for t in (_utc("2025-03-06T17:30:00Z"), _utc("2025-03-06T17:30:30.5Z"))
+    )
+    assert whole.azimuth_true_deg != fraction.azimuth_true_deg
+
+
+def test_parse_utc_accepts_z_suffix() -> None:
     expected = datetime(2025, 3, 6, 17, 30, tzinfo=timezone.utc)
 
     from_z = ephemeris.parse_utc("2025-03-06T17:30:00Z")
-    from_naive = ephemeris.parse_utc("2025-03-06T17:30:00")
 
     assert from_z == expected
-    assert from_z.tzinfo is not None
-    assert from_naive == expected
-    assert from_naive.tzinfo is not None
+    assert from_z.utcoffset() == timedelta(0)
+
+
+@pytest.mark.parametrize(
+    "text", ["2025-03-06T17:30:00", "2025-03-06T17:30:00+03:00", "2025-03-06T17:30:00+00:00"]
+)
+def test_parse_utc_rejects_times_without_z(text: str) -> None:
+    with pytest.raises(InvalidParameter) as excinfo:
+        ephemeris.parse_utc(text, "start_utc")
+    assert "'start_utc'" in excinfo.value.message
 
 
 def test_parse_utc_rejects_bad_text() -> None:
@@ -155,6 +175,23 @@ def test_body_positions_rejects_date_outside_range() -> None:
     message = str(excinfo.value)
     assert "1849" in message
     assert "2150" in message
+
+
+def test_corrupt_kernels_raise_data_unavailable(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from app.settings import KERNEL_FILES
+
+    for name in KERNEL_FILES:
+        (tmp_path / name).write_bytes(b"not a SPICE kernel\n")
+    monkeypatch.setenv("FEZA_KERNEL_DIR", str(tmp_path))
+
+    with pytest.raises(DataUnavailable):
+        ephemeris.ensure_loaded()
+    assert ephemeris.kernels_loaded() is False
+
+    monkeypatch.delenv("FEZA_KERNEL_DIR", raising=False)
+    assert ephemeris.kernels_loaded() is True
 
 
 def test_missing_kernels_raise_and_real_kernels_reload(
