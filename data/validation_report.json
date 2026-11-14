@@ -1,10 +1,10 @@
 {
-  "generated_utc": "2026-11-14T20:00:12Z",
+  "generated_utc": "2026-11-14T21:06:40Z",
   "summary": {
-    "pass": 42,
+    "pass": 45,
     "warn": 0,
     "fail": 0,
-    "skipped": 3,
+    "skipped": 0,
     "info": 1
   },
   "rows": [
@@ -655,14 +655,14 @@
       "condition": "Apollo 11 site, 20 and 21 Feb 2027",
       "kind": "reference",
       "expected": "2027-02-20T22:09:00Z",
-      "measured": null,
-      "diff": null,
+      "measured": "2027-02-20T22:08:45Z",
+      "diff": -0.25,
       "threshold": 2,
       "unit": "min",
-      "status": "skipped",
+      "status": "pass",
       "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
       "endpoint": "/api/events",
-      "note": "no 'eclipse_start' event in response; needs eclipse events in /api/events, not implemented yet (#41, F3-A1)"
+      "note": null
     },
     {
       "id": "T5-eclipse-end",
@@ -671,14 +671,14 @@
       "condition": "Apollo 11 site, 20 and 21 Feb 2027",
       "kind": "reference",
       "expected": "2027-02-21T00:36:00Z",
-      "measured": null,
-      "diff": null,
+      "measured": "2027-02-21T00:36:46Z",
+      "diff": 0.766667,
       "threshold": 2,
       "unit": "min",
-      "status": "skipped",
+      "status": "pass",
       "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
       "endpoint": "/api/events",
-      "note": "no 'eclipse_end' event in response; needs eclipse events in /api/events, not implemented yet (#41, F3-A1)"
+      "note": null
     },
     {
       "id": "T5-max-obscured",
@@ -687,14 +687,14 @@
       "condition": "Apollo 11 site, 20 and 21 Feb 2027",
       "kind": "reference",
       "expected": 0.343,
-      "measured": null,
-      "diff": null,
+      "measured": 0.343,
+      "diff": 0.0,
       "threshold": 0.005,
       "unit": "fraction",
-      "status": "skipped",
+      "status": "pass",
       "source": "docs/research/dogrulama/zamanda-degisen-veri.md, No 70",
       "endpoint": "/api/events",
-      "note": "no 'eclipse_start' event in response; needs eclipse events in /api/events, not implemented yet (#41, F3-A1)"
+      "note": null
     },
     {
       "id": "T6-mons-mouton-sunlit-fraction",
