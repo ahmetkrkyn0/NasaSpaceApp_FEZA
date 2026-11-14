@@ -23,7 +23,7 @@ Blender'da modellenen bir rover'ın Unreal Engine 5'e aktarılıp Ay koşulları
 | Blender | Rover modelleme ve rigging (bone kurma). NASA 3D Resources'taki hazır rover modelleri başlangıç olarak kullanılabilir; lisans koşulları kontrol edilmeli. |
 | Unreal Engine 5 | Simülasyon, fizik (Chaos) ve görselleştirme. |
 | Cesium for Unreal | Ay arazisinin büyük ölçekli, enlem/boylamlı gösterimi. Ayrı bir platform değil, Unreal'a kurulan bir plugin; her şey tek projede çalışır. |
-| Veri | 5 m/px LOLA DEM (Lunar Orbiter Laser Altimeter yükseklik modeli). |
+| Veri | LOLA DEM (Lunar Orbiter Laser Altimeter yükseklik modeli). 5 m/px yalnızca 87,5° enlemden kutba kadar var; 85°'den 10 m, 80°'den 20 m. |
 
 ### Kapsam
 
@@ -278,7 +278,7 @@ Dijital ikizin özü bu iki tablonun kesişimidir. Yeni rover eklemek için bir 
 
 ### Nedir, nereden çıktı?
 
-1980'lerin sonunda NASA JPL'de geliştirilen, **yaysız**, 6 tekerlekli bir süspansiyon sistemi. Sojourner, Spirit, Opportunity, Curiosity ve Perseverance'ta kullanıldı. Çin'in Ay rover'ları Yutu ve Yutu-2 de benzer bir yapı kullanıyor.
+1980'lerin sonunda NASA JPL'de geliştirilen, **yaysız**, 6 tekerlekli bir süspansiyon sistemi. Sojourner, Spirit, Opportunity, Curiosity ve Perseverance'ta kullanıldı. Ay'da doğrulanan örnek Hindistan'ın Pragyan rover'ıdır (Chandrayaan-3); Yutu ve Yutu-2 için bu bilgi doğrulanamadı.
 
 ### Parçaları
 
@@ -354,7 +354,7 @@ Unreal Level (tek sahne)
 
 1. Kullanıcı Cesium ile tüm Ay'ı görür ve iniş bölgelerini inceler.
 2. Bir bölge seçince kamera oraya iner; **Cesium Sub-Level** ile o bölgenin Landscape, kaya ve rover içeriği yüklenir.
-3. Landscape'in altında kalan Cesium arazisi **Cartographic Polygon** ile kesilip gizlenir; iki zemin üst üste binip titreşmez.
+3. Landscape'in altında kalan Cesium arazisi **Cartographic Polygon** ile kesilip gizlenir; iki zemin görüntüde üst üste binip titreşmez. Dikkat: gizleme fiziği etkilemez, gizlenen arazi çarpışmaya devam eder; Cesium tileset'inde "Create Physics Meshes" ayrıca kapatılmalı.
 
 ### Koordinat uyumu
 

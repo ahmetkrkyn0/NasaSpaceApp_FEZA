@@ -97,7 +97,7 @@ Fark yaklaşık 1,65°. Bu, Güneş'in kutuptaki bütün yükseklik aralığınd
 
 ## 4. Standart yöntem: ufuk profili
 
-Literatürde "horizon method" olarak geçer. Mazarico vd. (2011), ESA'nın ICAT aracı (De Rosa vd. 2012) ve Barker vd. aynı yolu izler.
+Literatürde "horizon method" olarak geçer. Mazarico vd. (2011), Astrium'un ESA Lunar Lander projesi için geliştirdiği ICAT aracı (De Rosa vd. 2012) ve Barker vd. aynı yolu izler.
 
 ```mermaid
 flowchart LR
@@ -180,11 +180,11 @@ Dünya için de aynı ufuk profili kullanılır; yalnızca hedef değişir.
 
 | Çalışma | DEM | Azimut | Mesafe | Güneş modeli | Zaman |
 |---|---|---|---|---|---|
-| Mazarico vd. 2011 (Icarus) | LOLA 240 m/px, 75° enleme kadar | Çok yönlü ufuk profilleri | — | — | 1 saat adım, 18,6 yıllık nütasyon döngüsü |
+| Mazarico vd. 2011 (Icarus) | LOLA 240 m/px, 75° enleme kadar | Çok yönlü ufuk profilleri | — | — | 1 saat adım (PGDA ürün sayfasına göre; makale özeti uzun simülasyonlar için 6 saat diyor), 18,6 yıllık döngü |
 | De Rosa vd. 2012, ESA ICAT | LOLA | 720 (0,5°) | En fazla 150 km, değişken adım | 0,533° disk, dikey oran | 12 sinodik ay |
 | Gläser vd. 2014 (Icarus) | LOLA 20 m/px | — | — | — | 19 yıl; yüzeyde, 2 m ve 10 m |
 | Barker vd. (Planet. Space Sci.) | 5 / 80 / 240 m/px iç içe | 720 (0,5°) | Yakın alan ~100 m, uzak alan 50–200 km | Kenar kararmalı disk | 1 saat adım, 2024–2026 |
-| Fritsch vd., HPG 2025 (DLR) | Gezegen ölçeğinde yükseklik haritası | 360 → 16 Fourier katsayısı | — | Yumuşak gölge yaklaşımları | Gerçek zamanlı; RTX 4090'da 0,1–0,25 ms ek yük |
+| Fritsch vd., HPG 2025 (DLR) | Gezegen ölçeğinde yükseklik haritası | 360 → 16 Fourier katsayısı | — | Yumuşak gölge yaklaşımları | Gerçek zamanlı; RTX 4090'da 16 katsayıyla 0,19–0,55 ms ek yük (8 katsayıyla 0,1–0,25 ms) |
 
 Tablodaki "—" o bilginin okuduğum kaynakta bulunmadığını gösterir. Gläser vd. 2014'ün tam metnine ulaşılamadı; o satır makalenin özetinden ve öne çıkan bulgularından derlendi.
 
@@ -219,7 +219,7 @@ Kaynaklar bu yüzden güneş panellerinin olabildiğince yükseğe konmasını �
 
 ## 10. Projemiz için öneri
 
-Bu not, [ışık ve ısı katmanı](../light-heat-layer/README.md) notundaki **M2 · Ufuk maskesi** modülünün yöntem ayrıntısıdır. Oradaki döngü, Bölüm 3'teki eğrilik terimli formülü (`d² / 2R`) kullanıyor ve 360 yön öngörüyor. Literatürdeki standart 720 yön (0,5°); bellek kısıtı varsa 360 yön de kullanılabilir, ama Güneş'in saatlik hareketinden daha kaba bir çözünürlük olur.
+Bu not, [ışık ve ısı katmanı](../light-heat-layer/README.md) notundaki **M2 · Ufuk maskesi** modülünün yöntem ayrıntısıdır. Oradaki döngü, Bölüm 3'teki eğrilik terimli formülü (`d² / 2R`) kullanıyor ve 360 yön öngörüyor. Literatürde yaygın değer 720 yön (0,5°; 1440 ve 360 yön kullanan çalışmalar da var); bellek kısıtı varsa 360 yön de kullanılabilir, ama Güneş'in saatlik hareketinden daha kaba bir çözünürlük olur.
 
 1. **Hazır siteler için önceden hesaplanmış profiller.** Her site için 720 değerlik `H(az)` profilini çevrimdışı hesaplayıp JSON olarak sakla. Site ve direk yüksekliği başına yaklaşık 3 KB tutar.
 2. **Arayüzde basit karşılaştırma.** Tarayıcı yalnızca `e_☉ > H(az_☉)` karşılaştırmasını ve disk oranı formülünü çalıştırır. Mevcut az/el kodumuza (`lunarAzEl.mjs`, `site_azel_spice.py`, bkz. [ephemeris-rotation-ground-stations](../ephemeris-rotation-ground-stations/README.md)) doğrudan bağlanır.
@@ -237,7 +237,7 @@ Bu not, [ışık ve ısı katmanı](../light-heat-layer/README.md) notundaki **M
 Aşağıdaki taslak yalnızca yöntemi göstermek içindir. Yapay arazide (düz küre ve tek bir tepe) sınandı:
 
 - **Düz arazi, 2 m direk:** −0,0869° verdi; beklenen değer −0,087°.
-- **5000 m'lik tepe, 100 km uzakta:** 1,15° verdi; formül 1,21° veriyor. Aradaki küçük fark, o mesafedeki ~1,4 km'lik örnekleme adımından geliyor.
+- **5000 m'lik tepe, 100 km uzakta:** 1,15° verdi; formül 1,21° veriyor. Aradaki küçük fark, o mesafedeki 2 km'lik örnekleme adımından ve tepenin genişliğinden geliyor.
 
 `dem_height(lat, lon)` fonksiyonu, LOLA DEM'den metre cinsinden yükseklik döndüren bir yer tutucudur.
 
