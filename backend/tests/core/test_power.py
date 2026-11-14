@@ -12,6 +12,7 @@ from app.core.power import compute_power, disk_fraction, incidence_cos
 from app.terrain.horizon import HorizonProfile
 
 MONS_MOUTON = (-84.78, 29.13)
+APOLLO_11 = (0.67416, 23.47314)
 START = datetime(2026, 12, 1, tzinfo=timezone.utc)
 END = datetime(2027, 1, 1, tzinfo=timezone.utc)
 T3_SUN_RADIUS_DEG = 0.267
@@ -133,3 +134,21 @@ def test_disk_fraction_models_agree_at_the_edges() -> None:
     radius = np.full(3, 0.267)
     for model in ("area", "vertical"):
         assert disk_fraction(el, horizon, radius, model).tolist() == pytest.approx([0.0, 0.5, 1.0])
+
+
+def test_eclipse_lowers_power_at_apollo_11() -> None:
+    """S-09: Earth covers part of the Sun on 20 and 21 February 2027 (T5)."""
+
+    lat, lon = APOLLO_11
+    observer = Observer(lat, lon, 0.0, HorizonProfile(lat, lon, None, 0.0, [0.0] * 720, "sphere"))
+    start = datetime(2027, 2, 20, 20, tzinfo=timezone.utc)
+    end = datetime(2027, 2, 21, 2, tzinfo=timezone.utc)
+    samples = {s["utc"]: s for s in compute_power(observer, start, end, _panel("two_axis"))["samples"]}
+
+    before = samples[datetime(2027, 2, 20, 21, tzinfo=timezone.utc)]
+    during = samples[datetime(2027, 2, 21, 0, tzinfo=timezone.utc)]
+    after = samples[datetime(2027, 2, 21, 2, tzinfo=timezone.utc)]
+    assert before["sun_visible_fraction"] > 0.99
+    assert after["sun_visible_fraction"] > 0.99
+    assert during["sun_visible_fraction"] < 0.9
+    assert during["power_w"] < before["power_w"]

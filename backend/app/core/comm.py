@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from app.core import relay
 from app.core.events import Observer
 from app.core.now import forward_track, next_crossing
 from app.terrain.horizon import horizon_at
@@ -15,6 +16,9 @@ def comm_window(observer: Observer, utc: datetime, earth_criterion: str) -> dict
 
     The search runs ``now.SEARCH_HOURS`` ahead (less near the end of the
     ephemeris range); ``searched_hours`` reports what was actually searched.
+    The relay label is ``intermittent`` when the visibility changes within the
+    search; otherwise it follows ``relay.relay_status`` for an Earth that was
+    always (share 1) or never (share 0) visible over ``searched_hours``.
     """
 
     track = forward_track(observer, "EARTH", earth_criterion, utc)
@@ -24,6 +28,10 @@ def comm_window(observer: Observer, utc: datetime, earth_criterion: str) -> dict
     searched_hours = (track.times[-1] - utc).total_seconds() / 3600.0
 
     minutes = None if change is None else (change.utc - utc).total_seconds() / 60.0
+    if change is None:
+        status = relay.relay_status(1.0 if visible else 0.0, searched_hours)
+    else:
+        status = "intermittent"
     return {
         "utc": utc,
         "visible_now": visible,
@@ -36,5 +44,7 @@ def comm_window(observer: Observer, utc: datetime, earth_criterion: str) -> dict
         "earth_azimuth_true_deg": position.azimuth_true_deg,
         "horizon_deg": horizon_at(observer.profile, position.azimuth_true_deg),
         "criterion": earth_criterion,
+        "relay_status": status,
+        "relay_required": relay.relay_required(status),
         "validity": observer.validity,
     }

@@ -42,5 +42,7 @@ def get_comm_window(
         earth_azimuth_true_deg=params.rounded(window["earth_azimuth_true_deg"], 4),
         horizon_deg=round(window["horizon_deg"], 4),
         criterion=window["criterion"],
+        relay_status=window["relay_status"],
+        relay_required=window["relay_required"],
         validity=window["validity"],
     )

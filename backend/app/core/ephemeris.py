@@ -66,7 +66,8 @@ def _ensure_loaded_locked(kernel_dir: Path) -> None:
     try:
         for name in KERNEL_FILES:
             spiceypy.furnsh(str((kernel_dir / name).resolve()))
-    except (SpiceyError, OSError) as exc:
+        _smoke_test_locked()
+    except (SpiceyError, OSError, ValueError) as exc:
         spiceypy.kclear()
         raise DataUnavailable(
             f"SPICE kernels in {kernel_dir} could not be loaded ({_first_line(exc)}). "
@@ -74,6 +75,21 @@ def _ensure_loaded_locked(kernel_dir: Path) -> None:
         ) from None
 
     _loaded_dir = kernel_dir
+
+
+def _smoke_test_locked() -> None:
+    """Prove the loaded kernels hold usable data; the caller holds the lock.
+
+    ``furnsh`` can accept a file that is not a kernel without raising, so the
+    loaded set is exercised once: the LSK for ``str2et``, the SPK, FK and binary
+    PCK for ``spkpos`` in ``MOON_ME``, and the text PCK for ``bodvrd``.
+    """
+
+    et = spiceypy.str2et("2026-01-01T00:00:00")
+    spiceypy.spkpos("SUN", et, "MOON_ME", "NONE", "MOON")
+    spiceypy.spkpos("EARTH", et, "MOON_ME", "NONE", "MOON")
+    spiceypy.bodvrd("SUN", "RADII", 3)
+    spiceypy.bodvrd("EARTH", "RADII", 3)
 
 
 def _first_line(exc: Exception) -> str:
