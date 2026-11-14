@@ -43,7 +43,7 @@ Planning a landing near the lunar south pole means juggling extreme lighting and
 
 This project turns ephemeris and terrain data into a simple tool for mission planners, educators, and the public: pick sites and dates, see Sun and Earth positions relative to the horizon, and compare power and communication windows side by side.
 
-Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceappschallenge.org/) 2026. The challenge text is in [LunarLandingSiteNavigator.md](LunarLandingSiteNavigator.md), data sources in [Resources.md](Resources.md).
+Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceappschallenge.org/) 2026. The challenge text is in [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md), data sources in [docs/challenge/resources.md](docs/challenge/resources.md).
 
 <!-- Screenshot or demo GIF: ![Demo](docs/assets/demo.gif) -->
 
@@ -130,10 +130,14 @@ flowchart LR
 .
 ├── .github/          # CI workflow, PR/issue templates, CODEOWNERS
 ├── docs/             # Design notes, decisions (ADR), assets
+│   └── challenge/    # Challenge statement, resources, judging and submission guides
 ├── TODO              # source code folders
+├── AGENTS.md         # Rules for AI coding agents
 ├── CHANGELOG.md
+├── CLAUDE.md
 ├── CONTRIBUTING.md
 ├── LICENSE
+├── NOTICE
 └── README.md
 ```
 
@@ -170,5 +174,5 @@ Distributed under the Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NO
 
 ## Acknowledgements
 
-- NASA Space Apps Challenge and the data providers listed in [Resources.md](Resources.md)
+- NASA Space Apps Challenge and the data providers listed in [docs/challenge/resources.md](docs/challenge/resources.md)
 - TODO: libraries, resources, or people to credit
