@@ -104,8 +104,19 @@ function scenarioKey(scenario: Scenario | null): string {
 
 const idle = <T,>(): Promise<T | null> => Promise.resolve(null);
 
+/**
+ * Drops the previous answer while a new one loads or after it failed. `useAsync` keeps the old
+ * data during a reload; for an answer tied to the scenario that would show another scenario's
+ * result under the new name and dates.
+ */
+export function currentOnly<T>(state: AsyncState<T>): AsyncState<T> {
+  if (state.status === 'loading') return { status: 'loading', data: undefined, error: undefined };
+  if (state.status === 'error') return { status: 'error', data: undefined, error: state.error };
+  return state;
+}
+
 export function useEvents(scenario: Scenario | null): AsyncState<EventList | null> {
-  return useAsync<EventList | null>(
+  const { state } = useAsync<EventList | null>(
     (signal) => {
       const location = scenario && locationOf(scenario);
       const window = windowOf(scenario);
@@ -123,7 +134,8 @@ export function useEvents(scenario: Scenario | null): AsyncState<EventList | nul
       );
     },
     [scenarioKey(scenario), getDataMode()],
-  ).state;
+  );
+  return currentOnly(state);
 }
 
 export interface SkyData {
@@ -133,7 +145,7 @@ export interface SkyData {
 }
 
 export function useSkyData(scenario: Scenario | null): AsyncState<SkyData | null> {
-  return useAsync<SkyData | null>(
+  const { state } = useAsync<SkyData | null>(
     async (signal) => {
       const location = scenario && locationOf(scenario);
       const window = windowOf(scenario);
@@ -155,7 +167,8 @@ export function useSkyData(scenario: Scenario | null): AsyncState<SkyData | null
       return { horizon, series, capped: request.capped };
     },
     [scenarioKey(scenario), getDataMode()],
-  ).state;
+  );
+  return currentOnly(state);
 }
 
 /** Waits until a value has stopped changing for `delayMs`, so a drag does not flood the server. */

@@ -55,7 +55,8 @@ export interface SkyStripProps {
 export type EclipseDrawing = 'overlap' | 'no-size' | 'sample-outside';
 
 const DRAWING_TEXT: Record<EclipseDrawing, string> = {
-  overlap: 'The Earth disk is drawn in front of the Sun at the server positions, so the overlap shows the covered part.',
+  overlap:
+    'The Earth disk is drawn in front of the Sun at the server positions. The strip axes use different scales, so the overlap is illustrative; the share given here is the server value.',
   'no-size': 'Apparent disk sizes are not available, so the covered part is not drawn.',
   'sample-outside': 'The nearest sample lies outside the eclipse, so no overlap is drawn.',
 };

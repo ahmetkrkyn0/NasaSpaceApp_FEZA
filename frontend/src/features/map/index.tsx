@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getLayer, getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
@@ -45,6 +45,12 @@ export default function MapPanel() {
     [regionOpen, mode],
   ).state;
   const psrAvailable = !(psrState.status === 'error' && layerMissing(psrState.error));
+  // Picked before the check finished and then found missing: return to the layer shown before.
+  const previousLayer = useRef<LayerName | null>(layerName === 'psr' ? null : layerName);
+  useEffect(() => {
+    if (layerName !== 'psr') previousLayer.current = layerName;
+    else if (!psrAvailable) setLayerName(previousLayer.current);
+  }, [layerName, psrAvailable]);
   const otherState = useAsync(
     (signal) =>
       regionOpen && layerName && layerName !== 'psr'

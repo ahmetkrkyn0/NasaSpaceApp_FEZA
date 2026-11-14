@@ -135,7 +135,7 @@ describe('eclipse on the horizon strip', () => {
     expect(eclipseDrawing(span, sized('2027-02-20T23:00:00Z'))).toBe('overlap');
     expect(eclipseDrawing(span, sized('2027-02-21T02:00:00Z'))).toBe('sample-outside');
     expect(eclipseDrawing(span, { ...base, utc: '2027-02-20T23:00:00Z' })).toBe('no-size');
-    expect(eclipseNote(span, 'overlap')).toContain('the overlap shows the covered part');
+    expect(eclipseNote(span, 'overlap')).toContain('the overlap is illustrative');
     expect(eclipseNote(span, 'sample-outside')).toContain('The nearest sample lies outside the eclipse');
   });
 

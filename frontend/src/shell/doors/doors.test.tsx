@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { eventsEclipseExample, eventsExample, sitesExample } from '../../api/examples';
 import type { EventMetrics, Scenario } from '../../api/types';
 import { selectPanels } from '../../features/registry';
-import { windowOf } from '../../features/timeline/data';
+import { currentOnly, windowOf } from '../../features/timeline/data';
 import { scenarioStore } from '../../state/scenario-store';
 import { createUiStore, type Door } from '../ui-state';
 import { STAGE_PANEL_IDS, arrangeDoor } from './arrange';
@@ -142,5 +142,18 @@ describe('one-sentence result', () => {
   it('points to the Plan door when no scenario is set', () => {
     const html = renderToStaticMarkup(<SummaryView scenario={null} window={null} events={null} />);
     expect(html).toContain('Choose a site and dates in the Plan door');
+  });
+});
+
+describe('answers of the previous scenario', () => {
+  it('are dropped while the new scenario loads or after it fails, so no sentence uses them', () => {
+    expect(currentOnly({ status: 'loading', data: eventsExample, error: undefined }).data).toBeUndefined();
+    const failed = currentOnly({ status: 'error', data: eventsExample, error: new Error('boom') });
+    expect(failed.data).toBeUndefined();
+    expect(failed.status).toBe('error');
+    expect(currentOnly({ status: 'success', data: eventsExample, error: undefined }).data).toBe(eventsExample);
+    const html = renderToStaticMarkup(<SummaryView scenario={scenario} window={window} events={null} />);
+    expect(html).toContain('Loading the result');
+    expect(html).not.toContain('Earth is in view');
   });
 });
