@@ -162,15 +162,22 @@ def ephemeris_range() -> tuple[datetime, datetime]:
 
 
 def to_spice_utc(dt: datetime) -> str:
-    """Format ``dt`` for SPICE without a timezone suffix (ADR-0002 rule 7)."""
+    """Format ``dt`` for SPICE without a timezone suffix (ADR-0002 rule 7).
+
+    Fractional seconds are kept (``...:00.5``) so the computed instant is the requested one.
+    """
 
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    dt = dt.astimezone(timezone.utc)
+    text = dt.strftime("%Y-%m-%dT%H:%M:%S")
+    if dt.microsecond:
+        text += f".{dt.microsecond:06d}".rstrip("0")
+    return text
 
 
 def format_utc(dt: datetime) -> str:
-    """Format ``dt`` as an ISO 8601 UTC timestamp ending in ``Z``."""
+    """Format ``dt`` as an ISO 8601 UTC timestamp ending in ``Z``; fractions only when present."""
 
     return f"{to_spice_utc(dt)}Z"
 

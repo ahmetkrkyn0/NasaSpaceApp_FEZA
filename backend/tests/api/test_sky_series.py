@@ -44,6 +44,16 @@ def test_sky_series_single_sample(client: TestClient) -> None:
     assert_matches_example(body, "sky-series")
 
 
+def test_sky_series_keeps_fractional_seconds(client: TestClient) -> None:
+    params = dict(BASE_PARAMS, start_utc="2025-03-06T17:30:00.5Z")
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["start_utc"] == "2025-03-06T17:30:00.5Z"
+    assert body["samples"][0]["utc"] == "2025-03-06T17:30:00.5Z"
+
+
 def test_sky_series_hourly_samples(client: TestClient) -> None:
     params = dict(BASE_PARAMS, hours=24, step_minutes=60)
     response = client.get("/api/sky-series", params=params)

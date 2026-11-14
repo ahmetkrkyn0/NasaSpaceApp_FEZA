@@ -129,6 +129,20 @@ def test_to_spice_utc_has_no_suffix() -> None:
     assert "Z" not in text
 
 
+def test_fractional_seconds_are_kept() -> None:
+    moment = _utc("2025-03-06T17:30:00.25Z")
+
+    assert ephemeris.to_spice_utc(moment) == "2025-03-06T17:30:00.25"
+    assert ephemeris.format_utc(moment) == "2025-03-06T17:30:00.25Z"
+    assert ephemeris.format_utc(_utc("2025-03-06T17:30:00Z")) == "2025-03-06T17:30:00Z"
+
+    whole, fraction = (
+        ephemeris.body_positions(-84.7906, 29.1957, 0.0, [t], "EARTH")[0]
+        for t in (_utc("2025-03-06T17:30:00Z"), _utc("2025-03-06T17:30:30.5Z"))
+    )
+    assert whole.azimuth_true_deg != fraction.azimuth_true_deg
+
+
 def test_parse_utc_accepts_z_suffix_and_naive_text() -> None:
     expected = datetime(2025, 3, 6, 17, 30, tzinfo=timezone.utc)
 
