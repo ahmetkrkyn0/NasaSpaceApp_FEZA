@@ -13,7 +13,17 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": "Lunar Module descent stage, landed 20 July 1969."
+    "notes": "Lunar Module descent stage, landed 20 July 1969.",
+    "cards": [
+      {
+        "agency": "CSA",
+        "text": "The landing gear of the Eagle lunar module was built in Canada.",
+        "source": {
+          "label": "Canadian Space Agency",
+          "url": "https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/from-apollo-to-artemis-the-evolution-of-crewed-lunar-missions.asp"
+        }
+      }
+    ]
   },
   {
     "id": "change-4",
@@ -109,7 +119,17 @@
       "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"
     },
     "validity": "MEASURED",
-    "notes": "Landed upright near Mons Latreille in Mare Crisium."
+    "notes": "Landed upright near Mons Latreille in Mare Crisium.",
+    "cards": [
+      {
+        "agency": "CSA",
+        "text": "Coatings from a Canadian testing laboratory flew on a NASA dust experiment aboard this lander.",
+        "source": {
+          "label": "SpaceQ",
+          "url": "https://spaceq.ca/nasa-clps-2-canada-canadarm3/"
+        }
+      }
+    ]
   },
   {
     "id": "im2-athena",
