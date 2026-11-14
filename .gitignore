@@ -41,3 +41,5 @@ coverage/
 # --- Agent köprüsü yerel durum dosyaları ---
 .slack_watch_state.json
 .review/
+
+.omc/
