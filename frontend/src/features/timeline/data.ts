@@ -85,6 +85,13 @@ export function eventsRequest(window: ScenarioWindow): { end_utc: UtcString; cap
   return { end_utc: toUtc(capped ? limitMs : window.endMs), capped };
 }
 
+/** The part of the window the events answer covers: the window up to the events request end. */
+export function eventsWindow(window: ScenarioWindow): ScenarioWindow {
+  const request = eventsRequest(window);
+  const endMs = request ? parseUtc(request.end_utc) : null;
+  return endMs === null ? window : { startMs: window.startMs, endMs };
+}
+
 export function useScenario(): { active: Scenario | null; window: ScenarioWindow | null; selectedMs: number | null } {
   const active = useStore(scenarioStore, (s) => s.active);
   const selectedMs = useStore(scenarioStore, selectedMsOf);

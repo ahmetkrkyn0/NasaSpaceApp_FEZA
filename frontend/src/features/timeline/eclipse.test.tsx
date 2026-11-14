@@ -2,8 +2,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { eventsEclipseExample, eventsExample, skySeriesExample, horizonExample } from '../../api/examples';
 import type { SkyEvent } from '../../api/types';
-import { SkyStrip, eclipseNote } from '../sky/SkyStrip';
-import { windowOf } from './data';
+import { SkyStrip, eclipseDrawing, eclipseNote } from '../sky/SkyStrip';
+import { MAX_RANGE_HOURS, eventsWindow, windowOf } from './data';
 import { ECLIPSE_EXPLANATION, activeEclipse, eclipseSpans, obscuredText } from './eclipse';
 import { TimelineView, eclipseLabel, type TimelineViewProps } from './TimelineView';
 
@@ -45,6 +45,17 @@ describe('eclipse spans', () => {
     expect(eclipseSpans([start, end], early)).toEqual([
       { startMs: START, endMs: early.endMs, openStart: false, openEnd: true, maxObscured: 0.343 },
     ]);
+  });
+
+  it('ends an unfinished eclipse where the events answer ends, not at the scenario end', () => {
+    const [start] = eventsEclipseExample.events as [SkyEvent, SkyEvent];
+    // Scenario longer than the events cap; the eclipse start falls inside the cap.
+    const long = windowOf(scenarioAt('2026-12-25T00:00:00Z', '2027-04-30T00:00:00Z'))!;
+    const covered = eventsWindow(long);
+    expect(covered.endMs).toBe(long.startMs + MAX_RANGE_HOURS * 3_600_000);
+    const [only] = eclipseSpans([start], covered);
+    expect(only).toMatchObject({ startMs: START, endMs: covered.endMs, openEnd: true });
+    expect(eclipseLabel(only!)).toContain('2027-02-20 22:09 UTC to after the range');
   });
 
   it('writes the covered share as a unit conversion of the server value', () => {
@@ -113,8 +124,19 @@ describe('eclipse on the horizon strip', () => {
     expect(html.indexOf('sky-disk-earth')).toBeGreaterThan(html.indexOf('sky-disk-sun'));
   });
 
-  it('says the overlap shows the covered part when disk sizes are known', () => {
-    expect(eclipseNote(span, true)).toContain('the overlap shows the covered part');
+  it('claims a drawn overlap only for a sized sample inside the eclipse', () => {
+    const base = skySeriesExample.samples[0]!;
+    const sized = (utc: string) => ({
+      ...base,
+      utc,
+      sun: { ...base.sun, radius_deg: 0.27 },
+      earth: { ...base.earth, radius_deg: 0.95 },
+    });
+    expect(eclipseDrawing(span, sized('2027-02-20T23:00:00Z'))).toBe('overlap');
+    expect(eclipseDrawing(span, sized('2027-02-21T02:00:00Z'))).toBe('sample-outside');
+    expect(eclipseDrawing(span, { ...base, utc: '2027-02-20T23:00:00Z' })).toBe('no-size');
+    expect(eclipseNote(span, 'overlap')).toContain('the overlap shows the covered part');
+    expect(eclipseNote(span, 'sample-outside')).toContain('The nearest sample lies outside the eclipse');
   });
 
   it('adds nothing outside an eclipse', () => {

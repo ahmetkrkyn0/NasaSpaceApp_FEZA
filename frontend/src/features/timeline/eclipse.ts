@@ -7,7 +7,7 @@
 
 import type { SkyEvent } from '../../api/types';
 import type { ScenarioWindow } from './data';
-import { parseUtc } from './time';
+import { formatUtc, formatUtcRange, parseUtc } from './time';
 
 /** Text of the eclipse mark (docs/design/tutulmalar.md, "Arayüzde nerede görünür"). */
 export const ECLIPSE_EXPLANATION = 'Earth passes in front of the Sun. Seen from Earth, this is a lunar eclipse.';
@@ -77,6 +77,14 @@ function span(startMs: number, endMs: number, openStart: boolean, openEnd: boole
 /** The eclipse under the selected moment, if any. */
 export function activeEclipse(spans: readonly EclipseSpan[], ms: number): EclipseSpan | null {
   return spans.find((s) => ms >= s.startMs && ms <= s.endMs) ?? null;
+}
+
+/** Times of an eclipse; an edge outside the events answer is named as such. */
+export function eclipseTimesText(span: EclipseSpan): string {
+  if (!span.openStart && !span.openEnd) return formatUtcRange(span.startMs, span.endMs);
+  const start = span.openStart ? 'before the range' : formatUtc(span.startMs);
+  const end = span.openEnd ? 'after the range' : formatUtc(span.endMs);
+  return `${start} to ${end}`;
 }
 
 /** `0.343` gives `up to 34.3 % of the Sun's disk covered`; a unit conversion of the server value. */

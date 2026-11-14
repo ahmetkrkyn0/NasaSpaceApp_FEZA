@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
 import type { HorizonProfile, SkySample, SkySeries } from '../../api/types';
 import { SourcePopover, type SourceDetail } from '../../ui/SourcePopover';
-import { ECLIPSE_EXPLANATION, obscuredText, type EclipseSpan } from '../timeline/eclipse';
-import { formatUtc, formatUtcRange } from '../timeline/time';
+import { ECLIPSE_EXPLANATION, eclipseTimesText, obscuredText, type EclipseSpan } from '../timeline/eclipse';
+import { formatUtc, parseUtc } from '../timeline/time';
 import {
   diskState,
   elevationDomain,
@@ -52,12 +52,23 @@ export interface SkyStripProps {
  * Note shown while the selected moment lies inside an eclipse. The covered share is the
  * server's maximum for the whole eclipse, never a value computed for the moment.
  */
-export function eclipseNote(eclipse: EclipseSpan, disksSized: boolean): string {
-  const times = formatUtcRange(eclipse.startMs, eclipse.endMs);
-  const drawn = disksSized
-    ? 'The Earth disk is drawn in front of the Sun at the server positions, so the overlap shows the covered part.'
-    : 'Apparent disk sizes are not available, so the covered part is not drawn.';
-  return `Eclipse in progress (${times}): ${ECLIPSE_EXPLANATION} Largest share for this eclipse: ${obscuredText(eclipse.maxObscured)}. ${drawn}`;
+export type EclipseDrawing = 'overlap' | 'no-size' | 'sample-outside';
+
+const DRAWING_TEXT: Record<EclipseDrawing, string> = {
+  overlap: 'The Earth disk is drawn in front of the Sun at the server positions, so the overlap shows the covered part.',
+  'no-size': 'Apparent disk sizes are not available, so the covered part is not drawn.',
+  'sample-outside': 'The nearest sample lies outside the eclipse, so no overlap is drawn.',
+};
+
+/** Whether the drawn disks can show the covered part: sizes known and the sample inside the eclipse. */
+export function eclipseDrawing(eclipse: EclipseSpan, sample: SkySample): EclipseDrawing {
+  if (sample.sun.radius_deg === null || sample.earth.radius_deg === null) return 'no-size';
+  const ms = parseUtc(sample.utc);
+  return ms !== null && ms >= eclipse.startMs && ms <= eclipse.endMs ? 'overlap' : 'sample-outside';
+}
+
+export function eclipseNote(eclipse: EclipseSpan, drawing: EclipseDrawing): string {
+  return `Eclipse in progress (${eclipseTimesText(eclipse)}): ${ECLIPSE_EXPLANATION} Largest share for this eclipse: ${obscuredText(eclipse.maxObscured)}. ${DRAWING_TEXT[drawing]}`;
 }
 
 /** Facts for the source window, read only from the response fields. */
@@ -239,10 +250,8 @@ export function SkyStrip({ horizon, series, selectedMs, capped = false, eclipse 
         ) : (
           <span className="sky-note">The sky series has no samples.</span>
         )}
-        {eclipse ? (
-          <span className="sky-note sky-note-eclipse">
-            {eclipseNote(eclipse, nearest !== null && nearest.sample.sun.radius_deg !== null && nearest.sample.earth.radius_deg !== null)}
-          </span>
+        {eclipse && nearest ? (
+          <span className="sky-note sky-note-eclipse">{eclipseNote(eclipse, eclipseDrawing(eclipse, nearest.sample))}</span>
         ) : null}
         {capped ? <span className="sky-note">The sky series covers the first two months of the scenario.</span> : null}
       </figcaption>

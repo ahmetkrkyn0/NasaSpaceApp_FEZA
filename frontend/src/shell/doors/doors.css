@@ -18,29 +18,41 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* Result above the strip on the left, countdown in its own column on the right, so the
+   strip keeps its height. */
 .door-stage {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-areas:
+    'summary hud'
+    'main hud';
+  grid-template-rows: auto 1fr;
+  align-content: start;
   gap: 12px;
   padding: 12px;
   overflow-y: auto;
 }
 
-.door-stage-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 12px;
+.door-stage.no-summary {
+  grid-template-areas: 'main hud';
+  grid-template-rows: auto;
 }
 
-.door-stage-head:empty {
-  display: none;
+.door-stage.no-hud {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'summary'
+    'main';
+}
+
+.door-stage.no-summary.no-hud {
+  grid-template-areas: 'main';
 }
 
 .door-summary {
-  flex: 1 1 320px;
+  grid-area: summary;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -66,7 +78,7 @@
 }
 
 .door-stage-hud {
-  flex: 0 1 300px;
+  grid-area: hud;
 }
 
 .door-stage-hud > .panel-host {
@@ -77,7 +89,7 @@
 }
 
 .door-stage-main {
-  flex: 1 0 auto;
+  grid-area: main;
 }
 
 .door-stage-main > .panel-host {
@@ -106,5 +118,10 @@
   .content-grid.door-grid.has-left-rail.no-right-rail,
   .content-grid.door-grid.no-left-rail.has-right-rail {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .door-stage {
+    display: flex;
+    flex-direction: column;
   }
 }

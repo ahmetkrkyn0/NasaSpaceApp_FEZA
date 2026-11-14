@@ -1,5 +1,5 @@
 import { describeError } from '../timeline/describe-error';
-import { useEvents, useScenario, useSkyData } from '../timeline/data';
+import { eventsWindow, useEvents, useScenario, useSkyData } from '../timeline/data';
 import { activeEclipse, eclipseSpans } from '../timeline/eclipse';
 import { SkyStrip } from './SkyStrip';
 
@@ -10,7 +10,7 @@ export default function SkyPanel() {
   // Eclipses come only from the `/api/events` answer; without them no eclipse is shown.
   const events = useEvents(active);
   const eclipse =
-    events.data && window && selectedMs !== null ? activeEclipse(eclipseSpans(events.data.events, window), selectedMs) : null;
+    events.data && window && selectedMs !== null ? activeEclipse(eclipseSpans(events.data.events, eventsWindow(window)), selectedMs) : null;
 
   return (
     <section className="sky-panel" aria-label="Sky view">

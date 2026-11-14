@@ -32,6 +32,10 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
     a.left.length > 0 ? 'has-left-rail' : 'no-left-rail',
     a.side.length > 0 ? 'has-right-rail' : 'no-right-rail',
   ].join(' ');
+  const hasSummary = door === 'explore';
+  const stageClass = ['door-stage', hasSummary ? '' : 'no-summary', a.head.length > 0 ? '' : 'no-hud']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <main className={gridClass} data-door-layout={door}>
@@ -41,18 +45,16 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
         </aside>
       ) : null}
       <section className="center-stage" aria-label="Main view">
-        <div className="door-stage">
-          <div className="door-stage-head">
-            {door === 'explore' ? <DoorSummary /> : null}
-            {a.head.length > 0 ? (
-              <div className="door-stage-hud">
-                <PanelSlot panels={a.head} />
-              </div>
-            ) : null}
-          </div>
+        <div className={stageClass}>
+          {hasSummary ? <DoorSummary /> : null}
           <div className="door-stage-main">
             <PanelSlot panels={a.stage} />
           </div>
+          {a.head.length > 0 ? (
+            <div className="door-stage-hud">
+              <PanelSlot panels={a.head} />
+            </div>
+          ) : null}
         </div>
         <div className="bottom-dock" aria-label="Timeline">
           <PanelSlot panels={a.bottom} />

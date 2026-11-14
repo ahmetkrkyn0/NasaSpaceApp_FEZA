@@ -3,12 +3,12 @@ import type { EventList } from '../../api/types';
 import { SourcePopover } from '../../ui/SourcePopover';
 import { TERRAIN_NOT_INCLUDED } from '../sky/geometry';
 import { bandSegments, dayTicks, eventMarks, fractionOf, msAt, type BandSegment } from './bands';
-import { eventsRequest, type ScenarioWindow } from './data';
-import { ECLIPSE_EXPLANATION, eclipseSpans, obscuredText, type EclipseSpan } from './eclipse';
+import { eventsRequest, eventsWindow, type ScenarioWindow } from './data';
+import { ECLIPSE_EXPLANATION, eclipseSpans, eclipseTimesText, obscuredText, type EclipseSpan } from './eclipse';
 import { EVENT_LABEL, HIGH_UNCERTAINTY, RANGE_MEANING, eventTimeText } from './event-range';
 import type { JumpKind } from './jumps';
 import { PLAYBACK_SPEEDS, type PlaybackSpeed } from './playback';
-import { MS_PER_MINUTE, formatDate, formatHours, formatUtc, formatUtcRange, parseUtc } from './time';
+import { MS_PER_MINUTE, formatDate, formatHours, formatUtc, parseUtc } from './time';
 import './timeline.css';
 
 export interface TimelineViewProps {
@@ -60,10 +60,7 @@ function Band({ segments, empty }: { segments: BandSegment[]; empty: string }) {
 
 /** Mark text of one eclipse: times, the server's largest covered share and the explanation. */
 export function eclipseLabel(span: EclipseSpan): string {
-  const start = span.openStart ? 'before the range' : formatUtc(span.startMs);
-  const end = span.openEnd ? 'after the range' : formatUtc(span.endMs);
-  const times = span.openStart || span.openEnd ? `${start} to ${end}` : formatUtcRange(span.startMs, span.endMs);
-  return `Eclipse, ${times}, ${obscuredText(span.maxObscured)}. ${ECLIPSE_EXPLANATION}`;
+  return `Eclipse, ${eclipseTimesText(span)}, ${obscuredText(span.maxObscured)}. ${ECLIPSE_EXPLANATION}`;
 }
 
 /** Eclipse spans drawn over the Sun band, separate from the sunlit and dark windows. */
@@ -101,7 +98,8 @@ export function TimelineView(props: TimelineViewProps) {
   const cursor = fractionOf(selectedMs, window);
   const marks = events ? eventMarks(events.events, window) : [];
   const anyRange = marks.some((m) => eventTimeText(m.event).meaning !== null);
-  const eclipses = events ? eclipseSpans(events.events, window) : [];
+  // Spans end where the events answer ends (the two month cap), not at the scenario end.
+  const eclipses = events ? eclipseSpans(events.events, eventsWindow(window)) : [];
 
   const msFromPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
     // The bands column defines the time axis; the row labels sit to its left.
