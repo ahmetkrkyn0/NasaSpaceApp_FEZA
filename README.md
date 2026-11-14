@@ -130,7 +130,8 @@ flowchart LR
 .
 ├── .github/          # CI workflow, PR/issue templates, CODEOWNERS
 ├── docs/             # Design notes, decisions (ADR), assets
-│   └── challenge/    # Challenge statement, resources, judging and submission guides
+│   ├── challenge/    # Challenge statement, resources, judging and submission guides
+│   └── research/     # Background research notes
 ├── TODO              # source code folders
 ├── AGENTS.md         # Rules for AI coding agents
 ├── CHANGELOG.md
