@@ -1,7 +1,8 @@
 import { useId, useState } from 'react';
 import type { HorizonProfile, SkySample, SkySeries } from '../../api/types';
 import { SourcePopover, type SourceDetail } from '../../ui/SourcePopover';
-import { formatUtc } from '../timeline/time';
+import { ECLIPSE_EXPLANATION, obscuredText, type EclipseSpan } from '../timeline/eclipse';
+import { formatUtc, formatUtcRange } from '../timeline/time';
 import {
   diskState,
   elevationDomain,
@@ -43,6 +44,20 @@ export interface SkyStripProps {
   selectedMs: number;
   /** The sky-series request was shortened to the endpoint limit. */
   capped?: boolean;
+  /** Eclipse under the selected moment, from the `/api/events` answer. */
+  eclipse?: EclipseSpan | null;
+}
+
+/**
+ * Note shown while the selected moment lies inside an eclipse. The covered share is the
+ * server's maximum for the whole eclipse, never a value computed for the moment.
+ */
+export function eclipseNote(eclipse: EclipseSpan, disksSized: boolean): string {
+  const times = formatUtcRange(eclipse.startMs, eclipse.endMs);
+  const drawn = disksSized
+    ? 'The Earth disk is drawn in front of the Sun at the server positions, so the overlap shows the covered part.'
+    : 'Apparent disk sizes are not available, so the covered part is not drawn.';
+  return `Eclipse in progress (${times}): ${ECLIPSE_EXPLANATION} Largest share for this eclipse: ${obscuredText(eclipse.maxObscured)}. ${drawn}`;
 }
 
 /** Facts for the source window, read only from the response fields. */
@@ -80,7 +95,7 @@ function bodyText(body: Body, sample: SkySample): string {
  * profile is a filled silhouette; Sun and Earth paths are lines; the selected moment shows
  * each body as a disk, filled when visible, outlined and dim when below the horizon.
  */
-export function SkyStrip({ horizon, series, selectedMs, capped = false }: SkyStripProps) {
+export function SkyStrip({ horizon, series, selectedMs, capped = false, eclipse = null }: SkyStripProps) {
   const [hover, setHover] = useState<Body | null>(null);
   const clipId = useId().replace(/:/g, '');
   const domain = elevationDomain(horizon, series);
@@ -124,7 +139,7 @@ export function SkyStrip({ horizon, series, selectedMs, capped = false }: SkyStr
     return (
       <g
         key={body}
-        className={`sky-disk sky-disk-${body} sky-disk-${state}`}
+        className={`sky-disk sky-disk-${body} sky-disk-${state}${body === 'sun' && eclipse ? ' sky-disk-eclipsed' : ''}`}
         tabIndex={0}
         role="img"
         aria-label={label}
@@ -197,7 +212,8 @@ export function SkyStrip({ horizon, series, selectedMs, capped = false }: SkyStr
             run.length > 1 ? <polyline key={`${body}-${i}`} className={`sky-path sky-path-${body}`} points={runPath(run)} /> : null,
           ),
         )}
-        {nearest ? (['earth', 'sun'] as const).map((body) => disk(body, nearest.sample)) : null}
+        {/* Earth is nearer than the Sun, so its disk is drawn last and covers the Sun where they overlap. */}
+        {nearest ? (['sun', 'earth'] as const).map((body) => disk(body, nearest.sample)) : null}
       </svg>
       <figcaption className="sky-readout">
         {nearest ? (
@@ -223,6 +239,11 @@ export function SkyStrip({ horizon, series, selectedMs, capped = false }: SkyStr
         ) : (
           <span className="sky-note">The sky series has no samples.</span>
         )}
+        {eclipse ? (
+          <span className="sky-note sky-note-eclipse">
+            {eclipseNote(eclipse, nearest !== null && nearest.sample.sun.radius_deg !== null && nearest.sample.earth.radius_deg !== null)}
+          </span>
+        ) : null}
         {capped ? <span className="sky-note">The sky series covers the first two months of the scenario.</span> : null}
       </figcaption>
     </figure>
