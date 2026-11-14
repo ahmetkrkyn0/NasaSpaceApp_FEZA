@@ -29,6 +29,7 @@ EPHEMERIS_INFO = {
 
 _LOCK = threading.Lock()
 _loaded_dir: Path | None = None
+_range_cache: dict[Path, tuple[datetime, datetime]] = {}
 
 _COVERAGE_BODIES = (10, 399, 301)
 
@@ -111,7 +112,11 @@ def ephemeris_range() -> tuple[datetime, datetime]:
     """Return the computable UTC range shared by Sun, Earth and Moon coverage."""
 
     ensure_loaded()
-    kernel_path = str((get_settings().kernel_dir / "de440s.bsp").resolve())
+    kernel_dir = get_settings().kernel_dir
+    cached = _range_cache.get(kernel_dir)
+    if cached is not None:
+        return cached
+    kernel_path = str((kernel_dir / "de440s.bsp").resolve())
 
     with _LOCK:
         cover = None
@@ -124,6 +129,7 @@ def ephemeris_range() -> tuple[datetime, datetime]:
 
     start = _ceil_day(start + timedelta(days=1))
     end = _floor_day(end - timedelta(days=1))
+    _range_cache[kernel_dir] = (start, end)
     return start, end
 
 
