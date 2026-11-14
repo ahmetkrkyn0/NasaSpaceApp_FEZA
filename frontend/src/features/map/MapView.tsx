@@ -3,7 +3,7 @@ import type { LayerBounds, LayerGrid, LayerName, Site } from '../../api/types';
 import { LAYER_NAMES } from '../../api/types';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { forwardSouthPolar, inverseSouthPolar, type GeoPoint } from './projection';
-import { LAYER_TEXT, gridRange, layerImage } from './raster';
+import { LAYER_TEXT, PSR_NOTE, gridRange, layerImage } from './raster';
 import './map.css';
 
 export type MapViewMode = 'overview' | 'region';
@@ -35,6 +35,11 @@ export interface MapViewProps {
   layerName: LayerName | null;
   onLayerName: (name: LayerName | null) => void;
   layer: LayerStatus;
+  /**
+   * `false` when the server answered that the permanent shadow layer is missing (503); the
+   * option is then shown but cannot be picked. Default `true`.
+   */
+  psrAvailable?: boolean;
   onPickPoint: (point: GeoPoint) => void;
   onPickSite: (site: Site) => void;
 }
@@ -112,6 +117,7 @@ function SiteMarker({
  */
 export function MapView(props: MapViewProps) {
   const { view, onView, sites, activeSiteId, point, layerName, onLayerName, layer, onPickPoint, onPickSite } = props;
+  const psrAvailable = props.psrAvailable ?? true;
   const image = useMemo(
     () => (layer.kind === 'ready' && layer.grid.bounds && layerName ? layerImage(layer.grid, layerName) : null),
     [layer, layerName],
@@ -141,11 +147,19 @@ export function MapView(props: MapViewProps) {
             onChange={(e) => onLayerName(e.currentTarget.value === '' ? null : (e.currentTarget.value as LayerName))}
           >
             <option value="">None</option>
-            {LAYER_NAMES.map((name) => (
-              <option key={name} value={name}>
-                {LAYER_TEXT[name].label}
-              </option>
-            ))}
+            {LAYER_NAMES.map((name) => {
+              const off = name === 'psr' && !psrAvailable;
+              return (
+                <option
+                  key={name}
+                  value={name}
+                  disabled={off}
+                  title={name === 'psr' ? (off ? `Not available on this server. ${PSR_NOTE}` : PSR_NOTE) : undefined}
+                >
+                  {off ? `${LAYER_TEXT[name].label} (not available)` : LAYER_TEXT[name].label}
+                </option>
+              );
+            })}
           </select>
         </label>
       ) : null}
@@ -287,6 +301,7 @@ export function MapView(props: MapViewProps) {
             {layer.grid.validity ? <ValidityBadge validity={layer.grid.validity} /> : null}
           </span>
         ) : null}
+        {view === 'region' && layerName === 'psr' ? <span className="map-legend-note">{PSR_NOTE}</span> : null}
       </div>
       {note ? <p className="map-note">{note}</p> : null}
     </div>

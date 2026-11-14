@@ -76,6 +76,12 @@ export function layerImage(grid: LayerGrid, name: LayerName): string | null {
   return canvas.toDataURL('image/png');
 }
 
+/**
+ * Note of the permanent shadow layer: the mask shows shadow, not ice
+ * (docs/design/kalici-golge-katmani.md, "Arayüzde nerede görünür" and "Bilinen sınırlar").
+ */
+export const PSR_NOTE = 'Shadow only, not ice. Ice presence is uncertain.';
+
 export const LAYER_TEXT: Record<LayerName, { label: string; unit: string }> = {
   hillshade: { label: 'Hillshade', unit: '' },
   elevation: { label: 'Elevation', unit: 'm' },

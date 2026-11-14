@@ -149,6 +149,12 @@
   stroke-dasharray: 2 2;
 }
 
+/* During an eclipse the Sun keeps a heavier dashed ring, so the state reads without colour. */
+.sky-disk-eclipsed .sky-disk-outline {
+  stroke-width: 2.5;
+  stroke-dasharray: 4 2;
+}
+
 .sky-disk:focus-visible .sky-disk-outline,
 .sky-disk:hover .sky-disk-outline {
   stroke: var(--lavender-bright);
@@ -179,4 +185,8 @@
   margin: 0;
   color: var(--text-dim);
   font-size: var(--fs-small);
+}
+
+.sky-note-eclipse {
+  color: var(--text-2);
 }

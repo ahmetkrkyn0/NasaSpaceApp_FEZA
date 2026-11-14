@@ -3,7 +3,8 @@ import type { EventList } from '../../api/types';
 import { SourcePopover } from '../../ui/SourcePopover';
 import { TERRAIN_NOT_INCLUDED } from '../sky/geometry';
 import { bandSegments, dayTicks, eventMarks, fractionOf, msAt, type BandSegment } from './bands';
-import { eventsRequest, type ScenarioWindow } from './data';
+import { eventsRequest, eventsWindow, type ScenarioWindow } from './data';
+import { ECLIPSE_EXPLANATION, eclipseSpans, eclipseTimesText, obscuredText, type EclipseSpan } from './eclipse';
 import { EVENT_LABEL, HIGH_UNCERTAINTY, RANGE_MEANING, eventTimeText } from './event-range';
 import type { JumpKind } from './jumps';
 import { PLAYBACK_SPEEDS, type PlaybackSpeed } from './playback';
@@ -57,6 +58,34 @@ function Band({ segments, empty }: { segments: BandSegment[]; empty: string }) {
   );
 }
 
+/** Mark text of one eclipse: times, the server's largest covered share and the explanation. */
+export function eclipseLabel(span: EclipseSpan): string {
+  return `Eclipse, ${eclipseTimesText(span)}, ${obscuredText(span.maxObscured)}. ${ECLIPSE_EXPLANATION}`;
+}
+
+/** Eclipse spans drawn over the Sun band, separate from the sunlit and dark windows. */
+function EclipseOverlay({ spans, window }: { spans: EclipseSpan[]; window: ScenarioWindow }) {
+  return (
+    <>
+      {spans.map((span) => {
+        const from = fractionOf(span.startMs, window);
+        const to = fractionOf(span.endMs, window);
+        const label = eclipseLabel(span);
+        return (
+          <span
+            key={`eclipse-${span.startMs}`}
+            className="tl-eclipse"
+            role="img"
+            aria-label={label}
+            title={label}
+            style={{ left: `${from * 100}%`, width: `max(${(to - from) * 100}%, 4px)` }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 /**
  * Timeline (docs/design/gosterim-ve-arayuz.md, "Zorunlu gösterimler" 2): a sunlit or dark band,
  * an Earth visible or hidden band, event marks and the selected-moment cursor. Dark and hidden
@@ -69,6 +98,8 @@ export function TimelineView(props: TimelineViewProps) {
   const cursor = fractionOf(selectedMs, window);
   const marks = events ? eventMarks(events.events, window) : [];
   const anyRange = marks.some((m) => eventTimeText(m.event).meaning !== null);
+  // Spans end where the events answer ends (the two month cap), not at the scenario end.
+  const eclipses = events ? eclipseSpans(events.events, eventsWindow(window)) : [];
 
   const msFromPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
     // The bands column defines the time axis; the row labels sit to its left.
@@ -162,6 +193,7 @@ export function TimelineView(props: TimelineViewProps) {
           ) : (
             <span className="tl-band-empty">{eventsNote ?? 'Loading events…'}</span>
           )}
+          <EclipseOverlay spans={eclipses} window={window} />
           <span className="tl-cursor" style={{ left: `${cursor * 100}%` }} aria-hidden="true" />
         </div>
         <span className="tl-row-label">Earth</span>
@@ -229,10 +261,16 @@ export function TimelineView(props: TimelineViewProps) {
         <span className="tl-key tl-key-dark">Dark (hatched)</span>
         <span className="tl-key tl-key-earth_visible">Earth visible</span>
         <span className="tl-key tl-key-earth_hidden">Earth hidden (hatched)</span>
+        {eclipses.length > 0 ? <span className="tl-key tl-key-eclipse">Eclipse (cross-hatched, on the Sun band)</span> : null}
       </div>
       {eventsRequest(window)?.capped ? (
         <p className="tl-note">Events cover the first two months of the scenario, the longest range the server computes.</p>
       ) : null}
+      {eclipses.map((span) => (
+        <p key={`eclipse-note-${span.startMs}`} className="tl-note">
+          {eclipseLabel(span)}
+        </p>
+      ))}
       {anyRange ? <p className="tl-note">Event times with two values: {RANGE_MEANING}.</p> : null}
     </div>
   );

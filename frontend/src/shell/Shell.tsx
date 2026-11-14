@@ -1,5 +1,6 @@
 import { doorHasModes, selectPanels } from '../features/registry';
 import { useStore } from '../lib/hooks';
+import { DoorLayout } from './doors/DoorLayout';
 import { PanelSlot } from './PanelSlot';
 import { RailTabs } from './RailTabs';
 import { DOOR_LABEL, TopBar } from './TopBar';
@@ -14,6 +15,25 @@ export function Shell() {
   const door = useStore(uiStore, (s) => s.door);
   const mode = useStore(uiStore, (s) => s.mode);
   const filter = { door, mode };
+
+  const statusBar = (
+    <footer className="lp-status-bar">
+      <span className="lp-status-item">{DOOR_LABEL[door]} door</span>
+      {doorHasModes(door) ? (
+        <span className="lp-status-item">{mode === 'plan' ? 'Plan' : 'Analyze'} mode</span>
+      ) : null}
+    </footer>
+  );
+
+  // Explore and Classroom have their own layout (shell/doors/); the grid below is the Plan door.
+  if (door !== 'plan') {
+    return (
+      <div className="app-shell" data-door={door} data-mode={mode}>
+        <TopBar />
+        <DoorLayout door={door} mode={mode} footer={statusBar} />
+      </div>
+    );
+  }
 
   const left = selectPanels('leftRail', filter);
   const center = selectPanels('center', filter);
@@ -48,12 +68,7 @@ export function Shell() {
           <div className="bottom-dock" aria-label="Timeline">
             <PanelSlot panels={bottom} />
           </div>
-          <footer className="lp-status-bar">
-            <span className="lp-status-item">{DOOR_LABEL[door]} door</span>
-            {doorHasModes(door) ? (
-              <span className="lp-status-item">{mode === 'plan' ? 'Plan' : 'Analyze'} mode</span>
-            ) : null}
-          </footer>
+          {statusBar}
         </section>
         {hasRight ? (
           <aside className="right-rail" aria-label="Results">

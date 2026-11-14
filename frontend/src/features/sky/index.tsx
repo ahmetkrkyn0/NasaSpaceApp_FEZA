@@ -1,11 +1,16 @@
 import { describeError } from '../timeline/describe-error';
-import { useScenario, useSkyData } from '../timeline/data';
+import { eventsWindow, useEvents, useScenario, useSkyData } from '../timeline/data';
+import { activeEclipse, eclipseSpans } from '../timeline/eclipse';
 import { SkyStrip } from './SkyStrip';
 
 /** Sky tab: the horizon strip for the active scenario at the selected moment. */
 export default function SkyPanel() {
-  const { active, selectedMs } = useScenario();
+  const { active, window, selectedMs } = useScenario();
   const sky = useSkyData(active);
+  // Eclipses come only from the `/api/events` answer; without them no eclipse is shown.
+  const events = useEvents(active);
+  const eclipse =
+    events.data && window && selectedMs !== null ? activeEclipse(eclipseSpans(events.data.events, eventsWindow(window)), selectedMs) : null;
 
   return (
     <section className="sky-panel" aria-label="Sky view">
@@ -17,7 +22,13 @@ export default function SkyPanel() {
           {describeError(sky.error)}
         </p>
       ) : sky.data ? (
-        <SkyStrip horizon={sky.data.horizon} series={sky.data.series} selectedMs={selectedMs} capped={sky.data.capped} />
+        <SkyStrip
+          horizon={sky.data.horizon}
+          series={sky.data.series}
+          selectedMs={selectedMs}
+          capped={sky.data.capped}
+          eclipse={eclipse}
+        />
       ) : (
         <p className="sky-note">Loading the horizon and sky series…</p>
       )}

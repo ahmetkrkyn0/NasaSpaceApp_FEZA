@@ -181,6 +181,10 @@
   gap: 6px;
 }
 
+.map-legend-note {
+  color: var(--text-2);
+}
+
 .map-data {
   font-family: var(--font-data);
 }
