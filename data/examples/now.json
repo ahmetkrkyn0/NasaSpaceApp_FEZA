@@ -1,0 +1,14 @@
+{
+  "utc": "2026-12-05T00:00:00Z",
+  "sun_up": null,
+  "hours_to_sunset": null,
+  "hours_to_sunrise": null,
+  "earth_up": false,
+  "hours_to_earthset": null,
+  "hours_to_earthrise": 148.68,
+  "night_hours": null,
+  "criterion": "center",
+  "mast_height_m": 0,
+  "search_limited": false,
+  "validity": "SYNTHETIC"
+}

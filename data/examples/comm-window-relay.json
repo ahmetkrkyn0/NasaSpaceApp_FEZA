@@ -1,0 +1,19 @@
+{
+  "utc": "2019-01-03T02:26:00Z",
+  "lat_deg": -45.4446,
+  "lon_deg": 177.5991,
+  "mast_height_m": 0,
+  "visible_now": false,
+  "minutes_remaining": null,
+  "minutes_until_visible": null,
+  "next_change_utc": null,
+  "search_limited": true,
+  "searched_hours": 744,
+  "earth_elevation_deg": -39.2,
+  "earth_azimuth_true_deg": 190.32,
+  "horizon_deg": 0.0,
+  "criterion": "center",
+  "relay_status": "required",
+  "relay_required": true,
+  "validity": "SYNTHETIC"
+}

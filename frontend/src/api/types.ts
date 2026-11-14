@@ -1,0 +1,493 @@
+/**
+ * Types for every structure in the data contract (docs/adr/0003-veri-sozlesmesi.md)
+ * and the API endpoints (docs/adr/0004-api-uc-noktalari.md).
+ *
+ * Field names follow the contract exactly: lower case with underscores, angles end in
+ * `_deg`, times are ISO 8601 UTC strings ending in `Z`. A value the server does not know
+ * is `null`; the field is still present. Fields marked optional (`?`) belong to extra
+ * features and only appear when that feature is built.
+ *
+ * No React, no Vite: this file compiles on its own.
+ */
+
+/** ISO 8601 UTC time ending in `Z`, for example `2026-12-01T00:00:00Z`. */
+export type UtcString = string;
+
+// ---------------------------------------------------------------------------
+// Closed value sets. The arrays are exported so code and checks can list them.
+// ---------------------------------------------------------------------------
+
+/** Lowest to highest. A result built from several inputs takes the lowest label. */
+export const VALIDITY_VALUES = ['SYNTHETIC', 'DERIVED', 'MODEL', 'MEASURED'] as const;
+export type Validity = (typeof VALIDITY_VALUES)[number];
+
+export const SITE_CATEGORIES = [
+  'apollo',
+  'clps',
+  'commercial',
+  'international',
+  'artemis_candidate',
+  'test',
+  'custom',
+] as const;
+export type SiteCategory = (typeof SITE_CATEGORIES)[number];
+
+export const SITE_STATUSES = [
+  'landed',
+  'landed_tipped',
+  'crashed',
+  'planned',
+  'candidate',
+  'reference',
+] as const;
+export type SiteStatus = (typeof SITE_STATUSES)[number];
+
+export const HORIZON_METHODS = ['terrain', 'sphere'] as const;
+export type HorizonMethod = (typeof HORIZON_METHODS)[number];
+
+export const EVENT_TYPES = [
+  'sunrise',
+  'sunset',
+  'earthrise',
+  'earthset',
+  'eclipse_start',
+  'eclipse_end',
+] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+export const WINDOW_KINDS = ['sunlit', 'dark', 'earth_visible', 'earth_hidden'] as const;
+export type WindowKind = (typeof WINDOW_KINDS)[number];
+
+/** How a disk counts as above the horizon. Default for Earth: `center`. */
+export const CRITERIA = ['center', 'first_limb', 'full_disk'] as const;
+export type Criterion = (typeof CRITERIA)[number];
+export const DEFAULT_EARTH_CRITERION: Criterion = 'center';
+
+export const PANEL_TYPES = ['horizontal', 'vertical_fixed', 'vertical_tracking', 'two_axis'] as const;
+export type PanelType = (typeof PANEL_TYPES)[number];
+
+/** Extra feature: docs/design/role-etiketi.md */
+export const RELAY_STATUSES = ['not_required', 'intermittent', 'required', 'unknown'] as const;
+export type RelayStatus = (typeof RELAY_STATUSES)[number];
+
+/**
+ * Evidence level of a past-mission fact (docs/design/gecmis-gorev-vakalari.md, "Kanıt düzeyi
+ * etiketi"): official report, preliminary statement, third-party commentary.
+ */
+export const EVIDENCE_LEVELS = ['official', 'preliminary', 'commentary'] as const;
+export type EvidenceLevel = (typeof EVIDENCE_LEVELS)[number];
+
+/** Map layers (ADR-0004, "Harita katmanı adları"). */
+export const LAYER_NAMES = ['hillshade', 'elevation', 'slope', 'psr'] as const;
+export type LayerName = (typeof LAYER_NAMES)[number];
+
+/** The only region in the first release. */
+export const LAYER_REGIONS = ['mons-mouton'] as const;
+export type LayerRegion = (typeof LAYER_REGIONS)[number];
+
+/** Server error codes (ADR-0004, "Hata kodları"). */
+export const SERVER_ERROR_CODES = [
+  'site_not_found',
+  'invalid_parameter',
+  'date_out_of_range',
+  'too_many_scenarios',
+  'data_unavailable',
+] as const;
+export type ServerErrorCode = (typeof SERVER_ERROR_CODES)[number];
+
+/** `/api/compare` takes at most this many scenarios (ADR-0004, "Sınırlar"). */
+export const MAX_COMPARE_SCENARIOS = 4;
+
+const VALIDITY_RANK: Record<Validity, number> = { SYNTHETIC: 0, DERIVED: 1, MODEL: 2, MEASURED: 3 };
+
+/** The lowest of several validity labels (ADR-0003, rule 4). */
+export function lowestValidity(first: Validity, ...rest: Validity[]): Validity {
+  return rest.reduce((low, v) => (VALIDITY_RANK[v] < VALIDITY_RANK[low] ? v : low), first);
+}
+
+// ---------------------------------------------------------------------------
+// Shared pieces
+// ---------------------------------------------------------------------------
+
+export interface SourceRef {
+  label: string;
+  url: string | null;
+}
+
+/** Extra feature: info cards on a site (docs/design/csa-bilgi-kartlari.md). */
+export interface InfoCard {
+  agency: string;
+  text: string;
+  source: SourceRef;
+}
+
+// ---------------------------------------------------------------------------
+// Site (`/api/sites`)
+// ---------------------------------------------------------------------------
+
+export interface Site {
+  /** Lower case with hyphens, for example `im2-athena`. */
+  id: string;
+  name: string;
+  category: SiteCategory;
+  /** ME frame, degrees. */
+  lat_deg: number;
+  /** ME frame, degrees, east positive, between -180 and 180. */
+  lon_deg: number;
+  /** Metres above the 1737.4 km sphere. */
+  elevation_m: number | null;
+  landing_utc: UtcString | null;
+  status: SiteStatus;
+  coordinate_source: SourceRef;
+  validity: Validity;
+  notes: string | null;
+  cards?: InfoCard[];
+}
+
+// ---------------------------------------------------------------------------
+// Horizon profile (`/api/horizon`)
+// ---------------------------------------------------------------------------
+
+export interface DemInfo {
+  product: string;
+  resolution_m: number;
+  url: string | null;
+}
+
+export interface HorizonProfile {
+  lat_deg: number;
+  lon_deg: number;
+  site_id: string | null;
+  mast_height_m: number;
+  /** Always 0.5. */
+  azimuth_step_deg: number;
+  /** 720 values. First value is north, then eastwards. */
+  horizon_deg: number[];
+  method: HorizonMethod;
+  max_range_km: number | null;
+  dem: DemInfo | null;
+  /** `DERIVED` for terrain, `SYNTHETIC` for sphere. */
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Sky series (`/api/sky-series`)
+// ---------------------------------------------------------------------------
+
+export interface SunSample {
+  azimuth_true_deg: number;
+  elevation_deg: number;
+  /** Horizon angle in the direction of the Sun. */
+  horizon_deg: number;
+  /** Part of the disk above the horizon: 0 none, 1 all. */
+  visible_fraction: number;
+  range_au: number | null;
+  radius_deg: number | null;
+}
+
+export interface EarthSample {
+  azimuth_true_deg: number;
+  elevation_deg: number;
+  horizon_deg: number;
+  visible_fraction: number;
+  range_km: number | null;
+  radius_deg: number | null;
+}
+
+export interface SkySample {
+  utc: UtcString;
+  sun: SunSample;
+  earth: EarthSample;
+}
+
+export interface EphemerisInfo {
+  /** For example `SPICE DE440`. */
+  source: string;
+  /** `MOON_ME`. */
+  frame: string;
+  /** `LT+S`. */
+  correction: string;
+}
+
+export interface SkySeries {
+  lat_deg: number;
+  lon_deg: number;
+  mast_height_m: number;
+  start_utc: UtcString;
+  step_minutes: number;
+  /** Both ends included: `hours` 24 with `step_minutes` 60 gives 25 samples. */
+  samples: SkySample[];
+  ephemeris: EphemerisInfo;
+  horizon: { method: HorizonMethod; validity: Validity };
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Events, windows and metrics (`/api/events`)
+// ---------------------------------------------------------------------------
+
+export interface SkyEvent {
+  type: EventType;
+  utc: UtcString;
+  /**
+   * Sensitivity range: the event time with the horizon moved one arc minute down and up.
+   * Not a confidence interval. `null` when it could not be computed.
+   */
+  utc_earliest: UtcString | null;
+  utc_latest: UtcString | null;
+  criterion: Criterion;
+  /** Extra feature: eclipse events only (docs/design/tutulmalar.md). */
+  max_obscured_fraction?: number | null;
+}
+
+export interface EventWindow {
+  kind: WindowKind;
+  start_utc: UtcString;
+  end_utc: UtcString;
+  duration_hours: number;
+}
+
+export interface EventMetrics {
+  sunlit_fraction: number | null;
+  longest_dark_hours: number | null;
+  max_sun_elevation_deg: number | null;
+  earth_visible_fraction: number | null;
+  longest_earth_hidden_hours: number | null;
+}
+
+/** Extra feature fields: docs/design/role-etiketi.md */
+export interface RelayFields {
+  relay_status?: RelayStatus;
+  relay_required?: boolean;
+}
+
+export interface EventList extends RelayFields {
+  events: SkyEvent[];
+  windows: EventWindow[];
+  metrics: EventMetrics;
+  mast_height_m: number;
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Now status (`/api/now`)
+// ---------------------------------------------------------------------------
+
+export interface NowStatus {
+  utc: UtcString;
+  sun_up: boolean | null;
+  hours_to_sunset: number | null;
+  hours_to_sunrise: number | null;
+  earth_up: boolean | null;
+  hours_to_earthset: number | null;
+  hours_to_earthrise: number | null;
+  /** Length of the current dark window if the Sun is down, otherwise of the next one. */
+  night_hours: number | null;
+  /** Criterion used for the Earth fields. */
+  criterion: Criterion;
+  mast_height_m: number;
+  /** `true` when an event was not found within the searched time. */
+  search_limited: boolean;
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Communication window (`/api/comm-window`). Durations in minutes.
+// ---------------------------------------------------------------------------
+
+export interface CommWindow extends RelayFields {
+  utc: UtcString;
+  lat_deg: number;
+  lon_deg: number;
+  mast_height_m: number;
+  visible_now: boolean;
+  minutes_remaining: number | null;
+  minutes_until_visible: number | null;
+  next_change_utc: UtcString | null;
+  search_limited: boolean;
+  searched_hours: number;
+  earth_elevation_deg: number | null;
+  earth_azimuth_true_deg: number | null;
+  horizon_deg: number;
+  criterion: Criterion;
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Panel profiles (`/api/panel-profiles`) and power (`/api/power`)
+// ---------------------------------------------------------------------------
+
+export interface PanelProfile {
+  /** For example `vertical_tracking`. */
+  id: string;
+  type: PanelType;
+  area_m2: number;
+  /** Between 0 and 1. */
+  efficiency: number;
+  /** Only for `vertical_fixed`. */
+  fixed_azimuth_deg: number | null;
+  mast_height_m: number;
+  /** `SYNTHETIC` for the default values. */
+  validity: Validity;
+}
+
+export interface PowerSample {
+  utc: UtcString;
+  incidence_cos: number;
+  sun_visible_fraction: number;
+  irradiance_w_m2: number;
+  power_w: number;
+}
+
+export interface PowerSummary {
+  mean_power_w: number | null;
+  energy_kwh: number | null;
+  sunlit_fraction: number | null;
+  longest_dark_hours: number | null;
+}
+
+export interface PowerSeries {
+  panel_profile_id: string;
+  mast_height_m: number;
+  /** Panel direction used; only for `vertical_fixed`, otherwise `null`. */
+  fixed_azimuth_deg: number | null;
+  samples: PowerSample[];
+  summary: PowerSummary;
+  /** Lower of the panel profile and the horizon profile. */
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
+// Scenario and comparison (`/api/compare`)
+// ---------------------------------------------------------------------------
+
+/**
+ * A scenario names either a catalogue site (`site_id`) or custom coordinates
+ * (`lat_deg` and `lon_deg`); the unused fields are `null`.
+ */
+export interface Scenario {
+  scenario_id: string;
+  label: string;
+  site_id: string | null;
+  lat_deg: number | null;
+  lon_deg: number | null;
+  start_utc: UtcString;
+  end_utc: UtcString;
+  /** `null` falls back to the panel profile, then to 2 m (ADR-0003, "Direk yüksekliği kuralı"). */
+  mast_height_m: number | null;
+  panel_profile_id: string;
+  /** Only for a `vertical_fixed` panel. */
+  fixed_azimuth_deg?: number | null;
+  /** Default `center`. */
+  earth_criterion?: Criterion;
+}
+
+export interface CompareRequest {
+  scenarios: Scenario[];
+}
+
+export interface CompareMetrics extends EventMetrics {
+  mean_power_w: number | null;
+}
+
+export type CompareMetricName = keyof CompareMetrics;
+
+export interface CompareScenarioResult {
+  scenario: Scenario;
+  metrics: CompareMetrics;
+  now: NowStatus | null;
+  validity: Validity;
+}
+
+export interface CompareDelta {
+  metric: CompareMetricName;
+  /** Keyed by `scenario_id`. */
+  values: Record<string, number | null>;
+  unit: string;
+  best_scenario_id: string | null;
+}
+
+export interface CompareResponse {
+  scenarios: CompareScenarioResult[];
+  deltas: CompareDelta[];
+}
+
+// ---------------------------------------------------------------------------
+// Past missions (`/api/reference-missions`), docs/design/gecmis-gorev-vakalari.md
+// ---------------------------------------------------------------------------
+
+export interface MissionFact {
+  text: string;
+  evidence: EvidenceLevel;
+  source: SourceRef;
+}
+
+export interface ReferenceMission {
+  id: string;
+  mission: string;
+  site_id: string;
+  landing_utc: UtcString;
+  /** How reliable `landing_utc` is. */
+  landing_utc_validity: Validity;
+  outcome: SiteStatus;
+  /** Angles at `landing_utc`, sphere at 0 m, no terrain. */
+  expected: {
+    sun_elevation_deg: number | null;
+    sun_azimuth_true_deg: number | null;
+    earth_elevation_deg: number | null;
+  };
+  facts: MissionFact[];
+}
+
+// ---------------------------------------------------------------------------
+// Health (`/api/health`) and error body
+// ---------------------------------------------------------------------------
+
+export interface Health {
+  ok: boolean;
+  kernels_loaded: boolean;
+  dem_available: boolean;
+  /** Dates the server can compute; outside it the server answers `date_out_of_range`. */
+  ephemeris_range: { start_utc: UtcString | null; end_utc: UtcString | null };
+}
+
+export interface ApiErrorBody {
+  error: { code: ServerErrorCode | string; message: string };
+}
+
+// ---------------------------------------------------------------------------
+// Map layers (`/api/layers/{name}`): decoded form, see layers.ts
+// ---------------------------------------------------------------------------
+
+/** Grid bounds in metres in the south polar projection of the elevation maps. */
+export interface LayerBounds {
+  x_min: number;
+  y_min: number;
+  x_max: number;
+  y_max: number;
+}
+
+export interface LayerGrid {
+  name: string;
+  rows: number;
+  cols: number;
+  /** Row-major, `rows * cols` values; missing cells are `NaN`. */
+  values: Float32Array;
+  min: number | null;
+  max: number | null;
+  resolution_m: number | null;
+  validity: Validity | null;
+  /** Count of `NaN` cells, not a sentinel value. */
+  nodata_count: number | null;
+  downsample: number | null;
+  bounds: LayerBounds | null;
+}
+
+// ---------------------------------------------------------------------------
+// Request parameters
+// ---------------------------------------------------------------------------
+
+/** Catalogue site or custom coordinates (ADR-0004, "Konum parametreleri"). */
+export type LocationParams = { site_id: string } | { lat_deg: number; lon_deg: number };
+
+export type WithMast = { mast_height_m?: number };

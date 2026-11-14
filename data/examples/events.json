@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "type": "earthset",
+      "utc": "2026-12-03T10:03:00Z",
+      "utc_earliest": null,
+      "utc_latest": null,
+      "criterion": "center"
+    },
+    {
+      "type": "earthrise",
+      "utc": "2026-12-11T04:41:00Z",
+      "utc_earliest": null,
+      "utc_latest": null,
+      "criterion": "center"
+    },
+    {
+      "type": "earthset",
+      "utc": "2026-12-30T11:02:00Z",
+      "utc_earliest": null,
+      "utc_latest": null,
+      "criterion": "center"
+    }
+  ],
+  "windows": [
+    {
+      "kind": "earth_visible",
+      "start_utc": "2026-12-01T00:00:00Z",
+      "end_utc": "2026-12-03T10:03:00Z",
+      "duration_hours": 58.05
+    },
+    {
+      "kind": "earth_hidden",
+      "start_utc": "2026-12-03T10:03:00Z",
+      "end_utc": "2026-12-11T04:41:00Z",
+      "duration_hours": 186.63
+    },
+    {
+      "kind": "earth_visible",
+      "start_utc": "2026-12-11T04:41:00Z",
+      "end_utc": "2026-12-30T11:02:00Z",
+      "duration_hours": 462.35
+    },
+    {
+      "kind": "earth_hidden",
+      "start_utc": "2026-12-30T11:02:00Z",
+      "end_utc": "2026-12-31T00:00:00Z",
+      "duration_hours": 12.97
+    }
+  ],
+  "metrics": {
+    "sunlit_fraction": null,
+    "longest_dark_hours": null,
+    "max_sun_elevation_deg": 6.47,
+    "earth_visible_fraction": 0.723,
+    "longest_earth_hidden_hours": 186.63
+  },
+  "mast_height_m": 0,
+  "validity": "SYNTHETIC"
+}

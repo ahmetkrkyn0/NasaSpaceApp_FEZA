@@ -1,0 +1,10 @@
+/* Design values come from the design export as they are; nothing is copied.
+   tokens.css: colours, type scale, tracking, faces, radius, shadows.
+   fonts.css:  @font-face rules (files under design-export/assets/fonts/).
+   motion.css (keyframes) is imported from main.tsx so that the header
+   repair in vite.config.ts can run on it. */
+@import '../../../frontend-migrate/design-export/tokens.css';
+@import '../../../frontend-migrate/design-export/fonts.css';
+@import './base.css';
+@import './shell.css';
+@import './ui.css';
