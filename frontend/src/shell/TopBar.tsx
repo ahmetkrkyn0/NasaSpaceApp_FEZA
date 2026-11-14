@@ -1,3 +1,4 @@
+import { doorHasModes } from '../features/registry';
 import { useStore } from '../lib/hooks';
 import { BrandMark, PRODUCT_NAME } from './BrandMark';
 import { DOORS, MODES, uiStore, type Door, type Mode } from './ui-state';
@@ -35,20 +36,22 @@ export function TopBar() {
           <BrandMark size={24} />
           <span className="lp-brand-name">{PRODUCT_NAME}</span>
         </span>
-        <div className="lp-mode-switch" role="group" aria-label="Mode">
-          {MODES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              className="lp-mode-button"
-              aria-pressed={mode === value}
-              title={MODE_HINT[value]}
-              onClick={() => uiStore.setMode(value)}
-            >
-              {MODE_LABEL[value]}
-            </button>
-          ))}
-        </div>
+        {doorHasModes(door) ? (
+          <div className="lp-mode-switch" role="group" aria-label="Mode">
+            {MODES.map((value) => (
+              <button
+                key={value}
+                type="button"
+                className="lp-mode-button"
+                aria-pressed={mode === value}
+                title={MODE_HINT[value]}
+                onClick={() => uiStore.setMode(value)}
+              >
+                {MODE_LABEL[value]}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className="lp-door-switch" role="group" aria-label="Audience">
         {DOORS.map((value) => (

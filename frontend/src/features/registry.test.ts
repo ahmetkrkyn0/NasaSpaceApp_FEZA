@@ -68,6 +68,24 @@ describe('panel registry', () => {
     }
   });
 
+  it('shows the sky view and timeline in Explore and Classroom whatever the mode', () => {
+    for (const door of ['explore', 'classroom'] as const) {
+      for (const mode of MODES) {
+        expect(selectPanels('rightRail', { door, mode }, 'sky').map((p) => p.id)).toEqual(['sky']);
+        expect(selectPanels('bottomDock', { door, mode }).map((p) => p.id)).toEqual(['timeline']);
+      }
+    }
+  });
+
+  it('offers the why cards in all three doors', () => {
+    expect(PANELS.find((p) => p.id === 'why')?.doors).toEqual(['explore', 'classroom', 'plan']);
+  });
+
+  it('keeps the Plan door split: no right rail in PLAN, no setup in ANALYZE', () => {
+    expect(selectPanels('rightRail', { door: 'plan', mode: 'plan' })).toEqual([]);
+    expect(selectPanels('leftRail', { door: 'plan', mode: 'analyze' })).toEqual([]);
+  });
+
   it('enables all four tabs in the Plan door in Analyze mode', () => {
     expect(enabledTabs({ door: 'plan', mode: 'analyze' })).toEqual(['sky', 'power', 'comms', 'compare']);
   });

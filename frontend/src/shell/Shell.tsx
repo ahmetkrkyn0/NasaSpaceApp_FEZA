@@ -1,4 +1,4 @@
-import { selectPanels } from '../features/registry';
+import { doorHasModes, selectPanels } from '../features/registry';
 import { useStore } from '../lib/hooks';
 import { PanelSlot } from './PanelSlot';
 import { RailTabs } from './RailTabs';
@@ -50,7 +50,9 @@ export function Shell() {
           </div>
           <footer className="lp-status-bar">
             <span className="lp-status-item">{DOOR_LABEL[door]} door</span>
-            <span className="lp-status-item">{mode === 'plan' ? 'Plan' : 'Analyze'} mode</span>
+            {doorHasModes(door) ? (
+              <span className="lp-status-item">{mode === 'plan' ? 'Plan' : 'Analyze'} mode</span>
+            ) : null}
           </footer>
         </section>
         {hasRight ? (

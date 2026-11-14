@@ -31,7 +31,10 @@ export interface PanelEntry {
   slot: PanelSlot;
   /** Required for rightRail panels, absent otherwise. */
   tab?: RailTab;
-  /** Modes in which the panel shows. `null` means every mode. */
+  /**
+   * Modes in which the panel shows. `null` means every mode. Only the Plan
+   * door splits into PLAN and ANALYZE; Explore and Classroom ignore this.
+   */
   modes: readonly Mode[] | null;
   /** Doors in which the panel shows. Every panel belongs to at least one. */
   doors: readonly Door[];
@@ -55,7 +58,7 @@ export const PANELS: readonly PanelEntry[] = [
   { id: 'power', title: 'Power', slot: 'rightRail', tab: 'power', modes: ['analyze'], doors: ['plan'], component: PowerPanel },
   { id: 'comms', title: 'Earth link', slot: 'rightRail', tab: 'comms', modes: ['analyze'], doors: ['plan'], component: CommsPanel },
   { id: 'compare', title: 'Compare scenarios', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ['plan'], component: ComparePanel },
-  { id: 'why', title: 'Why they differ', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ['plan', 'classroom'], component: WhyPanel },
+  { id: 'why', title: 'Why they differ', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ALL_DOORS, component: WhyPanel },
   { id: 'validation', title: 'Validation', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ['plan'], component: ValidationPanel },
   { id: 'timeline', title: 'Timeline', slot: 'bottomDock', modes: null, doors: ALL_DOORS, component: TimelinePanel },
 ];
@@ -79,8 +82,14 @@ export interface PanelFilter {
   mode: Mode;
 }
 
+/** Only the Plan door has the PLAN and ANALYZE split. */
+export function doorHasModes(door: Door): boolean {
+  return door === 'plan';
+}
+
 export function isVisible(entry: PanelEntry, { door, mode }: PanelFilter): boolean {
-  return entry.doors.includes(door) && (entry.modes === null || entry.modes.includes(mode));
+  if (!entry.doors.includes(door)) return false;
+  return !doorHasModes(door) || entry.modes === null || entry.modes.includes(mode);
 }
 
 /** Panels of one slot (and one tab, for the right rail) visible in a door and mode. */
