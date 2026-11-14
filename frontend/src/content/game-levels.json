@@ -1,0 +1,42 @@
+{
+  "_about": "Levels of the landing window game (docs/design/mini-oyun.md, UC-17). The goals are game targets, not mission requirements. They were checked against the product's own computation: see 'calibration' on each level. Texts hold no numbers except the calibration notes, which quote the server's answers.",
+  "mission_days": 14,
+  "mast_height_m": 2,
+  "levels": [
+    {
+      "id": "equator",
+      "title": "Apollo 11, December 2026",
+      "site_id": "apollo-11",
+      "date_min": "2026-12-01",
+      "date_max": "2026-12-30",
+      "intro": "A site near the equator, where Apollo 11 landed. Pick a landing date that gives your two-week mission enough daylight and short nights.",
+      "goals": { "sunlit_fraction_min": 0.5, "longest_dark_hours_max": 72, "earth_visible_fraction_min": 0.7 },
+      "calibration": "Live server, 14 November 2026 (UTC), 2 m mast (flat horizon at this site): all three goals hold for landings on 12 to 18 December; Earth is in view the whole time on every date."
+    },
+    {
+      "id": "polar-december",
+      "title": "Mons Mouton, December 2026",
+      "site_id": "mons-mouton-im2-target",
+      "date_min": "2026-12-01",
+      "date_max": "2026-12-20",
+      "intro": "Near the south pole Earth can sink below the horizon for days. Land on the wrong date and you lose contact with home.",
+      "intro_source": { "label": "JPL Horizons, Earthset and Earthrise at the Mons Mouton test site, December 2026", "file": "docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md", "row": "42" },
+      "goals": { "sunlit_fraction_min": 0.5, "longest_dark_hours_max": 72, "earth_visible_fraction_min": 0.7 },
+      "calibration": "Live server, 14 November 2026 (UTC), 2 m mast (terrain horizon): the Earth goal fails for landings on 1 to 5 December (Earth in view 63 to 68 percent of the mission) and holds from 6 December; all three goals hold for 12 to 19 December."
+    },
+    {
+      "id": "far-side",
+      "title": "Chang'e 4, December 2026",
+      "site_id": "change-4",
+      "date_min": "2026-12-01",
+      "date_max": "2026-12-30",
+      "intro": "This site is on the far side of the Moon. Can you find a date when your lander can talk to Earth?",
+      "goals": { "sunlit_fraction_min": 0.5, "longest_dark_hours_max": 72, "earth_visible_fraction_min": 0.7 },
+      "calibration": "Live server, 14 November 2026 (UTC), 2 m mast (flat horizon at this site): Earth is in view zero percent of the time on every date; the Sun goals hold for landings on 1 to 4 and 29 to 30 December.",
+      "never_earth": {
+        "text": "Earth never rose above the horizon during your mission. This site is on the far side: when it was checked for a whole year, Earth stayed below the horizon all the time. A lander here needs a relay satellite to talk to Earth.",
+        "source": { "label": "JPL Horizons, Chang'e 4 site", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "14" }
+      }
+    }
+  ]
+}

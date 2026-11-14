@@ -1,0 +1,35 @@
+/* Landing window game (docs/design/mini-oyun.md). */
+
+.g-stars {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+.g-star {
+  color: var(--text-dimmest);
+}
+
+.g-star-on {
+  color: var(--risk-med);
+}
+
+.g-goal {
+  display: block;
+  padding: 2px 0;
+  color: var(--text-2);
+}
+
+.g-goal-met {
+  color: var(--mint-text);
+}
+
+/* Text for screen readers only. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
