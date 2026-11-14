@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Literal, Sequence
 
 import spiceypy
+from spiceypy.utils.exceptions import SpiceyError
 
 from app.errors import DataUnavailable, DateOutOfRange, InvalidParameter
 from app.settings import KERNEL_FILES, get_settings
@@ -62,10 +63,34 @@ def _ensure_loaded_locked(kernel_dir: Path) -> None:
             "Run python backend/scripts/download_kernels.py"
         )
 
-    for name in KERNEL_FILES:
-        spiceypy.furnsh(str((kernel_dir / name).resolve()))
+    try:
+        for name in KERNEL_FILES:
+            spiceypy.furnsh(str((kernel_dir / name).resolve()))
+    except (SpiceyError, OSError) as exc:
+        spiceypy.kclear()
+        raise DataUnavailable(
+            f"SPICE kernels in {kernel_dir} could not be loaded ({_first_line(exc)}). "
+            "Run python backend/scripts/download_kernels.py --force"
+        ) from None
 
     _loaded_dir = kernel_dir
+
+
+def _first_line(exc: Exception) -> str:
+    """First non-empty line of an error, enough to name the failing file."""
+
+    lines = [line.strip() for line in str(exc).splitlines() if line.strip()]
+    return lines[0] if lines else type(exc).__name__
+
+
+def _unusable(kernel_dir: Path, exc: Exception) -> DataUnavailable:
+    """Drop the loaded kernels so the next call retries; the caller holds the lock."""
+
+    global _loaded_dir
+    spiceypy.kclear()
+    _loaded_dir = None
+    _range_cache.pop(kernel_dir, None)
+    return DataUnavailable(f"SPICE kernels in {kernel_dir} are unusable ({_first_line(exc)}).")
 
 
 def ensure_loaded() -> None:
@@ -119,13 +144,16 @@ def ephemeris_range() -> tuple[datetime, datetime]:
     kernel_path = str((kernel_dir / "de440s.bsp").resolve())
 
     with _LOCK:
-        cover = None
-        for body in _COVERAGE_BODIES:
-            body_cover = spiceypy.spkcov(kernel_path, body)
-            cover = body_cover if cover is None else spiceypy.wnintd(cover, body_cover)
-        start_et, end_et = spiceypy.wnfetd(cover, 0)
-        start = _et_to_datetime(start_et)
-        end = _et_to_datetime(end_et)
+        try:
+            cover = None
+            for body in _COVERAGE_BODIES:
+                body_cover = spiceypy.spkcov(kernel_path, body)
+                cover = body_cover if cover is None else spiceypy.wnintd(cover, body_cover)
+            start_et, end_et = spiceypy.wnfetd(cover, 0)
+            start = _et_to_datetime(start_et)
+            end = _et_to_datetime(end_et)
+        except (SpiceyError, ValueError) as exc:
+            raise _unusable(kernel_dir, exc) from None
 
     start = _ceil_day(start + timedelta(days=1))
     end = _floor_day(end - timedelta(days=1))
@@ -187,39 +215,54 @@ def body_positions(
         normalized.append(moment)
 
     with _LOCK:
-        observer = spiceypy.latrec(
-            MOON_RADIUS_KM + height_m / 1000.0,
-            math.radians(lon_deg),
-            math.radians(lat_deg),
-        )
-        _, radii = spiceypy.bodvrd(body, "RADII", 3)
-        body_radius_km = float(radii[0])
+        try:
+            return _positions_locked(lat_deg, lon_deg, height_m, normalized, body)
+        except SpiceyError as exc:
+            raise _unusable(get_settings().kernel_dir, exc) from None
 
-        positions: list[BodyPosition] = []
-        for moment in normalized:
-            et = spiceypy.str2et(to_spice_utc(moment))
-            state, _light_time = spiceypy.azlcpo(
-                "ELLIPSOID",
-                body,
-                et,
-                "LT+S",
-                False,
-                True,
-                observer,
-                "MOON",
-                "MOON_ME",
+
+def _positions_locked(
+    lat_deg: float,
+    lon_deg: float,
+    height_m: float,
+    times: Sequence[datetime],
+    body: str,
+) -> list[BodyPosition]:
+    """SPICE part of ``body_positions``; the caller holds the lock."""
+
+    observer = spiceypy.latrec(
+        MOON_RADIUS_KM + height_m / 1000.0,
+        math.radians(lon_deg),
+        math.radians(lat_deg),
+    )
+    _, radii = spiceypy.bodvrd(body, "RADII", 3)
+    body_radius_km = float(radii[0])
+
+    positions: list[BodyPosition] = []
+    for moment in times:
+        et = spiceypy.str2et(to_spice_utc(moment))
+        state, _light_time = spiceypy.azlcpo(
+            "ELLIPSOID",
+            body,
+            et,
+            "LT+S",
+            False,
+            True,
+            observer,
+            "MOON",
+            "MOON_ME",
+        )
+        azimuth_deg = math.degrees(state[1]) % 360.0
+        elevation_deg = math.degrees(state[2])
+        range_km = float(state[0])
+        radius_deg = math.degrees(math.asin(min(1.0, body_radius_km / range_km)))
+        positions.append(
+            BodyPosition(
+                azimuth_true_deg=azimuth_deg,
+                elevation_deg=elevation_deg,
+                range_km=range_km,
+                radius_deg=radius_deg,
             )
-            azimuth_deg = math.degrees(state[1]) % 360.0
-            elevation_deg = math.degrees(state[2])
-            range_km = float(state[0])
-            radius_deg = math.degrees(math.asin(min(1.0, body_radius_km / range_km)))
-            positions.append(
-                BodyPosition(
-                    azimuth_true_deg=azimuth_deg,
-                    elevation_deg=elevation_deg,
-                    range_km=range_km,
-                    radius_deg=radius_deg,
-                )
-            )
+        )
 
     return positions

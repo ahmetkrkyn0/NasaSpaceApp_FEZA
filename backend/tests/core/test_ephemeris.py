@@ -157,6 +157,23 @@ def test_body_positions_rejects_date_outside_range() -> None:
     assert "2150" in message
 
 
+def test_corrupt_kernels_raise_data_unavailable(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from app.settings import KERNEL_FILES
+
+    for name in KERNEL_FILES:
+        (tmp_path / name).write_bytes(b"not a SPICE kernel\n")
+    monkeypatch.setenv("FEZA_KERNEL_DIR", str(tmp_path))
+
+    with pytest.raises(DataUnavailable):
+        ephemeris.ensure_loaded()
+    assert ephemeris.kernels_loaded() is False
+
+    monkeypatch.delenv("FEZA_KERNEL_DIR", raising=False)
+    assert ephemeris.kernels_loaded() is True
+
+
 def test_missing_kernels_raise_and_real_kernels_reload(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

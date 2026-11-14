@@ -21,6 +21,15 @@ def test_health_reports_loaded_kernels(client: TestClient) -> None:
     assert_matches_example(body, "health")
 
 
+def test_health_with_corrupt_kernels(corrupt_kernels_client: TestClient) -> None:
+    response = corrupt_kernels_client.get("/api/health")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["kernels_loaded"] is False
+    assert body["ephemeris_range"] is None
+
+
 def test_health_without_kernels(no_kernels_client: TestClient) -> None:
     response = no_kernels_client.get("/api/health")
 

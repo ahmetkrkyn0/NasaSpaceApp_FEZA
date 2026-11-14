@@ -43,6 +43,20 @@ def no_kernels_client(
 
 
 @pytest.fixture
+def corrupt_kernels_client(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> TestClient:
+    """Client whose kernel directory holds unreadable files with the right names."""
+    from app.settings import KERNEL_FILES
+
+    for name in KERNEL_FILES:
+        (tmp_path / name).write_bytes(b"not a SPICE kernel\n")
+    monkeypatch.setenv("FEZA_DATA_DIR", str(FIXTURES_DIR))
+    monkeypatch.setenv("FEZA_KERNEL_DIR", str(tmp_path))
+    return _make_client()
+
+
+@pytest.fixture
 def no_data_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
     """Client with an empty data directory and the real SPICE kernels."""
     monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))

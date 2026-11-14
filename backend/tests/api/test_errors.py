@@ -84,6 +84,14 @@ def test_sky_series_without_kernels_returns_503(
     _assert_error(response, 503, "data_unavailable")
 
 
+def test_sky_series_with_corrupt_kernels_returns_503(
+    corrupt_kernels_client: TestClient,
+) -> None:
+    response = corrupt_kernels_client.get("/api/sky-series", params=BASE_PARAMS)
+
+    _assert_error(response, 503, "data_unavailable")
+
+
 def test_unknown_site_without_data_returns_503(no_data_client: TestClient) -> None:
     response = no_data_client.get("/api/sky-series", params={"site_id": "nope"})
 
