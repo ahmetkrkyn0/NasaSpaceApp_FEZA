@@ -1,0 +1,87 @@
+/* Countdown over the map (F2-C). */
+
+.hud-panel,
+.hud-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hud-asof {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.hud-asof.is-stale {
+  color: var(--risk-med);
+}
+
+.hud-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.hud-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hud-row dt {
+  color: var(--text-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.hud-row dd {
+  margin: 0;
+}
+
+.hud-value {
+  color: var(--text);
+  font-family: var(--font-data);
+  font-size: var(--fs-value);
+}
+
+.hud-status {
+  color: var(--text-2);
+  font-size: var(--fs-body);
+}
+
+.hud-event {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.hud-data {
+  font-family: var(--font-data);
+}
+
+.hud-meaning {
+  color: var(--text-dim);
+}
+
+.hud-warning {
+  align-self: flex-start;
+  padding: 0 6px;
+  border: 1px dashed var(--risk-med);
+  border-radius: var(--radius);
+  color: var(--risk-med);
+  font-family: var(--font-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+}
+
+.hud-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}

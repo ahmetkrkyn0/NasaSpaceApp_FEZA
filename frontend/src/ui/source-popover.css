@@ -1,0 +1,25 @@
+/* Detail rows of the source window (F2-C): read from the response's own fields. */
+
+.source-details {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.source-detail {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px;
+}
+
+.source-detail dt {
+  color: var(--text-3);
+  font-family: var(--font-label);
+}
+
+.source-detail dd {
+  margin: 0;
+  color: var(--text-2);
+  font-family: var(--font-data);
+  overflow-wrap: anywhere;
+}
