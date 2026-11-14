@@ -37,6 +37,11 @@ __pycache__/
 .venv/
 venv/
 coverage/
+.pytest_cache/
+*.egg-info/
+
+# --- Downloaded data (SPICE kernels, DEMs, layers); never commit ---
+data/raw/
 
 # --- Agent köprüsü yerel durum dosyaları ---
 .slack_watch_state.json
