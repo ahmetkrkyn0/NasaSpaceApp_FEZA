@@ -38,5 +38,6 @@ __pycache__/
 venv/
 coverage/
 
-# --- Local agent tooling (kept per machine, not shared) ---
-agent_chat.py
+# --- Agent köprüsü yerel durum dosyaları ---
+.slack_watch_state.json
+.review/
