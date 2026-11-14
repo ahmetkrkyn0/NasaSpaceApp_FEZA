@@ -102,6 +102,27 @@ def test_sky_series_by_site_id(client: TestClient) -> None:
     assert body["lon_deg"] == pytest.approx(177.5991)
 
 
+@pytest.mark.parametrize(
+    ("mast_height_m", "method", "validity"),
+    [(2, "terrain", "DERIVED"), (10, "terrain", "DERIVED"), (5, "sphere", "SYNTHETIC"), (20, "sphere", "SYNTHETIC")],
+)
+def test_sky_series_horizon_follows_the_mast_rule(
+    client: TestClient, mast_height_m: float, method: str, validity: str
+) -> None:
+    params = {
+        "site_id": "mons-mouton-im2-target",
+        "mast_height_m": mast_height_m,
+        "start_utc": "2026-12-01T00:00:00Z",
+        "hours": 0,
+    }
+    response = client.get("/api/sky-series", params=params)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["horizon"] == {"method": method, "validity": validity}
+    assert body["validity"] == validity
+
+
 def test_sky_series_normalizes_longitude(client: TestClient) -> None:
     params = dict(BASE_PARAMS, lon_deg=206.0148)
     response = client.get("/api/sky-series", params=params)

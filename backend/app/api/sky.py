@@ -7,9 +7,8 @@ from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Query
 
-from app.core import ephemeris, location, sphere_horizon, visibility
+from app.core import ephemeris, events, location, visibility
 from app.errors import InvalidParameter
-from app.models.common import lowest_validity
 from app.models.sky import (
     EarthSample,
     EphemerisInfo,
@@ -18,6 +17,7 @@ from app.models.sky import (
     SkySeries,
     SunSample,
 )
+from app.terrain.horizon import horizon_at
 
 router = APIRouter(tags=["sky"])
 
@@ -92,18 +92,15 @@ def sky_series(
 
     times = _sample_times(start, hours, step_minutes)
 
-    height_m = (place.elevation_m or 0.0) + mast_height_m
-    suns = ephemeris.body_positions(place.lat_deg, place.lon_deg, height_m, times, "SUN")
-    earths = ephemeris.body_positions(place.lat_deg, place.lon_deg, height_m, times, "EARTH")
-
-    profile = sphere_horizon.get_horizon_profile(
-        place.lat_deg, place.lon_deg, mast_height_m, place.site_id
-    )
+    observer = events.observer_for(place, mast_height_m)
+    profile = observer.profile
+    suns = ephemeris.body_positions(observer.lat_deg, observer.lon_deg, observer.height_m, times, "SUN")
+    earths = ephemeris.body_positions(observer.lat_deg, observer.lon_deg, observer.height_m, times, "EARTH")
 
     samples: list[SkySample] = []
     for moment, sun, earth in zip(times, suns, earths):
-        sun_horizon = sphere_horizon.horizon_at(profile, sun.azimuth_true_deg)
-        earth_horizon = sphere_horizon.horizon_at(profile, earth.azimuth_true_deg)
+        sun_horizon = horizon_at(profile, sun.azimuth_true_deg)
+        earth_horizon = horizon_at(profile, earth.azimuth_true_deg)
         samples.append(
             SkySample(
                 utc=ephemeris.format_utc(moment),
@@ -140,6 +137,6 @@ def sky_series(
         step_minutes=step_minutes,
         samples=samples,
         ephemeris=EphemerisInfo(**ephemeris.EPHEMERIS_INFO),
-        horizon=HorizonInfo(method=profile["method"], validity=profile["validity"]),
-        validity=lowest_validity("MODEL", profile["validity"]),
+        horizon=HorizonInfo(method=profile.method, validity=profile.validity),
+        validity=observer.validity,
     )
