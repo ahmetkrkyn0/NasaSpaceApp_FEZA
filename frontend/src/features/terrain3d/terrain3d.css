@@ -1,0 +1,58 @@
+/* 3D terrain of the south pole region (issue #106). Colours come from the theme tokens. */
+
+.terrain-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.terrain-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.terrain-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.terrain-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.terrain-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+.terrain-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.terrain-validity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terrain-data {
+  font-family: var(--font-data);
+}
