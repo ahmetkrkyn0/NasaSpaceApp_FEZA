@@ -141,6 +141,11 @@ export interface SightlineOptions {
   maxDistance_m?: number;
   /** Stop as soon as the horizon reaches this angle (degrees); used when only "blocked or not" matters. */
   stopAbove_deg?: number;
+  /**
+   * Stop once no terrain further out can reach this angle (degrees). The horizon returned is then
+   * only known to be below it, which is enough to say that a disk above it is in full view.
+   */
+  clearBelow_deg?: number;
 }
 
 export const DEFAULT_GROWTH = 0.02;
@@ -188,6 +193,7 @@ export function sightline(terrain: ShadowTerrain, point: SurfacePoint, toBody: V
   const growth = options.growth ?? DEFAULT_GROWTH;
   const maxDistance = options.maxDistance_m ?? DEFAULT_MAX_DISTANCE_M;
   const stopAbove = options.stopAbove_deg !== undefined ? options.stopAbove_deg * DEG : Infinity;
+  const clearBelow = options.clearBelow_deg !== undefined ? options.clearBelow_deg * DEG : -Infinity;
   const rTop = R + terrain.maxHeight_m;
 
   let best = -Math.PI / 2;
@@ -199,7 +205,8 @@ export function sightline(terrain: ShadowTerrain, point: SurfacePoint, toBody: V
     const s = Math.sin(theta);
     // No terrain from here on can rise above the horizon already found: the angle to the
     // highest height of the data only falls with distance.
-    if (Math.atan2(rTop * c - r0, rTop * s) < best) break;
+    const bound = Math.atan2(rTop * c - r0, rTop * s);
+    if (bound < best || bound < clearBelow) break;
     const gx = u.x * c + ex * s;
     const gy = u.y * c + ey * s;
     const gz = u.z * c + ez * s;
@@ -318,8 +325,78 @@ export function visibilityMap(
     const n = Math.hypot(to.x, to.y, to.z) || 1;
     const el = Math.asin(Math.min(1, Math.max(-1, (u.x * to.x + u.y * to.y + u.z * to.z) / n))) / DEG;
     walk.stopAbove_deg = el + body.radius_deg;
+    walk.clearBelow_deg = el - body.radius_deg;
     const line = sightline(terrain, point, to, walk);
     out[k] = diskFraction(line.elevation_deg - line.horizon_deg, body.radius_deg);
   }
   return out;
+}
+
+/** Unit vectors at a map point: straight up, and along the map's +x and +y on the ground. */
+export function mapAxes(x_m: number, y_m: number): { up: Vec3; alongX: Vec3; alongY: Vec3 } {
+  const a = x_m / (2 * R);
+  const b = y_m / (2 * R);
+  const t = a * a + b * b + 1;
+  const unit = (v: Vec3): Vec3 => {
+    const n = Math.hypot(v.x, v.y, v.z) || 1;
+    return { x: v.x / n, y: v.y / n, z: v.z / n };
+  };
+  return {
+    up: unprojectUnit(x_m, y_m),
+    alongX: unit({ x: 2 * t - 4 * a * a, y: 4 * a, z: -4 * a * b }),
+    alongY: unit({ x: -4 * a * b, y: 4 * b, z: 2 * t - 4 * b * b }),
+  };
+}
+
+/**
+ * A Moon-fixed direction in the scene axes of the 3D terrain at a map point (X along the map's
+ * x, Y up, Z against the map's y; `geometry.ts`).
+ */
+export function toSceneAxes(x_m: number, y_m: number, v: Vec3): Vec3 {
+  const { up, alongX, alongY } = mapAxes(x_m, y_m);
+  const n = Math.hypot(v.x, v.y, v.z) || 1;
+  const dot = (p: Vec3) => (p.x * v.x + p.y * v.y + p.z * v.z) / n;
+  return { x: dot(alongX), y: dot(up), z: -dot(alongY) };
+}
+
+/**
+ * Moon-fixed direction of a body from the azimuth (from true north, clockwise to east) and
+ * elevation the server gives at a site. This only turns the server's two angles into a vector.
+ */
+export function skyDirection(lat_deg: number, lon_deg: number, azimuth_true_deg: number, elevation_deg: number): Vec3 {
+  const lat = lat_deg * DEG;
+  const lon = lon_deg * DEG;
+  const az = azimuth_true_deg * DEG;
+  const el = elevation_deg * DEG;
+  const up = { x: Math.cos(lat) * Math.sin(lon), y: Math.sin(lat), z: Math.cos(lat) * Math.cos(lon) };
+  const north = { x: -Math.sin(lat) * Math.sin(lon), y: Math.cos(lat), z: -Math.sin(lat) * Math.cos(lon) };
+  const east = { x: Math.cos(lon), y: 0, z: -Math.sin(lon) };
+  const h = Math.cos(el);
+  const n = h * Math.cos(az);
+  const e = h * Math.sin(az);
+  const s = Math.sin(el);
+  return { x: s * up.x + n * north.x + e * east.x, y: s * up.y + n * north.y + e * east.y, z: s * up.z + n * north.z + e * east.z };
+}
+
+/** What the server says about a body seen from a site (`/api/sky-series`). */
+export interface SiteSky {
+  azimuth_true_deg: number;
+  elevation_deg: number;
+  radius_deg: number;
+  /** Distance from the site in metres; `null` for the Sun. */
+  range_m: number | null;
+}
+
+/**
+ * A body for the whole map from what the server gave at one site. The Sun keeps its direction
+ * everywhere. The Earth is placed at its distance from the site, so that every other point of
+ * the map gets its own direction to it.
+ */
+export function bodyFromSite(lat_deg: number, lon_deg: number, site: SurfacePoint, eye_m: number, sky: SiteSky): SkyBody {
+  const to = skyDirection(lat_deg, lon_deg, sky.azimuth_true_deg, sky.elevation_deg);
+  if (sky.range_m === null) return { direction: to, distance_m: null, radius_deg: sky.radius_deg };
+  const p = surfacePosition(site, eye_m);
+  const c = { x: p.x + to.x * sky.range_m, y: p.y + to.y * sky.range_m, z: p.z + to.z * sky.range_m };
+  const d = Math.hypot(c.x, c.y, c.z);
+  return { direction: { x: c.x / d, y: c.y / d, z: c.z / d }, distance_m: d, radius_deg: sky.radius_deg };
 }

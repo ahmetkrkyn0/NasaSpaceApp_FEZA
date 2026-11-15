@@ -15,6 +15,8 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 4px;
+  /* Room for the countdown card at the top left of the stage; the groups wrap instead of sliding under it. */
+  padding-left: min(280px, 34%);
 }
 
 /* The canvas takes the height the notes leave, so the notes below are never clipped. */
@@ -34,6 +36,12 @@
   width: 100%;
   height: 100%;
   cursor: grab;
+}
+
+.terrain-toggles {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-left: 8px;
 }
 
 .terrain-note {
@@ -83,4 +91,35 @@
   color: var(--text);
   font-family: var(--font-body);
   font-size: var(--fs-small);
+}
+
+/* The long explanations fold away so the canvas keeps its height. */
+.terrain-about {
+  flex: none;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.terrain-about summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.terrain-about[open] {
+  max-height: 40%;
+  overflow-y: auto;
+}
+
+/* Names of the Sun and the Earth, placed beside their discs by the view. */
+.terrain-sky-label {
+  position: absolute;
+  display: none;
+  transform: translate(10px, -50%);
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  pointer-events: none;
+  white-space: nowrap;
 }

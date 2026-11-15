@@ -190,7 +190,9 @@ describe('availability and panel', () => {
     const html = renderToStaticMarkup(<TerrainPanel places={[]} selectedId={null} onPick={() => undefined} />);
     expect(html).toContain('Hillshade');
     expect(html).toContain('Permanent shadow');
-    expect(html).toContain('cast shadows are not computed');
+    expect(html).toContain('Sunlight and shadows');
+    expect(html).toContain('A drawing derived from the map, not a server result');
+    expect(html).toContain('How this view is drawn');
   });
 });
 

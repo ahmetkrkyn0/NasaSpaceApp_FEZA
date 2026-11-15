@@ -234,7 +234,6 @@ export function exaggerationNote(mesh: Pick<TerrainMesh, 'exaggeration'>): strin
   return `Vertical exaggeration ×${mesh.exaggeration}`;
 }
 
-export const SHADING_NOTE = 'Shading uses the Sun direction at the selected site; cast shadows are not computed.';
 export const NO_SUN_NOTE = 'Even light: the Sun direction at the selected site is not loaded.';
 export const PSR_SURFACE_NOTE = 'Permanent shadow: shadow, not ice. Ice presence is uncertain.';
 
