@@ -50,8 +50,9 @@ export function globePlaces(sites: readonly Site[], recommend: RecommendState): 
   const withRank = <T extends GlobePlace>(p: T): T => (rank.has(p.id) ? { ...p, rank: rank.get(p.id) } : p);
   return [
     ...sites.map((s) => withRank<GlobePlace>({ id: s.id, name: s.name, lat_deg: s.lat_deg, lon_deg: s.lon_deg, kind: 'site' })),
+    // `catalogue` entries are the catalogue sites, already drawn as sites (#97, 4.3).
     ...(recommend.candidates?.candidates ?? [])
-      .filter((c) => !sites.some((s) => s.id === c.id))
+      .filter((c) => c.kind === 'candidate' && !sites.some((s) => s.id === c.id))
       .map((c) => withRank<GlobePlace>({ id: c.id, name: c.name, lat_deg: c.lat_deg, lon_deg: c.lon_deg, kind: 'candidate' })),
   ];
 }

@@ -517,9 +517,14 @@ export interface CandidateMethod {
   source: string;
 }
 
+/** `candidate`: a region found in the elevation maps. `catalogue`: a catalogue site listed with them (#97, 4.3). */
+export const CANDIDATE_KINDS = ['candidate', 'catalogue'] as const;
+export type CandidateKind = (typeof CANDIDATE_KINDS)[number];
+
 /** A candidate region. Its id (`cand-NN`) is a valid `site_id` on every location endpoint. */
 export interface Candidate {
   id: string;
+  kind: CandidateKind;
   name: string;
   lat_deg: number;
   lon_deg: number;

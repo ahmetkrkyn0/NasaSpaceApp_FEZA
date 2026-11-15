@@ -64,7 +64,10 @@ describe('example files of the new endpoints', () => {
       expect(r.score).toBeNull();
       expect(r.eliminated_by.length).toBeGreaterThan(0);
     }
-    expect(candidatesExample.candidates.every((c) => isCandidateId(c.id))).toBe(true);
+    // Both kinds of the #97 4.3 addendum: candidate regions (cand-NN) and catalogue sites.
+    const kinds = candidatesExample.candidates.map((c) => c.kind);
+    expect(new Set(kinds)).toEqual(new Set(['candidate', 'catalogue']));
+    for (const c of candidatesExample.candidates) expect(isCandidateId(c.id)).toBe(c.kind === 'candidate');
     // Ground stations carry their source.
     for (const s of groundStationsExample) expect(s.source.url).toMatch(/^https:\/\//);
   });
@@ -187,7 +190,7 @@ describe('recommend store', () => {
     const store = createRecommendStore(() => Promise.resolve(candidatesExample));
     expect(knownPlaceIds(['apollo-11'], store.getState())).toEqual(['apollo-11']);
     await store.loadCandidates();
-    expect(knownPlaceIds(['apollo-11'], store.getState())).toEqual(['apollo-11', 'cand-01', 'cand-02', 'cand-03']);
+    expect(knownPlaceIds(['apollo-11'], store.getState())).toEqual(['apollo-11', 'cand-01', 'cand-02', 'cand-03', 'mons-mouton-im2-target']);
     expect(isCandidateId('cand-07')).toBe(true);
     expect(isCandidateId('mons-mouton-im2-target')).toBe(false);
   });

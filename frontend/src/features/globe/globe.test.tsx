@@ -141,7 +141,7 @@ describe('places on the globe', () => {
     region: 'mons-mouton',
     method: { window_m: 200, slope_limit_deg: 12, min_separation_km: 2, source: 'x' },
     candidates: [
-      { id: 'cand-01', name: 'Candidate 1', lat_deg: -85, lon_deg: 30, elevation_m: 0, mean_slope_deg: 3, max_slope_deg: 6, slope_std_deg: 1, safe_cell_fraction: 0.9, psr_fraction: 0, distance_to_psr_km: 3, has_terrain_horizon: true, validity: 'DERIVED' },
+      { id: 'cand-01', kind: 'candidate', name: 'Candidate 1', lat_deg: -85, lon_deg: 30, elevation_m: 0, mean_slope_deg: 3, max_slope_deg: 6, slope_std_deg: 1, safe_cell_fraction: 0.9, psr_fraction: 0, distance_to_psr_km: 3, has_terrain_horizon: true, validity: 'DERIVED' },
     ],
     validity: 'DERIVED',
   };
@@ -153,6 +153,10 @@ describe('places on the globe', () => {
     expect(cand).toMatchObject({ kind: 'candidate', rank: 1 });
     expect(list.find((p) => p.id === 'apollo-11')?.rank).toBeUndefined();
     expect(list.filter((p) => p.kind === 'site')).toHaveLength(sitesExample.length);
+    // A catalogue entry in the candidate list is not drawn a second time.
+    const catalogue = { ...candidates.candidates[0]!, id: sitesExample[0]!.id, kind: 'catalogue' as const };
+    const withCatalogue = globePlaces(sitesExample, { ...EMPTY_RECOMMEND_STATE, candidates: { ...candidates, candidates: [catalogue] } });
+    expect(withCatalogue).toHaveLength(sitesExample.length);
   });
 
   it('moves the scenario to a picked place, candidates included', () => {
