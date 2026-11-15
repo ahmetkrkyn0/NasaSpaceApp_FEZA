@@ -18,6 +18,8 @@ At the lunar south pole the Sun never climbs high. In December 2026 it reaches o
 ![Validation](https://img.shields.io/badge/validation-113%20pass%20%C2%B7%200%20fail-brightgreen)
 ![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0b3d91)
 
+**[▶ Demo: slides and 30-second video](https://drive.google.com/drive/folders/1YRAIZKT6ozyZFqt9GNfwpi4g6wL1GMvq?usp=sharing)**
+
 [Overview](#overview) · [Getting Started](#getting-started) · [Usage](#usage) · [Validation](#validation) · [Data Sources](#data-sources-and-licences) · [Use of AI Tools](#use-of-ai-tools)
 
 </div>

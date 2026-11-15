@@ -18,6 +18,8 @@ Ay'ın güney kutbunda Güneş hiç yükselmez. Aralık 2026'da Mons Mouton'da u
 ![Doğrulama](https://img.shields.io/badge/validation-113%20pass%20%C2%B7%200%20fail-brightgreen)
 ![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0b3d91)
 
+**[▶ Demo: sunum ve 30 saniyelik video](https://drive.google.com/drive/folders/1YRAIZKT6ozyZFqt9GNfwpi4g6wL1GMvq?usp=sharing)**
+
 [Genel bakış](#genel-bakış) · [Kurulum](#kurulum) · [Kullanım](#kullanım) · [Doğrulama](#doğrulama) · [Veri kaynakları](#veri-kaynakları-ve-lisanslar) · [Yapay zekâ kullanımı](#yapay-zekâ-araçlarının-kullanımı)
 
 </div>
