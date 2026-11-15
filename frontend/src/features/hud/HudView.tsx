@@ -1,5 +1,6 @@
 import type { EventList, NowStatus } from '../../api/types';
 import { ExampleDataNote } from '../../api/ExampleDataNote';
+import { exampleSource } from '../../api/recorded';
 import { SourcePopover } from '../../ui/SourcePopover';
 import { HIGH_UNCERTAINTY } from '../timeline/event-range';
 import { formatUtc, parseUtc } from '../timeline/time';
@@ -16,15 +17,28 @@ export interface HudViewProps {
 
 const CRITERION_TEXT = { center: 'disk centre', first_limb: 'first limb', full_disk: 'full disk' } as const;
 
+/**
+ * The answer whose example note the countdown shows: the first of `now` and `events` that is a
+ * general example rather than a recording of this site and period, since both feed the rows.
+ * `null` when neither is a fallback example (PR #135 review).
+ */
+export function fallbackAnswer(now: NowStatus, events: EventList | null): NowStatus | EventList | null {
+  return [now, events].find((value) => {
+    const source = value ? exampleSource(value) : undefined;
+    return source !== undefined && !source.matched;
+  }) ?? null;
+}
+
 /** Countdown over the map: time to the next sunset or sunrise, Earthset or Earthrise, and night length. */
 export function HudView({ now, events, selectedMs }: HudViewProps) {
   const rows = buildCountdown(now, events);
   const answerMs = parseUtc(now.utc);
   const stale = answerMs !== null && answerMs !== selectedMs;
+  const fallback = fallbackAnswer(now, events);
 
   return (
     <div className="hud-view">
-      <ExampleDataNote value={now} fallbackOnly />
+      {fallback ? <ExampleDataNote value={fallback} fallbackOnly /> : null}
       <div className="hud-head">
         <SourcePopover
           validity={now.validity}
