@@ -69,3 +69,17 @@ export function graticule(stepDeg = 30, segments = 72): LatLon[][] {
   }
   return lines;
 }
+
+/**
+ * Camera position after a new place is selected: the camera keeps its distance and view when
+ * the place already faces it, and turns (same distance) to the place only when it is on the
+ * hidden side. `null` means "leave the camera where it is".
+ */
+export function turnTowards(camera: Vec3, focus: LatLon, minFacing = 0.2): Vec3 | null {
+  const distance = Math.hypot(camera.x, camera.y, camera.z);
+  if (distance === 0) return null;
+  const p = latLonToVector(focus, 1);
+  const facing = (p.x * camera.x + p.y * camera.y + p.z * camera.z) / distance;
+  if (facing >= minFacing) return null;
+  return latLonToVector(focus, distance);
+}

@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import { getHorizon } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
+import { formatDate } from '../../api/format';
 import { ExampleDataNote } from '../../api/ExampleDataNote';
 import type { HorizonProfile, LocationParams } from '../../api/types';
 import { useAsync, type AsyncResult, type AsyncState } from '../../lib/hooks';
@@ -127,6 +128,26 @@ export function PanelHeader({ title, children }: { title: string; children?: Rea
       <h2 className="panel-kicker">{title}</h2>
       {children}
     </header>
+  );
+}
+
+/**
+ * The scenario's name and period under a panel title. An empty name leaves only the period,
+ * so the line never starts with a comma.
+ */
+export function ScenarioPeriod({ label, start_utc, end_utc }: { label: string; start_utc: string; end_utc: string }) {
+  const period = `${formatDate(start_utc)} to ${formatDate(end_utc)}`;
+  const name = label.trim();
+  return (
+    <p className="d-muted">
+      {name ? (
+        <>
+          <span className="data">{name}</span>, {period}
+        </>
+      ) : (
+        `From ${period}`
+      )}
+    </p>
   );
 }
 
