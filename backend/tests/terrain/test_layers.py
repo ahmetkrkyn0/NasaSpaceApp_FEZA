@@ -1,6 +1,7 @@
 """Layer storage and ``GET /api/layers/{name}`` on a small stored grid."""
 
 import re
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -73,7 +74,7 @@ def test_missing_layer(tmp_path):
 @pytest.fixture
 def client(monkeypatch, tmp_path):
     monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
-    save_layer(layers_dir(tmp_path), _meta(), _values())
+    _save_region(layers_dir(tmp_path))
     from app.main import create_app
 
     return TestClient(create_app())
@@ -97,7 +98,9 @@ def test_endpoint_defaults(client):
     assert client.get("/api/layers/elevation").status_code == 200
 
 
-def test_missing_file_is_503(client):
+def test_missing_file_is_503(client, tmp_path):
+    # One layer missing from the only folder: the region is not available.
+    layer_paths(layers_dir(tmp_path), "mons-mouton", "slope")[0].unlink()
     r = client.get("/api/layers/slope", params={"format": "f32", "region": "mons-mouton"})
     assert r.status_code == 503
     assert r.json()["error"]["code"] == "data_unavailable"
@@ -157,6 +160,7 @@ def test_psr_endpoint_serves_a_binary_mask(monkeypatch, tmp_path):
     meta = _meta("psr")
     meta = LayerMeta(**{**meta.to_dict(), "unit": "1", "product": "PGDA 90 LPSR_80S_20MPP_ADJ"})
     mask = np.array([[0, 1, 1, 0], [0, 0, np.nan, 1], [1, 0, 0, 0]], dtype=np.float32)
+    _save_region(layers_dir(tmp_path))
     save_layer(layers_dir(tmp_path), meta, mask)
     from app.main import create_app
 
@@ -182,3 +186,149 @@ def test_stored_layers_share_one_grid():
     assert len(keys) <= 1
     for meta in stored:
         assert meta.validity == "MEASURED"
+
+
+# ---------- bundled copy (data/layers), served on a clean checkout ----------
+
+REPO_DATA = Path(__file__).resolve().parents[3] / "data"
+BUNDLE_LIMIT_BYTES = 6_000_000  # #102
+
+
+def test_downsample_mean_fraction_and_nan():
+    from app.terrain.layers import downsample_values
+
+    v = np.array([[1, 3, 0, 1], [5, 7, 1, 1], [np.nan, np.nan, 2, np.nan], [np.nan, np.nan, 4, np.nan]],
+                 dtype=np.float32)
+    out = downsample_values(v, 2)
+    assert out.shape == (2, 2)
+    assert out[0, 0] == 4.0          # mean of 1, 3, 5, 7
+    assert out[0, 1] == 0.75         # fraction of ones in a 0/1 block
+    assert np.isnan(out[1, 0])       # no valid cell
+    assert out[1, 1] == 3.0          # NaN cells are skipped
+
+
+def test_downsample_layer_meta(tmp_path):
+    from app.terrain.layers import downsample_layer
+
+    meta = LayerMeta(**{**_meta().to_dict(), "rows": 4, "cols": 4, "y_min": 1980.0})
+    values = np.arange(16, dtype=np.float32).reshape(4, 4)
+    small = downsample_layer(load_layer_from(tmp_path, meta, values), 2)
+    m = small.meta
+    assert (m.rows, m.cols, m.resolution_m, m.downsample) == (2, 2, 40.0, 2)
+    assert (m.x_min, m.y_min, m.x_max, m.y_max) == (1000.0, 1980.0, 1080.0, 2060.0)
+    assert m.downsample_method == "mean" and m.source_max == 15.0
+
+
+def load_layer_from(directory, meta, values):
+    save_layer(directory, meta, values)
+    return load_layer(directory, meta.region, meta.name)
+
+
+def test_bundled_layers_are_committed_and_small():
+    from app.terrain.layers import DOWNSAMPLE_METHODS, LAYER_NAMES, LAYER_SOURCES, bundled_layers_dir
+
+    directory = bundled_layers_dir(REPO_DATA)
+    metas = [load_layer(directory, "mons-mouton", n).meta for n in LAYER_NAMES]
+    total = sum(p.stat().st_size for n in LAYER_NAMES for p in layer_paths(directory, "mons-mouton", n))
+    assert total <= BUNDLE_LIMIT_BYTES
+    assert len({(m.rows, m.cols, m.x_min, m.y_min, m.x_max, m.y_max, m.resolution_m) for m in metas}) == 1
+    for m in metas:
+        assert m.validity == "DERIVED"
+        assert m.product == LAYER_SOURCES[m.name][0] and m.url == LAYER_SOURCES[m.name][1]
+        assert m.downsample_method == DOWNSAMPLE_METHODS[m.name]
+        assert m.resolution_m == 20.0 * m.downsample
+        assert m.source_max is not None
+    psr = load_layer(directory, "mons-mouton", "psr")
+    finite = psr.values[np.isfinite(psr.values)]
+    assert finite.min() >= 0.0 and finite.max() <= 1.0
+    assert psr.meta.description.endswith("Shadow only. Ice presence is uncertain.")
+    rest = psr.meta.description.replace("Ice presence is uncertain.", "").lower()
+    assert not re.search(r"\b(ice|water|frost|volatile)", rest)
+
+
+def test_clean_checkout_serves_bundled_layers(monkeypatch, tmp_path):
+    """No data/raw/layers: all four layers come from data/layers with 200."""
+
+    import shutil
+
+    from app.terrain.layers import LAYER_NAMES
+
+    shutil.copytree(REPO_DATA / "layers", tmp_path / "layers")
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    c = TestClient(create_app())
+    for name in LAYER_NAMES:
+        r = c.get(f"/api/layers/{name}")
+        assert r.status_code == 200, name
+        assert r.headers["X-Layer-Downsample"] == "2"
+        assert r.headers["X-Layer-Resolution-M"] == "40"
+        assert len(r.content) == int(r.headers["X-Layer-Rows"]) * int(r.headers["X-Layer-Cols"]) * 4
+    assert c.get("/api/health").json()["layers_available"] is True
+
+
+def _save_region(directory, offset=0.0):
+    from app.terrain.layers import LAYER_NAMES
+
+    for name in LAYER_NAMES:
+        save_layer(directory, _meta(name), _values() + offset)
+
+
+def test_full_resolution_copy_wins(monkeypatch, tmp_path):
+    from app.terrain.layers import bundled_layers_dir
+
+    _save_region(bundled_layers_dir(tmp_path), offset=100)
+    _save_region(layers_dir(tmp_path))
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    r = TestClient(create_app()).get("/api/layers/elevation")
+    np.testing.assert_array_equal(np.frombuffer(r.content, dtype="<f4").reshape(ROWS, COLS), _values())
+
+
+def test_partial_full_resolution_folder_is_ignored(monkeypatch, tmp_path):
+    """Only one layer in data/raw/layers: all four still come from data/layers, on one grid."""
+
+    from app.terrain.layers import LAYER_NAMES, bundled_layers_dir
+
+    _save_region(bundled_layers_dir(tmp_path), offset=100)
+    full = LayerMeta(**{**_meta().to_dict(), "rows": 6, "cols": 8, "resolution_m": 10.0})
+    save_layer(layers_dir(tmp_path), full, np.zeros((6, 8), dtype=np.float32))
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    c = TestClient(create_app())
+    for name in LAYER_NAMES:
+        r = c.get(f"/api/layers/{name}")
+        assert (r.headers["X-Layer-Rows"], r.headers["X-Layer-Resolution-M"]) == ("3", "20"), name
+    np.testing.assert_array_equal(
+        np.frombuffer(c.get("/api/layers/elevation").content, dtype="<f4").reshape(ROWS, COLS),
+        _values() + 100,
+    )
+    assert c.get("/api/health").json()["layers_available"] is True
+
+
+def test_partial_folders_alone_are_not_available(monkeypatch, tmp_path):
+    save_layer(layers_dir(tmp_path), _meta(), _values())
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    c = TestClient(create_app())
+    assert c.get("/api/layers/elevation").status_code == 503
+    assert c.get("/api/health").json()["layers_available"] is False
+
+
+def test_downsample_factor_bounds(tmp_path):
+    from app.terrain.layers import downsample_layer
+
+    layer = load_layer_from(tmp_path, _meta(), _values())
+    for factor in (1, 4):
+        with pytest.raises(ValueError):
+            downsample_layer(layer, factor)
+
+
+def test_health_reports_missing_layers(monkeypatch, tmp_path):
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    assert TestClient(create_app()).get("/api/health").json()["layers_available"] is False

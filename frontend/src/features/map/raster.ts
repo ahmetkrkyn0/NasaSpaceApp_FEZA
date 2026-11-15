@@ -35,6 +35,11 @@ export function tokenRgb(token: string): Rgb | null {
   return match ? [parseInt(match[1] ?? '0', 16), parseInt(match[2] ?? '0', 16), parseInt(match[3] ?? '0', 16)] : null;
 }
 
+/** Opacity of a permanent-shadow cell: 200 for a fully shadowed cell, scaled by the fraction. */
+export function psrAlpha(fraction: number): number {
+  return Math.round(200 * Math.min(1, Math.max(0, fraction)));
+}
+
 /** RGBA bytes, row 0 first. `mask` colours the shadowed cells of the permanent-shadow layer. */
 export function layerPixels(grid: LayerGrid, name: LayerName, mask: Rgb = [255, 255, 255]): Uint8ClampedArray {
   const out = new Uint8ClampedArray(grid.rows * grid.cols * 4);
@@ -45,12 +50,13 @@ export function layerPixels(grid: LayerGrid, name: LayerName, mask: Rgb = [255, 
     const o = i * 4;
     if (level < 0) continue; // transparent
     if (name === 'psr') {
-      // Mask: shadowed cells in the umbra colour, others transparent.
+      // Mask in the umbra colour. A cell is the shadowed fraction of its 20 m cells (0..1; the
+      // full resolution mask is 0 or 1), so opacity follows the fraction; 0 stays transparent.
       if (v > 0) {
         out[o] = mask[0];
         out[o + 1] = mask[1];
         out[o + 2] = mask[2];
-        out[o + 3] = 200;
+        out[o + 3] = psrAlpha(v);
       }
       continue;
     }

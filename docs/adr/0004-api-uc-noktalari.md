@@ -29,7 +29,7 @@ Saha isteyen her uç nokta şu iki biçimden birini kabul eder:
 
 | Yöntem | Yol | Parametreler | Yanıt | Açıklama |
 |---|---|---|---|---|
-| GET | `/api/health` | yok | `{ "ok": true, "kernels_loaded": true, "dem_available": true, "ephemeris_range": { "start_utc": "...", "end_utc": "..." } }` | Sunucu ve veri dosyaları hazır mı; hesaplanabilen tarih aralığı |
+| GET | `/api/health` | yok | `{ "ok": true, "kernels_loaded": true, "dem_available": true, "layers_available": true, "ephemeris_range": { "start_utc": "...", "end_utc": "..." } }` | Sunucu ve veri dosyaları hazır mı; hesaplanabilen tarih aralığı |
 | GET | `/api/sites` | `category` (isteğe bağlı) | `Site` dizisi | Hazır saha listesi |
 | GET | `/api/horizon` | konum, `mast_height_m` | `HorizonProfile` | Ufuk profili. Hazır sahada dosyadan; özel koordinatta ilk sürümde düz ufuk (`method: sphere`) |
 | GET | `/api/sky-series` | konum, `start_utc`, `hours`, `step_minutes` | `SkySeries` | Güneş ve Dünya'nın zaman içindeki konumu |
@@ -117,3 +117,4 @@ Yapılacaklar:
 - 14 Kasım 2026, F2-A ([#37](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/37)): "Sınırlar" bölümüne `/api/events`, `/api/power`, `/api/now`, `/api/comm-window` ve `/api/compare` sınırları ile ölçülen süreler yazıldı; ölçülmemiş sınır varsayımı kaldırıldı.
 - 14 Kasım 2026, F3-B ([#43](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/43)): `/api/validation` biçimi yazıldı. Rapor satırlarına `condition` ve `kind` alanları, `status` değerlerine ve `summary` sayılarına `info` eklendi (T6, yaklaşık karşılaştırma); T3 satırları birim testten yazılır ve `endpoint` `null` olur.
 - 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `GET /api/body-series` uç noktası tabloya, sınırları "Sınırlar" bölümüne eklendi; `step_s` hata kodları tablosuna yazıldı.
+- 15 Kasım 2026, [#102](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/102): `/api/health` yanıtına `layers_available` eklendi; her bölgenin dört katmanı da aynı klasörde (`data/raw/layers/` ya da `data/layers/`) varsa `true`. Klasör bölge başına seçilir: tam çözünürlüklü `data/raw/layers/` yalnızca bölgenin dört katmanını da içeriyorsa kullanılır, yoksa dördü de depodaki küçültülmüş `data/layers/` kopyasından gelir; böylece bir bölgenin katmanları hep aynı ızgarada kalır. Küçültülmüş kopyada `X-Layer-Resolution-M` 40, `X-Layer-Downsample` 2, `X-Layer-Validity` `DERIVED` olur; başlık adları değişmez. Katman `.json` dosyasına `downsample_method` (`mean` ya da `fraction`) ve `source_max` (tam çözünürlükteki en büyük değer) eklendi. Küçültülmüş `psr` hücresi 0 ile 1 arasında bir orandır (gölgedeki 20 m hücrelerin payı).

@@ -2,6 +2,7 @@
   "ok": true,
   "kernels_loaded": true,
   "dem_available": false,
+  "layers_available": true,
   "ephemeris_range": {
     "start_utc": "1849-12-27T00:00:00Z",
     "end_utc": "2150-01-20T00:00:00Z"

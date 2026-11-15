@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from app.core import ephemeris
 from app.errors import DataUnavailable
 from app.settings import get_settings
+from app.terrain.layers import layers_available
 
 router = APIRouter(tags=["health"])
 
@@ -20,7 +21,7 @@ def _dem_available() -> bool:
 
 @router.get("/health")
 def health() -> dict:
-    """Report whether kernels and DEMs are present; always answers 200."""
+    """Report whether kernels, DEMs and map layers are present; always answers 200."""
 
     try:
         start, end = ephemeris.ephemeris_range()
@@ -38,5 +39,6 @@ def health() -> dict:
         "ok": True,
         "kernels_loaded": kernels_loaded,
         "dem_available": _dem_available(),
+        "layers_available": layers_available(get_settings().data_dir),
         "ephemeris_range": ephemeris_range,
     }
