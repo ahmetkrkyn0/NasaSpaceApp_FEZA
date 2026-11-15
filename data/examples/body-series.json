@@ -3,19 +3,27 @@
   "samples": [
     {
       "utc": "2026-12-05T00:00:00Z",
-      "sub_solar_lat_deg": -1.2,
-      "sub_solar_lon_deg": 45.3,
-      "sub_earth_lat_deg": 3.1,
-      "sub_earth_lon_deg": -4.2,
-      "earth_distance_km": 384400.0
+      "sub_solar_lat_deg": -1.455001,
+      "sub_solar_lon_deg": -128.623039,
+      "sub_earth_lat_deg": 5.928983,
+      "sub_earth_lon_deg": 5.961902,
+      "earth_distance_km": 394476.834
     },
     {
-      "utc": "2026-12-05T06:00:00Z",
-      "sub_solar_lat_deg": -1.2,
-      "sub_solar_lon_deg": 42.3,
-      "sub_earth_lat_deg": 3.0,
-      "sub_earth_lon_deg": -4.3,
-      "earth_distance_km": 384500.0
+      "utc": "2026-12-05T12:00:00Z",
+      "sub_solar_lat_deg": -1.453422,
+      "sub_solar_lon_deg": -134.715023,
+      "sub_earth_lat_deg": 6.209004,
+      "sub_earth_lon_deg": 5.627314,
+      "earth_distance_km": 396205.324
+    },
+    {
+      "utc": "2026-12-06T00:00:00Z",
+      "sub_solar_lat_deg": -1.451758,
+      "sub_solar_lon_deg": -140.807991,
+      "sub_earth_lat_deg": 6.413678,
+      "sub_earth_lon_deg": 5.252477,
+      "earth_distance_km": 397801.508
     }
   ],
   "validity": "DERIVED"
