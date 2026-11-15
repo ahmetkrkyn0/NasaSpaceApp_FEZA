@@ -79,6 +79,21 @@ of the Sun and Earth and Earth's turn come from the server.
 | Lander model | Team FEZA's Athena (IM-2) model: byte-identical copy of `shipmodel/export/athena_lander.glb` (MD5 `ec0f9fffe8d317d18a84ccaa478f6de0`), built from scratch in Blender by `shipmodel/tools/athena_build.py`; no third-party meshes or textures. Shown upright and enlarged; it does not show how a mission ended |
 | Antenna marks, relay satellite, stars | Simple shapes and random points made in code (`frontend/src/features/space/`); team FEZA's own work. The relay is an illustration, and the stars are decorative, not a catalogue |
 
+## Opening screen background
+
+Files: `backdrop/moon-phases-near-far-1080.mp4` and `backdrop/moon-phases-near-far-poster.jpg`. Not a
+render of the team: a NASA animation played behind the opening screen, labelled "Illustration" on screen.
+It is an artist's concept and is not used in any calculation.
+
+| Item | Value |
+| --- | --- |
+| Source | NASA Scientific Visualization Studio, "Lunar Near and Far Side Phases", ID 14992 (<https://svs.gsfc.nasa.gov/14992/>), released 24 March 2026; file `Moon_Phases_Near_Far_Waning_4K.mp4` (3840 x 2160, 60 fps). Also published by NASA as "Artist's Concept – Lunar Near and Far Side Phases – Waning Gibbous" (<https://www.nasa.gov/video-detail/moon-phases-near-far-waning-4k/>) |
+| Credit | NASA's Goddard Space Flight Center Scientific Visualization Studio; animator Dan Gallagher (eMITS), data provider Ernie Wright (STC), data analyst Tuomas Kankola |
+| Changes made | Re-encoded with ffmpeg to 1920 x 1080 at 30 fps, H.264, no audio (3.8 MB, 14.9 s); the poster is one frame of that file at 5 s, scaled to 1280 px. No other edit; no logo, insignia or text appears in the frames |
+| Prepared by | Re-encoded for the LunaPath design export (`frontend-migrate/`), from which the team took the file; placed on the opening screen by team FEZA |
+| Licence | NASA "Images and Media" guidelines (<https://www.nasa.gov/nasa-brand-center/images-and-media/>); NASA is credited as the source; no NASA endorsement is implied |
+| AI tools | None: the animation is NASA's; no image-generating AI tool was used |
+
 ## Not included
 
 Left out on purpose: each scene's `earth.jpg` and `sun.jpg`, the stations' `moon.jpg` and `moonzoom.jpg`
