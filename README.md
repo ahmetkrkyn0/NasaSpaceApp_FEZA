@@ -47,16 +47,19 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 
 ## Features
 
-- Ten catalogue sites (past landings and the IM-2 target on Mons Mouton) or any custom latitude and longitude
+- Ten catalogue sites (past landings and the IM-2 target on Mons Mouton), twelve candidate regions on Mons Mouton, or any custom latitude and longitude
 - Any date in the ephemeris range, with a timeline to step through the lunar day
 - Sun and Earth as disks on a horizon strip, against a terrain horizon at the south polar sites
 - Sunrise, sunset, earthrise and earthset to the second, each with a one-arcminute sensitivity range
 - Countdown to the next sunset or Earthset
 - Hourly solar panel power for four panel set-ups, with energy, sunlit share and longest dark period
 - Direct-to-Earth communication windows and a "relay required" label where Earth never rises
+- Earth link view: when each Deep Space Network complex (Goldstone, Madrid, Canberra) sees the Moon, and which periods have a direct link, no station in view, or need a relay because Earth is below the site's horizon
 - Eclipses (Earth covering the Sun) and the power drop they cause
 - Side-by-side comparison of two to four scenarios, with "why" cards that change one input at a time
 - Map layers around the south pole: hillshade, elevation, slope, permanently shadowed regions
+- Candidate regions picked from the 20 m slope and permanent shadow maps of Mons Mouton, each with a terrain horizon
+- Site recommendation: choose weights, a slope limit and a permanent shadow preference, and the candidate regions and catalogue sites of the region are ranked, every score shown with its components; the score ranks sites, it does not certify a landing site
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
 - A validity label on every result; assumed values (flat horizon, panel profiles) are marked as such
 - Dark theme by default and an optional light theme from the top bar, with contrast checked by tests
@@ -145,18 +148,24 @@ The API answers under <http://127.0.0.1:8000/api>, for example `/api/health` and
 2. Pick a date and time. The horizon strip shows where the Sun and Earth are; the timeline shows sunlit, dark, Earth-visible and Earth-hidden windows.
 3. Choose a panel set-up and a mast height to see hourly power and the energy over the range.
 4. Add scenarios (another site, another date) and open the comparison to see them side by side, with the best value per metric and a "why" card for each difference.
-5. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
+5. In the Plan door, open **Site recommendation**, set the weights and limits and rank the Mons Mouton sites for the active period and mast; use a ranked site as the scenario or add the top three to the comparison.
+6. Open the **Comms** tab (the **Earth link** panel in Plan, **Talking to Earth** in Explore and Classroom) to see the link windows over the period, which ground stations see the Moon at the selected moment, and when a relay would be needed.
+7. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
 
 Main endpoints ([ADR-0004](docs/adr/0004-api-uc-noktalari.md)):
 
 | Endpoint | Returns |
 | -------- | ------- |
 | `/api/sky-series` | Sun and Earth azimuth, elevation, distance and apparent radius over time |
+| `/api/body-series` | Sub-solar and sub-Earth points on the Moon (`MOON_ME`) and the Earth distance over time |
 | `/api/events` | Rise and set events, windows, summary metrics, eclipses and the relay label |
 | `/api/now`, `/api/comm-window` | State at an instant and time to the next change |
 | `/api/power` | Hourly panel power and summary |
 | `/api/compare` | Two to four scenarios with per-metric differences |
 | `/api/horizon`, `/api/layers/{name}` | Horizon profile of a site; map layers |
+| `/api/candidates` | Candidate regions of a region and the catalogue sites inside it; candidate ids work as `site_id` everywhere |
+| `/api/recommend` | Weighted score and ranking of the candidate regions (and catalogue sites), with components and eliminated sites |
+| `/api/ground-stations`, `/api/earth-link` | Deep Space Network stations with coordinate sources; station view and link windows (`direct`, `no_station`, `relay_needed`) |
 | `/api/eclipses` | Earth covering the Sun |
 | `/api/validation` | The validation report |
 
@@ -180,18 +189,23 @@ npm --prefix frontend run build
 
 The server tests need the SPICE kernels; run `python backend/scripts/download_kernels.py` first.
 
+`python backend/scripts/smoke_api.py --in-process` calls every endpoint for every catalogue site and candidate region and exits with an error if any answer is not 200; without `--in-process` it calls a server on port 8000.
+
 ## Validation
 
 `python backend/scripts/run_validation.py --in-process` runs the reference tests of [docs/PLAN.md, 4.2](docs/PLAN.md) against the endpoints without a separate server and writes [`data/validation_report.json`](data/validation_report.json) and [`docs/validation-report.md`](docs/validation-report.md). Without `--in-process` it calls a server on port 8000. The first run also reads one NASA map window over the network for the approximate comparison T6; `--no-t6` skips it.
 
-Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The current run has 45 passing checks, no failures and one approximate comparison (T6). The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
+Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The current run ([`docs/validation-report.md`](docs/validation-report.md)) has 69 passing checks, no failures and one approximate comparison (T6); T8 checks the sub-solar and sub-Earth points against JPL Horizons and T9 the limits of the candidate regions. The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
 
 ## Known Limits
 
-- **Terrain horizon only at four sites.** Precomputed terrain horizons exist only for the catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3), at 2 m and 10 m masts. All other sites, custom coordinates and mast heights use a flat horizon, labelled `SYNTHETIC` and shown as "Assumed, terrain not included".
+- **Terrain horizon only at four sites and the candidate regions.** Precomputed terrain horizons exist only for the catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3) and the twelve candidate regions on Mons Mouton, at 2 m and 10 m masts. All other sites, custom coordinates and mast heights use a flat horizon, labelled `SYNTHETIC` and shown as "Assumed, terrain not included".
 - **Panel profiles are assumptions.** Area, efficiency and mounting are generic values, labelled `SYNTHETIC`.
 - **Accident causes are not computed.** Past missions show the measured environment; causes are quoted only from official sources with an evidence label.
-- **Relay satellites are not modelled.** The relay label only says that Earth is not in line of sight.
+- **Relay satellites are not modelled.** The relay label and the link view's "relay needed" only say that Earth is not in line of sight; the relay drawn in the link schematic is labelled "Illustration".
+- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, with Earth's rotation from the `IAU_EARTH` model (no nutation, no UT1 correction); the 10° minimum station elevation is an assumption.
+- **The score is not a landing safety guarantee.** It ranks sites for the weights the user chose. The 12° slope limit is the Apollo lunar module's landing limit (SP-2013-605, [verified in gorev-araclari.md, row 89](docs/research/dogrulama/gorev-araclari.md)); the other thresholds are assumptions and are marked as such.
+- **No rocks or small craters.** Candidate regions and their scores come from 20 m maps; boulders and craters smaller than a cell are not in the data.
 - **Eclipses** treat Earth as a sharp disk and the Sun as uniformly bright.
 - **Terrain horizon accuracy** is compared with NASA's illumination map only approximately (T6).
 - **Illustrations are not computed.** The Sun, Earth, shadows, stars and lander in the Unity images were placed by hand. An image shows a kind of terrain, not the ground at the chosen site. There is no live 3D view.
@@ -202,12 +216,12 @@ Every expected value in the report comes from a row marked verified in [`docs/re
 flowchart LR
     User --> UI[Web interface<br/>React + Vite]
     UI -- "/api (JSON)" --> API[FastAPI server]
-    API --> Core[Core: ephemeris, events,<br/>power, comm, eclipses]
-    API --> Terrain[Terrain: horizon profiles,<br/>map layers]
+    API --> Core[Core: ephemeris, events,<br/>power, comm, eclipses,<br/>stations, recommendation]
+    API --> Terrain[Terrain: horizon profiles,<br/>map layers, candidates]
     Core --> SPICE[(SPICE kernels<br/>data/raw/kernels)]
     Terrain --> Hz[(Horizon profiles<br/>data/horizons)]
-    Terrain --> Layers[(Map layers<br/>data/raw/layers)]
-    API --> Catalog[(Sites, panels, missions<br/>data/*.json)]
+    Terrain --> Layers[(Map layers<br/>data/layers, data/raw/layers)]
+    API --> Catalog[(Sites, candidates, stations,<br/>panels, missions<br/>data/*.json)]
     Val[run_validation.py] --> API
 ```
 
@@ -224,7 +238,10 @@ All computation happens on the server; the interface only formats the server's n
 │   ├── sites.json        # Site catalogue with coordinate sources
 │   ├── panel_profiles.json
 │   ├── reference_missions.json
+│   ├── candidates.json   # Candidate regions on Mons Mouton
+│   ├── ground_stations.json  # Deep Space Network stations with coordinate sources
 │   ├── horizons/         # Precomputed terrain horizon profiles
+│   ├── layers/           # Map layers at 40 m, used when data/raw/layers is absent
 │   ├── examples/         # One example payload per endpoint, test vectors
 │   ├── validation_report.json
 │   └── raw/              # Downloaded kernels and layers (not committed)
@@ -244,10 +261,11 @@ Data the code actually uses:
 
 | Data | Used for | Source |
 | ---- | -------- | ------ |
-| SPICE kernels: `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`, `pck00011.tpc`, `naif0012.tls` | Sun and Earth positions and sizes | NASA NAIF generic kernels, <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
-| LOLA height maps `LDEM_80S_20MPP_ADJ` (20 m) and `LDEM_60S_60MPP_ADJ` (60 m) | Terrain horizon profiles, elevation layer | NASA GSFC PGDA product 90, <https://pgda.gsfc.nasa.gov/products/90> |
-| `LDEM_80S_20MPP_ADJ_HILL`, `LDSM_80S_20MPP_ADJ`, `LPSR_80S_20MPP_ADJ` | Hillshade, slope and permanent shadow layers | NASA GSFC PGDA product 90 |
+| SPICE kernels: `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`, `pck00011.tpc`, `naif0012.tls` | Sun and Earth positions and sizes; Earth's rotation for the ground stations | NASA NAIF generic kernels, <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
+| LOLA height maps `LDEM_80S_20MPP_ADJ` (20 m) and `LDEM_60S_60MPP_ADJ` (60 m) | Terrain horizon profiles of the south polar sites and candidate regions, elevation layer | NASA GSFC PGDA product 90, <https://pgda.gsfc.nasa.gov/products/90> |
+| `LDEM_80S_20MPP_ADJ_HILL`, `LDSM_80S_20MPP_ADJ`, `LPSR_80S_20MPP_ADJ` | Hillshade, slope and permanent shadow layers; candidate regions and their slope and shadow values | NASA GSFC PGDA product 90 |
 | `AVGVISIB_75S_120M_201608` | Approximate comparison T6 (validation only) | NASA GSFC PGDA product 69, <https://pgda.gsfc.nasa.gov/products/69> |
+| Deep Space Network station coordinates (DSS 14, DSS 63, DSS 43) | Ground station view in the Earth link | NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P, <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
 | Site coordinates | Site catalogue | NASA NSSDC lunar artifact table; LROC site releases; each site's source is in `data/sites.json` |
 | JPL Horizons | Reference values for tests only; never called at run time | <https://ssd.jpl.nasa.gov/horizons/> |
 
