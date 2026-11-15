@@ -3,6 +3,7 @@ import type { Door, Mode, RailTab } from '../shell/ui-state';
 import CommsPanel from './comms';
 import ComparePanel from './compare';
 import GamePanel from './game';
+import LinkPanel from './link';
 import HudPanel from './hud';
 import MapPanel from './map';
 import MissionsPanel from './missions';
@@ -61,6 +62,7 @@ export const PANELS: readonly PanelEntry[] = [
   { id: 'sky', title: 'Sky view', slot: 'rightRail', tab: 'sky', modes: ['analyze'], doors: ALL_DOORS, component: SkyPanel },
   { id: 'power', title: 'Power', slot: 'rightRail', tab: 'power', modes: ['analyze'], doors: ['plan'], component: PowerPanel },
   { id: 'comms', title: 'Earth link', slot: 'rightRail', tab: 'comms', modes: ['analyze'], doors: ['plan'], component: CommsPanel },
+  { id: 'link', title: 'Talking to Earth', slot: 'rightRail', tab: 'comms', modes: ['analyze'], doors: ['explore', 'classroom'], component: LinkPanel },
   { id: 'compare', title: 'Compare scenarios', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ['plan'], component: ComparePanel },
   { id: 'why', title: 'Why they differ', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ALL_DOORS, component: WhyPanel },
   { id: 'validation', title: 'Validation', slot: 'rightRail', tab: 'compare', modes: ['analyze'], doors: ['plan'], component: ValidationPanel },
