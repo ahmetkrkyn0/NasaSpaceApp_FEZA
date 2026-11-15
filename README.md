@@ -71,6 +71,7 @@ The product, this README, the project page text and the presentation are in Engl
 - Dark theme by default and an optional light theme from the top bar, with contrast checked by tests
 - Example mode without a server: recorded answers of the live server for every catalogue site and candidate region in December 2026; any other choice shows a general example with a note that it does not match the selection
 - Pre-rendered Unreal Engine illustrations of the three kinds of landing terrain and the Deep Space Network ground stations, always labelled "Illustration" ([credits](frontend/public/media/CREDITS.md))
+- Opening screen: NASA's animation of the Moon's near and far side phases (NASA SVS 14992) plays behind the product name, labelled "Illustration"; with reduced motion only a still frame is shown
 
 ## Tech Stack
 
@@ -280,6 +281,7 @@ Data the code actually uses:
 | Deep Space Network station coordinates (DSS 14, DSS 63, DSS 43) | Ground station view in the Earth link | NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P, <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
 | NASA SVS 4720 "CGI Moon Kit" colour map | Surface image of the 3D Moon and the space view, for orientation only | NASA Scientific Visualization Studio, <https://svs.gsfc.nasa.gov/4720> |
 | NASA Blue Marble Next Generation, April 2004, with topography and bathymetry | Earth's surface in the space view, for orientation only | NASA Earth Observatory, <https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/> |
+| NASA SVS 14992 "Lunar Near and Far Side Phases" animation | Background of the opening screen, labelled as an illustration; not used in any calculation | NASA Scientific Visualization Studio, <https://svs.gsfc.nasa.gov/14992/> |
 | Site coordinates | Site catalogue | NASA NSSDC lunar artifact table; LROC site releases; each site's source is in `data/sites.json` |
 | JPL Horizons | Reference values for tests only; never called at run time | <https://ssd.jpl.nasa.gov/horizons/> |
 
