@@ -54,3 +54,4 @@ Yapılacaklar:
 ## Değişiklik notu
 
 - 2026-11-14: 5. maddedeki özel koordinat cümlesi `ufuk-hesabi.md` ile tutarlı olacak şekilde daraltıldı (ilk sürümde düz ufuk). Karar değişmedi, sözleşme belgeleri arasındaki çelişki giderildi (PR #31).
+- 2026-11-15: 6. madde daraltıldı. Unity çalışma zamanında kullanılmaz; Unity ile önceden üretilmiş sabit görseller ve kısa döngüler (`frontend/public/media/`) arayüzde yalnızca illüstrasyon olarak kullanılır ve ekranda öyle etiketlenir. Bu görsellerdeki Güneş, gölge ve araç konumu hesaplanmış değildir; hesaplanan konumlar ufuk şeridindedir. 2. maddedeki canlı 3B görünüm kararı aynen durur (#80).
