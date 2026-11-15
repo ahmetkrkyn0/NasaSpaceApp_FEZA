@@ -62,9 +62,16 @@ def load_ground_stations() -> list[dict]:
 
 
 def find_site(site_id: str) -> dict | None:
-    """Return the site record with ``site_id``, or ``None`` when it is unknown."""
+    """Return the site record with ``site_id``, or ``None`` when it is unknown.
+
+    Catalogue sites come first; a candidate region id (``cand-NN``,
+    ``data/candidates.json``) resolves too, so every endpoint that takes a
+    location accepts it (#97, 4.3). ``load_sites`` and ``/api/sites`` keep only
+    the catalogue."""
 
     for site in load_sites():
         if site.get("id") == site_id:
             return site
-    return None
+    from app.terrain.candidates import find_candidate
+
+    return find_candidate(get_settings().data_dir, site_id)
