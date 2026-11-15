@@ -517,6 +517,26 @@ Depodaki kopyalar temiz bir kopyanın sunucusuz ve indirmesiz çalışması içi
 
 Yıldızlar süs olarak kalır ve "decorative" notunu taşır. Gerçek yıldız kataloğu bu işin kapsamında değildir: kaynak ve lisans doğrulaması gerektirir ve istenenlerin hiçbirini karşılamaz.
 
+## 14. Durum ve şefe sorular (2026-11-15)
+
+Bu branch'te yapılanlar (merge istenmiyor; plan netleşene kadar burada kalır):
+
+- `3D terrain`: gölge çekirdeği (`terrain3d/shadow.ts`), Güneş ve Dünya diskleri, ayakta bakış, imleç okuması ve ölçek çubuğu. 3B arazi ileride Unreal'a taşınacağı için bu görünüme daha fazla emek verilmeyecek.
+- Arka uç: `south-pole-cap` bölgesi (80° G'den kutba, PGDA 90 `LDEM_80S_80MPP_ADJ`, 320 m'ye blok ortalaması, yalnız `elevation`). Veri `make_layers.py --region south-pole-cap` ile `data/raw/layers/` altına üretilir, depoya girmez.
+- `3D Moon`: kutup başlığı gerçek ölçekli kabartma olarak çizilir, sunucunun Güneş yönüyle aydınlatılır, arazi gölgeleri tarayıcıda (worker) hesaplanır; kamera yüzeye ~14 km'ye kadar iner; imleç altında enlem, boylam, yükseklik, eğim, Güneş payı; ölçek çubuğu.
+
+Görülen eksikler:
+
+- 320 m veri yakın bakışta ayrıntıyı kaybediyor; QuickMap'teki görünüm yükseklikten değil LROC fotoğraf mozaiğinden geliyor.
+- Görünüm küçük bir panelde; tam ekran sahne gerekli.
+- Artemis III aday bölgeleri (NASA, Ekim 2024, dokuz bölge) için koordinat yok. Sayısal kaynak: USGS, McClernan 2024, "Down Selected Artemis III Candidate Landing Site Navigational Grids", DOI 10.5066/P1MEQ6UK (CC0, şekil dosyaları; ScienceBase bot kontrolü yüzünden tarayıcıdan indirilmeli). Resimden ölçülmüş kutu kullanılmayacak.
+
+Şefe sorular:
+
+1. Ciddi bir DEM ve görüntü araştırması: kutup için hangi ürünler (PGDA 90'ın 20 m / 10 m / 5 m haritaları, LROC WAC kutup mozaiği, LROC NAC güney kutbu mozaiği, ShadowCam), çözünürlük, kapsam, boyut, lisans ve tarayıcıya nasıl parçalı (tile) sunulacağı.
+2. Bu işin fazlara bölünmesi: önerimiz (a) tam ekran 3B Ay sahnesi, (b) yüksek çözünürlüklü veri ve tile sunumu, (c) Artemis III bölgeleri ve aday alanlar, (d) zamana göre gölge ve Dünya görünürlüğü.
+3. 13.1'deki karar (gölge tarayıcıda) bu ölçekte de geçerli mi, yoksa gölge haritaları sunucuda mı üretilmeli?
+
 ## Kaynaklar
 
 - NASA SVS 4720, CGI Moon Kit: <https://svs.gsfc.nasa.gov/4720>
