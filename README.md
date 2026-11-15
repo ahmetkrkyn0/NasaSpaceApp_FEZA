@@ -45,6 +45,8 @@ This project turns ephemeris and terrain data into a simple tool for mission pla
 
 Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceappschallenge.org/) 2026. The challenge text is in [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md). The project page text is in [docs/submission/project-description.md](docs/submission/project-description.md).
 
+The product, this README, the project page text and the presentation are in English. The working notes under `docs/` (plan, research, team set-up, decision records) are the team's internal records and are in Turkish.
+
 ## Features
 
 - Ten catalogue sites (past landings and the IM-2 target on Mons Mouton), twelve candidate regions on Mons Mouton, or any custom latitude and longitude
@@ -58,19 +60,23 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 - Eclipses (Earth covering the Sun) and the power drop they cause
 - Side-by-side comparison of two to four scenarios, with "why" cards that change one input at a time
 - Map layers around the south pole: hillshade, elevation, slope, permanently shadowed regions
-- 3D Moon: a globe next to the 2D map with the sites and candidate regions, lit from the Sun direction the server computes for the selected moment and with the sub-Earth point marked
+- 3D Moon: a globe next to the 2D map with the sites and candidate regions, wrapped in NASA's CGI Moon Kit colour map, lit from the Sun direction the server computes for the selected moment and with the sub-Earth point marked; an "Even light" choice shows the whole near side, labelled as not the computed illumination
+- 3D terrain: the Mons Mouton region as a surface built from the elevation layer (heights exaggerated three times, and the factor is shown), coloured by hillshade, slope or permanent shadow, lit from the Sun direction at the selected site, with the sites and candidate regions marked
+- Space view: the Moon and Earth with the three Deep Space Network stations, the team's Athena model at the site, a line to the stations that see the Moon when the link is direct, and a relay path labelled "Illustration" when Earth is below the horizon; Earth's direction and turn come from the server, distances and sizes are not to scale
+- Five research scenarios (a low polar Sun, the far side, the lunar night, Athena's target and landing point, a recommended region against the target) that load a site, period and door in one click, each with its question, three things to watch and its sources
 - Candidate regions picked from the 20 m slope and permanent shadow maps of Mons Mouton, each with a terrain horizon
 - Site recommendation: choose weights, a slope limit and a permanent shadow preference, and the candidate regions and catalogue sites of the region are ranked, every score shown with its components; the score ranks sites, it does not certify a landing site
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
 - A validity label on every result; assumed values (flat horizon, panel profiles) are marked as such
 - Dark theme by default and an optional light theme from the top bar, with contrast checked by tests
+- Example mode without a server: recorded answers of the live server for every catalogue site and candidate region in December 2026; any other choice shows a general example with a note that it does not match the selection
 - Pre-rendered Unreal Engine illustrations of the three kinds of landing terrain and the Deep Space Network ground stations, always labelled "Illustration" ([credits](frontend/public/media/CREDITS.md))
 
 ## Tech Stack
 
 | Layer | Technology |
 | ----- | ---------- |
-| Web interface | React, TypeScript, Vite ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)); three.js for the 3D Moon, loaded only when the 3D view opens |
+| Web interface | React, TypeScript, Vite ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)); three.js for the 3D Moon, 3D terrain and space view, loaded only when a 3D view opens |
 | Server | Python 3.11+, FastAPI, Uvicorn ([`backend/`](backend/README.md)) |
 | Ephemeris | NASA NAIF SPICE through SpiceyPy (DE440, `MOON_ME` frame); JPL Horizons only for validation |
 | Terrain | LOLA height maps (PGDA product 90) read with rasterio; NumPy for ray casting |
@@ -122,7 +128,7 @@ No configuration is needed for local use. Optional settings:
 | -------- | ----- | ----------- | ------- |
 | `FEZA_DATA_DIR` | server | Folder with `sites.json`, `panel_profiles.json`, `reference_missions.json` | `data/` |
 | `FEZA_KERNEL_DIR` | server | Folder with the SPICE kernels | `data/raw/kernels/` |
-| `VITE_DATA_MODE` | interface | `live` reads the server; anything else reads the example files in `data/examples/` | example files |
+| `VITE_DATA_MODE` | interface | `live` reads the server; anything else reads the recorded answers in `data/examples/recorded/` and the example files in `data/examples/` | example files |
 
 > [!WARNING]
 > Never commit `.env` or any secret. It is ignored by `.gitignore`.
@@ -139,7 +145,7 @@ python -m uvicorn app.main:app --app-dir backend --port 8000 --reload
 npm --prefix frontend run dev
 ```
 
-Open <http://127.0.0.1:5173/?data=live>. The development server forwards `/api` to port 8000. Without `?data=live` (or `VITE_DATA_MODE=live`) the interface shows the example payloads from `data/examples/`, which is useful when the server is not running.
+Open <http://127.0.0.1:5173/?data=live>. The development server forwards `/api` to port 8000. Without `?data=live` (or `VITE_DATA_MODE=live`) the interface shows recorded server answers (`data/examples/recorded/`: every catalogue site and candidate region, December 2026, 2 m mast) and, for any other choice, the general examples in `data/examples/` with a note that they do not match. Example mode does not compute anything; it is useful when the server is not running.
 
 The API answers under <http://127.0.0.1:8000/api>, for example `/api/health` and `/api/sites`. FastAPI's interactive documentation is at <http://127.0.0.1:8000/docs>.
 
@@ -152,7 +158,10 @@ The API answers under <http://127.0.0.1:8000/api>, for example `/api/health` and
 5. In the Plan door, open **Site recommendation**, set the weights and limits and rank the Mons Mouton sites for the active period and mast; use a ranked site as the scenario or add the top three to the comparison.
 6. Open the **Comms** tab (the **Earth link** panel in Plan, **Talking to Earth** in Explore and Classroom) to see the link windows over the period, which ground stations see the Moon at the selected moment, and when a relay would be needed.
 7. Switch the map to **3D Moon** (or open the **3D Moon** panel in Explore and Classroom) to see the sites and candidate regions on a globe lit for the selected moment; drag to turn it and pick a place from the list.
-8. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
+8. With a site or candidate region of Mons Mouton selected, switch the map to **3D terrain** to see the region's relief with the chosen colour layer, lit for the selected moment.
+9. Switch the map to **Space** (the **Earth and Moon** panel in Explore and Classroom) to see who can talk to whom at the selected moment; the **Moon**, **Earth** and **Link** buttons move the camera.
+10. Open a **research scenario** from any door to load a ready-made question with its site, period and sources.
+11. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
 
 Main endpoints ([ADR-0004](docs/adr/0004-api-uc-noktalari.md)):
 
@@ -197,7 +206,7 @@ The server tests need the SPICE kernels; run `python backend/scripts/download_ke
 
 `python backend/scripts/run_validation.py --in-process` runs the reference tests of [docs/PLAN.md, 4.2](docs/PLAN.md) against the endpoints without a separate server and writes [`data/validation_report.json`](data/validation_report.json) and [`docs/validation-report.md`](docs/validation-report.md). Without `--in-process` it calls a server on port 8000. The first run also reads one NASA map window over the network for the approximate comparison T6; `--no-t6` skips it.
 
-Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The current run ([`docs/validation-report.md`](docs/validation-report.md)) has 85 passing checks, no failures and one approximate comparison (T6); T8 checks the sub-solar and sub-Earth points on the Moon against JPL Horizons, T9 the limits of the candidate regions and T10 the sub-lunar and sub-solar points on the Earth against JPL Horizons. The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
+Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The final run of 15 November 2026 ([`docs/validation-report.md`](docs/validation-report.md)) has 113 passing checks, no failures and one approximate comparison (T6); T8 checks the sub-solar and sub-Earth points on the Moon against JPL Horizons, T9 the limits of the candidate regions, T10 the sub-lunar and sub-solar points on the Earth against JPL Horizons, T11 the consistency of the site recommendation and T12 the Moon's elevation at the three Deep Space Network stations against JPL Horizons and the edges of the link windows. The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
 
 ## Known Limits
 
@@ -208,7 +217,8 @@ Every expected value in the report comes from a row marked verified in [`docs/re
 - **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, with Earth's rotation from the `IAU_EARTH` model (no nutation, no UT1 correction); the 10° minimum station elevation is an assumption. The same model gives the sub-lunar and sub-solar points on the Earth in `/api/body-series`, so their longitudes can be off by up to 0.1° (T10).
 - **The score is not a landing safety guarantee.** It ranks sites for the weights the user chose. The 12° slope limit is the Apollo lunar module's landing limit (SP-2013-605, [verified in gorev-araclari.md, row 89](docs/research/dogrulama/gorev-araclari.md)); the other thresholds are assumptions and are marked as such.
 - **No rocks or small craters.** Candidate regions and their scores come from 20 m maps; boulders and craters smaller than a cell are not in the data.
-- **The 3D Moon is a plain grey sphere.** It has no surface texture yet and no terrain relief; its light comes from the server's Sun direction for the nearest hourly sample, and nothing on it casts shadows.
+- **The 3D views draw, they do not compute.** The 3D Moon's surface image is NASA's colour map, shown for orientation only; the globe has no relief, its light comes from the server's Sun direction for the nearest hourly sample, and nothing on it casts shadows. The 3D terrain exaggerates heights three times, is drawn from at most 250 points per side, and does not compute cast shadows. In the space view the Earth–Moon distance and the body sizes are compressed, the stars are decorative, and the antennas, lander and relay are drawings.
+- **Example mode is not a live calculation.** Without the server the interface shows answers recorded from it for December 2026, a 2 m mast and the vertical tracking panel; other choices fall back to general examples, and a note says so.
 - **Eclipses** treat Earth as a sharp disk and the Sun as uniformly bright.
 - **Terrain horizon accuracy** is compared with NASA's illumination map only approximately (T6).
 - **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site.
@@ -236,7 +246,7 @@ All computation happens on the server; the interface only formats the server's n
 .
 ├── backend/              # FastAPI server: app/ (api, core, models, terrain), scripts/, tests/
 ├── frontend/             # React + TypeScript + Vite web interface
-├── frontend-migrate/     # Reference interface design export (layout, tokens)
+├── frontend-migrate/     # Design export the interface reads: tokens, fonts, icons, motion (from LunaPath)
 ├── data/
 │   ├── sites.json        # Site catalogue with coordinate sources
 │   ├── panel_profiles.json
@@ -245,12 +255,11 @@ All computation happens on the server; the interface only formats the server's n
 │   ├── ground_stations.json  # Deep Space Network stations with coordinate sources
 │   ├── horizons/         # Precomputed terrain horizon profiles
 │   ├── layers/           # Map layers at 40 m, used when data/raw/layers is absent
-│   ├── examples/         # One example payload per endpoint, test vectors
+│   ├── examples/         # One example payload per endpoint, test vectors; recorded/ holds recorded server answers
 │   ├── validation_report.json
 │   └── raw/              # Downloaded kernels and layers (not committed)
 ├── docs/                 # Plan, ADRs, design notes, research, submission text
 ├── shipmodel/            # IM-2 Athena lander model and its Blender build script
-├── public/assets/        # Images used in the docs
 ├── AGENTS.md             # Rules for AI coding agents
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
@@ -269,6 +278,8 @@ Data the code actually uses:
 | `LDEM_80S_20MPP_ADJ_HILL`, `LDSM_80S_20MPP_ADJ`, `LPSR_80S_20MPP_ADJ` | Hillshade, slope and permanent shadow layers; candidate regions and their slope and shadow values | NASA GSFC PGDA product 90 |
 | `AVGVISIB_75S_120M_201608` | Approximate comparison T6 (validation only) | NASA GSFC PGDA product 69, <https://pgda.gsfc.nasa.gov/products/69> |
 | Deep Space Network station coordinates (DSS 14, DSS 63, DSS 43) | Ground station view in the Earth link | NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P, <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
+| NASA SVS 4720 "CGI Moon Kit" colour map | Surface image of the 3D Moon and the space view, for orientation only | NASA Scientific Visualization Studio, <https://svs.gsfc.nasa.gov/4720> |
+| NASA Blue Marble Next Generation, April 2004, with topography and bathymetry | Earth's surface in the space view, for orientation only | NASA Earth Observatory, <https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/> |
 | Site coordinates | Site catalogue | NASA NSSDC lunar artifact table; LROC site releases; each site's source is in `data/sites.json` |
 | JPL Horizons | Reference values for tests only; never called at run time | <https://ssd.jpl.nasa.gov/horizons/> |
 
@@ -288,6 +299,8 @@ Main open source dependencies and their licences, read from the installed packag
 | React, Vite, Vitest | MIT |
 | three.js | MIT |
 | TypeScript | Apache-2.0 |
+| Archivo, Archivo Narrow, Azeret Mono (fonts) | SIL Open Font License 1.1 |
+| Material Symbols Outlined (icons) | Apache-2.0 |
 
 All are compatible with this project's Apache 2.0 licence.
 
@@ -295,16 +308,16 @@ All are compatible with this project's Apache 2.0 licence.
 
 The images and short loops in [`frontend/public/media/`](frontend/public/media/) are offline Unreal Engine renders, shown in the interface as labelled illustrations, not as the product's calculation. They cover Moon surface scenes, the three Deep Space Network ground stations and an Earth globe. The lander in the surface scenes is the team's own Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts).
 
-Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
+Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md). The Deep Space Network antenna in the station images is NASA's "Deep Space Network 70 Meter Antenna 3D Model" (NASA VTAD); no NASA insignia or logo appears in the images.
 
 ## Use of AI Tools
 
 The NASA Space Apps rules ask teams to say where and how AI tools were used.
 
-- **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand. The rules the agents follow are in [AGENTS.md](AGENTS.md).
+- **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); it also wrote the role pages and one research note, and that pull request was reviewed with OpenAI Codex. OpenAI Codex was used for code review on most code changes. A team member merged the pull requests: some by hand, some through a script on that member's machine that squash-merges a pull request once the review marked it ready and CI passed. The rules the agents follow are in [AGENTS.md](AGENTS.md).
 - **Research:** the notes in [docs/research/](docs/research/) were drafted with AI assistance. Each claim the product relies on was checked against its source and labelled in [docs/research/dogrulama/](docs/research/dogrulama/); only verified values are used.
-- **Images:** three AI-generated (Grok) rover concept images, `public/assets/grok-*.jpg`, appear in one research note. They are not part of the product or the demo.
-- **Illustration media:** the images in `frontend/public/media/` were rendered in Unreal Engine 5.8. Who prepared them and any other tools used in making them, AI tools included, are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
+- **Images:** three rover concept images were generated with Grok during research. They had no AI watermark, so they and the PDF copy of that research note were removed from the repository; the product and the demo never used them. Unused design assets that looked AI-generated were removed from `frontend-migrate/` for the same reason. No AI-generated image remains in the project.
+- **Illustration media:** the images and loops in `frontend/public/media/` were rendered in Unreal Engine 5.8 from NASA imagery, CC0 assets and the team's own models and scripts. No image-generating AI tool was used for any of them. Who prepared them and every tool and source are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md).
 - **Data:** no data is AI-generated. Positions come from SPICE, terrain from LOLA, reference values from JPL Horizons and published sources.
 
 ## Contributing

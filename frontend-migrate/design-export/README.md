@@ -1,5 +1,10 @@
 # design-export
 
+> **15 November 2026:** every file under `assets/` except `assets/fonts/` was removed from this
+> repository (images, models and video the interface never used, some of them AI-generated without a
+> watermark). `DESIGN.md`, `assets-manifest.json` and `strings.json` still list them; those lists
+> describe the original export and are out of date for `assets/`.
+
 Machine-readable companion to `DESIGN.md`: the exact values of the LunaPath frontend (tokens, fonts,
 motion, colour ramps, icons, feature registry, visible strings, assets, API contract), extracted from
 source by script. Nothing in this folder is typed by hand except this README.
