@@ -50,6 +50,19 @@ File: `stations/earth-globe/overview.jpg`.
 | Scale note | Not to scale: the Moon is placed much closer to Earth than in reality and the satellites are enlarged. The render only illustrates which bodies are involved |
 | Licence of third-party parts | NASA media usage guidelines for all NASA models and imagery (no endorsement implied) |
 
+## 3D Moon surface image
+
+File: `moon/lroc-color-poles-4k.jpg`. Not a render: the colour map wrapped around the 3D Moon view
+(`frontend/src/features/globe/`). It is shown for orientation only and is not used in any calculation.
+
+| Item | Value |
+| --- | --- |
+| Source | NASA Scientific Visualization Studio, "CGI Moon Kit", ID 4720 (<https://svs.gsfc.nasa.gov/4720>), file `lroc_color_poles_4k.tif` (2019 version, 4096 x 2048, equirectangular, centred on 0° longitude) |
+| Credit | NASA's Scientific Visualization Studio; visualizer Ernie Wright (STC), scientist Noah Petro (NASA/GSFC) |
+| Data behind it | LROC WAC Hapke-normalized colour mosaic (643, 566 and 415 nm bands), which covers 70° N to 70° S; the polar caps are filled with the lower resolution LOLA laser-altimeter albedo map (LDAM). NASA notes the map is optimized for appearance, not for science |
+| Changes made | Converted from TIFF to JPEG (quality 85) at the same size; no other edit |
+| Licence | NASA media usage guidelines (no endorsement implied) |
+
 ## Not included
 
 Left out on purpose: each scene's `earth.jpg` and `sun.jpg`, the stations' `moon.jpg` and `moonzoom.jpg`

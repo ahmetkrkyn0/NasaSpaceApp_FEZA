@@ -53,7 +53,7 @@ EARTH_SUB_POINTS_TEST = BACKEND_DIR / "tests" / "core" / "test_earth_sub_points.
 CANDIDATES_SCRIPT = BACKEND_DIR / "scripts" / "make_candidates.py"
 
 STATUSES = ("pass", "warn", "fail", "skipped", "info")
-TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11")
+TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12")
 
 CONDITIONS = {
     "T1": "Six past landings at the landing instant; zero height, flat horizon (sphere)",
@@ -86,6 +86,10 @@ CONDITIONS = {
     "T11": (
         "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default "
         "weights; again with a 3 deg slope limit and with the sunlit weight alone"
+    ),
+    "T12": (
+        "Moon elevation at the three DSN stations against JPL Horizons; GET /api/earth-link at the "
+        "Mons Mouton test site, 0 m mast, 1 to 31 Dec 2026, against the T2b Earth events"
     ),
 }
 """Test conditions of docs/PLAN.md, 4.2; a vector may override with ``condition``."""
@@ -778,6 +782,114 @@ def t11_rows(fetch: Fetch, post: Callable[[str, dict], tuple[int, Any]] | None) 
     return rows
 
 
+# ---------- T12: Earth link (#99, #104) ----------
+
+STATIONS_TEST = BACKEND_DIR / "tests" / "core" / "test_stations.py"
+T12_STATION_SOURCE = "backend/tests/core/test_stations.py (JPL Horizons, queried 15 Nov 2026)"
+T12_PARAMS = {
+    "site_id": "mons-mouton-im2-target", "mast_height_m": 0,
+    "start_utc": "2026-12-01T00:00:00Z", "end_utc": "2026-12-31T00:00:00Z",
+    "earth_criterion": "center",
+}
+
+
+def load_stations_test() -> Any:
+    _ensure_backend_path()
+    spec = importlib.util.spec_from_file_location("t12_stations_test", STATIONS_TEST)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def t12_station_rows(load: Callable[[], Any] = load_stations_test) -> list[dict]:
+    """Moon elevation at each DSN station against Horizons (the #99 reference test's own cases)."""
+
+    note = (f"Computed by {STATIONS_TEST.relative_to(REPO_ROOT).as_posix()} cases with "
+            "ephemeris.moon_elevations_from_earth; IAU_EARTH rotation model, no refraction.")
+    try:
+        test = load()
+    except Exception as exc:  # noqa: BLE001
+        return [_row("T12", "T12-station-elevation", "Moon elevation at the DSN stations", "deg",
+                     T12_STATION_SOURCE, note=f"Reference test could not be loaded: {exc}")]
+    from app.core import ephemeris
+
+    rows = []
+    for station_id, utc, expected in test.HORIZONS_CASES:
+        row = _row("T12", f"T12-{station_id}-{utc[:13]}", f"{station_id}, {utc}: Moon elevation",
+                   "deg", T12_STATION_SOURCE, expected=expected,
+                   threshold=test.ELEVATION_TOL_DEG, note=note)
+
+        def compute(sid=station_id, t=utc):
+            s = test._station(sid)
+            (value,) = ephemeris.moon_elevations_from_earth(
+                s.lat_deg, s.lon_deg, s.elevation_m, [_parse_utc(t)])
+            return value
+
+        _fill(row, compute)
+        rows.append(row)
+    return rows
+
+
+def t12_link_rows(fetch: Fetch, vectors: list[dict]) -> list[dict]:
+    """Earth-link edges at the Mons Mouton test site against the T2b reference events.
+
+    At a 0 m mast the site loses the Earth exactly when T2b's earthset happens,
+    so ``relay_needed`` must start at each earthset and end at the earthrise;
+    thresholds are T2b's own."""
+
+    by_id = {v["id"]: v for v in vectors}
+    status, body = fetch("/api/earth-link", T12_PARAMS)
+    specs = [("T12-relay-start-1", "T2b-earthset-1", "start_utc", 0),
+             ("T12-relay-end-1", "T2b-earthrise-1", "end_utc", 0),
+             ("T12-relay-start-2", "T2b-earthset-2", "start_utc", 1)]
+    rows = []
+    relays = [] if status != 200 else [w for w in body["link_windows"] if w["mode"] == "relay_needed"]
+    for row_id, ref_id, field, index in specs:
+        ref = by_id.get(ref_id)
+        if ref is None:
+            continue
+        row = _row("T12", row_id, f"Mons Mouton test site: relay_needed {field} #{index + 1} "
+                   f"against {ref_id}", "min", ref["source"], expected=ref["expected"],
+                   threshold=ref["threshold"], endpoint="/api/earth-link",
+                   note="0 m mast, Earth criterion centre, 1 to 31 Dec 2026.")
+        if status != 200:
+            row["note"] = f"HTTP {status}"
+            row["status"] = "skipped" if status == 404 else "fail"
+        elif index >= len(relays):
+            row["note"] = f"only {len(relays)} relay_needed window(s)"
+        else:
+            measured = relays[index][field]
+            diff = difference(measured, ref["expected"], "utc")
+            row["measured"] = measured
+            row["diff"] = round(diff, 6)
+            warn = ref.get("warn_threshold")
+            if abs(diff) <= float(ref["threshold"]) + 1e-9:
+                row["status"] = "pass"
+            elif warn is not None and abs(diff) <= float(warn):
+                row["status"] = "warn"
+            else:
+                row["status"] = "fail"
+        rows.append(row)
+
+    ref = by_id.get("T2b-earth-hidden-fraction")
+    if ref is not None:
+        row = _row("T12", "T12-relay-fraction", "Mons Mouton test site: share of time relay_needed "
+                   "against the T2b Earth-hidden fraction", "1", ref["source"],
+                   expected=ref["expected"], threshold=ref["threshold"], endpoint="/api/earth-link")
+        if status == 200:
+            start, end = _parse_utc(T12_PARAMS["start_utc"]), _parse_utc(T12_PARAMS["end_utc"])
+            hidden = sum((_parse_utc(w["end_utc"]) - _parse_utc(w["start_utc"])).total_seconds()
+                         for w in relays)
+            value = hidden / (end - start).total_seconds()
+            row["measured"] = round(value, 6)
+            row["diff"] = round(value - float(ref["expected"]), 6)
+            row["status"] = "pass" if abs(row["diff"]) <= float(ref["threshold"]) + 1e-9 else "fail"
+        else:
+            row["note"] = f"HTTP {status}"
+        rows.append(row)
+    return rows
+
+
 # ---------- T9: candidate regions (#103, #104) ----------
 
 T9_SOURCE = "docs/research/dogrulama/gorev-araclari.md, No 89 (slope limit); #103 (method)"
@@ -895,6 +1007,7 @@ TEST_HEADINGS = {
     "T9": "T9: Candidate regions",
     "T10": "T10: Points below the Moon and the Sun on the Earth (JPL Horizons)",
     "T11": "T11: Recommendation consistency",
+    "T12": "T12: Earth link (DSN station elevation and link edges)",
 }
 
 
@@ -982,6 +1095,8 @@ def main(argv: list[str] | None = None) -> int:
     extra += t9_rows()
     extra += t10_rows(fetch)
     extra += t11_rows(fetch, in_process_poster() if args.in_process else http_poster(args.base_url))
+    extra += t12_station_rows()
+    extra += t12_link_rows(fetch, vectors)
     report = run(vectors, fetch, extra)
     report["target"] = "in-process" if args.in_process else args.base_url
     args.out.parent.mkdir(parents=True, exist_ok=True)

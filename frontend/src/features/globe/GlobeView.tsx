@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, type LatLon, type Vec3 } from './coords';
+import { MOON_TEXTURE_URL, TEXTURE_ROTATION_Y } from './texture';
 
 export interface GlobePlace {
   id: string;
@@ -34,8 +35,29 @@ function token(name: string, fallback: string): THREE.Color {
 
 const v3 = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
 
-/** The Moon's surface is drawn neutral grey in both themes; the marks follow the theme tokens. */
+/**
+ * The Moon's surface is neutral grey until the surface image has loaded, and stays grey if it
+ * cannot load; it is the same in both themes. The marks follow the theme tokens.
+ */
 const SURFACE = 'silver';
+
+/** The surface image, loaded once per page and reused when the scene is rebuilt. */
+let moonTexture: THREE.Texture | null = null;
+let moonTextureLoad: Promise<THREE.Texture> | null = null;
+function loadMoonTexture(): Promise<THREE.Texture> {
+  moonTextureLoad ??= new THREE.TextureLoader().loadAsync(MOON_TEXTURE_URL).then(
+    (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      moonTexture = texture;
+      return texture;
+    },
+    (error: unknown) => {
+      moonTextureLoad = null;
+      throw error;
+    },
+  );
+  return moonTextureLoad;
+}
 
 /** Current theme (`<html data-theme>`), so a theme switch rebuilds the scene with its colours. */
 function useThemeKey(): string {
@@ -58,7 +80,7 @@ interface Live {
 }
 
 /** Ambient light when the Sun direction is known (night side stays readable) and when it is not. */
-const AMBIENT_WITH_SUN = 0.12;
+const AMBIENT_WITH_SUN = 0.25;
 const AMBIENT_EVEN = 1.6;
 
 /**
@@ -99,11 +121,17 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
     camera.position.copy(focus ? v3(latLonToVector(focus, 4)) : new THREE.Vector3(0, 0, 4));
     camera.lookAt(0, 0, 0);
 
-    const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 96, 64),
-      new THREE.MeshStandardMaterial({ color: new THREE.Color(SURFACE), roughness: 1, metalness: 0 }),
-    );
+    const surface = new THREE.MeshStandardMaterial({ color: new THREE.Color(SURFACE), roughness: 1, metalness: 0 });
+    const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 64), surface);
+    globe.rotation.y = TEXTURE_ROTATION_Y;
     scene.add(globe);
+    let disposed = false;
+    const showTexture = (texture: THREE.Texture) => {
+      texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+      surface.map = texture;
+      surface.color.set('white');
+      surface.needsUpdate = true;
+    };
     const ambient = new THREE.AmbientLight(0xffffff, AMBIENT_EVEN);
     const sunLight = new THREE.DirectionalLight(0xffffff, 0);
     scene.add(ambient, sunLight);
@@ -183,6 +211,18 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
     observer.observe(host);
 
     liveRef.current = { sunLight, ambient, ring, render };
+    if (moonTexture) {
+      showTexture(moonTexture);
+    } else {
+      loadMoonTexture().then(
+        (texture) => {
+          if (disposed) return;
+          showTexture(texture);
+          render();
+        },
+        () => undefined, // The grey surface stays; the marks and lines do not depend on the image.
+      );
+    }
     applyLight(liveRef.current, lightRef.current.sun, lightRef.current.subEarth);
     resize();
     if (controls.enableDamping) loop();
@@ -199,6 +239,7 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
     renderer.domElement.addEventListener('click', onClick);
 
     return () => {
+      disposed = true;
       liveRef.current = null;
       cancelAnimationFrame(frame);
       observer.disconnect();

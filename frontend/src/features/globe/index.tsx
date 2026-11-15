@@ -12,6 +12,7 @@ import { formatUtc } from '../timeline/time';
 import { sunDirection, type LatLon } from './coords';
 import type { GlobePlace } from './GlobeView';
 import { bodySeriesRequest, lightAt } from './light';
+import { SURFACE_IMAGE_NOTE } from './texture';
 import './globe.css';
 
 /** three.js lives in this chunk and is only fetched when a 3D view opens (issue #105, item 4). */
@@ -104,6 +105,7 @@ export function MoonGlobe({ places, selectedId, onPick, light, note }: MoonGlobe
         {light.subEarth ? <li>Ring: sub-Earth point (Earth overhead)</li> : null}
         <li>Lines every 30° of latitude and longitude; drag to turn</li>
       </ul>
+      {webgl ? <p className="globe-note">{SURFACE_IMAGE_NOTE}</p> : null}
       <div className="globe-light">
         <p className="globe-note">{sun ? LIGHTING_NOTE : NO_LIGHTING_NOTE}</p>
         {sun && light.utc ? (

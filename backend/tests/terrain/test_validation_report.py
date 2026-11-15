@@ -13,7 +13,7 @@ ROW_FIELDS = (
     "id", "test", "title", "condition", "kind", "expected", "measured", "diff",
     "threshold", "unit", "status", "source", "endpoint", "note",
 )
-REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11"}
+REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"}
 
 
 @pytest.fixture
@@ -113,3 +113,11 @@ def test_t11_rows_check_the_recommendation(report):
             "T11-events-agree"} <= set(rows)
     for row in rows.values():
         assert row["endpoint"] == "/api/recommend"
+
+
+def test_t12_rows_cover_stations_and_link_edges(report):
+    rows = [row for row in report["rows"] if row["test"] == "T12"]
+    stations = [row for row in rows if row["unit"] == "deg"]
+    assert len(stations) == 19 and all(row["threshold"] == 0.1 for row in stations)
+    ids = {row["id"] for row in rows}
+    assert {"T12-relay-start-1", "T12-relay-end-1", "T12-relay-start-2", "T12-relay-fraction"} <= ids
