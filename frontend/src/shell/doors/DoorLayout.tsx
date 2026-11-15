@@ -35,8 +35,7 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
     a.side.length > 0 ? 'has-right-rail' : 'no-right-rail',
   ].join(' ');
   const hasSummary = door === 'explore';
-  const column = [...a.head, ...a.aside];
-  const stageClass = column.length > 0 ? 'door-stage' : 'door-stage no-hud';
+  const stageClass = a.head.length > 0 ? 'door-stage' : 'door-stage no-hud';
 
   return (
     <main className={gridClass} data-door-layout={door}>
@@ -55,9 +54,9 @@ export function DoorLayout({ door, mode, footer }: DoorLayoutProps) {
           <div className="door-stage-main">
             <PanelSlot panels={a.stage} />
           </div>
-          {column.length > 0 ? (
+          {a.head.length > 0 ? (
             <div className="door-stage-hud">
-              <PanelSlot panels={column} />
+              <PanelSlot panels={a.head} />
             </div>
           ) : null}
         </div>

@@ -17,16 +17,14 @@ export interface DoorArrangement {
   left: PanelEntry[];
   /** Main stage, wide: the horizon strip. */
   stage: PanelEntry[];
-  /** Column beside the stage: the countdown. */
+  /** Column beside the stage: the countdown, on its own. */
   head: PanelEntry[];
-  /**
-   * Centre panels of the door (the Surface view illustration), placed in the column beside the
-   * stage under the countdown, so their height never pushes the horizon strip off screen.
-   */
-  aside: PanelEntry[];
   /** Strip under the stage: the timeline. */
   bottom: PanelEntry[];
-  /** Right column: result panels that are not on the stage. */
+  /**
+   * Right column: result panels that are not on the stage, then the door's centre panels (the
+   * Surface view illustration), which fit there without moving the strip, countdown or timeline.
+   */
   side: PanelEntry[];
 }
 
@@ -37,8 +35,7 @@ export function arrangeDoor(filter: PanelFilter): DoorArrangement {
     left: selectPanels('leftRail', filter),
     stage: rail.filter(onStage),
     head: selectPanels('canvasOverlay', filter),
-    aside: selectPanels('center', filter),
     bottom: selectPanels('bottomDock', filter),
-    side: rail.filter((entry) => !onStage(entry)),
+    side: [...rail.filter((entry) => !onStage(entry)), ...selectPanels('center', filter)],
   };
 }

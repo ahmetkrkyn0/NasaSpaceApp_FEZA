@@ -58,13 +58,19 @@ export function SceneView({ choice, initialView = 'poster' }: SceneViewProps) {
   const alt = `Illustration of ${scene.title.toLowerCase()} terrain (${buttons.find((b) => b.id === view)?.label ?? 'Scene'}); not the real surface of this site.`;
 
   return (
-    <section className="scene-panel" aria-label="Surface view">
-      <div className="scene-head">
-        <h2 className="panel-kicker">Surface view</h2>
-        <span className="scene-tag">Illustration</span>
+    <section className="scene-panel has-figure" aria-label="Surface view">
+      {/*
+        The tag and both notes form one block that stays on screen (sticky) while any part of the
+        panel is in view, so the image is never seen without them.
+      */}
+      <div className="scene-lead">
+        <div className="scene-head">
+          <h2 className="panel-kicker">Surface view</h2>
+          <span className="scene-tag">Illustration</span>
+        </div>
+        <p className="scene-note scene-note-strong">{ILLUSTRATION_NOTE}</p>
+        <p className="scene-note scene-lander">{LANDER_NOTE}</p>
       </div>
-      {/* The notes sit next to the image so that any visible part of it is read with them. */}
-      <p className="scene-note scene-note-strong">{ILLUSTRATION_NOTE}</p>
       <figure className="scene-figure">
         {view === 'loop' ? (
           <video
@@ -83,7 +89,6 @@ export function SceneView({ choice, initialView = 'poster' }: SceneViewProps) {
           <img className="scene-media" src={mediaUrl(still)} alt={alt} loading="lazy" />
         )}
       </figure>
-      <p className="scene-note">{LANDER_NOTE}</p>
       <div className="scene-views" role="group" aria-label="Illustration view">
         {buttons.map((b) => (
           <button
@@ -100,7 +105,7 @@ export function SceneView({ choice, initialView = 'poster' }: SceneViewProps) {
       <p className="scene-type">
         <span className="scene-type-name">{scene.title}</span> · {scene.description}
       </p>
-      <p className="scene-note">
+      <p className="scene-note scene-basis">
         Terrain type: {site.basis} Source: {sourceLink(site.source_url, site.source_label)}
       </p>
     </section>

@@ -19,7 +19,11 @@ const ids = (list: { id: string }[]) => list.map((p) => p.id);
 describe('door arrangement', () => {
   it('puts the horizon strip on the Explore stage with the countdown and timeline', () => {
     const a = arrangeDoor({ door: 'explore', mode: 'plan' });
+    // The Surface view goes to the end of the right column, so the strip, countdown and timeline
+    // keep their places.
     expect(ids(a.stage)).toEqual(['sky']);
+    expect(ids(a.head)).toEqual(['hud']);
+    expect(ids(a.side).at(-1)).toBe('scene');
     expect(ids(a.head)).toEqual(['hud']);
     expect(ids(a.bottom)).toEqual(['timeline']);
     expect(ids(a.side)).not.toContain('sky');
@@ -29,13 +33,15 @@ describe('door arrangement', () => {
     const a = arrangeDoor({ door: 'classroom', mode: 'analyze' });
     expect(ids(a.left)).toContain('tasks');
     expect(ids(a.stage)).toEqual(['sky']);
+    expect(ids(a.head)).toEqual(['hud']);
+    expect(ids(a.side).at(-1)).toBe('scene');
     expect(ids(a.bottom)).toEqual(['timeline']);
   });
 
   it.each(['explore', 'classroom'] as Door[])('places each panel the registry gives %s exactly once and nothing else', (door) => {
     const filter = { door, mode: 'plan' as const };
     const a = arrangeDoor(filter);
-    const placed = [...a.left, ...a.stage, ...a.head, ...a.aside, ...a.bottom, ...a.side].map((p) => p.id).sort();
+    const placed = [...a.left, ...a.stage, ...a.head, ...a.bottom, ...a.side].map((p) => p.id).sort();
     const registered = (['leftRail', 'center', 'canvasOverlay', 'rightRail', 'bottomDock'] as const)
       .flatMap((slot) => ids(selectPanels(slot, filter)))
       .sort();
@@ -68,6 +74,10 @@ describe('changing the door keeps the scenario', () => {
     expect(html).toContain(`data-door-layout="${door}"`);
     expect(html).toContain('data-panel="sky"');
     expect(html).toContain('data-panel="timeline"');
+    // The Surface view sits in the right column, not in the stage.
+    const stage = html.slice(html.indexOf('door-stage-main'), html.indexOf('bottom-dock'));
+    expect(stage).not.toContain('data-panel="scene"');
+    expect(html.slice(html.indexOf('class="right-rail"'))).toContain('data-panel="scene"');
     expect(setScenario).not.toHaveBeenCalled();
     expect(setSelected).not.toHaveBeenCalled();
   });

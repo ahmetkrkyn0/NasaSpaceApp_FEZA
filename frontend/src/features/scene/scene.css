@@ -85,3 +85,15 @@
 .scene-note a {
   color: var(--text-2);
 }
+
+/* Tag and notes stay in view while the right column is scrolled; same background as the column. */
+.scene-lead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 6px;
+  background: var(--bg-surface);
+}
