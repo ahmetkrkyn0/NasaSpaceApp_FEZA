@@ -124,6 +124,11 @@
 
 .door-stage-main {
   grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Panels in the main column (the Surface view) can lay out by its width. */
+  container: door-main / inline-size;
 }
 
 .door-stage-main > .panel-host {

@@ -85,3 +85,56 @@
 .scene-note a {
   color: var(--text-2);
 }
+
+/* Tag and notes stay in view while the panel is scrolled inside the stage. */
+.scene-lead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 6px;
+  background: var(--bg-inset);
+}
+
+/* Wide main column: image on the left; tag, notes, buttons and terrain lines on the right. */
+@container door-main (min-width: 600px) {
+  .scene-panel.has-figure {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'figure lead'
+      'figure views'
+      'figure type'
+      'figure basis';
+    grid-template-rows: auto auto auto 1fr;
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: start;
+  }
+
+  .scene-panel.has-figure .scene-lead {
+    grid-area: lead;
+  }
+
+  .scene-panel.has-figure .scene-figure {
+    grid-area: figure;
+  }
+
+  .scene-panel.has-figure .scene-views {
+    grid-area: views;
+  }
+
+  .scene-panel.has-figure .scene-type {
+    grid-area: type;
+  }
+
+  .scene-panel.has-figure .scene-basis {
+    grid-area: basis;
+  }
+
+  .scene-panel.has-figure .scene-media {
+    max-height: none;
+  }
+}
