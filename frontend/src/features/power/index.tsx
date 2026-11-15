@@ -7,7 +7,7 @@ import { scenarioStore } from '../../state/scenario-store';
 import { eventsRequest, locationWithMast, powerRequest, scenarioDays } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { PANEL_TYPE_LABEL } from '../setup/form';
-import { AsyncBlock, ExampleNote, Field, Fields, HorizonNote, NeedsScenario, PanelHeader, useHorizon, useRequest } from '../setup/shared';
+import { AsyncBlock, ExampleNote, Field, Fields, HorizonNote, NeedsScenario, PanelHeader, ScenarioPeriod, useHorizon, useRequest } from '../setup/shared';
 
 /**
  * Power tab (UC-06): Sun elevation, sunlit time, longest dark, power curve and mean power.
@@ -123,9 +123,7 @@ function PowerForScenario({ scenario }: { scenario: Scenario }) {
     <section className="d-panel" aria-label="Power">
       <PanelHeader title="Power" />
       <ExampleNote />
-      <p className="d-muted">
-        <span className="data">{scenario.label}</span>, {formatDate(scenario.start_utc)} to {formatDate(scenario.end_utc)}
-      </p>
+      <ScenarioPeriod label={scenario.label} start_utc={scenario.start_utc} end_utc={scenario.end_utc} />
       {horizon.state.data ? <HorizonNote horizon={horizon.state.data} /> : null}
 
       <div className="d-section">

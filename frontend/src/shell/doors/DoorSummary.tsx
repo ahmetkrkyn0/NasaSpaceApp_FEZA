@@ -1,5 +1,6 @@
 import { getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
+import { exampleSource } from '../../api/recorded';
 import type { EventList, Scenario, Site } from '../../api/types';
 import { TERRAIN_NOT_INCLUDED } from '../../features/sky/geometry';
 import { describeError } from '../../features/timeline/describe-error';
@@ -39,13 +40,23 @@ export function SummaryView({ scenario, window, events, sites = [], note }: Summ
   }
   const request = eventsRequest(window);
   const endMs = parseUtc(request?.end_utc) ?? window.endMs;
-  const name = placeName(scenario, sites);
-  const sentence = summarySentence({ label: name, startMs: window.startMs, endMs, metrics: events.metrics });
+  const source = exampleSource(events);
+  const name = source && !source.matched ? source.label : placeName(scenario, sites);
+  const sentence = summarySentence({
+    label: name, startMs: source && !source.matched ? Date.parse(source.start_utc) : window.startMs,
+    endMs: source && !source.matched ? Date.parse(source.end_utc) : endMs, metrics: events.metrics,
+  });
   return (
     <section className="door-summary" aria-label="Result">
       <p className="door-summary-text">
         {sentence ?? `Summary not available: the server returned no sunlight or Earth metrics for ${name}.`}
       </p>
+      {source ? (
+        <p className="door-summary-note" role="note">
+          Example data: {source.label}, {source.start_utc.slice(0, 10)} to {source.end_utc.slice(0, 10)}.
+          {source.matched ? ` Recorded ${source.recorded_utc}; sky samples every ${source.sky_step_minutes! / 60} hours.` : ' This example does not match the selected site, period or settings; use a research scenario or live data.'}
+        </p>
+      ) : null}
       <ValidityBadge validity={events.validity} note={events.validity === 'SYNTHETIC' ? TERRAIN_NOT_INCLUDED : undefined} />
     </section>
   );

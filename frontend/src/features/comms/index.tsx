@@ -1,6 +1,6 @@
 import { getCommWindow, getEvents } from '../../api/client';
 import { getDataMode } from '../../api/config';
-import { formatDate, formatDeg, formatHours, formatMinutes, formatPercent, formatUtc } from '../../api/format';
+import { formatDeg, formatHours, formatMinutes, formatPercent, formatUtc } from '../../api/format';
 import { CRITERIA, DEFAULT_EARTH_CRITERION, type CommWindow, type Criterion, type EventList, type RelayStatus, type Scenario } from '../../api/types';
 import { useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
@@ -9,7 +9,7 @@ import { ValidityBadge } from '../../ui/ValidityBadge';
 import { RelayLabel } from './relay';
 import { GroundStations } from './stations';
 import { EarthLinkView } from '../link';
-import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, useRequest } from '../setup/shared';
+import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, ScenarioPeriod, useRequest } from '../setup/shared';
 
 /**
  * Comms tab (UC-07): Earth elevation, visibility windows and time left, for the criterion the
@@ -167,9 +167,7 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
     <section className="d-panel" aria-label="Earth link">
       <PanelHeader title="Earth link" />
       <ExampleNote />
-      <p className="d-muted">
-        <span className="data">{scenario.label}</span>, {formatDate(scenario.start_utc)} to {formatDate(scenario.end_utc)}
-      </p>
+      <ScenarioPeriod label={scenario.label} start_utc={scenario.start_utc} end_utc={scenario.end_utc} />
       <CriterionPicker scenario={scenario} />
       <RelayLabel status={relayStatus(events, comm)} />
       <div className="d-section">

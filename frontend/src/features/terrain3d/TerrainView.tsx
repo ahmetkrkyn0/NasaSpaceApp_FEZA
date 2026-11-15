@@ -30,6 +30,10 @@ function token(name: string, fallback: string): THREE.Color {
 interface Live {
   sunLight: THREE.DirectionalLight;
   ambient: THREE.AmbientLight;
+  geometry: THREE.BufferGeometry;
+  marks: THREE.Group;
+  markers: THREE.Mesh[];
+  size: number;
   render: () => void;
 }
 
@@ -39,8 +43,9 @@ const AMBIENT_EVEN = 1.5;
 /**
  * WebGL view of the terrain mesh, in its own module so three.js loads only when the view
  * opens. It draws the mesh and marks it is given and lights them from the given direction;
- * there are no cast shadows. The scene is built once per mesh, colours, marks and selection;
- * a new Sun direction only moves the light, so playing the timeline does not rebuild it.
+ * there are no cast shadows. The scene and camera are built once per mesh. New colours only
+ * replace the colour attribute, new marks or a new selection only redraw the marks, and a new
+ * Sun direction only moves the light, so none of them resets the camera.
  */
 export default function TerrainView({ mesh, colours, marks, selectedId, onPick, sun }: TerrainViewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -50,6 +55,8 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
   pickRef.current = onPick;
   const sunRef = useRef(sun);
   sunRef.current = sun;
+  const propsRef = useRef({ colours, marks, selectedId });
+  propsRef.current = { colours, marks, selectedId };
 
   useEffect(() => {
     const host = hostRef.current;
@@ -67,7 +74,7 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(mesh.positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colours, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(propsRef.current.colours, 3));
     geometry.setIndex(new THREE.BufferAttribute(mesh.indices, 1));
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();
@@ -84,25 +91,10 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
     const sunLight = new THREE.DirectionalLight(0xffffff, 0);
     scene.add(ambient, sunLight);
 
+    const markGroup = new THREE.Group();
+    scene.add(markGroup);
     const markers: THREE.Mesh[] = [];
     const size = span * 0.012;
-    const siteColour = token('--text', 'white');
-    const candidateColour = token('--mint', 'green');
-    const selectedColour = token('--lavender-bright', 'violet');
-    for (const mark of marks) {
-      const selected = mark.id === selectedId;
-      const top = mark.rank !== undefined && mark.rank <= 3;
-      const s = selected ? size * 1.8 : top ? size * 1.4 : size;
-      const g = mark.kind === 'site' ? new THREE.SphereGeometry(s, 16, 12) : new THREE.BoxGeometry(s * 1.6, s * 1.6, s * 1.6);
-      const marker = new THREE.Mesh(
-        g,
-        new THREE.MeshBasicMaterial({ color: selected ? selectedColour : mark.kind === 'site' ? siteColour : candidateColour }),
-      );
-      marker.position.set(mark.at.x, mark.at.y + s * 1.2, mark.at.z);
-      marker.userData.placeId = mark.id;
-      scene.add(marker);
-      markers.push(marker);
-    }
 
     const camera = new THREE.PerspectiveCamera(40, 1, span / 1000, span * 20);
     camera.up.set(0, 1, 0);
@@ -126,7 +118,8 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
     controls.addEventListener('change', render);
     const observer = new ResizeObserver(resize);
     observer.observe(host);
-    liveRef.current = { sunLight, ambient, render };
+    liveRef.current = { sunLight, ambient, geometry, marks: markGroup, markers, size, render };
+    drawMarks(liveRef.current, propsRef.current.marks, propsRef.current.selectedId);
     applySun(liveRef.current, sunRef.current, span);
     resize();
 
@@ -141,21 +134,35 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
     renderer.domElement.addEventListener('click', onClick);
 
     return () => {
-      liveRef.current = null;
       observer.disconnect();
       renderer.domElement.removeEventListener('click', onClick);
       controls.dispose();
       scene.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
+        if (o instanceof THREE.Mesh && o.parent !== markGroup) {
           o.geometry.dispose();
           const m = o.material;
           (Array.isArray(m) ? m : [m]).forEach((x) => x.dispose());
         }
       });
+      clearMarks(liveRef.current ?? { marks: markGroup, markers });
+      liveRef.current = null;
       renderer.dispose();
       host.removeChild(renderer.domElement);
     };
-  }, [mesh, colours, marks, selectedId]);
+  }, [mesh]);
+
+  // A new colour layer only replaces the vertex colours.
+  useEffect(() => {
+    const live = liveRef.current;
+    if (!live) return;
+    live.geometry.setAttribute('color', new THREE.BufferAttribute(colours, 3));
+    live.render();
+  }, [colours]);
+
+  // New marks or a new selection only redraw the marks.
+  useEffect(() => {
+    if (liveRef.current) drawMarks(liveRef.current, marks, selectedId);
+  }, [marks, selectedId]);
 
   useEffect(() => {
     const live = liveRef.current;
@@ -165,6 +172,38 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
 
   if (failed) return <p className="terrain-note" role="alert">{failed}</p>;
   return <div className="terrain-canvas" ref={hostRef} />;
+}
+
+function clearMarks(live: Pick<Live, 'marks' | 'markers'>) {
+  for (const m of live.markers) {
+    m.geometry.dispose();
+    (m.material as THREE.Material).dispose();
+  }
+  live.marks.clear();
+  live.markers.length = 0;
+}
+
+/** Sites are dots, candidate regions are squares; the selected place is larger and accented. */
+function drawMarks(live: Live, marks: readonly TerrainMark[], selectedId: string | null) {
+  clearMarks(live);
+  const siteColour = token('--text', 'white');
+  const candidateColour = token('--mint', 'green');
+  const selectedColour = token('--lavender-bright', 'violet');
+  for (const mark of marks) {
+    const selected = mark.id === selectedId;
+    const top = mark.rank !== undefined && mark.rank <= 3;
+    const s = selected ? live.size * 1.8 : top ? live.size * 1.4 : live.size;
+    const g = mark.kind === 'site' ? new THREE.SphereGeometry(s, 16, 12) : new THREE.BoxGeometry(s * 1.6, s * 1.6, s * 1.6);
+    const marker = new THREE.Mesh(
+      g,
+      new THREE.MeshBasicMaterial({ color: selected ? selectedColour : mark.kind === 'site' ? siteColour : candidateColour }),
+    );
+    marker.position.set(mark.at.x, mark.at.y + s * 1.2, mark.at.z);
+    marker.userData.placeId = mark.id;
+    live.marks.add(marker);
+    live.markers.push(marker);
+  }
+  live.render();
 }
 
 function applySun(live: Live, sun: ScenePoint | null, distance: number) {

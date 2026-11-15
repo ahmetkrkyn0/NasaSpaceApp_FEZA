@@ -45,6 +45,32 @@ export function missingText(error: unknown, what: string): string {
   return `${what} could not be loaded: ${describeError(error)}`;
 }
 
+/** Places drawn on the terrain, for the keyboard list: top ranked first, then in list order. */
+export function terrainPlaceList(places: readonly GlobePlace[], marks: readonly TerrainMark[]): GlobePlace[] {
+  const drawn = new Set(marks.map((m) => m.id));
+  return places.filter((p) => drawn.has(p.id)).sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
+}
+
+/** Keyboard way to pick a mark: the same places as on the surface, in a native list. */
+export function TerrainPlacePicker({ places, selectedId, onPick }: { places: readonly GlobePlace[]; selectedId: string | null; onPick: (id: string) => void }) {
+  const selected = places.some((p) => p.id === selectedId);
+  return (
+    <label className="terrain-site">
+      <span>Place</span>
+      <select value={selected ? selectedId ?? '' : ''} onChange={(e) => onPick(e.currentTarget.value)} disabled={places.length === 0}>
+        {!selected ? <option value="">{places.length === 0 ? 'No places on this terrain' : 'Choose a place…'}</option> : null}
+        {places.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.rank !== undefined ? `${p.rank}. ` : ''}
+            {p.name}
+            {p.kind === 'candidate' ? ' (candidate)' : ''}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export interface TerrainPanelProps {
   places: readonly GlobePlace[];
   selectedId: string | null;
@@ -95,6 +121,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
     const place = places.find((p) => p.id === id);
     if (place) onPick(place);
   };
+  const listed = useMemo(() => terrainPlaceList(places, marks), [places, marks]);
 
   return (
     <div className="terrain-panel">
@@ -110,6 +137,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
             {LAYER_TEXT[name].label}
           </button>
         ))}
+        <TerrainPlacePicker places={listed} selectedId={selectedId} onPick={pick} />
       </div>
       {heights.status === 'error' ? (
         <p className="terrain-note" role="alert">{missingText(heights.error, 'The elevation layer')}</p>
@@ -151,7 +179,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
           </li>
         ) : null}
         {heightGrid && !heightGrid.bounds ? <li>Example grid without map bounds: sites are not placed on it.</li> : null}
-        <li>Dot: landing site · square: candidate region (larger: top three of the last recommendation). Drag to turn.</li>
+        <li>Dot: landing site · square: candidate region (larger: top three of the last recommendation). Drag to turn; the Place list picks a mark with the keyboard.</li>
       </ul>
     </div>
   );

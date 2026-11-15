@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, type LatLon, type Vec3 } from './coords';
+import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, turnTowards, type LatLon, type Vec3 } from './coords';
 import { MOON_TEXTURE_URL, TEXTURE_ROTATION_Y } from './texture';
 import { cachedTexture, showTexture, token, useThemeKey } from './three-kit';
 
@@ -43,6 +43,10 @@ interface Live {
   sunLight: THREE.DirectionalLight;
   ambient: THREE.AmbientLight;
   ring: THREE.Mesh;
+  markers: THREE.Mesh[];
+  colours: { site: THREE.Color; candidate: THREE.Color; selected: THREE.Color };
+  camera: THREE.PerspectiveCamera;
+  controls: OrbitControls;
   render: () => void;
 }
 
@@ -53,8 +57,9 @@ const AMBIENT_EVEN = 1.6;
 /**
  * WebGL view of the globe. Kept in its own module so that three.js is only loaded when the 3D
  * view is opened. It draws; it computes nothing about the Sun or Earth. The scene is built
- * once per place list, selection and focus; the light and the sub-Earth ring are then moved in
- * place, so playing the timeline neither rebuilds the scene nor resets the camera.
+ * once per place list and theme. A new selection only restyles the marks, a new focus turns
+ * the camera only when the place is on the hidden side, and the light and the sub-Earth ring
+ * are moved in place, so neither picking a site nor playing the timeline resets the camera.
  */
 export default function GlobeView({ places, selectedId, onPick, sun, subEarth, focus }: GlobeViewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -67,6 +72,8 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
   const theme = useThemeKey();
   const lightRef = useRef({ sun, subEarth });
   lightRef.current = { sun, subEarth };
+  const viewRef = useRef({ selectedId, focus });
+  viewRef.current = { selectedId, focus };
 
   useEffect(() => {
     const host = hostRef.current;
@@ -85,7 +92,8 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    camera.position.copy(focus ? v3(latLonToVector(focus, 4)) : new THREE.Vector3(0, 0, 4));
+    const startFocus = viewRef.current.focus;
+    camera.position.copy(startFocus ? v3(latLonToVector(startFocus, 4)) : new THREE.Vector3(0, 0, 4));
     camera.lookAt(0, 0, 0);
 
     const surface = new THREE.MeshStandardMaterial({ color: new THREE.Color(SURFACE), roughness: 1, metalness: 0 });
@@ -102,24 +110,19 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
       scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(line.map((p) => v3(latLonToVector(p, 1.002)))), gridMaterial));
     }
 
-    // Sites are dots, candidate regions are squares; the selected place is larger and accented.
+    // Sites are dots, candidate regions are squares; the selected place is larger and accented
+    // (set by `styleMarkers`, so a new selection does not rebuild the scene).
     const markers: THREE.Mesh[] = [];
-    const siteColour = token('--text', 'white');
-    const candidateColour = token('--mint', 'green');
-    const selectedColour = token('--lavender-bright', 'violet');
+    const colours = { site: token('--text', 'white'), candidate: token('--mint', 'green'), selected: token('--lavender-bright', 'violet') };
     for (const place of places) {
-      const selected = place.id === selectedId;
       const topRanked = place.rank !== undefined && place.rank <= 3;
-      const size = selected ? 0.03 : topRanked ? 0.024 : 0.016;
+      const size = topRanked ? 0.024 : 0.016;
       const geometry = place.kind === 'site' ? new THREE.SphereGeometry(size, 16, 12) : new THREE.BoxGeometry(size * 1.6, size * 1.6, size * 1.6);
-      const marker = new THREE.Mesh(
-        geometry,
-        new THREE.MeshBasicMaterial({ color: selected ? selectedColour : place.kind === 'site' ? siteColour : candidateColour }),
-      );
+      const marker = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
       const p = v3(latLonToVector(place, 1.01));
       marker.position.copy(p);
       marker.lookAt(p.clone().multiplyScalar(2));
-      marker.userData.placeId = place.id;
+      marker.userData = { placeId: place.id, kind: place.kind, size };
       scene.add(marker);
       markers.push(marker);
     }
@@ -171,7 +174,8 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
     const observer = new ResizeObserver(resize);
     observer.observe(host);
 
-    liveRef.current = { sunLight, ambient, ring, render };
+    liveRef.current = { sunLight, ambient, ring, markers, colours, camera, controls, render };
+    styleMarkers(liveRef.current, viewRef.current.selectedId);
     showTexture(moonTexture, surface, renderer, () => !disposed, render);
     applyLight(liveRef.current, lightRef.current.sun, lightRef.current.subEarth);
     resize();
@@ -205,7 +209,24 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
       renderer.dispose();
       host.removeChild(renderer.domElement);
     };
-  }, [places, selectedId, focus, theme]);
+  }, [places, theme]);
+
+  // A new selection restyles the marks; the camera stays where it is.
+  useEffect(() => {
+    if (liveRef.current) styleMarkers(liveRef.current, selectedId);
+  }, [selectedId]);
+
+  // A new focus turns the camera only when the place is hidden, keeping the zoom.
+  useEffect(() => {
+    const live = liveRef.current;
+    if (!live || !focus) return;
+    const c = live.camera.position;
+    const next = turnTowards({ x: c.x, y: c.y, z: c.z }, focus);
+    if (!next) return;
+    live.camera.position.copy(v3(next));
+    live.controls.update();
+    live.render();
+  }, [focus]);
 
   // The selected moment moves only the light and the ring.
   useEffect(() => {
@@ -223,6 +244,16 @@ export default function GlobeView({ places, selectedId, onPick, sun, subEarth, f
       </span>
     </div>
   );
+}
+
+function styleMarkers(live: Live, selectedId: string | null) {
+  for (const marker of live.markers) {
+    const { placeId, kind, size } = marker.userData as { placeId: string; kind: 'site' | 'candidate'; size: number };
+    const selected = placeId === selectedId;
+    marker.scale.setScalar(selected ? 0.03 / size : 1);
+    (marker.material as THREE.MeshBasicMaterial).color.copy(selected ? live.colours.selected : kind === 'site' ? live.colours.site : live.colours.candidate);
+  }
+  live.render();
 }
 
 function applyLight(live: Live, sun: Vec3 | null, subEarth: LatLon | null) {

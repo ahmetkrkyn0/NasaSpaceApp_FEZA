@@ -9,7 +9,7 @@ import { ValidityBadge } from '../../ui/ValidityBadge';
 import { describeError } from '../timeline/describe-error';
 import { currentOnly, useScenario } from '../timeline/data';
 import { formatUtc } from '../timeline/time';
-import { sunDirection, type LatLon } from './coords';
+import { sunDirection, type LatLon, type Vec3 } from './coords';
 import type { GlobePlace } from './GlobeView';
 import { bodySeriesRequest, lightAt } from './light';
 import { SURFACE_IMAGE_NOTE } from './texture';
@@ -31,6 +31,8 @@ export function hasWebGL(): boolean {
 
 export const LIGHTING_NOTE = 'Lighting from the computed Sun direction; no cast shadows.';
 export const NO_LIGHTING_NOTE = 'Even lighting: the computed Sun direction is not loaded, so day and night are not shown.';
+/** Shown while the viewer has chosen even light over the computed Sun direction. */
+export const EVEN_LIGHT_NOTE = 'Even light: not the computed illumination. Turn it off to see day and night for the selected moment.';
 
 export interface GlobeLight {
   subSolar: LatLon | null;
@@ -65,12 +67,27 @@ export interface MoonGlobeProps {
   light: GlobeLight;
   /** Text shown above the globe, e.g. when a list failed to load. */
   note?: string | null;
+  /** Start with even light (the viewer's choice; tests). */
+  initialEven?: boolean;
+}
+
+/** Light the globe draws: the computed Sun direction, unless the viewer chose even light. */
+export function drawnSun(sun: Vec3 | null, even: boolean): Vec3 | null {
+  return even ? null : sun;
+}
+
+/** Note under the globe for the light it draws. */
+export function lightingNote(sun: Vec3 | null, even: boolean): string {
+  if (!sun) return NO_LIGHTING_NOTE;
+  return even ? EVEN_LIGHT_NOTE : LIGHTING_NOTE;
 }
 
 /** Globe with its legend, notes and a keyboard place list. */
-export function MoonGlobe({ places, selectedId, onPick, light, note }: MoonGlobeProps) {
+export function MoonGlobe({ places, selectedId, onPick, light, note, initialEven = false }: MoonGlobeProps) {
   const webgl = useMemo(hasWebGL, []);
   const sun = useMemo(() => sunDirection(light.subSolar), [light.subSolar]);
+  // Even light helps when the selected moment puts the near side in night; it is never the default.
+  const [even, setEven] = useState(initialEven);
   const selected = places.find((p) => p.id === selectedId) ?? null;
   // Refocus only when the selected place changes, not on every new list object.
   const focusLat = selected?.lat_deg;
@@ -94,7 +111,7 @@ export function MoonGlobe({ places, selectedId, onPick, light, note }: MoonGlobe
         </p>
       ) : (
         <Suspense fallback={<p className="globe-note">Loading the 3D view…</p>}>
-          <GlobeView places={places} selectedId={selectedId} onPick={pick} sun={sun} subEarth={light.subEarth} focus={focus} />
+          <GlobeView places={places} selectedId={selectedId} onPick={pick} sun={drawnSun(sun, even)} subEarth={light.subEarth} focus={focus} />
         </Suspense>
       )}
       {/* Below the globe, so the countdown overlay of the Plan door never covers it. */}
@@ -107,8 +124,18 @@ export function MoonGlobe({ places, selectedId, onPick, light, note }: MoonGlobe
       </ul>
       {webgl ? <p className="globe-note">{SURFACE_IMAGE_NOTE}</p> : null}
       <div className="globe-light">
-        <p className="globe-note">{sun ? LIGHTING_NOTE : NO_LIGHTING_NOTE}</p>
-        {sun && light.utc ? (
+        <button
+          type="button"
+          className={`map-button${even ? ' is-active' : ''}`}
+          aria-pressed={even}
+          disabled={!sun}
+          title={sun ? undefined : 'The computed Sun direction is not loaded, so the light is already even.'}
+          onClick={() => setEven((v) => !v)}
+        >
+          Even light
+        </button>
+        <p className="globe-note">{lightingNote(sun, even)}</p>
+        {sun && !even && light.utc ? (
           <p className="globe-note">
             {light.outside ? 'Nearest sample: ' : 'Sample: '}
             <span className="globe-data">{formatUtc(light.utc)}</span>

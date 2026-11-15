@@ -1,0 +1,82 @@
+{
+  "scenarios": [
+    {
+      "id": "polar-sun",
+      "title": "Mons Mouton: a low Sun",
+      "question": "When can a polar lander see the Sun and talk directly to Earth?",
+      "sites": ["mons-mouton-im2-target"],
+      "door": "explore",
+      "view": "2d-sky",
+      "vehicle": "Generic lander with an assumed vertical tracking solar panel",
+      "communication": "Intermittent Earth visibility; direct station windows and relay-needed gaps are computed separately.",
+      "watch": ["The Sun stays near the horizon.", "Earth visibility changes over the period.", "A visible Earth does not guarantee a visible ground station."],
+      "sources": [
+        {"label": "Verified polar solar elevation", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "11"},
+        {"label": "Recorded December events and station windows", "file": "data/examples/recorded/mons-mouton-im2-target/events.json", "row": "response.metrics"}
+      ]
+    },
+    {
+      "id": "far-side",
+      "title": "Chang'e 4: beyond direct Earth view",
+      "question": "Can a far-side lander communicate directly with Earth?",
+      "sites": ["change-4"],
+      "door": "classroom",
+      "view": "2d-sky",
+      "vehicle": "Chang'e 4 site study with a generic assumed solar panel",
+      "communication": "Relay needed throughout this recorded period; no relay orbit or radio link budget is modelled.",
+      "watch": ["Earth remains below the horizon.", "Sunlight and Earth visibility are different constraints.", "The relay label describes a need, not a simulated relay service."],
+      "sources": [
+        {"label": "Verified far-side Earth visibility", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "14"},
+        {"label": "NASA NSSDC lunar artifact table (site coordinates)", "file": "data/sites.json", "row": "change-4.coordinate_source", "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html"},
+        {"label": "Recorded relay windows", "file": "data/examples/recorded/change-4/earth-link.json", "row": "response.link_windows"}
+      ]
+    },
+    {
+      "id": "equatorial-night",
+      "title": "Apollo 11: the lunar night",
+      "question": "How long does darkness last near the equator?",
+      "sites": ["apollo-11"],
+      "door": "classroom",
+      "view": "2d-sky",
+      "vehicle": "Apollo 11 site study with a generic assumed solar panel; not a model of Eagle's power system",
+      "communication": "Earth is visible throughout this recorded period; station availability is a separate calculation.",
+      "watch": ["The longest dark interval in the event timeline.", "The difference between Sun and Earth visibility.", "Power is an assumed panel calculation, not historical mission telemetry."],
+      "sources": [
+        {"label": "Verified lunar rotation and equatorial geometry", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "10"},
+        {"label": "Recorded equatorial night and Earth visibility", "file": "data/examples/recorded/apollo-11/events.json", "row": "response.metrics"}
+      ]
+    },
+    {
+      "id": "athena-points",
+      "title": "Athena: target and landing point",
+      "question": "Does moving from the target point to the landing point change the sky?",
+      "sites": ["im2-athena", "mons-mouton-im2-target"],
+      "door": "classroom",
+      "view": "2d-sky",
+      "vehicle": "IM-2 Athena site comparison with the same generic assumed panel at both points",
+      "communication": "Compare computed Earth visibility at both points; this is not an explanation of mission failure.",
+      "watch": ["The two distinct catalogue coordinates.", "Small differences in computed sunlight and Earth gaps.", "Both points use the same future period and panel assumptions, not their historical flight conditions."],
+      "sources": [
+        {"label": "Verified separation between target and landing point", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "17"},
+        {"label": "Recorded landing-point events", "file": "data/examples/recorded/im2-athena/events.json", "row": "response.metrics"},
+        {"label": "Recorded target-point events", "file": "data/examples/recorded/mons-mouton-im2-target/events.json", "row": "response.metrics"}
+      ]
+    },
+    {
+      "id": "recommendation",
+      "title": "A recommended region and the target",
+      "question": "How does the top recorded candidate compare with the Mons Mouton target?",
+      "sites": ["cand-11", "mons-mouton-im2-target"],
+      "door": "classroom",
+      "view": "2d-sky",
+      "vehicle": "Generic lander, identical assumed vertical tracking panels",
+      "communication": "Compare recorded Earth visibility; the ranking also depends on terrain and the recorded weights.",
+      "watch": ["The first candidate in the recorded recommendation.", "Sunlight, darkness and Earth gaps in the comparison.", "A recommendation is a weighted model result, not a certified safe landing site."],
+      "sources": [
+        {"label": "Verified recommendation consistency", "file": "data/validation_report.json", "row": "T11"},
+        {"label": "Recorded ranking and its assumptions", "file": "data/examples/recorded/region/recommend.json", "row": "response.ranked[0]"},
+        {"label": "Recorded candidate events", "file": "data/examples/recorded/cand-11/events.json", "row": "response.metrics"}
+      ]
+    }
+  ]
+}

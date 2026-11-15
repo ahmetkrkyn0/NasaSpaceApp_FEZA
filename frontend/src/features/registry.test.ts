@@ -15,6 +15,7 @@ const PLAN_PANELS = [
   'scene', 'globe', 'space',
   'recommend',
   'link',
+  'scenarios',
 ];
 
 describe('panel registry', () => {
