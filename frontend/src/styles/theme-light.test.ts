@@ -69,10 +69,12 @@ function contrast(a: Rgba, b: Rgba): number {
 
 /**
  * Grounds text and marks are drawn on: page, rail, card, inset, raised, the horizon strip plot
- * (`--surface-high`), and the floating panels (`--glass`, `--glass-strong`) laid over the page.
+ * (`--surface-high`), the darkest surface step (`--surface-highest`, unused today, so a later use
+ * behind text is already covered; PR #94 review), and the floating panels (`--glass`,
+ * `--glass-strong`) laid over the page.
  */
 function grounds(theme: Map<string, string>): [string, Rgba][] {
-  const opaque = ['--void', '--bg-surface', '--bg-card', '--bg-inset', '--bg-raised', '--surface-high'].map(
+  const opaque = ['--void', '--bg-surface', '--bg-card', '--bg-inset', '--bg-raised', '--surface-high', '--surface-highest'].map(
     (n) => [n, colour(theme, n)] as [string, Rgba],
   );
   const page = colour(theme, '--void');
