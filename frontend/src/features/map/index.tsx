@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { getLayer, getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
@@ -9,6 +9,7 @@ import { scenarioStore } from '../../state/scenario-store';
 import { describeError } from '../timeline/describe-error';
 import { useScenario } from '../timeline/data';
 import { MoonGlobeContainer, globePlaces, withPlace } from '../globe';
+import { terrainAvailability } from '../terrain3d/availability';
 import { MapView, type LayerStatus, type MapCandidate, type MapViewMode } from './MapView';
 import { normalizeLongitude, type GeoPoint } from './projection';
 
@@ -25,6 +26,12 @@ export function withSite(active: Scenario, site: Site): Scenario {
 }
 
 const NO_SITES: readonly Site[] = [];
+
+/** The 3D terrain panel and three.js load only when that view is chosen (issue #106). */
+const TerrainPanel = lazy(() => import('../terrain3d'));
+
+type Dimension = '2d' | '3d' | 'terrain';
+const DIMENSION_LABELS: Record<Dimension, string> = { '2d': '2D map', '3d': '3D Moon', terrain: '3D terrain' };
 
 /** Candidate regions of the recommend store with their rank; catalogue sites are drawn as sites. */
 export function mapCandidates(sites: readonly Site[], recommend: RecommendState): MapCandidate[] {
@@ -43,7 +50,7 @@ export default function MapPanel() {
   const { active } = useScenario();
   const [view, setView] = useState<MapViewMode>('overview');
   // 2D map or 3D Moon; local to the panel, so it never changes the scenario in the address bar.
-  const [dimension, setDimension] = useState<'2d' | '3d'>('2d');
+  const [dimension, setDimension] = useState<Dimension>('2d');
   const [layerName, setLayerName] = useState<LayerName | null>('hillshade');
   const [picked, setPicked] = useState<GeoPoint | null>(null);
   const mode = getDataMode();
@@ -108,21 +115,52 @@ export default function MapPanel() {
     if (active) scenarioStore.setScenario(withPlace(active, { ...candidate, kind: 'candidate' }));
   };
 
+  const terrain = terrainAvailability(active?.site_id ?? null, recommend.candidates);
+  // The selection moved out of the region while the terrain was open: back to the 2D map.
+  useEffect(() => {
+    if (dimension === 'terrain' && !terrain.enabled) setDimension('2d');
+  }, [dimension, terrain.enabled]);
+
   const switcher = (
-    <span className="map-group map-dimension" role="group" aria-label="Map or globe">
-      {(['2d', '3d'] as const).map((d) => (
-        <button
-          key={d}
-          type="button"
-          className={`map-button${d === dimension ? ' is-active' : ''}`}
-          aria-pressed={d === dimension}
-          onClick={() => setDimension(d)}
-        >
-          {d === '2d' ? '2D map' : '3D Moon'}
-        </button>
-      ))}
-    </span>
+    <>
+      <span className="map-group map-dimension" role="group" aria-label="Map, globe or terrain">
+        {(['2d', '3d', 'terrain'] as const).map((d) => {
+          const off = d === 'terrain' && !terrain.enabled;
+          return (
+            <button
+              key={d}
+              type="button"
+              className={`map-button${d === dimension ? ' is-active' : ''}`}
+              aria-pressed={d === dimension}
+              disabled={off}
+              title={off ? terrain.reason ?? undefined : undefined}
+              onClick={() => setDimension(d)}
+            >
+              {DIMENSION_LABELS[d]}
+            </button>
+          );
+        })}
+      </span>
+      {!terrain.enabled && terrain.reason ? <p className="map-note">3D terrain: {terrain.reason}</p> : null}
+    </>
   );
+
+  if (dimension === 'terrain') {
+    return (
+      <section className="map-panel" aria-label="3D terrain">
+        {switcher}
+        <Suspense fallback={<p className="map-note">Loading the 3D terrain…</p>}>
+          <TerrainPanel
+            places={globePlaces(siteList, recommend)}
+            selectedId={active?.site_id ?? null}
+            onPick={(place) => {
+              if (active) scenarioStore.setScenario(withPlace(active, place));
+            }}
+          />
+        </Suspense>
+      </section>
+    );
+  }
 
   if (dimension === '3d') {
     return (
