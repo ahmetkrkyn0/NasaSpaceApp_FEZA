@@ -270,13 +270,9 @@ All are compatible with this project's Apache 2.0 licence.
 
 ### Illustration media
 
-The images and short loops in [`frontend/public/media/`](frontend/public/media/) are offline Unity renders, shown in the interface as labelled illustrations, not as computed data. Full credits, file by file group: [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md).
+The images and short loops in [`frontend/public/media/`](frontend/public/media/) are offline Unity renders, shown in the interface as labelled illustrations, not as computed data. They cover Moon surface scenes, the three Deep Space Network ground stations and an Earth globe. The lander in the surface scenes is the team's own Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts).
 
-| Images | Prepared by | Models | Textures and sky | Licence of third-party parts |
-| ------ | ----------- | ------ | ---------------- | ---------------------------- |
-| Moon surface scenes | pending | Lander: the team's Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts). Rocks and other objects: pending | Terrain and surface: pending. Stars: pending | pending |
-| Ground stations (Goldstone, Madrid, Canberra) | pending | Antennas: pending | pending | pending |
-| Earth globe | pending | Satellite and other objects: pending | Earth and Moon: pending | pending |
+Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
 
 ## Use of AI Tools
 
@@ -285,7 +281,7 @@ The NASA Space Apps rules ask teams to say where and how AI tools were used.
 - **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand. The rules the agents follow are in [AGENTS.md](AGENTS.md).
 - **Research:** the notes in [docs/research/](docs/research/) were drafted with AI assistance. Each claim the product relies on was checked against its source and labelled in [docs/research/dogrulama/](docs/research/dogrulama/); only verified values are used.
 - **Images:** three AI-generated (Grok) rover concept images, `public/assets/grok-*.jpg`, appear in one research note. They are not part of the product or the demo.
-- **Illustration media:** the Unity images in `frontend/public/media/` were rendered by pending. AI tools used in making them: pending.
+- **Illustration media:** the images in `frontend/public/media/` were rendered in Unity. Who prepared them and any other tools used in making them, AI tools included, are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
 - **Data:** no data is AI-generated. Positions come from SPICE, terrain from LOLA, reference values from JPL Horizons and published sources.
 
 ## Contributing
