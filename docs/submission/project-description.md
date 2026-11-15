@@ -14,11 +14,17 @@ Lunar Landing Site Navigator
 
 ## High-Level Project Summary
 
-Lunar Landing Site Navigator lets you pick a landing site and a date on the Moon and see, in one screen, where the Sun and Earth sit above the local horizon, how long sunlight and direct-to-Earth contact last, and how much power a solar panel would collect. Several site and date scenarios can be compared side by side, so a schedule slip or a moved landing point can be judged in minutes instead of by working through several expert tools. On Mons Mouton it also picks candidate regions from NASA's slope and shadow maps and ranks them with weights the user chooses, showing every part of the score, and it shows when the Deep Space Network can see the Moon and when a lander would need a relay. The same answers can be seen on a 2D map, a textured 3D Moon, a 3D view of the Mons Mouton terrain and an Earth–Moon scene with the three ground stations.
+At the lunar south pole the Sun never climbs high: in December 2026 it reaches only 6.47° above the horizon at Mons Mouton, and Earth drops out of sight for 27.7% of the month. A landing site moved a short distance, or a launch slipped by a few days, can decide whether a lander has power and a voice home. Lunar Landing Site Navigator makes that decision visible in one screen.
 
-It addresses the challenge directly: curated and custom sites, free choice of dates, Sun and Earth positions against a real terrain horizon at the south pole, time to sunset and Earthset, power and communication windows, a timeline and a comparison table. It matters because near the lunar south pole the Sun stays close to the horizon, so a small change in place or date can decide whether a mission has power and a link to Earth. The tool makes that sensitivity visible and explains why it happens, for mission planners, educators and the public alike.
+Pick a site and a date, and the tool shows where the Sun and Earth stand against the real terrain horizon, how long sunlight and direct-to-Earth contact last, and how much power a solar panel would collect. Up to four site and date scenarios sit side by side, so a schedule slip or a moved landing point can be judged in minutes instead of across several expert tools. On Mons Mouton it goes one step further: it finds candidate regions in NASA's slope and shadow maps, ranks them with weights the user chooses, shows every part of each score, and tells when a Deep Space Network station can see the Moon and when a relay would be needed. The same answers come alive on a 2D map, a textured 3D Moon, a 3D view of the Mons Mouton terrain and an Earth–Moon scene with the three ground stations.
+
+It answers the challenge point by point: curated and custom sites, any date the ephemeris covers, Sun and Earth against a real terrain horizon, time to sunset and Earthset, power and communication windows, a timeline and a comparison table, and views for three audiences. Every number is computed from NASA data, every result carries a reliability label, and the engine is checked against JPL Horizons in a validation run anyone can repeat. One engine serves mission planners, teachers and the public, so the same answer can be studied in a comparison table, played in a classroom task or felt in a landing-window game.
 
 ## Detailed Project Description
+
+### The problem
+
+NASA's Artemis program and commercial landers of the CLPS program, such as IM-2 Athena, are aiming for the lunar south pole, where craters that never see the Sun may hold water ice. The same geometry that keeps the ice makes landing hard: the Sun skims the horizon, so the surrounding terrain can block it and cut a lander's power, and Earth can sink below the local horizon and cut the direct link. Answering "when is the Sun up here, and can we talk to Earth?" today means combining ephemeris tools, terrain maps and ground station tables by hand. Lunar Landing Site Navigator puts these answers in one place, computed from NASA data and open to anyone with a browser.
 
 ### What it does
 
@@ -45,7 +51,7 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 
 ### How it works
 
-A Python server does all the computation; the web interface only shows the server's numbers.
+A Python server does all the computation, so every view shows the same numbers; the web interface only presents them.
 
 1. **Sun and Earth positions** come from NASA NAIF's SPICE toolkit (through SpiceyPy) with the DE440 planetary ephemeris and the Moon's high-accuracy orientation (`MOON_ME` frame). Positions are computed from the site itself, not from the Moon's centre, with light-time and stellar aberration corrections.
 2. **Horizon:** for the four catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3) and the twelve candidate regions, a terrain horizon was precomputed from NASA LOLA height maps (PGDA product 90) by casting 720 rays out to 150 km, for panel masts of 2 m and 10 m. Elsewhere a flat horizon on a 1737.4 km sphere is used and labelled as such.
@@ -72,16 +78,35 @@ The validation report (data/validation_report.json in the repository, readable v
 
 T7 is the core of the "why small changes matter" story: the same tiny horizon change moves sunrise about twelve times more at the south pole than near the equator, because the Sun climbs so slowly there.
 
+### What makes it different
+
+- **It explains, not only computes.** "Why" cards change one input at a time (site, dates, mast height, panel, Earth criterion) and show which one caused a difference, and every event time carries the range it would move by if the horizon were one arcminute off. This is how the tool shows that the same small horizon change moves sunrise 23.1 minutes at Mons Mouton but 1.98 minutes at Apollo 11 (T7).
+- **Power and contact together.** Sunlight, panel power, Earth in view and the Deep Space Network stations are computed for the same site, period and mast, so one view tells whether a lander can both charge and call home.
+- **Candidate regions with an open score.** Regions are picked from NASA's 20 m slope and permanent shadow maps, and the user's weights rank them with every component shown; a site over the slope limit is listed apart with the reason, never hidden.
+- **One engine, three doors.** Plan, Explore and Classroom share one site, date and moment: an engineer's ranking, a landing-window game and a guided classroom task all read the same computed answer.
+- **Honest by design.** Every value carries a reliability label (measured, model, derived or assumed); flat horizons, panel profiles and illustrations say so on screen, and limits are written down instead of hidden.
+
+### Built on NASA data
+
+NASA data is the core of every answer, not decoration:
+
+- Sun and Earth positions come from NASA NAIF's SPICE kernels (DE440 and the Moon's measured orientation).
+- Terrain horizons, map layers, the 3D terrain and the candidate regions come from LOLA height, slope, hillshade and permanent shadow maps (NASA GSFC PGDA product 90).
+- Ground station visibility uses the Deep Space Network antenna coordinates from NASA/JPL's DSN handbook 810-005.
+- Landing site coordinates come from NASA NSSDC and the LRO Camera (LROC) site releases; the 12° slope limit comes from the Apollo lunar module report NASA TN D-6850.
+- The 3D Moon wears NASA SVS's CGI Moon Kit and the Earth–Moon scene NASA's Blue Marble.
+- JPL Horizons and NASA's LOLA illumination map are the references the validation run checks the results against.
+
 ### Benefits
 
-- One screen and one shared state instead of several expert interfaces.
-- Fast what-if comparison when a launch slips or a landing point moves.
-- Honest numbers: every value has a validity label, a sensitivity range for event times, and a source.
-- The same engine serves an engineer's comparison table, a public sky view and classroom tasks.
+- **For mission planners:** one screen and one shared state instead of several expert interfaces; a what-if comparison in minutes when a launch slips or a landing point moves; candidate regions ranked with weights they control.
+- **For educators:** guided tasks and ready-made research questions that turn real ephemeris and terrain data into a lesson on why the poles are different.
+- **For the public:** a sky view, a 3D Moon, an Earth–Moon scene and a landing-window game that show, without equations, why landing near the south pole is hard.
+- **For everyone:** honest numbers, with a reliability label, a sensitivity range for event times and a source for every value, and a validation run that anyone can repeat.
 
 ### What we hope to achieve
 
-A quick first-look tool that mission teams, students and the public can open in a browser to understand why the south pole is hard: when the Sun and Earth are up, for how long, and what that means for power and contact.
+We want a first-look tool that a mission team, a classroom or a curious visitor can open in a browser and, within a minute, understand why the south pole is hard: when the Sun and Earth are up, for how long, and what that means for power and contact. Because the engine is open, validated against JPL Horizons and built on public NASA data, it can grow with the missions it describes: new sites, new dates and new candidate regions only need data, not a new tool.
 
 ### Tools, languages and software
 
