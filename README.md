@@ -246,7 +246,7 @@ All computation happens on the server; the interface only formats the server's n
 .
 ├── backend/              # FastAPI server: app/ (api, core, models, terrain), scripts/, tests/
 ├── frontend/             # React + TypeScript + Vite web interface
-├── frontend-migrate/     # Reference interface design export (layout, tokens)
+├── frontend-migrate/     # Design export the interface reads: tokens, fonts, icons, motion (from LunaPath)
 ├── data/
 │   ├── sites.json        # Site catalogue with coordinate sources
 │   ├── panel_profiles.json
@@ -260,7 +260,6 @@ All computation happens on the server; the interface only formats the server's n
 │   └── raw/              # Downloaded kernels and layers (not committed)
 ├── docs/                 # Plan, ADRs, design notes, research, submission text
 ├── shipmodel/            # IM-2 Athena lander model and its Blender build script
-├── public/assets/        # Images used in the docs
 ├── AGENTS.md             # Rules for AI coding agents
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
@@ -300,6 +299,8 @@ Main open source dependencies and their licences, read from the installed packag
 | React, Vite, Vitest | MIT |
 | three.js | MIT |
 | TypeScript | Apache-2.0 |
+| Archivo, Archivo Narrow, Azeret Mono (fonts) | SIL Open Font License 1.1 |
+| Material Symbols Outlined (icons) | Apache-2.0 |
 
 All are compatible with this project's Apache 2.0 licence.
 
@@ -313,9 +314,9 @@ Who prepared each image group, the other tools used, and the source and licence 
 
 The NASA Space Apps rules ask teams to say where and how AI tools were used.
 
-- **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand. The rules the agents follow are in [AGENTS.md](AGENTS.md).
+- **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); it also wrote the role pages and one research note, and that pull request was reviewed with OpenAI Codex. OpenAI Codex was used for code review on most code changes. A team member merged the pull requests: some by hand, some through a script on that member's machine that squash-merges a pull request once the review marked it ready and CI passed. The rules the agents follow are in [AGENTS.md](AGENTS.md).
 - **Research:** the notes in [docs/research/](docs/research/) were drafted with AI assistance. Each claim the product relies on was checked against its source and labelled in [docs/research/dogrulama/](docs/research/dogrulama/); only verified values are used.
-- **Images:** three AI-generated (Grok) rover concept images, `public/assets/grok-*.jpg`, appear in one research note. They are not part of the product or the demo.
+- **Images:** three rover concept images were generated with Grok during research. They had no AI watermark, so they and the PDF copy of that research note were removed from the repository; the product and the demo never used them. Unused design assets that looked AI-generated were removed from `frontend-migrate/` for the same reason. No AI-generated image remains in the project.
 - **Illustration media:** the images and loops in `frontend/public/media/` were rendered in Unreal Engine 5.8 from NASA imagery, CC0 assets and the team's own models and scripts. No image-generating AI tool was used for any of them. Who prepared them and every tool and source are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md).
 - **Data:** no data is AI-generated. Positions come from SPICE, terrain from LOLA, reference values from JPL Horizons and published sources.
 

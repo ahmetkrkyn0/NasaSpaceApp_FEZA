@@ -41,6 +41,10 @@ First release, submitted to the NASA Space Apps Challenge 2026.
 - Project page text, README with set-up, data sources, licences and the AI use statement.
 - Repository setup: licence, contribution guidelines, agent instructions, PR and issue templates, PR checks.
 
+### Removed
+
+- AI-generated concept images without a watermark (`public/assets/grok-*.jpg`, the PDF copy of the rover modelling note) and the unused images, models and video of the design export in `frontend-migrate/design-export/assets/`; only the fonts the interface uses are kept.
+
 ### Fixed
 
 - Corrupt SPICE kernels that load without an error now report the data as unavailable instead of being used.
