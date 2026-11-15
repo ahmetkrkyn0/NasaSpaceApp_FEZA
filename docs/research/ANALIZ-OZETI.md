@@ -95,7 +95,7 @@ Doğrulama, konu başına bir yapay zeka ajanıyla paralel yürütüldü. Ajanla
 | `rover-localization/README.md` | Rover konum bulma yöntemleri | Ana not |
 | `rover-localization/rover-konumlama-arastirmasi.pdf` | Aynı notun PDF hali | Ayrı araştırma değil |
 | `rover-modelleme-ve-unreal-gecis.md` | Unreal Engine ile rover simülasyonu | Ana not |
-| `ay-rover-dijital-ikiz.pdf` | Aynı notun PDF hali | Ayrı araştırma değil |
+| `ay-rover-dijital-ikiz.pdf` | Aynı notun PDF hali; yapay zekâ görselleri içerdiği için 15 Kasım 2026'da depodan kaldırıldı (#146) | Ayrı araştırma değil |
 | `ephemeris-rotation-ground-stations/` (PDF, sunum, hesap arşivi, README) | Güneş ve Dünya açıları, araç dönüş açıları, yer istasyonları | Rapor ve çalışan kod |
 | `mission-vehicles-models-physics/` (PDF, sunum, README) | Görev araçları, 3B modeller, lisanslar, fiziksel ölçüler | Rapor |
 | `explainability-mission-differences/` (PDF, README) | Görevler arasındaki farkların nedenleri ve açıklama yöntemleri | Rapor, 37 sayfa |
@@ -388,7 +388,7 @@ Belgenin ana dayanağı olan Mars konum bulma yöntemi (JPL'in Perseverance içi
 
 ### 5.10 Rover modelleme ve Unreal
 
-- **Belgeler:** `rover-modelleme-ve-unreal-gecis.md` ve PDF hali `ay-rover-dijital-ikiz.pdf`
+- **Belgeler:** `rover-modelleme-ve-unreal-gecis.md` ve PDF hali `ay-rover-dijital-ikiz.pdf` (15 Kasım 2026'da depodan kaldırıldı, #146)
 - **Tam tablo:** [dogrulama/rover-modelleme.md](dogrulama/rover-modelleme.md)
 
 | Toplam | Doğrulandı | Kısmen doğru | Yanlış | Kaynağı yok | Doğrulanamadı |

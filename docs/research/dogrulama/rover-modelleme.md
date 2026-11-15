@@ -3,7 +3,7 @@
 Bu dosya [ANALIZ-OZETI.md](../ANALIZ-OZETI.md) belgesinin ekidir. Araştırma notundaki her kontrol edilebilir iddia, notun gösterdiği kaynak açılarak karşılaştırıldı.
 
 - **Doğrulama tarihi:** 14 Kasım 2026
-- **İncelenen dosyalar:** [rover-modelleme-ve-unreal-gecis.md](../rover-modelleme-ve-unreal-gecis.md), [ay-rover-dijital-ikiz.pdf](../ay-rover-dijital-ikiz.pdf)
+- **İncelenen dosyalar:** [rover-modelleme-ve-unreal-gecis.md](../rover-modelleme-ve-unreal-gecis.md), `ay-rover-dijital-ikiz.pdf` (yapay zekâ görselleri içerdiği için 15 Kasım 2026'da depodan kaldırıldı, #146)
 - **Not:** Kanıt sütunundaki alıntılar kaynaktaki haliyle bırakıldı. Sayılar ve birimler kaynakla aynı yazıldı.
 
 | Etiket | Adet |
@@ -37,7 +37,7 @@ Sayılar, formüller ve tablolar iki halde aynı. Fark yalnızca ek cümlelerde:
 - B, LRV notuna "Jüriye anlatılabilecek güçlü bir detay." ekliyor; A'da yok.
 - B, FBX bölümünün başında "Rover'ın nasıl sürüleceği, ne kadar ağır olduğu ve Ay zemininde nasıl kaydığı Unreal'da tanımlanır." cümlesini içeriyor; A'da yok.
 - B, Chaos için "Dışarıdan bir şey eklenmiyor." ve regolit için "Tekerlek batar ve zemini kaydırır." cümlelerini içeriyor; A'da yok.
-- A, başta "literatür değerleri ve rover özellikleri birincil kaynaklardan teyit edilmeli; görseller Grok ile üretilmiştir" notunu ve içindekiler listesini içeriyor; B'de içindekiler dışında bu uyarı yok (görsel altyazılarında Grok notu var).
+- A, başta "literatür değerleri ve rover özellikleri birincil kaynaklardan teyit edilmeli; görseller Grok ile üretilmiştir" notunu (görseller 15 Kasım 2026'da depodan kaldırıldı, #146) ve içindekiler listesini içeriyor; B'de içindekiler dışında bu uyarı yok (görsel altyazılarında Grok notu var).
 
 ## 2. İddia tablosu
 
