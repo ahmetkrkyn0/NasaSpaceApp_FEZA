@@ -12,7 +12,7 @@ from fastapi.responses import Response
 
 from app.errors import DataUnavailable, InvalidParameter
 from app.settings import get_settings
-from app.terrain.layers import LAYER_NAMES, REGIONS, layers_dir, load_layer
+from app.terrain.layers import LAYER_NAMES, REGIONS, find_layer
 
 router = APIRouter(tags=["terrain"])
 
@@ -26,7 +26,9 @@ def layer(
     format: str = Query(default="f32"),
     region: str = Query(default=DEFAULT_REGION),
 ) -> Response:
-    """Return the stored layer ``name`` for ``region``."""
+    """Return the stored layer ``name`` for ``region``: the full resolution
+    copy under ``data/raw/layers`` when present, else the bundled
+    ``data/layers`` copy."""
 
     if name not in LAYER_NAMES:
         raise InvalidParameter(
@@ -40,7 +42,7 @@ def layer(
         )
 
     try:
-        grid = load_layer(layers_dir(get_settings().data_dir), region, name)
+        grid = find_layer(get_settings().data_dir, region, name)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         raise DataUnavailable(f"Layer '{name}' for region '{region}' is not available.") from exc
 

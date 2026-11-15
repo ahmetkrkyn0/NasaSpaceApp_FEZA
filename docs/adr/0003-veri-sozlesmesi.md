@@ -86,6 +86,27 @@ Her örnek:
 
 `horizon_deg` o cismin bulunduğu yöndeki ufuk açısıdır. `visible_fraction` diskin ufkun üstünde kalan kısmıdır: 0 hiç görünmüyor, 1 tamamı görünüyor.
 
+### Cisim serisi (`BodySeries`)
+
+Ay küresinin aydınlanması ve Dünya yönü için ([#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97), bölüm 4.1). Arayüz bu değerlerden yalnızca çizim yapar; gök mekaniği hesabı sunucudadır.
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `frame` | metin | Her zaman `MOON_ME` |
+| `samples` | dizi | Her eleman bir an (aşağıda) |
+| `validity` | metin | Her zaman `DERIVED` |
+
+Her örnek:
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `utc` | metin | Örnek anı |
+| `sub_solar_lat_deg`, `sub_solar_lon_deg` | sayı | Güneş altı noktası: Güneş'in tam tepede olduğu yer. Boylam eksi 180 ile artı 180 arası (ADR-0002, madde 3) |
+| `sub_earth_lat_deg`, `sub_earth_lon_deg` | sayı | Dünya altı noktası: Dünya'nın tam tepede olduğu yer. Aynı boylam kuralı |
+| `earth_distance_km` | sayı | Ay merkezinden Dünya merkezine görünür uzaklık (ışık süresi düzeltmeli) |
+
+Noktalar Ay'ın merkezinden, `LT+S` düzeltmesiyle hesaplanır (ADR-0002, madde 11): o anda Ay'dan bakınca Güneş ve Dünya'nın göründüğü yön. 1737,4 km kürede alt nokta, cismin yönünün yüzeyi kestiği noktadır. Güneş altı noktası JPL Horizons ile 0,0002 derece içinde tutuyor. Dünya altı noktası en çok 0,006 derece farklı, çünkü Horizons `ObsSub` değerini yıldız sapınımı (aberration) düzeltmesi olmadan veriyor; aynı ayarla SPICE, Horizons'ı 0,0001 derece içinde tutuyor (`backend/tests/core/test_sub_points.py`).
+
 ### Olaylar, pencereler ve ölçüler (`EventList`)
 
 | Alan | Tip | Açıklama |
@@ -204,3 +225,4 @@ Yapılacaklar:
 ## Değişiklik notu
 
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `NowStatus` yapısına `night_hours` eklendi (`UC-05`, gecenin uzunluğu). `Scenario` ve `PowerSeries` yapılarına `fixed_azimuth_deg` eklendi (`UC-06`, dik sabit panelde kullanıcının seçtiği yön). `Scenario` yapısına isteğe bağlı `earth_criterion` eklendi (`UC-07`). `utc_earliest` ve `utc_latest` alanlarının ilk sürümde nasıl bulunduğu yazıldı (`UC-10`; [PLAN.md](../PLAN.md), bölüm 12, karar 4).
+- 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `BodySeries` yapısı eklendi (`GET /api/body-series`; Güneş altı ve Dünya altı noktası, Dünya uzaklığı). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.1 ile aynı; örnek dosya `data/examples/body-series.json`.

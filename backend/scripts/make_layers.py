@@ -5,9 +5,15 @@ download of the whole file) and written as ``<region>_<name>.f32`` and
 ``<region>_<name>.json`` (see ``app.terrain.layers``). ``/api/layers/{name}``
 serves these files. All layers of a region must land on the same grid.
 
+``--bundle`` does not touch the network: it reads the full resolution files
+from data/raw/layers/ and writes a block-averaged copy to data/layers/, the
+copy that is committed and served on a clean checkout (method per layer in
+``app.terrain.layers.DOWNSAMPLE_METHODS``).
+
 Usage:
     python backend/scripts/make_layers.py
     python backend/scripts/make_layers.py --region mons-mouton --layers elevation slope
+    python backend/scripts/make_layers.py --bundle          # factor 2: 40 m, 1 MB per layer
 """
 
 from __future__ import annotations
@@ -31,7 +37,10 @@ from app.terrain.layers import (  # noqa: E402
     LAYER_UNITS,
     REGIONS,
     LayerMeta,
+    bundled_layers_dir,
+    downsample_layer,
     layers_dir,
+    load_layer,
     save_layer,
 )
 from app.terrain.projection import latlon_to_xy  # noqa: E402
@@ -80,16 +89,43 @@ def make_region(region_id: str, names: list[str], out_dir: Path) -> None:
         )
 
 
+def bundle_region(region_id: str, names: list[str], raw_dir: Path, out_dir: Path,
+                  factor: int) -> None:
+    total = 0
+    for name in names:
+        small = downsample_layer(load_layer(raw_dir, region_id, name), factor)
+        save_layer(out_dir, small.meta, small.values)
+        size = small.values.nbytes
+        total += size
+        m = small.meta
+        print(f"{region_id}/{name}: {m.rows} x {m.cols} at {m.resolution_m:g} m "
+              f"({m.downsample_method}), {size / 1e6:.2f} MB")
+    print(f"{region_id}: {total / 1e6:.2f} MB in {out_dir}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--region", nargs="+", default=list(REGIONS), choices=list(REGIONS))
     parser.add_argument(
         "--layers", nargs="+", default=DEFAULT_LAYERS, choices=list(LAYER_SOURCES)
     )
-    parser.add_argument("--out-dir", type=Path, default=None, help="default: data/raw/layers")
+    parser.add_argument("--out-dir", type=Path, default=None,
+                        help="default: data/raw/layers (data/layers with --bundle)")
+    parser.add_argument("--bundle", action="store_true",
+                        help="write the downsampled copy from data/raw/layers to data/layers")
+    parser.add_argument("--factor", type=int, default=2, help="block size for --bundle")
     args = parser.parse_args()
 
-    out_dir = args.out_dir or layers_dir(get_settings().data_dir)
+    data_dir = get_settings().data_dir
+    if args.bundle:
+        # All layers of a region share one grid, so the bundle always holds all four.
+        if sorted(args.layers) != sorted(DEFAULT_LAYERS):
+            parser.error("--bundle writes all four layers; drop --layers")
+        out_dir = args.out_dir or bundled_layers_dir(data_dir)
+        for region_id in args.region:
+            bundle_region(region_id, args.layers, layers_dir(data_dir), out_dir, args.factor)
+        return
+    out_dir = args.out_dir or layers_dir(data_dir)
     for region_id in args.region:
         make_region(region_id, args.layers, out_dir)
 

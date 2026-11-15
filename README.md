@@ -108,7 +108,7 @@ npm ci --prefix frontend
 
 `npm ci` installs the exact versions from `frontend/package-lock.json`. The kernel script downloads five SPICE files into `data/raw/kernels/` and skips files that are already there (`--force` downloads them again). A virtual environment (`python -m venv .venv`) is recommended but not required.
 
-Optional, for the map layers: `python backend/scripts/make_layers.py` reads the layer windows from the PGDA 90 maps over the network and stores them in `data/raw/layers/`. Without them the map shows no layer and `/api/layers/<name>` answers 503; everything else works.
+Map layers ship with the repository: `data/layers/` holds the four Mons Mouton layers at 40 m (2 × 2 blocks of the 20 m maps, 4 MB in total), so the map works on a clean checkout. Optional, for full resolution: `python backend/scripts/make_layers.py` reads the 20 m windows from the PGDA 90 maps over the network into `data/raw/layers/`; the server uses them when present. `python backend/scripts/make_layers.py --bundle` rebuilds `data/layers/` from them.
 
 ### Configuration
 
@@ -251,7 +251,7 @@ Data the code actually uses:
 | Site coordinates | Site catalogue | NASA NSSDC lunar artifact table; LROC site releases; each site's source is in `data/sites.json` |
 | JPL Horizons | Reference values for tests only; never called at run time | <https://ssd.jpl.nasa.gov/horizons/> |
 
-The kernels and layers are downloaded by scripts and never committed. NASA data is used under NASA's media and data guidelines; no NASA logo or insignia is used anywhere in the project.
+The kernels and full resolution layers are downloaded by scripts and never committed; only the downsampled layers in `data/layers/` are. NASA data is used under NASA's media and data guidelines; no NASA logo or insignia is used anywhere in the project.
 
 Main open source dependencies and their licences, read from the installed package metadata (this closes the open point in [ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)):
 
