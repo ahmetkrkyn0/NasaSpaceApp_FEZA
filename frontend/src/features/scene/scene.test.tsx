@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import sites from '../../../../data/sites.json';
 import type { Scenario } from '../../api/types';
 import { ILLUSTRATION_NOTE, LANDER_NOTE, SCENE_MEDIA, sceneFor } from './media';
+import { ScenePanelView, sceneKey } from './index';
 import { SceneView } from './SceneView';
 
 const MEDIA_DIR = fileURLToPath(new URL('../../../public/media/', import.meta.url));
@@ -96,6 +97,21 @@ describe('surface view panel', () => {
     const unmapped = renderToStaticMarkup(<SceneView choice={sceneFor(scenario('hakuto-r-m2'))} />);
     expect(unmapped).toContain('No surface illustration for this site.');
     expect(unmapped).not.toContain('<img');
+  });
+
+  it('mounts a fresh view on a site change, so an open loop never carries over', () => {
+    const plains = ScenePanelView({ active: scenario('blue-ghost-1') });
+    const ridges = ScenePanelView({ active: scenario('im2-athena') });
+    // A different key makes React unmount the old view (with its "loop" state) and mount a new one.
+    expect(plains.key).not.toBe(ridges.key);
+    expect(ridges.key).toBe(sceneKey(sceneFor(scenario('im2-athena'))));
+    // The new view gets no initial view, so it starts on the poster without a video element.
+    expect(ridges.props.initialView).toBeUndefined();
+    const fresh = renderToStaticMarkup(ridges);
+    expect(fresh).not.toContain('<video');
+    expect(fresh).toContain('scenes/moon-ridges/poster.jpg');
+    // The same site keeps its key, so switching views inside one site is not reset.
+    expect(ScenePanelView({ active: scenario('im2-athena') }).key).toBe(ridges.key);
   });
 
   it('changes the scene with the site', () => {

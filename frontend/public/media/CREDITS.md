@@ -15,6 +15,7 @@ Files: `scenes/moon-craters/`, `scenes/moon-plains/`, `scenes/moon-ridges/`
 | --- | --- |
 | Prepared by | pending |
 | Tool | Unity (offline renders; Unity is not used at run time) |
+| Other tools used in production | pending |
 | Lander model | Team FEZA's Athena (IM-2) model, built from scratch in Blender by `shipmodel/tools/athena_build.py`; no third-party meshes or textures (`shipmodel/README.md`). Shown upright for scale |
 | Terrain and surface textures | pending |
 | Rocks and other scene objects | pending |
@@ -29,6 +30,7 @@ Files: `stations/dsn-goldstone/`, `stations/dsn-madrid/`, `stations/dsn-canberra
 | --- | --- |
 | Prepared by | pending |
 | Tool | Unity (offline renders) |
+| Other tools used in production | pending |
 | Antenna model | pending |
 | Terrain and textures | pending |
 | Licence of third-party parts | pending |
@@ -41,7 +43,9 @@ File: `stations/earth-globe/overview.jpg`.
 | --- | --- |
 | Prepared by | pending |
 | Tool | Unity (offline render) |
+| Other tools used in production | pending |
 | Earth and Moon textures | pending |
+| Satellite model | pending |
 | Licence of third-party parts | pending |
 
 ## Not included

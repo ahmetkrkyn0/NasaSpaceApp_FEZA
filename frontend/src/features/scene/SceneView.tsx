@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ILLUSTRATION_NOTE, LANDER_NOTE, mediaUrl, type SceneChoice } from './media';
 import './scene.css';
 
@@ -7,7 +7,10 @@ type ViewId = 'poster' | 'loop' | string;
 
 export interface SceneViewProps {
   choice: SceneChoice;
-  /** Initial view; the panel starts on the poster and never plays the loop by itself. */
+  /**
+   * Initial view; the panel starts on the poster and never plays the loop by itself. A new site
+   * mounts a new instance (see `ScenePanelView`), so it also starts on the poster.
+   */
   initialView?: ViewId;
 }
 
@@ -29,9 +32,6 @@ function sourceLink(url: string, label: string) {
  */
 export function SceneView({ choice, initialView = 'poster' }: SceneViewProps) {
   const [view, setView] = useState<ViewId>(initialView);
-  const sceneKey = choice.kind === 'scene' ? choice.site.site_id : choice.kind;
-  // A new site starts again on its poster.
-  useEffect(() => setView(initialView), [sceneKey, initialView]);
 
   if (choice.kind !== 'scene') {
     const text =
