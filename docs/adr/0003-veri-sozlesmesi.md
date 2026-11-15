@@ -136,6 +136,41 @@ Her eleman:
 
 Seçim: merkezi kalıcı gölgede olmayan ve ortalama eğimi sınırı aşmayan pencereler, önce `safe_cell_fraction` büyükten küçüğe, sonra `mean_slope_deg` küçükten büyüğe sıralanır; birbirine `min_separation_km` uzaklıktan yakın olanlar atlanır. Dayanağı olan tek eşik eğim 12°'dir ([dogrulama/gorev-araclari.md](../research/dogrulama/gorev-araclari.md), No 89).
 
+### Saha önerisi (`RecommendRequest`, `RecommendResponse`)
+
+`POST /api/recommend` ([#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97), bölüm 4.4; [#100](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/100)). Bir bölgenin `Candidates` kayıtlarını dönem boyunca puanlar ve sıralar. Puan bir sıralama aracıdır, iniş sahası onayı değildir ([saha-puani.md](../design/saha-puani.md)). Örnek dosya `data/examples/recommend.json`.
+
+İstek:
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `region` | metin | Varsayılan `mons-mouton` |
+| `start_utc`, `end_utc` | metin | Dönem; `/api/events` ile aynı kurallar (en fazla 60 gün) |
+| `mast_height_m` | sayı ya da `null` | Direk yüksekliği kuralı (aşağıda); `null` ise 2 m |
+| `weights` | nesne | `sunlit`, `dark`, `earth`, `slope`, `roughness`, `psr_distance`; her biri 0 ile 1 arası, en az biri 0'dan büyük |
+| `limits` | nesne | `max_slope_deg` (varsayılan 12; 0'dan büyük, en fazla 90) |
+| `psr_preference` | metin | `far` (varsayılan, güç için uzak iyi) ya da `near` (bilim için yakın iyi) |
+| `include_catalogue_sites` | mantıksal | Varsayılan `true`; `kind: "catalogue"` kayıtları da sıralanır |
+
+Yanıt: `ranked` (önce puan alanlar puana göre büyükten küçüğe, eşitlikte kayıt sırası; sonra elenenler), `weights` ve `limits` (kullanılan değerler), `assumptions` (metin dizisi), `validity` (bütün sahaların en düşüğü).
+
+`ranked[]` elemanı: `site_id`, `name`, `lat_deg`, `lon_deg`, `score` (0 ile 100, bir ondalık; elenen sahada `null`), `eliminated`, `eliminated_by` (bozulan sınırların adları, ör. `max_slope_deg`), `components`, `validity` (bileşenlerin en düşüğü).
+
+`components[]` elemanı: `metric`, `value`, `unit`, `normalized` (0 ile 1, 1 en iyi, üç ondalık), `weight`, `validity`. Sıra ve ölçekler:
+
+| `metric` | Kaynak | `unit` | `normalized` | Ölçek dayanağı |
+|---|---|---|---|---|
+| `sunlit_fraction` | Olay hesabı (`EventMetrics`) | `1` | Değerin kendisi | — |
+| `longest_dark_hours` | Olay hesabı | `h` | `1 - değer / 336`, en az 0 | Assumed (saha-puani.md, 4: 14 gün) |
+| `earth_visible_fraction` | Olay hesabı, `earth_criterion` `center` | `1` | Değerin kendisi | — |
+| `mean_slope_deg` | `Candidates` kaydı | `deg` | `1 - değer / max_slope_deg` | Assumed |
+| `slope_std_deg` | `Candidates` kaydı | `deg` | `1 - değer / bölgedeki en büyük` | Assumed (saha-puani.md, 4) |
+| `distance_to_psr_km` | `Candidates` kaydı | `km` | `far`: `değer / bölgedeki en büyük`; `near`: `1 -` bunu. `null` (bölgede kalıcı gölge yok) `far` için 1, `near` için 0 | Assumed |
+
+"Bölgedeki en büyük" bütün aday ve katalog kayıtları üzerinden alınır; `include_catalogue_sites` ölçeği değiştirmez. `score = 100 × Σ(weight × normalized) / Σ weight`, yanıttaki yuvarlanmış `normalized` değerlerinden hesaplanır; bu yüzden bileşenlerden yeniden hesaplanınca aynı sayı çıkar. Olay ölçülerinin `validity` değeri ufuktan gelir (arazi ufku `DERIVED`, düz ufuk `SYNTHETIC`); arazi ölçüleri kaydın `validity` değerini taşır.
+
+Eleme: sahanın penceresindeki en büyük eğim (`Candidates.max_slope_deg`) `limits.max_slope_deg` değerini aşarsa saha elenir. 12° dayanaklıdır (No 89); başka bir değer `assumptions` içinde "Assumed" diye yazılır. Aynı saha, direk yüksekliği ve dönem için olay hesabı süreç içinde önbellekte tutulur; yalnızca ağırlık ya da sınır değişince yeniden hesaplanmaz.
+
 ### Yer istasyonu (`GroundStation`) ve Dünya bağlantısı (`EarthLink`)
 
 Dünya tarafındaki görüş için ([#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97), bölüm 4.2). `/api/ground-stations` yanıtı `GroundStation` dizisidir; kayıtlar `data/ground_stations.json` dosyasından olduğu gibi gelir.
@@ -290,3 +325,4 @@ Yapılacaklar:
 - 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `BodySeries` yapısı eklendi (`GET /api/body-series`; Güneş altı ve Dünya altı noktası, Dünya uzaklığı). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.1 ile aynı; örnek dosya `data/examples/body-series.json`.
 - 15 Kasım 2026, [#103](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/103): `Candidates` yapısı eklendi (`GET /api/candidates`, `data/candidates.json`). Alanlar #97 bölüm 4.3 ile aynı; ek olarak `kind` (#97 eki) ve `method` içinde `stride_m`, `slope_limit_source`, `max_candidates`, `assumed`, `note`. Örnek dosya `data/examples/candidates.json` ve arayüz tipi bu alanları #109 ile alır. Aday kimlikleri (`cand-NN`) `site_id` olarak çözülür; `/api/sites` yalnızca katalog sahalarını döndürür.
 - 15 Kasım 2026, [#99](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/99): `GroundStation` ve `EarthLink` yapıları eklendi (`GET /api/ground-stations`, `GET /api/earth-link`); `data/ground_stations.json` depoda tutulan dosyalara eklendi. Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.2 ile aynı; örnek dosyalar `data/examples/earth-link.json` ve `data/examples/ground-stations.json` ([#108](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/108)). `link_windows` kaplama ve birleştirme kuralı, `station_ids` sırası ve varsayılan eşik yazıldı.
+- 15 Kasım 2026, [#100](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/100): `RecommendRequest` ve `RecommendResponse` yapıları eklendi (`POST /api/recommend`). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.4 ve `data/examples/recommend.json` ile aynı. Ölçekler ve dayanakları, eleme kuralı (penceredeki en büyük eğim, `max_slope_deg` ile) ve `validity` kuralı "Saha önerisi" bölümünde.
