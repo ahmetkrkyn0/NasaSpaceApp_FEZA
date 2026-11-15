@@ -91,10 +91,11 @@ function bestId(row: Row, sites: readonly RoleSite[]): string | null {
 const CW = 720;
 const CH = 230;
 const PAD = 34;
-const EL_MIN = -20;
+const EL_MIN = -90;
 const EL_MAX = 90;
 
-function chartY(elevation: number): number {
+/** Chart height of an elevation; the axis spans the whole range, so no sample is flattened. */
+export function chartY(elevation: number): number {
   const clamped = Math.max(EL_MIN, Math.min(EL_MAX, elevation));
   return CH - PAD - ((clamped - EL_MIN) / (EL_MAX - EL_MIN)) * (CH - 2 * PAD);
 }
@@ -198,7 +199,7 @@ export function EngineerPage() {
           <h2>Sun elevation over the month</h2>
           <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="Sun elevation in degrees for each chosen site across December 2026">
             <line className="rp-svg-axis" x1={PAD} x2={CW - PAD} y1={chartY(0)} y2={chartY(0)} />
-            {[0, 30, 60, 90].map((v) => (
+            {[-90, -45, 0, 45, 90].map((v) => (
               <text key={v} className="rp-svg-compass" x={PAD - 8} y={chartY(v) + 4} textAnchor="end">
                 {v}°
               </text>

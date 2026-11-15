@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import App from '../App';
 import { ROLE_SITES, percent, sampleAt, sampleLabel, siteById } from './data';
 import { EducatorPage } from './EducatorPage';
-import { EngineerPage } from './EngineerPage';
+import { EngineerPage, chartY } from './EngineerPage';
 import { Frame, RECORDED_NOTE } from './parts';
-import { PublicPage } from './PublicPage';
+import { PublicPage, story } from './PublicPage';
 import { ROLES, ROLE_DOOR, liveHref, parseRoleRoute, roleHref } from './route';
 import { StartPage } from './StartPage';
 
@@ -123,7 +123,30 @@ describe('role pages', () => {
     const far = siteById('change-4');
     expect(far.metrics.earth_visible_fraction).toBe(0);
     expect(far.relay_status).toBe('required');
+    expect(story(far)).toContain('Earth never rises here');
+    const html = renderToStaticMarkup(<PublicPage initialSiteId="change-4" />);
+    expect(html).toContain('Earth never rises here');
+    expect(html).toContain('Earth is out of view');
+    expect(html).toContain('Flat horizon, an assumption.');
+    expect(html).toContain('aria-valuetext="Day 16, 00:00 UTC.');
+  });
+
+  it('shows the polar site with its terrain horizon and low Sun', () => {
+    const pole = siteById('mons-mouton-im2-target');
+    const html = renderToStaticMarkup(<PublicPage />);
+    expect(html).toContain('Horizon from the LOLA height map.');
+    expect(html).toContain(`never climbs above ${pole.metrics.max_sun_elevation_deg.toFixed(1)}°`);
+  });
+
+  it('gives the educator the far-side answer from the recorded data', () => {
+    const far = siteById('change-4');
     const html = renderToStaticMarkup(<EducatorPage />);
-    expect(html).toContain(percent(far.metrics.earth_visible_fraction));
+    expect(html).toContain(`Now open ${far.name.replace("'", '&#x27;')} on the far side`);
+  });
+
+  it('keeps deep negative Sun elevations apart on the chart', () => {
+    expect(chartY(-89)).toBeGreaterThan(chartY(-43));
+    expect(chartY(-43)).toBeGreaterThan(chartY(0));
+    expect(chartY(0)).toBeGreaterThan(chartY(88));
   });
 });

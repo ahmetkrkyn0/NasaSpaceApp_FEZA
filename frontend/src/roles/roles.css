@@ -164,7 +164,7 @@
 
 .rp-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
   gap: 18px;
   margin: 0;
   padding: 0;
@@ -405,7 +405,7 @@
 
 .rp-split {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -512,7 +512,7 @@
 
 .rp-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
   gap: 14px;
   margin: 16px 0 0;
   padding: 0;

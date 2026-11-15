@@ -56,7 +56,7 @@ function horizonPath(site: RoleSite, scale: number): string {
   return `M0 ${first.toFixed(1)} ${line} L${W} ${last.toFixed(1)} L${W} ${H} L0 ${H} Z`;
 }
 
-function story(site: RoleSite): string {
+export function story(site: RoleSite): string {
   const m = site.metrics;
   if (site.relay_status === 'required') {
     return `Earth never rises here. A lander at ${site.name} needs a relay satellite to talk home.`;
@@ -67,8 +67,8 @@ function story(site: RoleSite): string {
   return `At ${site.name} the Sun climbs to ${m.max_sun_elevation_deg.toFixed(0)}° and Earth stays in the sky all month. Night still lasts ${daysText(m.longest_dark_hours)}.`;
 }
 
-export function PublicPage() {
-  const [siteId, setSiteId] = useState(ROLE_SITES[0]?.id ?? '');
+export function PublicPage({ initialSiteId }: { initialSiteId?: string } = {}) {
+  const [siteId, setSiteId] = useState(initialSiteId ?? ROLE_SITES[0]?.id ?? '');
   const [step, setStep] = useState(60);
   const site = ROLE_SITES.find((s) => s.id === siteId) ?? ROLE_SITES[0];
   if (!site) return null;
@@ -108,12 +108,21 @@ export function PublicPage() {
           ))}
         </svg>
         <div className="rp-sky-side">
-          <p className="rp-time">{sampleLabel(site, step)}</p>
+          <p className="rp-time" role="status">
+            {sampleLabel(site, step)}
+          </p>
           <p className={`rp-state ${sunUp ? 'rp-state-on' : 'rp-state-off'}`}>{sunUp ? 'The Sun is up' : 'The Sun is below the horizon'}</p>
           <p className={`rp-state ${earthUp ? 'rp-state-on' : 'rp-state-off'}`}>{earthUp ? 'Earth is in view' : 'Earth is out of view'}</p>
           <label className="rp-slider">
             <span>Move through the month</span>
-            <input type="range" min={0} max={site.samples.length - 1} value={step} onChange={(e) => setStep(Number(e.target.value))} />
+            <input
+              type="range"
+              min={0}
+              max={site.samples.length - 1}
+              value={step}
+              aria-valuetext={`${sampleLabel(site, step)}. ${sunUp ? 'Sun up' : 'Sun down'}, ${earthUp ? 'Earth in view' : 'Earth out of view'}.`}
+              onChange={(e) => setStep(Number(e.target.value))}
+            />
           </label>
           <p className="rp-fine">
             {site.horizon === 'terrain' ? 'Horizon from the LOLA height map.' : 'Flat horizon, an assumption.'} Disk sizes are enlarged.
