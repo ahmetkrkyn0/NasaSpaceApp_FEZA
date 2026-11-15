@@ -276,7 +276,7 @@ The images and short loops in [`frontend/public/media/`](frontend/public/media/)
 | ------ | ----------- | ------ | ---------------- | ---------------------------- |
 | Moon surface scenes | pending | Lander: the team's Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts). Rocks and other objects: pending | Terrain and surface: pending. Stars: pending | pending |
 | Ground stations (Goldstone, Madrid, Canberra) | pending | Antennas: pending | pending | pending |
-| Earth globe | pending | none | Earth and Moon: pending | pending |
+| Earth globe | pending | Satellite and other objects: pending | Earth and Moon: pending | pending |
 
 ## Use of AI Tools
 

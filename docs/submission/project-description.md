@@ -32,7 +32,7 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 - **Map layers:** hillshade, elevation, slope and permanently shadowed regions around the south pole.
 - **Three entry points on one engine:** Plan (engineers), Explore (public) and Classroom (educators) share the same site, date and time.
 - **Trust labels:** every result carries a validity label. Results computed with a flat horizon are marked as assumed ("terrain not included"); panel profiles are marked as assumptions.
-- **Illustrations:** pre-rendered images and short loops made with Unity show what the three kinds of landing terrain look like (mare plains, cratered highlands, mountain ridges) and what the three Deep Space Network ground stations look like. They always carry an "Illustration" label. They are pictures, not computed data: the Sun, shadows, stars and lander in them were placed by hand, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
+- **Illustrations:** pre-rendered images and short loops made with Unity illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not computed data: the Sun, shadows, stars and lander in them were placed by hand, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
 
 ### How it works
 
@@ -139,6 +139,6 @@ The repository README states the same in its "Use of AI tools" section.
   |---|---|---|---|---|
   | Moon surface scenes (`scenes/moon-plains`, `moon-craters`, `moon-ridges`) | pending | Lander: the team's Athena model (no third-party parts). Rocks and other objects: pending | Terrain and surface: pending. Stars: pending | pending |
   | Ground stations (`stations/dsn-goldstone`, `dsn-madrid`, `dsn-canberra`) | pending | Antennas: pending | pending | pending |
-  | Earth globe (`stations/earth-globe`) | pending | none | Earth and Moon: pending | pending |
+  | Earth globe (`stations/earth-globe`) | pending | Satellite and other objects: pending | Earth and Moon: pending | pending |
 
   The images carry no NASA logo, flag or insignia.
