@@ -1,10 +1,10 @@
 # Project page text
 
-Text for the NASA Space Apps 2026 project page, one section per form field ([submission guide](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/challenge/project-submission-guide.pdf), "Project page form field instructions"). The form must be filled in English.
+Text for the NASA Space Apps 2026 project page, one section per form field (submission guide (docs/challenge/project-submission-guide.pdf), "Project page form field instructions"). The form must be filled in English.
 
-Every number below either comes from the product's own validation run ([`data/validation_report.json`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/data/validation_report.json), produced by `python backend/scripts/run_validation.py`) or from a row marked "doğrulandı" (verified) in the [`docs/research/dogrulama/`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/tree/main/docs/research/dogrulama/) tables. The source is named next to each number.
+Every number below either comes from the product's own validation run (data/validation_report.json, produced by `python backend/scripts/run_validation.py`) or from a row marked "doğrulandı" (verified) in the docs/research/dogrulama/ tables. The source is named next to each number.
 
-Fields that are not text (demo link, final project link) are filled by the team when the links exist; they are not part of this file. Every link below is a full address, so the text can be pasted into the form as it is; repository links open once the repository is public.
+Fields that are not text (demo link, final project link) are filled by the team when the links exist; they are not part of this file. The text has no tables and no links into the repository, so it can be pasted into the form as it is: files are named by their path in the repository, and every link points to a public page.
 
 ---
 
@@ -41,7 +41,7 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 - **Light theme:** dark by default, with a light theme from the top bar; text and data colours are tested for contrast.
 - **Works without the server:** in example mode the interface shows answers recorded from the live server for every catalogue site and candidate region in December 2026 (2 m mast, vertical tracking panel). Example mode does not compute anything; any other choice shows a general example with a note that it does not match the selection.
 - **Trust labels:** every result carries a validity label. Results computed with a flat horizon are marked as assumed ("terrain not included"); panel profiles are marked as assumptions.
-- **Illustrations:** pre-rendered images and short loops made with Unreal Engine illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not the product's calculation: the Sun, shadows, stars and lander in them belong to each scene's own recorded moment (Sun and Earth directions from JPL DE421), not to the chosen site and moment, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/frontend/public/media/CREDITS.md).
+- **Illustrations:** pre-rendered images and short loops made with Unreal Engine illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not the product's calculation: the Sun, shadows, stars and lander in them belong to each scene's own recorded moment (Sun and Earth directions from JPL DE421), not to the chosen site and moment, and the computed Sun and Earth positions are in the horizon strip. Credits are in frontend/public/media/CREDITS.md.
 
 ### How it works
 
@@ -52,25 +52,23 @@ A Python server does all the computation; the web interface only shows the serve
 3. **Events** are found on a coarse time grid and refined by bisection with a fresh SPICE position at every step, down to one second, treating the Sun and Earth as disks.
 4. **Power** is efficiency × area × 1361 W/m² scaled for the Sun's distance × the panel's angle to the Sun × the visible part of the Sun's disk (above the horizon and not covered by Earth).
 5. **Ground stations and link:** the Moon's elevation at the three Deep Space Network complexes (coordinates from the DSN handbook 810-005) is found the same way as the site events. A direct link needs Earth above the site's horizon and the Moon above one station's minimum elevation (10° by default, an assumption).
-6. **Candidate regions and score:** a 200 m window slides over the 20 m maps in 100 m steps; windows are ranked by their share of cells with slope within 12° outside permanent shadow. The score is the weighted mean of six measures, each scaled to 0 to 1, shown from 0 to 100; the method is in [saha-puani.md](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/design/saha-puani.md).
+6. **Candidate regions and score:** a 200 m window slides over the 20 m maps in 100 m steps; windows are ranked by their share of cells with slope within 12° outside permanent shadow. The score is the weighted mean of six measures, each scaled to 0 to 1, shown from 0 to 100; the method is in docs/design/saha-puani.md.
 7. **Directions for the 3D views:** `/api/body-series` gives the sub-solar and sub-Earth points on the Moon (`MOON_ME`) and the sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) over time from the same SPICE kernels. The 3D Moon and the space view take the hourly sample nearest the selected moment; the space view turns Earth so that its sub-lunar point faces the Moon and its sub-solar point faces the Sun, a change of frame rather than a model of Earth's rotation. The 3D terrain takes its light from the Sun's azimuth and elevation at the site (`/api/sky-series`). The browser does no ephemeris work of its own.
 8. **No atmosphere, libration included, small changes made visible:** the Moon has no air, so no refraction correction is applied; the horizon is set by the terrain and the edge of the 1737.4 km sphere. Earth's position comes from the Moon's measured orientation (`MOON_ME`, DE440), so libration, Earth's slow wobble in the lunar sky, is part of the calculation. The "why" cards change one input at a time, and every event time carries its one-arcminute sensitivity range.
 9. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
 
-The validation report ([`data/validation_report.json`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/data/validation_report.json)) has 85 passing reference checks, no failures, and one approximate comparison ([readable report](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/validation-report.md)):
+The validation report (data/validation_report.json in the repository, readable version docs/validation-report.md) has 85 passing reference checks, no failures, and one approximate comparison:
 
-| Test | What is checked | Result |
-|---|---|---|
-| T1 | Sun and Earth azimuth and elevation at six past landings against JPL Horizons | all 15 within 0.01°; largest difference 0.0049° |
-| T2a, T2b | Mons Mouton, December 2026: highest Sun 6.47°, Earth set 3 Dec 10:03 UTC, rise 11 Dec 04:41 UTC, set 30 Dec 11:02 UTC, Earth hidden 27.7% of the month | all within 0.01°, 2 minutes and 0.5 percentage points |
-| T3 | Mean panel power per m² at Mons Mouton, December 2026, flat horizon: tracking panel 768.8 W, fixed vertical 423.4 W, flat 54.3 W | all within 0.5% |
-| T4 | Horizon dip for a mast: 0.087° at 2 m, 0.194° at 10 m | within 0.001° |
-| T5 | Apollo 11 site, 20 and 21 February 2027: Earth covers the Sun from 22:09 to 00:36 UTC, at most 34.3% | within 2 minutes and 0.5 percentage points |
-| T6 (approximate) | Sunlit share at Mons Mouton: this product 44.98%, NASA's 18.6-year average map 46.46% | reported, not scored: the map averages 18.6 years over a 120 m cell, this run one year at one point |
-| T7 | Sunrise shift for a one-arcminute horizon change: 1.98 minutes at Apollo 11, 23.1 minutes at Mons Mouton | passes |
-| T8 | Sub-solar and sub-Earth points and Earth distance at four instants (2025 to 2027) against JPL Horizons | all 20 pass; largest angle difference 0.0056° (limit 0.01°), largest distance difference 0.0035 km (limit 1 km) |
-| T9 | Candidate regions: largest mean slope 1.19° (limit 12°), no centre in permanent shadow, closest pair 2.15 km apart (at least 2 km), regenerated from the 20 m maps with no field changed | all 4 pass |
-| T10 | Sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) at four instants (2025 to 2027) against JPL Horizons | all 16 pass; largest longitude difference 0.091° (limit 0.1°), largest latitude difference 0.0031° (limit 0.01°) |
+- **T1:** Sun and Earth azimuth and elevation at six past landings against JPL Horizons. Result: all 15 within 0.01°; largest difference 0.0049°.
+- **T2a, T2b:** Mons Mouton, December 2026: highest Sun 6.47°, Earth set 3 Dec 10:03 UTC, rise 11 Dec 04:41 UTC, set 30 Dec 11:02 UTC, Earth hidden 27.7% of the month. Result: all within 0.01°, 2 minutes and 0.5 percentage points.
+- **T3:** Mean panel power per m² at Mons Mouton, December 2026, flat horizon: tracking panel 768.8 W, fixed vertical 423.4 W, flat 54.3 W. Result: all within 0.5%.
+- **T4:** Horizon dip for a mast: 0.087° at 2 m, 0.194° at 10 m. Result: within 0.001°.
+- **T5:** Apollo 11 site, 20 and 21 February 2027: Earth covers the Sun from 22:09 to 00:36 UTC, at most 34.3%. Result: within 2 minutes and 0.5 percentage points.
+- **T6 (approximate):** Sunlit share at Mons Mouton: this product 44.98%, NASA's 18.6-year average map 46.46%. Result: reported, not scored: the map averages 18.6 years over a 120 m cell, this run one year at one point.
+- **T7:** Sunrise shift for a one-arcminute horizon change: 1.98 minutes at Apollo 11, 23.1 minutes at Mons Mouton. Result: passes.
+- **T8:** Sub-solar and sub-Earth points and Earth distance at four instants (2025 to 2027) against JPL Horizons. Result: all 20 pass; largest angle difference 0.0056° (limit 0.01°), largest distance difference 0.0035 km (limit 1 km).
+- **T9:** Candidate regions: largest mean slope 1.19° (limit 12°), no centre in permanent shadow, closest pair 2.15 km apart (at least 2 km), regenerated from the 20 m maps with no field changed. Result: all 4 pass.
+- **T10:** Sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) at four instants (2025 to 2027) against JPL Horizons. Result: all 16 pass; largest longitude difference 0.091° (limit 0.1°), largest latitude difference 0.0031° (limit 0.01°).
 
 T7 is the core of the "why small changes matter" story: the same tiny horizon change moves sunrise about twelve times more at the south pole than near the equator, because the Sun climbs so slowly there.
 
@@ -114,9 +112,9 @@ A quick first-look tool that mission teams, students and the public can open in 
 Yes. SI tools were used as follows:
 
 - **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand.
-- **Research notes:** background research in `docs/research/` was drafted with AI assistance. Each claim used by the product was then checked against its source and labelled verified, partly correct, unverified or without source in the [`docs/research/dogrulama/`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/tree/main/docs/research/dogrulama/) tables. Only verified values are used in the product and in this text.
-- **Images:** three AI-generated concept images of rovers (Grok) appear in one research note ([rover-modelleme-ve-unreal-gecis.md](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/research/rover-modelleme-ve-unreal-gecis.md)) and their file names start with `grok-`. They are not part of the product or the demo.
-- **Illustration media:** the surface, ground station and Earth globe images were rendered in Unreal Engine 5.8 from NASA imagery, CC0 assets and the team's own models and scripts. No image-generating AI tool was used for any of them, so they carry no AI watermark. Who prepared them and every tool and source are recorded in [`frontend/public/media/CREDITS.md`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/frontend/public/media/CREDITS.md).
+- **Research notes:** background research in `docs/research/` was drafted with AI assistance. Each claim used by the product was then checked against its source and labelled verified, partly correct, unverified or without source in the docs/research/dogrulama/ tables. Only verified values are used in the product and in this text.
+- **Images:** three AI-generated concept images of rovers (Grok) appear in one research note (docs/research/rover-modelleme-ve-unreal-gecis.md) and their file names start with `grok-`. They are not part of the product or the demo.
+- **Illustration media:** the surface, ground station and Earth globe images were rendered in Unreal Engine 5.8 from NASA imagery, CC0 assets and the team's own models and scripts. No image-generating AI tool was used for any of them, so they carry no AI watermark. Who prepared them and every tool and source are recorded in frontend/public/media/CREDITS.md.
 - **Data:** no data was generated by AI. All positions come from SPICE, all terrain from LOLA height maps, and reference values from JPL Horizons and published sources.
 - **No NASA branding:** no AI tool was used to create, use or modify NASA logos, flags or mission insignia, and the product contains none.
 
@@ -146,7 +144,7 @@ Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add
 | NASA Science: Deep Space Network 70 Meter Antenna 3D Model (ground station illustrations) | https://science.nasa.gov/resource/deep-space-network-70-meter-antenna-3d-model/ |
 | NASA Science 3D Resources: TDRS satellite model (Earth globe illustration) | https://science.nasa.gov/3d-resources/ |
 
-The last three are used only in the pre-rendered illustrations, never in a calculation; details are in [`frontend/public/media/CREDITS.md`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/frontend/public/media/CREDITS.md).
+The last three are used only in the pre-rendered illustrations, never in a calculation; details are in frontend/public/media/CREDITS.md.
 
 What each source is used for:
 
@@ -158,7 +156,7 @@ What each source is used for:
 - **NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P**: Coordinates of the Goldstone (DSS 14), Madrid (DSS 63) and Canberra (DSS 43) antennas. Source: <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf>
 - **NASA SVS 4720 "CGI Moon Kit" colour map (LROC colour mosaic, LOLA albedo at the poles)**: Surface image of the 3D Moon and the space view, for orientation only; not used in any calculation. Source: <https://svs.gsfc.nasa.gov/4720>
 - **NASA Blue Marble Next Generation, April 2004, with topography and bathymetry**: Earth's surface in the space view, for orientation only. Source: <https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/>
-- **Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605)**: Slope limit of the candidate regions and the default limit of the score. Source: <https://ntrs.nasa.gov/citations/19720018253>; verified in [gorev-araclari.md, row 89](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/research/dogrulama/gorev-araclari.md)
+- **Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605)**: Slope limit of the candidate regions and the default limit of the score. Source: <https://ntrs.nasa.gov/citations/19720018253>; verified in docs/research/dogrulama/gorev-araclari.md, row 89
 - **NASA NSSDC lunar artifact table**: Coordinates of Apollo 11, Chang'e 4, Chang'e 6, SLIM, IM-1 and Blue Ghost 1. Source: <https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html>
 - **LRO Camera (LROC) site releases**: Coordinates of Chandrayaan-3, the IM-2 Athena landing point and the IM-2 target point on Mons Mouton. Source: <https://www.lroc.asu.edu/images/1314>, <https://www.lroc.asu.edu/images/1408>, <https://www.lroc.asu.edu/images/1401>
 
@@ -203,9 +201,9 @@ Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add
 | OpenAI Codex (AI code review; see Use of SI) | https://openai.com/codex/ |
 
 
-- **CSA (Canadian Space Agency):** information cards on Canada's part in lunar exploration, from Apollo to Artemis, shown on the Apollo 11 and Blue Ghost 1 sites (CSA pages listed in [csa-bilgi-kartlari.md](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/design/csa-bilgi-kartlari.md)).
-- **Mission facts** for the past-mission cases (landing times, outcomes) come from the agencies' and operators' own publications; each fact carries its source in [`data/reference_missions.json`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/data/reference_missions.json).
-- **Site coordinates outside NASA sources:** the Hakuto-R M2 impact point comes from the LRO crash-site location as reported by SpacePolicyOnline (June 2025); its entry in [`data/sites.json`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/data/sites.json) names that source.
+- **CSA (Canadian Space Agency):** information cards on Canada's part in lunar exploration, from Apollo to Artemis, shown on the Apollo 11 and Blue Ghost 1 sites (CSA pages listed in docs/design/csa-bilgi-kartlari.md).
+- **Mission facts** for the past-mission cases (landing times, outcomes) come from the agencies' and operators' own publications; each fact carries its source in data/reference_missions.json.
+- **Site coordinates outside NASA sources:** the Hakuto-R M2 impact point comes from the LRO crash-site location as reported by SpacePolicyOnline (June 2025); its entry in data/sites.json names that source.
 - **Software (open source):**
 
   - SpiceyPy: MIT
@@ -220,8 +218,8 @@ Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add
   - TypeScript: Apache-2.0
 
 - **Interface design:** the layout and visual tokens come from the team's own reference design export (`frontend-migrate/`).
-- **3D model:** the Athena lander model was built from scratch by a Blender script; its proportions come from Intuitive Machines' published Nova-C dimensions and photos (sources in [`shipmodel/README.md`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/shipmodel/README.md)). No logos, flags or agency marks are on it.
-- **Illustration media:** the images and short loops in `frontend/public/media/` (Moon surface scenes, ground stations, Earth globe) are offline Unreal Engine renders, shown in the interface as labelled illustrations. The lander in the surface scenes is the team's own Athena model (above; no third-party parts). Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/frontend/public/media/CREDITS.md), and listed below. The images carry no NASA logo, flag or insignia.
+- **3D model:** the Athena lander model was built from scratch by a Blender script; its proportions come from Intuitive Machines' published Nova-C dimensions and photos (sources in shipmodel/README.md). No logos, flags or agency marks are on it.
+- **Illustration media:** the images and short loops in `frontend/public/media/` (Moon surface scenes, ground stations, Earth globe) are offline Unreal Engine renders, shown in the interface as labelled illustrations. The lander in the surface scenes is the team's own Athena model (above; no third-party parts). Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, frontend/public/media/CREDITS.md, and listed below. The images carry no NASA logo, flag or insignia.
 - **Third-party assets in the illustrations:**
   - Poly Haven (<https://polyhaven.com>, CC0, credited although no attribution is required), Moon surface scenes: the "Moon" collection regolith textures (photography Greg Zaal, Rico Cilliers, Jenelle van Heerden; processing Dario Barresi) and the rocks `moon_rock_01` to `moon_rock_07` (Greg Zaal, Rico Cilliers, Jenelle van Heerden, Dario Barresi).
   - Poly Haven (CC0), ground station scenes: ground textures `dry_ground_rocks`, `aerial_grass_rock` and `grass_path_3` (Rob Tuytel); plant and rock models `wild_rooibos_bush`, `searsia_lucida`, `searsia_burchellii`, `namaqualand_boulder_02`, `namaqualand_boulder_05`, `namaqualand_boulder_06`, `namaqualand_rocks_01`, `stone_01`, `island_tree_01`, `island_tree_02`, `jacaranda_tree`, `pine_sapling_small`, `shrub_02`, `grass_medium_02`, `grass_bermuda_01`, `rock_07` and `boulder_01` (James Ray Cock, Jenelle van Heerden, Greg Zaal, Rico Cilliers, Rob Tuytel, Dario Barresi).
