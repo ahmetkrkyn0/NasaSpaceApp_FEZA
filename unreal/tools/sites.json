@@ -1,0 +1,40 @@
+{
+  "sites": [
+    {
+      "id": "leibnitz-beta-plateau",
+      "name": "Leibnitz Beta Plateau",
+      "subtitle": "Artemis III aday bölgesi #10 (gerçek DEM)",
+      "lat_deg": -85.427,
+      "lon_deg": 31.743,
+      "level": "/Game/Maps/Site_LBP",
+      "color": [1.0, 0.5, 0.1]
+    },
+    {
+      "id": "site-craters",
+      "name": "Kraterli Saha",
+      "subtitle": "Temsili arazi (Tycho çevresi örneği)",
+      "lat_deg": -43.3,
+      "lon_deg": -11.4,
+      "level": "/Game/Maps/Site_Craters",
+      "color": [1.0, 0.5, 0.1]
+    },
+    {
+      "id": "site-plains",
+      "name": "Mare Ovası",
+      "subtitle": "Temsili arazi (Sakinlik Denizi örneği)",
+      "lat_deg": 8.5,
+      "lon_deg": 31.4,
+      "level": "/Game/Maps/Site_Plains",
+      "color": [1.0, 0.5, 0.1]
+    },
+    {
+      "id": "site-ridges",
+      "name": "Sırtlı Yaylalar",
+      "subtitle": "Temsili arazi (Apenin Dağları örneği)",
+      "lat_deg": 19.0,
+      "lon_deg": -3.7,
+      "level": "/Game/Maps/Site_Ridges",
+      "color": [1.0, 0.5, 0.1]
+    }
+  ]
+}

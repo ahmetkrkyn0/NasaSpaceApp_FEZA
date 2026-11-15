@@ -13,6 +13,8 @@ If a decision changes, do not delete the old record: set its status to "Supersed
 | 0002 | [Koordinat sistemi, zaman ve açı kuralları](0002-koordinat-sistemi-ve-zaman.md) | Proposed |
 | 0003 | [Veri sözleşmesi](0003-veri-sozlesmesi.md) | Proposed |
 | 0004 | [API uç noktaları](0004-api-uc-noktalari.md) | Proposed |
+| 0005 | [Unreal 3D sahnesi: kapsam ve stack](0005-unreal-sahne-kapsami.md) | Proposed |
+| 0006 | [Python ön hesap → Unreal veri sözleşmesi](0006-unreal-veri-sozlesmesi.md) | Proposed |
 
 ## Template
 
