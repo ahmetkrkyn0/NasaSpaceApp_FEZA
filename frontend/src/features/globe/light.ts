@@ -28,8 +28,8 @@ export interface LightSample {
   outside: boolean;
 }
 
-/** The sample nearest the selected moment, or `null` for an empty series. */
-export function lightAt(series: BodySeries | null, ms: number): LightSample | null {
+/** The server sample nearest a moment, with whether the moment lies outside the series. */
+export function nearestSample(series: BodySeries | null, ms: number): { sample: BodySample; outside: boolean } | null {
   if (!series || series.samples.length === 0) return null;
   let best: BodySample | null = null;
   let bestGap = Infinity;
@@ -46,11 +46,18 @@ export function lightAt(series: BodySeries | null, ms: number): LightSample | nu
       best = s;
     }
   }
-  if (!best) return null;
+  return best ? { sample: best, outside: ms < first || ms > last } : null;
+}
+
+/** The sample nearest the selected moment, or `null` for an empty series. */
+export function lightAt(series: BodySeries | null, ms: number): LightSample | null {
+  const found = nearestSample(series, ms);
+  if (!found) return null;
+  const best = found.sample;
   return {
     subSolar: { lat_deg: best.sub_solar_lat_deg, lon_deg: best.sub_solar_lon_deg },
     subEarth: { lat_deg: best.sub_earth_lat_deg, lon_deg: best.sub_earth_lon_deg },
     utc: best.utc,
-    outside: ms < first || ms > last,
+    outside: found.outside,
   };
 }

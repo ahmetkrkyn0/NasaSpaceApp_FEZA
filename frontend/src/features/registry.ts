@@ -13,6 +13,7 @@ import RecommendPanel from './recommend';
 import ScenePanel from './scene';
 import SetupPanel from './setup';
 import SkyPanel from './sky';
+import SpacePanel from './space';
 import TasksPanel from './tasks';
 import TimelinePanel from './timeline';
 import ValidationPanel from './validation';
@@ -60,6 +61,7 @@ export const PANELS: readonly PanelEntry[] = [
   { id: 'map', title: 'Map', slot: 'center', modes: null, doors: ['plan'], component: MapPanel },
   { id: 'scene', title: 'Surface view', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: ScenePanel },
   { id: 'globe', title: '3D Moon', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: GlobePanel },
+  { id: 'space', title: 'Earth and Moon', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: SpacePanel },
   { id: 'hud', title: 'Countdown', slot: 'canvasOverlay', modes: null, doors: ALL_DOORS, component: HudPanel },
   { id: 'sky', title: 'Sky view', slot: 'rightRail', tab: 'sky', modes: ['analyze'], doors: ALL_DOORS, component: SkyPanel },
   { id: 'power', title: 'Power', slot: 'rightRail', tab: 'power', modes: ['analyze'], doors: ['plan'], component: PowerPanel },

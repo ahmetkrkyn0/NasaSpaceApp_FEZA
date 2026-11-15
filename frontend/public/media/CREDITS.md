@@ -63,6 +63,20 @@ File: `moon/lroc-color-poles-4k.jpg`. Not a render: the colour map wrapped aroun
 | Changes made | Converted from TIFF to JPEG (quality 85) at the same size; no other edit |
 | Licence | NASA media usage guidelines (no endorsement implied) |
 
+## Space scene (Earth and Moon)
+
+Files: `textures/earth-blue-marble-200404.jpg`, `models/athena_lander.glb`; the Moon uses
+`moon/lroc-color-poles-4k.jpg` above. Drawn in the space scene (`frontend/src/features/space/`). The
+images and model are shown for orientation only and are not used in any calculation; the directions
+of the Sun and Earth and Earth's turn come from the server.
+
+| Item | Value |
+| --- | --- |
+| Earth image | NASA Earth Observatory, "Blue Marble: Next Generation" with topography and bathymetry, April 2004 (<https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/>), file `world.topo.bathy.200404.3x5400x2700.jpg` (5400 x 2700, equirectangular, centred on 0° longitude), downloaded 2026-11-15. Used unchanged, renamed |
+| Earth image licence | NASA media usage guidelines (no endorsement implied) |
+| Lander model | Team FEZA's Athena (IM-2) model: byte-identical copy of `shipmodel/export/athena_lander.glb` (MD5 `ec0f9fffe8d317d18a84ccaa478f6de0`), built from scratch in Blender by `shipmodel/tools/athena_build.py`; no third-party meshes or textures. Shown upright and enlarged; it does not show how a mission ended |
+| Antenna marks, relay satellite, stars | Simple shapes and random points made in code (`frontend/src/features/space/`); team FEZA's own work. The relay is an illustration, and the stars are decorative, not a catalogue |
+
 ## Not included
 
 Left out on purpose: each scene's `earth.jpg` and `sun.jpg`, the stations' `moon.jpg` and `moonzoom.jpg`
