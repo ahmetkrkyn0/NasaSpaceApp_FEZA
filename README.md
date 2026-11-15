@@ -1,16 +1,52 @@
 <div align="center">
 
+**English** · [Türkçe](README.tr.md)
+
+<img src="frontend/public/media/backdrop/moon-phases-near-far-poster.jpg" alt="The Moon's near side" width="720">
+
+<sub>Illustration: NASA Scientific Visualization Studio, "Lunar Near and Far Side Phases" (ID 14992), the animation behind the app's opening screen.</sub>
+
 # Lunar Landing Site Navigator
 
-**Compare Moon landing sites and dates at a glance: where the Sun and Earth sit above the horizon, how long the power and direct-to-Earth communication windows last.**
+### Will your lander see the Sun, and can it call home?
+
+At the lunar south pole the Sun never climbs high. In December 2026 it reaches only **6.47°** above the horizon at Mons Mouton, and Earth can drop out of sight for **about five days at a time**. Pick a site and a date, and see power and contact windows computed from NASA data, side by side, in your browser.
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![PR Checks](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/actions/workflows/pr-checks.yml)
 ![Version](https://img.shields.io/badge/version-1.0.0-green)
+![Validation](https://img.shields.io/badge/validation-113%20pass%20%C2%B7%200%20fail-brightgreen)
+![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0b3d91)
+
+**[▶ Demo: slides and 30-second video](https://drive.google.com/drive/folders/1YRAIZKT6ozyZFqt9GNfwpi4g6wL1GMvq?usp=sharing)**
 
 [Overview](#overview) · [Getting Started](#getting-started) · [Usage](#usage) · [Validation](#validation) · [Data Sources](#data-sources-and-licences) · [Use of AI Tools](#use-of-ai-tools)
 
 </div>
+
+## At a glance
+
+| | |
+| --- | --- |
+| **Sites** | 10 catalogue landings (Apollo 11, CLPS, Chang'e, Chandrayaan-3, SLIM, Hakuto-R) + 12 candidate regions on Mons Mouton + any latitude and longitude |
+| **Physics** | NASA NAIF SPICE (DE440, `MOON_ME`), LOLA terrain horizons from 720 rays out to 150 km, events to the second |
+| **Answers** | Sun and Earth on the horizon, sunlit and dark windows, panel power, Deep Space Network link, eclipses, a ranked site recommendation |
+| **Views** | 2D map · textured 3D Moon · 3D terrain · Earth–Moon scene |
+| **Audiences** | Plan (engineers) · Explore (public) · Classroom (educators), one shared engine |
+| **Trust** | 113 reference checks pass against JPL Horizons and published values; every result says whether it is measured, derived or assumed |
+
+<table>
+<tr>
+<td width="50%"><img src="docs/assets/readme/explore-door.jpg" alt="Explore door: sky view, countdown, timeline and Earth link for Mons Mouton"></td>
+<td width="50%"><img src="docs/assets/readme/plan-door.jpg" alt="Plan door: site recommendation with score components, map and timeline"></td>
+</tr>
+<tr>
+<td><sub><b>Explore:</b> the Sun and Earth over Mons Mouton's horizon, the countdown, a month of sunlit and Earth-visible windows, and who can talk to Earth right now.</sub></td>
+<td><sub><b>Plan:</b> candidate regions ranked with your weights, every part of the score shown with its reliability label.</sub></td>
+</tr>
+</table>
+
+<sub>Screenshots of the running app in example mode (recorded server answers, December 2026).</sub>
 
 ---
 
@@ -45,7 +81,7 @@ This project turns ephemeris and terrain data into a simple tool for mission pla
 
 Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceappschallenge.org/) 2026. The challenge text is in [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md). The project page text is in [docs/submission/project-description.md](docs/submission/project-description.md).
 
-The product, this README, the project page text and the presentation are in English. The working notes under `docs/` (plan, research, team set-up, decision records) are the team's internal records and are in Turkish.
+The product, this README, the project page text and the presentation are in English; a Turkish version of this README is in [README.tr.md](README.tr.md). The working notes under `docs/` (plan, research, team set-up, decision records) are the team's internal records and are in Turkish.
 
 ## Features
 
@@ -340,6 +376,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
 | Tuna Deniz | Data and terrain: site catalogue, horizon profiles, map layers, validation run | [@tunadeniz1304](https://github.com/tunadeniz1304) |
 | Göktuğ Tabak | Interface shell and views: layout, horizon strip, timeline, map; task coordination | [@goktugtabak](https://github.com/goktugtabak) |
 | Ahmet Karakoyun | Interface data, panels and content: scenario state, set-up, power, comms, comparison | [@ahmetkrkyn0](https://github.com/ahmetkrkyn0) |
+| Berke Kuş | Illustrations and design: Unreal Engine renders of the surface and station scenes, the LunaPath interface design the app's tokens, icons and motion come from | — |
 
 ## License
 
