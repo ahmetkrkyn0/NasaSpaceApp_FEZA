@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { bodySeriesExample, earthLinkExample, earthLinkRelayExample, groundStationsExample } from '../../api/examples';
 import { latLonToVector } from '../globe/coords';
-import { EARTH_DISTANCE, EARTH_RADIUS, angleDeg, applyRotation, decorativeStars, earthPoint, earthPose, relayPoint, triad } from './frame';
+import { EARTH_DISTANCE, EARTH_RADIUS, MIN_REFERENCE_ANGLE_DEG, angleDeg, applyRotation, decorativeStars, earthPoint, earthPose, relayPoint, triad } from './frame';
 import { EARTH_TEXTURE_URL, LANDER_MODEL_URL, linkDrawingAt } from './scene-text';
 import { rotationQuaternion } from './three-frame';
 
@@ -51,6 +51,25 @@ describe('Earth placement from the server sample', () => {
       const expected = earthPoint(pose, station)!;
       expect(world.distanceTo(new THREE.Vector3(expected.x, expected.y, expected.z))).toBeLessThan(1e-6);
     }
+  });
+
+  it('gives no turn near new and full Moon, when the reference directions are nearly in line', () => {
+    const x = { x: 1, y: 0, z: 0 };
+    const at = (deg: number) => ({ x: Math.cos((deg * Math.PI) / 180), y: Math.sin((deg * Math.PI) / 180), z: 0 });
+    const y = { x: 0, y: 1, z: 0 };
+    const z = { x: 0, y: 0, z: 1 };
+    // Nearly parallel (1°) and nearly anti-parallel (179.5°) pairs, on either side.
+    expect(triad(x, at(1), y, z)).toBeNull();
+    expect(triad(x, at(179.5), y, z)).toBeNull();
+    expect(triad(x, y, x, at(1))).toBeNull();
+    expect(triad(x, y, x, at(-179))).toBeNull();
+    // Just above the limit the turn is given.
+    expect(triad(x, at(MIN_REFERENCE_ANGLE_DEG + 0.5), y, z)).not.toBeNull();
+    // A full Moon sample: the Sun straight behind Earth as seen from the Moon.
+    const full = { ...sample, sub_solar_lat_deg: -sample.sub_earth_lat_deg, sub_solar_lon_deg: sample.sub_earth_lon_deg - 180.4 };
+    const p = earthPose(full)!;
+    expect(p.rotation).toBeNull();
+    expect(earthPoint(p, groundStationsExample[0]!)).toBeNull();
   });
 
   it('has no orientation when the reference points are in line', () => {

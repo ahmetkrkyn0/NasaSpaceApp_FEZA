@@ -56,6 +56,8 @@ const v3 = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
 
 interface Live {
   earth: THREE.Group;
+  earthBall: THREE.Mesh;
+  plainEarth: THREE.Mesh;
   stationMarks: Map<string, THREE.Mesh>;
   links: THREE.Line[];
   relay: THREE.Group;
@@ -79,7 +81,9 @@ export function cameraFor(preset: CameraPreset, pose: EarthPose | null, site: La
     return { target: pose.centre, position: { x: pose.centre.x - pose.direction.x * 6, y: pose.centre.y - pose.direction.y * 6 + 0.8, z: pose.centre.z - pose.direction.z * 6 } };
   }
   if (preset === 'link' && pose) {
-    const mid = from(pose.centre, 0.5);
+    // Aimed nearer the Moon than the midpoint, so the Moon stays clear of the Plan door's
+    // countdown card at the top left and Earth still fits on the right.
+    const mid = from(pose.centre, 0.4);
     const up = Math.abs(pose.direction.y) < 0.9 ? { x: 0, y: 1, z: 0 } : { x: 1, y: 0, z: 0 };
     const side = new THREE.Vector3().crossVectors(v3(pose.direction), v3(up)).normalize();
     return { target: mid, position: { x: mid.x + side.x * 13, y: mid.y + side.y * 13 + 3, z: mid.z + side.z * 13 } };
@@ -179,6 +183,10 @@ export default function SpaceView(props: SpaceViewProps) {
     const earthBall = new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS, 96, 64), earthMaterial);
     earthBall.rotation.y = TEXTURE_ROTATION_Y;
     earth.add(earthBall);
+    // Without a turn the image and the stations would face the wrong way: a plain ball instead.
+    const plainEarth = new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS, 48, 32), new THREE.MeshStandardMaterial({ color: token('--text-3', 'grey'), roughness: 1, metalness: 0 }));
+    plainEarth.visible = false;
+    earth.add(plainEarth);
     const stationColour = token('--text-2', 'grey');
     const listeningColour = token('--mint', 'green');
     const stationMarks = new Map<string, THREE.Mesh>();
@@ -297,6 +305,8 @@ export default function SpaceView(props: SpaceViewProps) {
 
     const live: Live = {
       earth,
+      earthBall,
+      plainEarth,
       stationMarks,
       links,
       relay,
@@ -379,7 +389,11 @@ function applyMoment(live: Live, pose: EarthPose | null, link: LinkDrawing) {
     live.sunLight.intensity = 2.2;
     live.ambient.intensity = AMBIENT_WITH_SUN;
     live.earth.position.copy(v3(pose.centre));
+    const turned = pose.rotation !== null;
     if (pose.rotation) live.earth.quaternion.copy(rotationQuaternion(pose.rotation));
+    live.earthBall.visible = turned;
+    live.plainEarth.visible = !turned;
+    for (const mark of live.stationMarks.values()) mark.visible = turned;
     live.earth.visible = true;
     live.setEarthLabel(v3(pose.centre));
   } else {
@@ -406,6 +420,8 @@ function applyMoment(live: Live, pose: EarthPose | null, link: LinkDrawing) {
       return;
     }
     line.geometry.setFromPoints([sitePoint, v3(end)]);
+    // New end points: refresh the bounds, or the camera may cull a line that is in view.
+    line.geometry.computeBoundingSphere();
     line.visible = true;
   });
 
@@ -417,6 +433,7 @@ function applyMoment(live: Live, pose: EarthPose | null, link: LinkDrawing) {
     live.relay.visible = true;
     live.relayPath.geometry.setFromPoints([sitePoint, at, v3(pose.centre)]);
     live.relayPath.computeLineDistances();
+    live.relayPath.geometry.computeBoundingSphere();
     live.relayPath.visible = true;
     live.setRelayLabel(at.clone().add(new THREE.Vector3(0, 0.25, 0)));
   } else {

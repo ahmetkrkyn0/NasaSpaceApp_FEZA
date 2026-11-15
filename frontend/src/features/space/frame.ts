@@ -40,13 +40,23 @@ export function applyRotation(r: Rotation, v: Vec3): Vec3 {
 }
 
 /**
+ * Smallest angle between the two reference directions for which the turn is shown. Near new
+ * and full Moon the Sun and Moon directions from Earth fall nearly in line, and the Sun's 0.2°
+ * parallax between Earth and the Moon then moves the roll by several degrees; below 3° it could
+ * move it by more than 4°, so no turn is given.
+ */
+export const MIN_REFERENCE_ANGLE_DEG = 3;
+const MIN_SINE = Math.sin((MIN_REFERENCE_ANGLE_DEG * Math.PI) / 180);
+
+/**
  * Rotation that takes `a1` to `b1` exactly and puts `a2` in the plane of `b1` and `b2`
- * (TRIAD). `null` when either pair is parallel, so the roll is not defined.
+ * (TRIAD). `null` when either pair is parallel or anti-parallel within
+ * `MIN_REFERENCE_ANGLE_DEG`, so the roll is not reliably defined.
  */
 export function triad(a1: Vec3, a2: Vec3, b1: Vec3, b2: Vec3): Rotation | null {
   const ca = cross(a1, a2);
   const cb = cross(b1, b2);
-  if (norm(ca) < 1e-9 || norm(cb) < 1e-9) return null;
+  if (norm(ca) < MIN_SINE * norm(a1) * norm(a2) || norm(cb) < MIN_SINE * norm(b1) * norm(b2)) return null;
   const t1 = unit(a1);
   const t2 = unit(ca);
   const t3 = cross(t1, t2);

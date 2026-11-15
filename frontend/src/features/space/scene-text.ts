@@ -22,6 +22,8 @@ export const LANDER_NOTE =
 export const ANTENNA_NOTE = 'Antenna marks: simple shapes at the stations’ real latitude and longitude.';
 export const RELAY_NOTE = 'Illustration: a relay satellite is not modelled. The dashed path only shows that a relay would be needed.';
 export const NO_STATION_NOTE = 'No line: Earth is above the horizon at the site, but none of the three stations can see the Moon.';
+export const EARTH_TURN_UNAVAILABLE =
+  "Earth's turn is not available for this moment: the Sun, Earth and Moon are nearly in line, so Earth is drawn plain and the stations are not shown.";
 export const NO_EARTH_NOTE = "Earth is not drawn: the server's Earth direction for this moment is not loaded.";
 
 /** What the scene draws for the link at a moment, from the server's windows only. */

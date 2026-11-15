@@ -20,6 +20,7 @@ import {
   ANTENNA_NOTE,
   CAMERA_LABELS,
   DIRECTIONS_NOTE,
+  EARTH_TURN_UNAVAILABLE,
   LANDER_NOTE,
   NOT_TO_SCALE,
   NO_EARTH_NOTE,
@@ -65,9 +66,6 @@ export function SpaceSceneView(props: SpaceSceneProps) {
 
   return (
     <div className="space-panel">
-      <p className="space-scale" role="note">
-        {NOT_TO_SCALE}
-      </p>
       {webgl ? (
         <>
           <div className="space-controls">
@@ -115,12 +113,16 @@ export function SpaceSceneView(props: SpaceSceneProps) {
           {link ? <LinkDiagram mode={drawing.mode} link={link} inView={inView} /> : null}
         </>
       )}
+      {/* Below the scene, where the countdown overlay of the Plan door never covers it. */}
+      <p className="space-scale" role="note">
+        {NOT_TO_SCALE}
+      </p>
       <div className="space-status" role="status">
         {drawing.mode ? <strong className="space-mode">{MODE_LABEL[drawing.mode]}</strong> : null}
         <span>{status}</span>
         {link?.validity ? <ValidityBadge validity={link.validity} /> : null}
       </div>
-      {drawing.mode === 'direct' && listening.length > 0 ? (
+      {drawing.mode === 'direct' && listening.length > 0 && pose?.rotation ? (
         <p className="space-note">Line to: {listening.join(', ')} (highlighted on Earth).</p>
       ) : null}
       {drawing.mode === 'no_station' ? <p className="space-note">{NO_STATION_NOTE}</p> : null}
@@ -219,7 +221,7 @@ export function SpaceScene() {
     stations.status === 'error' ? `Ground stations could not be loaded: ${describeError(stations.error)}` : null,
     series.status === 'error' ? `Sun and Earth directions could not be loaded: ${describeError(series.error)}` : null,
     link.status === 'error' ? `The Earth link could not be loaded: ${describeError(link.error)}` : null,
-    pose && !pose.rotation ? "Earth's turn is not shown for this sample: the Sun, Earth and Moon are in line." : null,
+    pose && !pose.rotation ? EARTH_TURN_UNAVAILABLE : null,
     found?.outside ? 'The selected moment is outside the loaded series; the nearest sample is shown.' : null,
   ].filter((n): n is string => Boolean(n));
 
