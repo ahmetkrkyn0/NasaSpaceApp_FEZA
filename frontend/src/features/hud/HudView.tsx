@@ -1,4 +1,5 @@
 import type { EventList, NowStatus } from '../../api/types';
+import { ExampleDataNote } from '../../api/ExampleDataNote';
 import { SourcePopover } from '../../ui/SourcePopover';
 import { HIGH_UNCERTAINTY } from '../timeline/event-range';
 import { formatUtc, parseUtc } from '../timeline/time';
@@ -23,6 +24,7 @@ export function HudView({ now, events, selectedMs }: HudViewProps) {
 
   return (
     <div className="hud-view">
+      <ExampleDataNote value={now} fallbackOnly />
       <div className="hud-head">
         <SourcePopover
           validity={now.validity}

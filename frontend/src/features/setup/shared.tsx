@@ -7,18 +7,19 @@ import type { ReactNode } from 'react';
 import { getHorizon } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
+import { ExampleDataNote } from '../../api/ExampleDataNote';
 import type { HorizonProfile, LocationParams } from '../../api/types';
 import { useAsync, type AsyncResult, type AsyncState } from '../../lib/hooks';
 import { uiStore } from '../../shell/ui-state';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import './panels.css';
 
-/** Shown in example mode: the answers are the files in data/examples/, not this scenario. */
+/** Shown in example mode; individual fallback answers also carry their source identity. */
 export function ExampleNote() {
   if (getDataMode() !== 'examples') return null;
   return (
     <p className="d-note d-note-example" role="note">
-      Example data: these values come from the example files and are the same for every scenario. Add{' '}
+      Example data: recorded answers are available for the research scenarios. Other dates or settings use general examples; check the recorded place and period in the result note. Add{' '}
       <span className="data">?data=live</span> to the address to use the server.
     </p>
   );
@@ -54,11 +55,12 @@ export function AsyncBlock<T>({ result, children }: { result: AsyncResult<T>; ch
         <p className="d-muted" role="status">
           Updating for the new settings…
         </p>
+        <ExampleDataNote value={state.data} fallbackOnly />
         {children(state.data)}
       </div>
     );
   }
-  return <>{children(state.data)}</>;
+  return <><ExampleDataNote value={state.data} fallbackOnly />{children(state.data)}</>;
 }
 
 /**
