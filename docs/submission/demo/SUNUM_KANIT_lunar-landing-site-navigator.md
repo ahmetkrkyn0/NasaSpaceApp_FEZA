@@ -118,6 +118,8 @@ Render: 7 HTML sayfası, 7 PDF sayfası, fontlar gömülü. Görsel öz-denetim:
 
 Ekran görüntüleri: `node shots.mjs .feza/deck/20261114-234156` (Playwright, canlı sunucu, 1520 × 1040 CSS px); slayt 2 ve 3 bu görüntülerin aynı oranlı kırpımlarıdır. Kişisel veri içermez.
 
+2026-11-15 (#83): slayt 5'in görseli, Surface view panelinin göründüğü canlı Explore ekranıyla değiştirildi (`node shot-scene.mjs`, Playwright, canlı sunucu, 1520 × 1040 CSS px; ufuk şeridi, sonuç cümlesi, zaman çizelgesi bantları ve illüstrasyon görseli yüklendikten sonra). Alt yazı ve C açıklaması görselin hesaplanmamış bir illüstrasyon olduğunu söyler. Yeni rakam eklenmedi; defter değişmedi. Doğrulama yeniden çalıştırıldı: S1–S16 OK (S5 60), 7 PDF sayfası, fontlar gömülü.
+
 ## 6 Sayfa başına konuşma notları
 
 | Sayfa | Not |
@@ -126,7 +128,7 @@ Ekran görüntüleri: `node shots.mjs .feza/deck/20261114-234156` (Playwright, c
 | 2 | Opening view S-03: at the south pole the Sun circles just above the horizon. The 6.47° value is from the validation report, flat horizon; the screenshot shows the product with the terrain horizon. |
 | 3 | Main scenario S-01: a five-day slip moves the landing into the Earth-hidden window. Compare puts 1, 6 and 12 December side by side. |
 | 4 | Positions from NASA JPL SPICE, terrain horizon from the LOLA 20 m map (PGDA 90), every number labelled with its validity. |
-| 5 | Explore for the public, Classroom for teachers, Plan for engineers; the same scenario in every door. |
+| 5 | Explore for the public, Classroom for teachers, Plan for engineers; the same scenario in every door. The Surface view in the screenshot is a pre-rendered illustration of the terrain type, labelled Illustration in the product: not the site's real surface, nothing in it computed (#80, #83). |
 | 6 | 45 reference checks pass, none fail, none skipped (report refreshed after the eclipse feature). The one-year sunlit share is compared approximately with the NASA PGDA 69 map. |
 | 7 | Limits are stated with their next step: custom points use a flat horizon, event times move with horizon error and are shown as ranges, the 3D view is a separate app. |
 
