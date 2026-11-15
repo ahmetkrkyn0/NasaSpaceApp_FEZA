@@ -39,15 +39,15 @@
   --lavender-bright: #4736ad;
   --mint: #0b7a57;
   --mint-text: #08694b;
-  --cyan: #08708a;
+  --cyan: #076880;
   --cyan-text: #065f75;
   --coral: #b03f25;
   --coral-text: #9c341c;
 
   /* Risk ramp, same order and hues as the dark theme, darkened for a light ground. */
   --risk-low: #1d5fa8;
-  --risk-med: #7d6400;
-  --risk-high: #9a4f1a;
+  --risk-med: #745d00;
+  --risk-high: #944c19;
   --risk-crit: #c0271b;
 
   --surface-high: #e1e6ee;
@@ -55,8 +55,8 @@
   --secondary: #4c5d80;
 
   /* Hatched bands on a light ground. */
-  --terminator-dim: rgba(125, 100, 0, 0.16);
-  --umbra-dim: rgba(8, 112, 138, 0.16);
+  --terminator-dim: rgba(116, 93, 0, 0.16);
+  --umbra-dim: rgba(7, 104, 128, 0.16);
 
   /* The permanent shadow mask is drawn over the grey elevation image, which is the same in both
      themes, so it keeps its dark-theme colour (map images are not themed, issue #92). */
