@@ -139,11 +139,56 @@ export function heightAt(grid: LayerGrid, x_m: number, y_m: number): number | nu
   const r0 = Math.floor(fr);
   const c1 = Math.min(c0 + 1, grid.cols - 1);
   const r1 = Math.min(r0 + 1, grid.rows - 1);
-  const at = (r: number, c: number) => grid.values[r * grid.cols + c] ?? Number.NaN;
   const tc = fc - c0;
   const tr = fr - r0;
-  const v = (1 - tr) * ((1 - tc) * at(r0, c0) + tc * at(r0, c1)) + tr * ((1 - tc) * at(r1, c0) + tc * at(r1, c1));
-  return Number.isFinite(v) ? v : null;
+  // A neighbour with no weight is skipped, so a gap next to a valid cell does not hide it.
+  const terms: [number, number, number][] = [
+    [r0, c0, (1 - tr) * (1 - tc)],
+    [r0, c1, (1 - tr) * tc],
+    [r1, c0, tr * (1 - tc)],
+    [r1, c1, tr * tc],
+  ];
+  let v = 0;
+  for (const [r, c, w] of terms) {
+    if (w === 0) continue;
+    const h = grid.values[r * grid.cols + c] ?? Number.NaN;
+    if (!Number.isFinite(h)) return null;
+    v += w * h;
+  }
+  return v;
+}
+
+/** Index of the last entry of an ascending list that is at or below `x` (0 below the first). */
+function segment(edges: readonly number[], x: number): number {
+  let i = 0;
+  while (i < edges.length - 2 && (edges[i + 1] ?? Infinity) <= x) i += 1;
+  return i;
+}
+
+/**
+ * Drawn surface height (scene units, already exaggerated) at scene `x`, `z`, read from the
+ * thinned mesh triangles themselves, so a mark sits on the surface that is drawn rather than on
+ * the full grid. Points between the grid edge and the outer vertices take the edge height.
+ */
+export function meshHeightAt(mesh: TerrainMesh, x: number, z: number): number {
+  const { rows, cols, positions } = mesh;
+  const px = (k: number, axis: number) => positions[k * 3 + axis] ?? 0;
+  if (rows < 2 || cols < 2) return px(0, 1);
+  const xs = Array.from({ length: cols }, (_, j) => px(j, 0));
+  const zs = Array.from({ length: rows }, (_, i) => px(i * cols, 2));
+  const j = segment(xs, x);
+  const i = segment(zs, z);
+  const clamp = (t: number) => Math.min(Math.max(t, 0), 1);
+  const u = clamp((x - (xs[j] ?? 0)) / ((xs[j + 1] ?? 1) - (xs[j] ?? 0) || 1));
+  const v = clamp((z - (zs[i] ?? 0)) / ((zs[i + 1] ?? 1) - (zs[i] ?? 0) || 1));
+  // The two triangles of the quad, split along b-c as in `buildTerrain`'s indices.
+  const a = i * cols + j;
+  const ya = px(a, 1);
+  const yb = px(a + 1, 1);
+  const yc = px(a + cols, 1);
+  const yd = px(a + cols + 1, 1);
+  if (u + v <= 1) return ya + u * (yb - ya) + v * (yc - ya);
+  return yd + (1 - u) * (yc - yd) + (1 - v) * (yb - yd);
 }
 
 export interface ScenePoint {
@@ -153,19 +198,17 @@ export interface ScenePoint {
 }
 
 /**
- * Scene position of a latitude and longitude on the surface, through the map projection; `null`
- * when the point is outside the grid, the grid has no bounds, or the height there is missing.
+ * Scene position of a latitude and longitude on the drawn surface, through the map projection;
+ * `null` when the point is outside the grid, the grid has no bounds, or the height there is missing.
  */
 export function placeOnTerrain(grid: LayerGrid, mesh: TerrainMesh, lat_deg: number, lon_deg: number): ScenePoint | null {
   if (!mesh.centre_m) return null;
   const p = forwardSouthPolar(lat_deg, lon_deg);
-  const h = heightAt(grid, p.x_m, p.y_m);
-  if (h === null) return null;
-  return {
-    x: (p.x_m - mesh.centre_m.x) / M_PER_KM,
-    y: ((h - mesh.baseHeight_m) * mesh.exaggeration) / M_PER_KM,
-    z: -(p.y_m - mesh.centre_m.y) / M_PER_KM,
-  };
+  // The full grid says whether there is data here; the height is read from the drawn mesh.
+  if (heightAt(grid, p.x_m, p.y_m) === null) return null;
+  const x = (p.x_m - mesh.centre_m.x) / M_PER_KM;
+  const z = -(p.y_m - mesh.centre_m.y) / M_PER_KM;
+  return { x, y: meshHeightAt(mesh, x, z), z };
 }
 
 /**

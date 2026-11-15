@@ -62,6 +62,8 @@ export default function MapPanel() {
   }, []);
   const siteList = sites.status === 'success' ? sites.data : NO_SITES;
   const candidates = useMemo(() => mapCandidates(siteList, recommend), [siteList, recommend]);
+  // One list per data change: a new array on every render rebuilt the 3D terrain scene.
+  const places = useMemo(() => globePlaces(siteList, recommend), [siteList, recommend]);
   const regionOpen = view === 'region';
   // The permanent shadow layer is asked for as soon as the region view opens, so a missing
   // layer (503) shows as a disabled option before anyone picks it. The answer is reused when
@@ -151,7 +153,7 @@ export default function MapPanel() {
         {switcher}
         <Suspense fallback={<p className="map-note">Loading the 3D terrain…</p>}>
           <TerrainPanel
-            places={globePlaces(siteList, recommend)}
+            places={places}
             selectedId={active?.site_id ?? null}
             onPick={(place) => {
               if (active) scenarioStore.setScenario(withPlace(active, place));

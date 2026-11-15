@@ -13,6 +13,7 @@ import {
   cellCentre,
   exaggerationNote,
   heightAt,
+  meshHeightAt,
   placeOnTerrain,
   sunVector,
   vertexColours,
@@ -105,6 +106,41 @@ describe('marks on the terrain', () => {
     expect(at).not.toBeNull();
     expect(at?.x).toBeCloseTo(0, 6);
     expect(at?.z).toBeCloseTo(0, 6);
+  });
+
+  it('reads a mark height from the drawn (thinned) mesh, not the full grid', () => {
+    // 5 x 5 grid with a spike in the middle cell; thinned with stride 2 the spike is still a
+    // vertex, but a point between vertices must sit on the drawn triangles.
+    const n = 5;
+    const values = Array.from({ length: n * n }, (_, k) => (k === 12 ? 500 : 100));
+    const g: LayerGrid = { ...grid(values), rows: n, cols: n, bounds: { x_min: 0, y_min: 0, x_max: 100, y_max: 100 } };
+    const mesh = buildTerrain(g, 3, 3);
+    expect(mesh.stride).toBe(2);
+    // Every vertex reads back its own drawn height.
+    for (let k = 0; k < mesh.rows * mesh.cols; k += 1) {
+      const [x, y, z] = xyz(mesh.positions, k);
+      expect(meshHeightAt(mesh, x ?? 0, z ?? 0)).toBeCloseTo(y ?? 0, 9);
+    }
+    // Three quarters of the way from the corner vertex (0, 0) to the spike vertex (2, 2) lies in
+    // the triangle b-c-d of that quad: half the drawn spike height. The full grid there (between
+    // cells 1 and 2) is lower, so a mark placed from it would sink into the drawn slope.
+    const [xa, , za] = xyz(mesh.positions, 0);
+    const [xs, ys, zs] = xyz(mesh.positions, mesh.cols + 1);
+    const x = (xa ?? 0) + 0.75 * ((xs ?? 0) - (xa ?? 0));
+    const z = (za ?? 0) + 0.75 * ((zs ?? 0) - (za ?? 0));
+    expect(meshHeightAt(mesh, x, z)).toBeCloseTo((ys ?? 0) / 2, 9);
+    // Diagonal b-c of the quad: both its ends are flat ground, so the drawn surface there is too.
+    expect(meshHeightAt(mesh, ((xa ?? 0) + (xs ?? 0)) / 2, ((za ?? 0) + (zs ?? 0)) / 2)).toBeCloseTo(0, 9);
+  });
+
+  it('keeps a valid cell when a neighbour with no weight is a gap', () => {
+    const values = Array.from({ length: 12 }, () => 100);
+    values[1] = Number.NaN;
+    const g = grid(values);
+    // Exactly on the centre of cell (0, 0): its east neighbour has weight 0.
+    expect(heightAt(g, 1010, 2050)).toBe(100);
+    // Between the two cells the gap counts: no height.
+    expect(heightAt(g, 1020, 2050)).toBeNull();
   });
 
   it('leaves out points outside the grid', () => {
