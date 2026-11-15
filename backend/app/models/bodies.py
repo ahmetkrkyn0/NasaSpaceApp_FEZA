@@ -18,11 +18,17 @@ class BodySample(BaseModel):
     sub_earth_lat_deg: float
     sub_earth_lon_deg: float
     earth_distance_km: float
+    earth_sub_lunar_lat_deg: float
+    earth_sub_lunar_lon_deg: float
+    earth_sub_solar_lat_deg: float
+    earth_sub_solar_lon_deg: float
 
 
 class BodySeries(BaseModel):
     """Where the Sun and the Earth stand over the Moon over a time range."""
 
     frame: Literal["MOON_ME"]
+    earth_frame: Literal["IAU_EARTH"]
     samples: list[BodySample]
+    assumptions: list[str]
     validity: Validity

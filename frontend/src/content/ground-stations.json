@@ -1,12 +1,12 @@
 {
-  "_about": "Ground station illustration of the Earth link panel (issue #81). Every fact and number below is taken from NASA's official Deep Space Network page (source_url), read on 15 November 2026. Images are Unity renders, not photographs (frontend/public/media/CREDITS.md). Station visibility is computed by /api/earth-link (issue #110), not drawn from these pictures.",
+  "_about": "Ground station illustration of the Earth link panel (issue #81). Every fact and number below is taken from NASA's official Deep Space Network page (source_url), read on 15 November 2026. Images are Unreal Engine renders, not photographs (frontend/public/media/CREDITS.md). Station visibility is computed by /api/earth-link (issue #110), not drawn from these pictures.",
   "source": {
     "label": "NASA, Deep Space Network",
     "url": "https://www.nasa.gov/communicating-with-missions/dsn/"
   },
   "intro": "NASA's Deep Space Network listens from three complexes: Goldstone in California, near Madrid in Spain and near Canberra in Australia. Their placement keeps contact as Earth turns: before a spacecraft sinks below the horizon at one site, another site can pick up the signal.",
   "moon_note": "On 20 July 1969, Deep Space Network antennas helped receive the first downlink and two-way communication from the surface of the Moon.",
-  "illustration_note": "Illustration: these pictures are renders made with Unity. They are not photographs of the real sites.",
+  "illustration_note": "Illustration: these pictures are renders made with Unreal Engine. They are not photographs of the real sites.",
   "no_station_note": "These pictures are illustrations, not data. Which station sees the Moon is computed in the station cards above, for the Moon's centre rather than for the site; Earth visibility is computed from the landing site for Earth's disk.",
   "globe": {
     "image": "stations/earth-globe/overview.jpg",

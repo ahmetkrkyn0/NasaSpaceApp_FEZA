@@ -93,7 +93,9 @@ Ay küresinin aydınlanması ve Dünya yönü için ([#97](https://github.com/ah
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `frame` | metin | Her zaman `MOON_ME` |
+| `earth_frame` | metin | Her zaman `IAU_EARTH`; `earth_sub_*` alanlarının çerçevesi |
 | `samples` | dizi | Her eleman bir an (aşağıda) |
+| `assumptions` | metin dizisi | Dünya'ya bağlı noktaların model sınırı (dönüş modeli, enlem türü) |
 | `validity` | metin | Her zaman `DERIVED` |
 
 Her örnek:
@@ -104,6 +106,8 @@ Her örnek:
 | `sub_solar_lat_deg`, `sub_solar_lon_deg` | sayı | Güneş altı noktası: Güneş'in tam tepede olduğu yer. Boylam eksi 180 ile artı 180 arası (ADR-0002, madde 3) |
 | `sub_earth_lat_deg`, `sub_earth_lon_deg` | sayı | Dünya altı noktası: Dünya'nın tam tepede olduğu yer. Aynı boylam kuralı |
 | `earth_distance_km` | sayı | Ay merkezinden Dünya merkezine görünür uzaklık (ışık süresi düzeltmeli) |
+| `earth_sub_lunar_lat_deg`, `earth_sub_lunar_lon_deg` | sayı | Ay altı noktası Dünya üzerinde (`IAU_EARTH`): Ay'ın tam tepede olduğu yer. Enlem planetosentrik (Dünya merkezinden yön), boylam doğu pozitif, eksi 180 ile artı 180 arası |
+| `earth_sub_solar_lat_deg`, `earth_sub_solar_lon_deg` | sayı | Güneş altı noktası Dünya üzerinde (`IAU_EARTH`), aynı kurallar |
 
 Noktalar Ay'ın merkezinden, `LT+S` düzeltmesiyle hesaplanır (ADR-0002, madde 11): o anda Ay'dan bakınca Güneş ve Dünya'nın göründüğü yön. 1737,4 km kürede alt nokta, cismin yönünün yüzeyi kestiği noktadır. Güneş altı noktası JPL Horizons ile 0,0002 derece içinde tutuyor. Dünya altı noktası en çok 0,006 derece farklı, çünkü Horizons `ObsSub` değerini yıldız sapınımı (aberration) düzeltmesi olmadan veriyor; aynı ayarla SPICE, Horizons'ı 0,0001 derece içinde tutuyor (`backend/tests/core/test_sub_points.py`).
 
@@ -326,3 +330,4 @@ Yapılacaklar:
 - 15 Kasım 2026, [#103](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/103): `Candidates` yapısı eklendi (`GET /api/candidates`, `data/candidates.json`). Alanlar #97 bölüm 4.3 ile aynı; ek olarak `kind` (#97 eki) ve `method` içinde `stride_m`, `slope_limit_source`, `max_candidates`, `assumed`, `note`. Örnek dosya `data/examples/candidates.json` ve arayüz tipi bu alanları #109 ile alır. Aday kimlikleri (`cand-NN`) `site_id` olarak çözülür; `/api/sites` yalnızca katalog sahalarını döndürür.
 - 15 Kasım 2026, [#99](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/99): `GroundStation` ve `EarthLink` yapıları eklendi (`GET /api/ground-stations`, `GET /api/earth-link`); `data/ground_stations.json` depoda tutulan dosyalara eklendi. Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.2 ile aynı; örnek dosyalar `data/examples/earth-link.json` ve `data/examples/ground-stations.json` ([#108](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/108)). `link_windows` kaplama ve birleştirme kuralı, `station_ids` sırası ve varsayılan eşik yazıldı.
 - 15 Kasım 2026, [#100](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/100): `RecommendRequest` ve `RecommendResponse` yapıları eklendi (`POST /api/recommend`). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.4 ve `data/examples/recommend.json` ile aynı. Ölçekler ve dayanakları, eleme kuralı (penceredeki en büyük eğim, `max_slope_deg` ile) ve `validity` kuralı "Saha önerisi" bölümünde.
+- 15 Kasım 2026, [#122](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/122): `BodySeries` yanıtına `earth_frame` ve `assumptions`, örneklere `earth_sub_lunar_lat_deg`, `earth_sub_lunar_lon_deg`, `earth_sub_solar_lat_deg`, `earth_sub_solar_lon_deg` eklendi (#97 4.1 eki). Dünya, Ay'dan göründüğü haliyle alınır: yönelimi bir ışık süresi (yaklaşık 1,3 s) öncesinden, Güneş Dünya'dan `LT+S` ile. Enlemler planetosentriktir (jeodezik değil; fark en çok 0,19°). Mevcut alanlar ve değerleri değişmedi. Örnek dosya `data/examples/body-series.json` canlı yanıttan yenilendi.

@@ -35,7 +35,7 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 - **Site recommendation:** the user sets weights for sunlit time, the longest dark period, Earth in view, slope, roughness and distance to permanent shadow, a slope limit and a permanent shadow preference. The candidate regions and the catalogue sites of the region are ranked for the active period and mast; every score is shown with its components and validity labels, and sites whose steepest slope is over the limit are listed apart with the reason. A ranked site can become the scenario, or the top three can go to the comparison.
 - **Three entry points on one engine:** Plan (engineers), Explore (public) and Classroom (educators) share the same site, date and time.
 - **Trust labels:** every result carries a validity label. Results computed with a flat horizon are marked as assumed ("terrain not included"); panel profiles are marked as assumptions.
-- **Illustrations:** pre-rendered images and short loops made with Unity illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not computed data: the Sun, shadows, stars and lander in them were placed by hand, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
+- **Illustrations:** pre-rendered images and short loops made with Unreal Engine illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not the product's calculation: the Sun, shadows, stars and lander in them belong to each scene's own recorded moment (Sun and Earth directions from JPL DE421), not to the chosen site and moment, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
 
 ### How it works
 
@@ -82,7 +82,7 @@ A quick first-look tool that mission teams, students and the public can open in 
 - **Web interface:** React, TypeScript, Vite; tests with Vitest.
 - **Tests:** pytest for the server, Vitest for the interface, and a validation script that runs the reference tests over HTTP.
 - **3D:** a model of the IM-2 Athena lander built from scratch by a Blender script (no third-party meshes or textures).
-- **Illustrations:** Unity, for offline renders only; Unity does not run in the product, which shows the finished images and loops.
+- **Illustrations:** Unreal Engine 5.8, for offline renders only; it does not run in the product, which shows the finished images and loops.
 - **Collaboration:** GitHub (issues, pull requests, checks), Slack.
 
 ### Known limits
@@ -96,7 +96,7 @@ A quick first-look tool that mission teams, students and the public can open in 
 - **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, and Earth's rotation uses the `IAU_EARTH` model; the 10° minimum station elevation is an assumption.
 - **Eclipses** treat Earth as a sharp disk (no atmosphere) and the Sun as uniformly bright, so the covered share is an area ratio.
 - **The terrain horizon is compared with NASA's map only approximately** (T6 above); it is not presented as validated.
-- **Illustrations are not computed.** The Sun, Earth, shadows, stars and lander in the Unity images were placed by hand. An image shows a kind of terrain, not the ground at the chosen site, and the lander is the team's Athena model shown upright for scale, whatever happened to the mission that landed there. There is no live 3D view of a site.
+- **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site, and the lander is the team's Athena model shown upright for scale, whatever happened to the mission that landed there. There is no live 3D view of a site.
 
 ## Use of Super Intelligence (SI)
 
@@ -105,7 +105,7 @@ Yes. SI tools were used as follows:
 - **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand.
 - **Research notes:** background research in `docs/research/` was drafted with AI assistance. Each claim used by the product was then checked against its source and labelled verified, partly correct, unverified or without source in the [`docs/research/dogrulama/`](../research/dogrulama/) tables. Only verified values are used in the product and in this text.
 - **Images:** three AI-generated concept images of rovers (Grok) appear in one research note ([rover-modelleme-ve-unreal-gecis.md](../research/rover-modelleme-ve-unreal-gecis.md)) and their file names start with `grok-`. They are not part of the product or the demo.
-- **Illustration media:** the surface, ground station and Earth globe images were rendered in Unity. Who prepared them and any other tools used in making them, AI tools included, are recorded in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md); that credit information is being completed.
+- **Illustration media:** the surface, ground station and Earth globe images were rendered in Unreal Engine 5.8. Who prepared them and any other tools used in making them, AI tools included, are recorded in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md); that credit information is being completed.
 - **Data:** no data was generated by AI. All positions come from SPICE, all terrain from LOLA height maps, and reference values from JPL Horizons and published sources.
 - **No NASA branding:** no AI tool was used to create, use or modify NASA logos, flags or mission insignia, and the product contains none.
 
@@ -145,4 +145,4 @@ The repository README states the same in its "Use of AI tools" section.
 
 - **Interface design:** the layout and visual tokens come from the team's own reference design export (`frontend-migrate/`).
 - **3D model:** the Athena lander model was built from scratch by a Blender script; its proportions come from Intuitive Machines' published Nova-C dimensions and photos (sources in [`shipmodel/README.md`](../../shipmodel/README.md)). No logos, flags or agency marks are on it.
-- **Illustration media:** the images and short loops in `frontend/public/media/` (Moon surface scenes, ground stations, Earth globe) are offline Unity renders, shown in the interface as labelled illustrations. The lander in the surface scenes is the team's own Athena model (above; no third-party parts). Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md); that credit information is being completed. The images carry no NASA logo, flag or insignia.
+- **Illustration media:** the images and short loops in `frontend/public/media/` (Moon surface scenes, ground stations, Earth globe) are offline Unreal Engine renders, shown in the interface as labelled illustrations. The lander in the surface scenes is the team's own Athena model (above; no third-party parts). Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md); that credit information is being completed. The images carry no NASA logo, flag or insignia.

@@ -27,7 +27,7 @@ function sourceLink(url: string, label: string) {
 
 /**
  * Surface view: an illustration of the site's terrain type. It is not data, so it carries an
- * "Illustration" label instead of a validity badge, and the notes saying what is not computed
+ * "Illustration" label instead of a validity badge, and the notes saying what is not the product's calculation
  * are always on screen while an image is shown.
  */
 export function SceneView({ choice, initialView = 'poster' }: SceneViewProps) {

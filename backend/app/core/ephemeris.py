@@ -66,6 +66,15 @@ class SubPoints:
     sub_earth_lat_deg: float
     sub_earth_lon_deg: float
     earth_distance_km: float
+    earth_sub_lunar_lat_deg: float
+    earth_sub_lunar_lon_deg: float
+    earth_sub_solar_lat_deg: float
+    earth_sub_solar_lon_deg: float
+    """Earth-fixed (``IAU_EARTH``) points below the Moon and below the Sun, for the
+    Earth as it appears from the Moon at that instant: the Earth's orientation
+    is taken one light time (about 1.3 s) earlier, and the Sun is seen from the
+    Earth with ``LT+S``. Latitudes are planetocentric (the direction from the
+    Earth's centre), longitudes east positive in [-180, 180)."""
 
 
 def _ensure_loaded_locked(kernel_dir: Path) -> None:
@@ -290,6 +299,15 @@ def _sub_points_locked(times: Sequence[datetime]) -> list[SubPoints]:
         earth, _ = spiceypy.spkpos("EARTH", et, "MOON_ME", "LT+S", "MOON")
         _, sun_lon, sun_lat = spiceypy.reclat(sun)
         earth_range, earth_lon, earth_lat = spiceypy.reclat(earth)
+        # The Earth as seen from the Moon: its state one light time earlier.
+        earth_j2000, light_time = spiceypy.spkpos("EARTH", et, "J2000", "LT+S", "MOON")
+        et_earth = et - light_time
+        to_earth_fixed = spiceypy.pxform("J2000", EARTH_FRAME, et_earth)
+        moon_dir = spiceypy.mxv(to_earth_fixed, [-c for c in earth_j2000])
+        sun_j2000, _ = spiceypy.spkpos("SUN", et_earth, "J2000", "LT+S", "EARTH")
+        sun_dir = spiceypy.mxv(to_earth_fixed, sun_j2000)
+        _, lunar_lon, lunar_lat = spiceypy.reclat(moon_dir)
+        _, esun_lon, esun_lat = spiceypy.reclat(sun_dir)
         results.append(
             SubPoints(
                 sub_solar_lat_deg=math.degrees(sun_lat),
@@ -297,6 +315,10 @@ def _sub_points_locked(times: Sequence[datetime]) -> list[SubPoints]:
                 sub_earth_lat_deg=math.degrees(earth_lat),
                 sub_earth_lon_deg=wrap_lon_deg(math.degrees(earth_lon)),
                 earth_distance_km=float(earth_range),
+                earth_sub_lunar_lat_deg=math.degrees(lunar_lat),
+                earth_sub_lunar_lon_deg=wrap_lon_deg(math.degrees(lunar_lon)),
+                earth_sub_solar_lat_deg=math.degrees(esun_lat),
+                earth_sub_solar_lon_deg=wrap_lon_deg(math.degrees(esun_lon)),
             )
         )
     return results
