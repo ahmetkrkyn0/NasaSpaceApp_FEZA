@@ -46,6 +46,7 @@ import {
   type LayerGrid,
   type LayerName,
   type LayerRegion,
+  type WideLayerRegion,
   type LocationParams,
   type NowStatus,
   type PanelProfile,
@@ -78,7 +79,8 @@ export type NowParams = LocationParams & WithMast & { utc: UtcString; earth_crit
 export type CommWindowParams = NowParams;
 export type PowerParams = LocationParams &
   WithMast & { start_utc: UtcString; end_utc: UtcString; panel_profile_id: string; fixed_azimuth_deg?: number };
-export type LayerParams = { region: LayerRegion };
+/** A wide region serves only `elevation` (the server answers 422 for another layer). */
+export type LayerParams = { region: LayerRegion | WideLayerRegion };
 /** A period with a step in seconds, or a single instant (#97, section 4.1). */
 export type BodySeriesParams = { start_utc: UtcString; end_utc: UtcString; step_s: number } | { utc: UtcString };
 export type EarthLinkParams = LocationParams &

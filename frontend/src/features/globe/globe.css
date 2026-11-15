@@ -111,3 +111,39 @@
   max-height: none;
   aspect-ratio: auto;
 }
+
+/* Scale bar at the bottom right of the globe once it is zoomed in (the Plan door's countdown card
+   covers the left); its width is the ground length. */
+.globe-scale {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  display: none;
+  box-sizing: border-box;
+  padding-bottom: 2px;
+  border: 1px solid var(--text-2);
+  border-top: 0;
+  color: var(--text-2);
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Latitude, longitude and height under the cursor, at the top right of the globe. */
+.globe-readout {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  max-width: calc(100% - 16px);
+  padding: 1px 6px;
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  font-family: var(--font-data);
+  font-size: var(--fs-micro);
+  text-align: right;
+  pointer-events: none;
+}

@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
-import { getBodySeries, getSites } from '../../api/client';
+import { getBodySeries, getLayer, getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
-import type { BodySeries, Scenario, Site, Validity } from '../../api/types';
+import type { BodySeries, LayerGrid, Scenario, Site, Validity } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { recommendStore, type RecommendState } from '../../state/recommend-store';
 import { scenarioStore } from '../../state/scenario-store';
@@ -12,6 +12,7 @@ import { formatUtc } from '../timeline/time';
 import { sunDirection, type LatLon, type Vec3 } from './coords';
 import type { GlobePlace } from './GlobeView';
 import { bodySeriesRequest, lightAt } from './light';
+import { POLAR_MISSING_NOTE, POLAR_NOTE, POLAR_REGION } from './polar';
 import { SURFACE_IMAGE_NOTE } from './texture';
 import './globe.css';
 
@@ -69,6 +70,10 @@ export interface MoonGlobeProps {
   note?: string | null;
   /** Start with even light (the viewer's choice; tests). */
   initialEven?: boolean;
+  /** South polar height map; `null` while loading or when the server has none. */
+  polar?: LayerGrid | null;
+  /** The polar height map could not be loaded. */
+  polarMissing?: boolean;
 }
 
 /** Light the globe draws: the computed Sun direction, unless the viewer chose even light. */
@@ -83,11 +88,12 @@ export function lightingNote(sun: Vec3 | null, even: boolean): string {
 }
 
 /** Globe with its legend, notes and a keyboard place list. */
-export function MoonGlobe({ places, selectedId, onPick, light, note, initialEven = false }: MoonGlobeProps) {
+export function MoonGlobe({ places, selectedId, onPick, light, note, initialEven = false, polar = null, polarMissing = false }: MoonGlobeProps) {
   const webgl = useMemo(hasWebGL, []);
   const sun = useMemo(() => sunDirection(light.subSolar), [light.subSolar]);
   // Even light helps when the selected moment puts the near side in night; it is never the default.
   const [even, setEven] = useState(initialEven);
+  const [shadow, setShadow] = useState<{ busy: boolean; ms: number | null }>({ busy: false, ms: null });
   const selected = places.find((p) => p.id === selectedId) ?? null;
   // Refocus only when the selected place changes, not on every new list object.
   const focusLat = selected?.lat_deg;
@@ -111,7 +117,16 @@ export function MoonGlobe({ places, selectedId, onPick, light, note, initialEven
         </p>
       ) : (
         <Suspense fallback={<p className="globe-note">Loading the 3D view…</p>}>
-          <GlobeView places={places} selectedId={selectedId} onPick={pick} sun={drawnSun(sun, even)} subEarth={light.subEarth} focus={focus} />
+          <GlobeView
+            places={places}
+            selectedId={selectedId}
+            onPick={pick}
+            sun={drawnSun(sun, even)}
+            subEarth={light.subEarth}
+            focus={focus}
+            polar={polar}
+            onShadowState={setShadow}
+          />
         </Suspense>
       )}
       {/* Below the globe, so the countdown overlay of the Plan door never covers it. */}
@@ -120,9 +135,16 @@ export function MoonGlobe({ places, selectedId, onPick, light, note, initialEven
         <li>Dot: landing site · large mark: selected place</li>
         {hasCandidates ? <li>Square: candidate region (larger: top three of the last recommendation)</li> : null}
         {light.subEarth ? <li>Ring: sub-Earth point (Earth overhead)</li> : null}
-        <li>Lines every 30° of latitude and longitude; drag to turn</li>
+        <li>Lines every 30° of latitude and longitude; drag to turn, scroll to zoom down to the surface</li>
       </ul>
       {webgl ? <p className="globe-note">{SURFACE_IMAGE_NOTE}</p> : null}
+      {webgl && polar ? (
+        <p className="globe-note">
+          {POLAR_NOTE}
+          {sun && !even ? (shadow.busy ? ' Working out the terrain shadows…' : shadow.ms !== null ? ` Shadows worked out in ${(shadow.ms / 1000).toFixed(1)} s.` : '') : ''}
+        </p>
+      ) : null}
+      {webgl && polarMissing ? <p className="globe-note">{POLAR_MISSING_NOTE}</p> : null}
       <div className="globe-light">
         <button
           type="button"
@@ -195,6 +217,9 @@ export function MoonGlobeContainer() {
     return sample ? { ...sample, validity: seriesData?.validity } : NO_LIGHT;
   }, [seriesData, selectedMs]);
 
+  // The polar height map (14 MB) is asked for once per data mode.
+  const polar = useAsync((signal) => getLayer('elevation', { region: POLAR_REGION }, { signal }), [mode]).state;
+
   const siteList = sites.status === 'success' ? sites.data : NO_SITES;
   const places = useMemo(() => globePlaces(siteList, recommend), [siteList, recommend]);
   const notes = [
@@ -210,6 +235,8 @@ export function MoonGlobeContainer() {
       selectedId={active?.site_id ?? null}
       light={light}
       note={notes.length > 0 ? notes.join(' ') : null}
+      polar={polar.status === 'success' && polar.data.bounds ? polar.data : null}
+      polarMissing={polar.status === 'error'}
       onPick={(place) => {
         if (active) scenarioStore.setScenario(withPlace(active, place));
       }}

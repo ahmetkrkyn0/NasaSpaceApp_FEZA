@@ -85,6 +85,10 @@ export type LayerName = (typeof LAYER_NAMES)[number];
 export const LAYER_REGIONS = ['mons-mouton'] as const;
 export type LayerRegion = (typeof LAYER_REGIONS)[number];
 
+/** Wide regions that hold only `elevation`: 80° S to the pole at 320 m. */
+export const WIDE_LAYER_REGIONS = ['south-pole-cap'] as const;
+export type WideLayerRegion = (typeof WIDE_LAYER_REGIONS)[number];
+
 /** Server error codes (ADR-0004, "Hata kodları"). */
 export const SERVER_ERROR_CODES = [
   'site_not_found',
