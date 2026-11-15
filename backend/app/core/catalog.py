@@ -15,6 +15,7 @@ from app.settings import get_settings
 SITES_FILE = "sites.json"
 PANEL_PROFILES_FILE = "panel_profiles.json"
 REFERENCE_MISSIONS_FILE = "reference_missions.json"
+GROUND_STATIONS_FILE = "ground_stations.json"
 
 
 def _load_list(file_name: str) -> list[dict]:
@@ -52,6 +53,12 @@ def load_reference_missions() -> list[dict]:
     """Return the reference mission records from ``reference_missions.json``."""
 
     return _load_list(REFERENCE_MISSIONS_FILE)
+
+
+def load_ground_stations() -> list[dict]:
+    """Return the Earth ground station records from ``ground_stations.json``."""
+
+    return _load_list(GROUND_STATIONS_FILE)
 
 
 def find_site(site_id: str) -> dict | None:
