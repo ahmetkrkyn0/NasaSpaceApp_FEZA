@@ -29,13 +29,21 @@ First release, submitted to the NASA Space Apps Challenge 2026.
 - Validation run against the reference tests, with a report (`backend/scripts/run_validation.py`, `/api/validation`).
 - Web interface (React, TypeScript, Vite): scenario set-up, horizon strip, timeline with playback, countdown, map, power, comms and comparison panels; Plan, Explore and Classroom entry points; "why" cards with one-input counterfactuals; event markers for eclipses.
 - Web interface: site recommendation panel in the Plan door (weights, slope limit, permanent shadow preference, ranked sites with score components, "use this site" and "add top three to compare"); Earth link view with the three stations, a band of link windows over the period and a schematic of the state at the selected moment (full view in Plan, summary in Explore and Classroom); typed client and example payloads for the new endpoints.
-- Web interface: 3D Moon (three.js, loaded only when opened) with a 2D/3D switch on the map and a panel in Explore and Classroom; sites and candidate regions on a grey globe lit from the server's sub-solar point, with the sub-Earth point marked.
+- Web interface: 3D Moon (three.js, loaded only when opened) with a 2D/3D switch on the map and a panel in Explore and Classroom; sites and candidate regions on a globe wrapped in the NASA SVS 4720 colour map, lit from the server's sub-solar point, with the sub-Earth point marked and an "Even light" choice labelled as not the computed illumination. Picking a site no longer resets the camera.
+- Web interface: 3D terrain of the Mons Mouton region from the elevation layer (heights exaggerated three times), coloured by hillshade, slope or permanent shadow, lit from the Sun direction at the site, with sites and candidate regions marked and a keyboard place list.
+- Web interface: space view of the Moon and Earth (Plan map view, "Earth and Moon" panel in Explore and Classroom): Earth placed and turned from the server's points, the three DSN stations, the Athena model at the site, the link line or the relay path labelled "Illustration", camera buttons, "Not to scale"; NASA Blue Marble Earth image.
+- Web interface: five research scenarios that load a site, period, mast and door, with their question, observations, recorded answers and sources; the door site picker lists candidate regions.
+- Example mode answers from recorded live server responses for every catalogue site and candidate region in December 2026 (`data/examples/recorded/`), with a note when a choice falls back to a general example.
 - Example payload for every endpoint and contract tests against them.
 - IM-2 Athena lander 3D model built by a Blender script.
 - Illustration media: pre-rendered Unreal Engine images of three kinds of lunar terrain and of the Deep Space Network ground stations, labelled as illustrations in the interface, with credits in `frontend/public/media/CREDITS.md`.
 - Light theme, switched from the top bar and remembered in the browser; the dark theme stays the default and is unchanged. Text and data colours are tested for contrast (4.5:1 and 3:1).
 - Project page text, README with set-up, data sources, licences and the AI use statement.
 - Repository setup: licence, contribution guidelines, agent instructions, PR and issue templates, PR checks.
+
+### Removed
+
+- AI-generated concept images without a watermark (`public/assets/grok-*.jpg`, the PDF copy of the rover modelling note) and the unused images, models and video of the design export in `frontend-migrate/design-export/assets/`; only the fonts the interface uses are kept.
 
 ### Fixed
 
