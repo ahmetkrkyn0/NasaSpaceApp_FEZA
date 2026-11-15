@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-11-15T07:39:37Z",
+  "generated_utc": "2026-11-15T07:44:56Z",
   "summary": {
-    "pass": 85,
+    "pass": 90,
     "warn": 0,
     "fail": 0,
     "skipped": 0,
@@ -1403,6 +1403,102 @@
       "source": "backend/tests/core/test_earth_sub_points.py (JPL Horizons, queried 15 Nov 2026)",
       "endpoint": "/api/body-series",
       "note": "IAU_EARTH rotation model (no nutation, no UT1): longitudes within 0.1 deg as for the #99 station elevations. Horizons latitudes are planetodetic; the expected value is converted to planetocentric."
+    },
+    {
+      "id": "T11-score-recomputed",
+      "test": "T11",
+      "title": "Largest difference between a score and its components' weighted mean",
+      "condition": "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default weights; again with a 3 deg slope limit and with the sunlit weight alone",
+      "kind": "reference",
+      "expected": null,
+      "measured": 0.0,
+      "diff": null,
+      "threshold": null,
+      "unit": "points",
+      "status": "pass",
+      "source": "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)",
+      "endpoint": "/api/recommend",
+      "note": "Score = 100 x sum(weight x normalized) / sum(weight), rounded to 0.1.",
+      "expected_range": [
+        0,
+        0.05
+      ]
+    },
+    {
+      "id": "T11-elimination",
+      "test": "T11",
+      "title": "Sites whose elimination disagrees with their steepest slope (12 and 3 deg limits)",
+      "condition": "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default weights; again with a 3 deg slope limit and with the sunlit weight alone",
+      "kind": "reference",
+      "expected": null,
+      "measured": 0.0,
+      "diff": null,
+      "threshold": null,
+      "unit": "count",
+      "status": "pass",
+      "source": "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)",
+      "endpoint": "/api/recommend",
+      "note": "The 3 deg limit eliminates 5 of 14 sites; max_slope_deg from /api/candidates.",
+      "expected_range": [
+        0,
+        0.0
+      ]
+    },
+    {
+      "id": "T11-order",
+      "test": "T11",
+      "title": "Ranking order violations (score descending, eliminated sites last)",
+      "condition": "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default weights; again with a 3 deg slope limit and with the sunlit weight alone",
+      "kind": "reference",
+      "expected": null,
+      "measured": 0.0,
+      "diff": null,
+      "threshold": null,
+      "unit": "count",
+      "status": "pass",
+      "source": "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)",
+      "endpoint": "/api/recommend",
+      "note": null,
+      "expected_range": [
+        0,
+        0.0
+      ]
+    },
+    {
+      "id": "T11-single-weight",
+      "test": "T11",
+      "title": "With only the sunlit weight, sites out of sunlit-fraction order",
+      "condition": "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default weights; again with a 3 deg slope limit and with the sunlit weight alone",
+      "kind": "reference",
+      "expected": null,
+      "measured": 0.0,
+      "diff": null,
+      "threshold": null,
+      "unit": "count",
+      "status": "pass",
+      "source": "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)",
+      "endpoint": "/api/recommend",
+      "note": null,
+      "expected_range": [
+        0,
+        0.0
+      ]
+    },
+    {
+      "id": "T11-events-agree",
+      "test": "T11",
+      "title": "cand-11: sunlit fraction, recommend against /api/events",
+      "condition": "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default weights; again with a 3 deg slope limit and with the sunlit weight alone",
+      "kind": "reference",
+      "expected": 0.0479,
+      "measured": 0.0479,
+      "diff": 0.0,
+      "threshold": 0.0001,
+      "unit": "1",
+      "status": "pass",
+      "source": "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)",
+      "endpoint": "/api/recommend",
+      "note": "Same site, period, mast height and Earth criterion (centre)."
     }
   ],
   "target": "in-process"

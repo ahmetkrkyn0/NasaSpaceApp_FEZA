@@ -84,6 +84,7 @@ def plan(call: Call) -> list[tuple[str, str, str, dict | None, dict | None]]:
         ("reference-missions", "GET", "/api/reference-missions", None, None),
         ("validation", "GET", "/api/validation", None, None),
         ("candidates", "GET", "/api/candidates", None, None),
+        ("ground-stations", "GET", "/api/ground-stations", None, None),
         ("body-series", "GET", "/api/body-series",
          {"start_utc": START_UTC, "end_utc": END_UTC, "step_s": 3600}, None),
     ]
@@ -109,6 +110,7 @@ def plan(call: Call) -> list[tuple[str, str, str, dict | None, dict | None]]:
             ("power", "GET", "/api/power", {**span, "panel_profile_id": profile_id}, None),
             ("now", "GET", "/api/now", {**loc, "utc": NOW_UTC}, None),
             ("comm-window", "GET", "/api/comm-window", {**loc, "utc": NOW_UTC}, None),
+            ("earth-link", "GET", "/api/earth-link", span, None),
         ]
     if len(ids) >= 2 and profile_id:
         scenarios = [
@@ -118,6 +120,12 @@ def plan(call: Call) -> list[tuple[str, str, str, dict | None, dict | None]]:
             for i, site_id in enumerate([ids[0], ids[-1]])
         ]
         requests.append(("compare", "POST", "/api/compare", None, {"scenarios": scenarios}))
+    requests.append(("recommend", "POST", "/api/recommend", None, {
+        "region": "mons-mouton", "start_utc": START_UTC, "end_utc": END_UTC, "mast_height_m": 2,
+        "weights": {"sunlit": 1.0, "dark": 1.0, "earth": 1.0, "slope": 1.0, "roughness": 0.5,
+                    "psr_distance": 0.0},
+        "limits": {"max_slope_deg": 12.0}, "psr_preference": "far", "include_catalogue_sites": True,
+    }))
     return requests
 
 
