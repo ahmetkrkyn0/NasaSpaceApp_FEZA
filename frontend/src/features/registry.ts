@@ -7,6 +7,7 @@ import HudPanel from './hud';
 import MapPanel from './map';
 import MissionsPanel from './missions';
 import PowerPanel from './power';
+import RecommendPanel from './recommend';
 import ScenePanel from './scene';
 import SetupPanel from './setup';
 import SkyPanel from './sky';
@@ -50,6 +51,7 @@ const ALL_DOORS: readonly Door[] = ['explore', 'classroom', 'plan'];
  */
 export const PANELS: readonly PanelEntry[] = [
   { id: 'setup', title: 'Scenario setup', slot: 'leftRail', modes: ['plan'], doors: ['plan'], component: SetupPanel },
+  { id: 'recommend', title: 'Site recommendation', slot: 'leftRail', modes: ['plan'], doors: ['plan'], component: RecommendPanel },
   { id: 'missions', title: 'Past missions', slot: 'leftRail', modes: ['plan'], doors: ['plan', 'classroom'], component: MissionsPanel },
   { id: 'tasks', title: 'Guided tasks', slot: 'leftRail', modes: null, doors: ['classroom'], component: TasksPanel },
   { id: 'game', title: 'Landing window game', slot: 'leftRail', modes: null, doors: ['explore'], component: GamePanel },
