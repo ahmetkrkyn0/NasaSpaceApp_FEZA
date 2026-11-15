@@ -59,6 +59,7 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 - Map layers around the south pole: hillshade, elevation, slope, permanently shadowed regions
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
 - A validity label on every result; assumed values (flat horizon, panel profiles) are marked as such
+- Pre-rendered Unity illustrations of the three kinds of landing terrain and the Deep Space Network ground stations, always labelled "Illustration" ([credits](frontend/public/media/CREDITS.md))
 
 ## Tech Stack
 
@@ -69,6 +70,7 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 | Ephemeris | NASA NAIF SPICE through SpiceyPy (DE440, `MOON_ME` frame); JPL Horizons only for validation |
 | Terrain | LOLA height maps (PGDA product 90) read with rasterio; NumPy for ray casting |
 | 3D model | Blender script for the IM-2 Athena lander ([`shipmodel/`](shipmodel/README.md)) |
+| Illustrations | Unity, offline renders only; Unity does not run in the product ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)) |
 
 ## Getting Started
 
@@ -191,6 +193,7 @@ Every expected value in the report comes from a row marked verified in [`docs/re
 - **Relay satellites are not modelled.** The relay label only says that Earth is not in line of sight.
 - **Eclipses** treat Earth as a sharp disk and the Sun as uniformly bright.
 - **Terrain horizon accuracy** is compared with NASA's illumination map only approximately (T6).
+- **Illustrations are not computed.** The Sun, Earth, shadows, stars and lander in the Unity images were placed by hand. An image shows a kind of terrain, not the ground at the chosen site. There is no live 3D view.
 
 ## Architecture
 
@@ -265,6 +268,16 @@ Main open source dependencies and their licences, read from the installed packag
 
 All are compatible with this project's Apache 2.0 licence.
 
+### Illustration media
+
+The images and short loops in [`frontend/public/media/`](frontend/public/media/) are offline Unity renders, shown in the interface as labelled illustrations, not as computed data. Full credits, file by file group: [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md).
+
+| Images | Prepared by | Models | Textures and sky | Licence of third-party parts |
+| ------ | ----------- | ------ | ---------------- | ---------------------------- |
+| Moon surface scenes | pending | Lander: the team's Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts). Rocks and other objects: pending | Terrain and surface: pending. Stars: pending | pending |
+| Ground stations (Goldstone, Madrid, Canberra) | pending | Antennas: pending | pending | pending |
+| Earth globe | pending | none | Earth and Moon: pending | pending |
+
 ## Use of AI Tools
 
 The NASA Space Apps rules ask teams to say where and how AI tools were used.
@@ -272,6 +285,7 @@ The NASA Space Apps rules ask teams to say where and how AI tools were used.
 - **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand. The rules the agents follow are in [AGENTS.md](AGENTS.md).
 - **Research:** the notes in [docs/research/](docs/research/) were drafted with AI assistance. Each claim the product relies on was checked against its source and labelled in [docs/research/dogrulama/](docs/research/dogrulama/); only verified values are used.
 - **Images:** three AI-generated (Grok) rover concept images, `public/assets/grok-*.jpg`, appear in one research note. They are not part of the product or the demo.
+- **Illustration media:** the Unity images in `frontend/public/media/` were rendered by pending. AI tools used in making them: pending.
 - **Data:** no data is AI-generated. Positions come from SPICE, terrain from LOLA, reference values from JPL Horizons and published sources.
 
 ## Contributing
