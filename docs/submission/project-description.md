@@ -138,6 +138,8 @@ Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add
 | LRO Camera (LROC): IM-2 Athena landing site | https://www.lroc.asu.edu/images/1408 |
 | LRO Camera (LROC): IM-2 intended landing site on Mons Mouton | https://www.lroc.asu.edu/images/1401 |
 | NASA TN D-6850, Apollo Experience Report: Lunar Module Landing Gear Subsystem (12° landing slope limit) | https://ntrs.nasa.gov/citations/19720018253 |
+| NASA: Deep Space Network overview (ground station cards) | https://www.nasa.gov/communicating-with-missions/dsn/ |
+| NASA NTRS 20240009717: Navigation Doppler Lidar (past mission facts) | https://ntrs.nasa.gov/citations/20240009717 |
 | NASA Scientific Visualization Studio: CGI Moon Kit (3D Moon surface image) | https://svs.gsfc.nasa.gov/4720 |
 | NASA Earth Observatory: Blue Marble Next Generation with topography and bathymetry (Earth image) | https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/ |
 | NASA Scientific Visualization Studio: Black Marble 2016 (Earth night image in an illustration) | https://svs.gsfc.nasa.gov/30876 |
@@ -161,6 +163,45 @@ What each source is used for:
 - **LRO Camera (LROC) site releases**: Coordinates of Chandrayaan-3, the IM-2 Athena landing point and the IM-2 target point on Mons Mouton. Source: <https://www.lroc.asu.edu/images/1314>, <https://www.lroc.asu.edu/images/1408>, <https://www.lroc.asu.edu/images/1401>
 
 ## Space Agency Partner Data and Other References
+
+Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add New Link" for each). Every address is the full URL and opens without a login. Details of each entry follow the table.
+
+| Link Text | Link Url |
+|---|---|
+| Canadian Space Agency: From Apollo to Artemis, the evolution of crewed lunar missions (Apollo 11 information card) | https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/from-apollo-to-artemis-the-evolution-of-crewed-lunar-missions.asp |
+| JAXA press release, 25 January 2024: SLIM landing results (past mission facts) | https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf |
+| JAXA press release, 26 August 2024: SLIM mission end (past mission facts) | https://global.jaxa.jp/press/2024/08/20240826-1_e.html |
+| SpaceQ: NASA CLPS 2 and Canada (Blue Ghost 1 information card) | https://spaceq.ca/nasa-clps-2-canada-canadarm3/ |
+| Firefly Aerospace: spacecraft autonomy (Blue Ghost 1 mission facts) | https://fireflyspace.com/spacecraft-autonomy/ |
+| SpaceNews: IM-2 lunar lander mission ends (past mission facts) | https://spacenews.com/im-2-lunar-lander-mission-ends/ |
+| SpacePolicyOnline: Hardware Failure Doomed ispace's Mission 2 (Hakuto-R M2 impact point from LRO) | https://spacepolicyonline.com/news/hardware-failure-doomed-ispaces-mission-2/ |
+| Durga Prasad et al. 2023, MNRAS Letters 526, L116 (Chandrayaan-3 landing site terrain) | https://academic.oup.com/mnrasl/article/526/1/L116/7236874 |
+| Wikipedia: Mons Mouton (terrain type of the IM-2 target) | https://en.wikipedia.org/wiki/Mons_Mouton |
+| Intuitive Machines: Nova-C lander page, archived 4 March 2025 (proportions of the Athena model) | https://web.archive.org/web/20250304174546/https://www.intuitivemachines.com/nova-c |
+| Poly Haven: CC0 textures and models (illustration scenes) | https://polyhaven.com |
+| SpiceyPy (SPICE in Python, MIT) | https://github.com/AndrewAnnex/SpiceyPy |
+| FastAPI (MIT) | https://fastapi.tiangolo.com |
+| Pydantic (MIT) | https://docs.pydantic.dev |
+| Uvicorn (BSD-3-Clause) | https://github.com/encode/uvicorn |
+| Starlette (BSD-3-Clause) | https://github.com/encode/starlette |
+| NumPy (BSD-3-Clause) | https://numpy.org |
+| rasterio (BSD) | https://rasterio.readthedocs.io |
+| GDAL (MIT, used through rasterio) | https://gdal.org |
+| pytest (MIT) | https://pytest.org |
+| React (MIT) | https://react.dev |
+| Vite (MIT) | https://vite.dev |
+| Vitest (MIT) | https://vitest.dev |
+| three.js (MIT) | https://threejs.org |
+| TypeScript (Apache-2.0) | https://www.typescriptlang.org |
+| Unreal Engine 5.8 (offline renders of the illustrations) | https://www.unrealengine.com |
+| Blender (Athena lander model) | https://www.blender.org |
+| FFmpeg (illustration loops) | https://ffmpeg.org |
+| SciPy (illustration terrain scripts) | https://scipy.org |
+| Pillow (illustration texture scripts) | https://python-pillow.org |
+| Skyfield with JPL DE421 (Sun and Earth directions in the illustrations) | https://rhodesmill.org/skyfield/ |
+| Claude Code by Anthropic (AI coding assistant; see Use of SI) | https://www.anthropic.com/claude-code |
+| OpenAI Codex (AI code review; see Use of SI) | https://openai.com/codex/ |
+
 
 - **CSA (Canadian Space Agency):** information cards on Canada's part in lunar exploration, from Apollo to Artemis, shown on the Apollo 11 and Blue Ghost 1 sites (CSA pages listed in [csa-bilgi-kartlari.md](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/docs/design/csa-bilgi-kartlari.md)).
 - **Mission facts** for the past-mission cases (landing times, outcomes) come from the agencies' and operators' own publications; each fact carries its source in [`data/reference_missions.json`](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/data/reference_missions.json).
