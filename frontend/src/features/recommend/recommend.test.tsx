@@ -15,6 +15,8 @@ import {
   DEFAULT_LIMITS,
   buildRequest,
   componentText,
+  createRanker,
+  rankingIsStale,
   eliminatedReason,
   runRanking,
   siteScenario,
@@ -114,7 +116,7 @@ describe('server errors', () => {
     const result = await runRanking(ACTIVE, zero, refuse, store);
     expect(result.ok).toBe(false);
     expect(store.getState().ranked).toBe(recommendExample);
-    if (!result.ok) expect(renderToStaticMarkup(<ErrorNote error={result.error} />)).toContain('At least one weight must be above zero.');
+    if (!result.ok && 'error' in result) expect(renderToStaticMarkup(<ErrorNote error={result.error} />)).toContain('At least one weight must be above zero.');
   });
 
   it('a good answer is stored with its request (example mode)', async () => {
@@ -141,5 +143,33 @@ describe('panel', () => {
 
   it('asks for a scenario first when there is none', () => {
     expect(renderToStaticMarkup(<RecommendPanel />)).toContain('No scenario yet');
+  });
+});
+
+describe('PR #116 review notes', () => {
+  it('drops an older ranking answer that arrives after a newer one', async () => {
+    const store = createRecommendStore();
+    const pending: ((r: RecommendResponse) => void)[] = [];
+    const run = createRanker(() => new Promise((resolve) => pending.push(resolve)), store);
+    const first = run(ACTIVE, DEFAULT_FORM);
+    const second = run({ ...ACTIVE, mast_height_m: 2 }, DEFAULT_FORM);
+    const newer = { ...recommendExample, assumptions: ['newer'] };
+    pending[1]!(newer);
+    expect(await second).toEqual({ ok: true });
+    pending[0]!(recommendExample);
+    expect(await first).toEqual({ ok: false, stale: true });
+    expect(store.getState().ranked).toBe(newer);
+    expect(store.getState().rankedRequest?.mast_height_m).toBe(2);
+  });
+
+  it('says when the ranking belongs to another period or mast than the active scenario', () => {
+    const request = buildRequest(ACTIVE, DEFAULT_FORM);
+    expect(rankingIsStale(request, ACTIVE)).toBe(false);
+    expect(rankingIsStale(request, { ...ACTIVE, mast_height_m: 2 })).toBe(true);
+    expect(rankingIsStale(request, { ...ACTIVE, start_utc: '2026-12-06T00:00:00Z' })).toBe(true);
+    expect(rankingIsStale(null, ACTIVE)).toBe(false);
+
+    const html = renderToStaticMarkup(<RecommendResults response={recommendExample} active={ACTIVE} stale />);
+    expect(html).toContain('score <span class="data">71</span> (for the ranked period)');
   });
 });

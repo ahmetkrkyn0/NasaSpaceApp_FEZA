@@ -68,6 +68,10 @@ describe('example files of the new endpoints', () => {
     const kinds = candidatesExample.candidates.map((c) => c.kind);
     expect(new Set(kinds)).toEqual(new Set(['candidate', 'catalogue']));
     for (const c of candidatesExample.candidates) expect(isCandidateId(c.id)).toBe(c.kind === 'candidate');
+    // Method fields of the #103 contract: the slope limit carries its source, assumptions are named.
+    expect(candidatesExample.method.slope_limit_source).toContain('No 89');
+    expect(candidatesExample.method.assumed).toContain('window_m');
+    expect(candidatesExample.method.assumed).not.toContain('slope_limit_deg');
     // Ground stations carry their source.
     for (const s of groundStationsExample) expect(s.source.url).toMatch(/^https:\/\//);
   });
