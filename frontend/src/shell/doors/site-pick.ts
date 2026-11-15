@@ -17,6 +17,9 @@ import {
 
 const MS_PER_DAY = 86_400_000;
 
+/** A place the picker can choose: a catalogue site or a loaded candidate region (#97, 4.3). */
+export type PickPlace = Pick<Site, 'id' | 'name'>;
+
 /** Today at 00:00 UTC, the start of a scenario picked without one. */
 export function todayUtc(nowMs: number): UtcString {
   return new Date(Math.floor(nowMs / MS_PER_DAY) * MS_PER_DAY).toISOString().replace('.000Z', 'Z');
@@ -26,7 +29,7 @@ export function todayUtc(nowMs: number): UtcString {
  * The scenario after picking `site`: the active one moved to the site (dates, mast, panel and
  * criterion kept), or a new one from today with the default length, mast and panel.
  */
-export function scenarioForPick(active: Scenario | null, site: Site, sites: readonly Site[], nowMs: number): Scenario {
+export function scenarioForPick(active: Scenario | null, site: PickPlace, sites: readonly PickPlace[], nowMs: number): Scenario {
   if (active) return sameDateAnotherSite(active, site, sites);
   return buildScenario({
     place: { kind: 'site', site },
@@ -42,7 +45,7 @@ export function scenarioForPick(active: Scenario | null, site: Site, sites: read
  * a moment left in the address bar from an earlier link cannot fall outside the new range; a
  * moved scenario keeps its moment, since its dates do not change.
  */
-export function applyPick(store: Pick<ScenarioStore, 'getState' | 'setScenario' | 'setSelectedUtc'>, site: Site, sites: readonly Site[], nowMs: number): Scenario {
+export function applyPick(store: Pick<ScenarioStore, 'getState' | 'setScenario' | 'setSelectedUtc'>, site: PickPlace, sites: readonly PickPlace[], nowMs: number): Scenario {
   const active = store.getState().active;
   const next = scenarioForPick(active, site, sites, nowMs);
   store.setScenario(next);
@@ -56,4 +59,25 @@ export const CUSTOM_POINT = '__custom__';
 export function pickerValue(active: Scenario | null): string {
   if (!active) return '';
   return active.site_id ?? CUSTOM_POINT;
+}
+
+/**
+ * Candidate regions offered next to the catalogue: `candidate` entries only (a `catalogue`
+ * entry is a catalogue site already in the list), without ids the catalogue already has.
+ */
+export function candidateOptions(sites: readonly PickPlace[], candidates: readonly (PickPlace & { kind: string })[]): PickPlace[] {
+  const known = new Set(sites.map((s) => s.id));
+  return candidates.filter((c) => c.kind === 'candidate' && !known.has(c.id)).map(({ id, name }) => ({ id, name }));
+}
+
+/**
+ * An extra option for an active site that is in neither list (for example a candidate before the
+ * candidate list has loaded), so the select shows that place instead of falling back to its first
+ * option. `null` when the value is already listed, empty or a custom point.
+ */
+export function unlistedOption(active: Scenario | null, sites: readonly PickPlace[], candidates: readonly PickPlace[]): PickPlace | null {
+  const value = pickerValue(active);
+  if (!active || value === '' || value === CUSTOM_POINT) return null;
+  if (sites.some((s) => s.id === value) || candidates.some((c) => c.id === value)) return null;
+  return { id: value, name: active.label.trim() || value };
 }

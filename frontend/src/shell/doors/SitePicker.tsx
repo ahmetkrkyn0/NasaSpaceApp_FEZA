@@ -4,15 +4,19 @@ import type { Scenario, Site } from '../../api/types';
 import { groupSites } from '../../features/setup/form';
 import { describeError } from '../../features/timeline/describe-error';
 import { formatDate, parseUtc } from '../../features/timeline/time';
+import { useEffect } from 'react';
 import { useAsync, useStore } from '../../lib/hooks';
+import { recommendStore } from '../../state/recommend-store';
 import { scenarioStore } from '../../state/scenario-store';
 import { DEFAULT_DURATION_DAYS } from '../../state/scenario-tools';
-import { CUSTOM_POINT, applyPick, pickerValue } from './site-pick';
+import { CUSTOM_POINT, applyPick, candidateOptions, pickerValue, unlistedOption, type PickPlace } from './site-pick';
 
 export interface SitePickerViewProps {
   sites: readonly Site[];
+  /** Loaded candidate regions not in the catalogue (`candidateOptions`). */
+  candidates?: readonly PickPlace[];
   active: Scenario | null;
-  onPick: (site: Site) => void;
+  onPick: (site: PickPlace) => void;
   /** Loading or error text for the site list. */
   note?: string | null;
 }
@@ -25,8 +29,9 @@ function datesText(active: Scenario): string {
 }
 
 /** Site list of the Explore and Classroom doors, with the dates the scenario covers. */
-export function SitePickerView({ sites, active, onPick, note }: SitePickerViewProps) {
+export function SitePickerView({ sites, candidates = [], active, onPick, note }: SitePickerViewProps) {
   const value = pickerValue(active);
+  const unlisted = unlistedOption(active, sites, candidates);
   return (
     <div className="door-site">
       <label className="door-site-label">
@@ -36,12 +41,14 @@ export function SitePickerView({ sites, active, onPick, note }: SitePickerViewPr
           value={value}
           disabled={sites.length === 0}
           onChange={(e) => {
-            const site = sites.find((s) => s.id === e.currentTarget.value);
-            if (site) onPick(site);
+            const id = e.currentTarget.value;
+            const place = sites.find((s) => s.id === id) ?? candidates.find((c) => c.id === id);
+            if (place) onPick(place);
           }}
         >
           {value === '' ? <option value="">Choose a site…</option> : null}
           {value === CUSTOM_POINT ? <option value={CUSTOM_POINT}>Custom point (set in the Plan door)</option> : null}
+          {unlisted ? <option value={unlisted.id}>{unlisted.name}</option> : null}
           {groupSites(sites).map((group) => (
             <optgroup key={group.category} label={group.label}>
               {group.sites.map((s) => (
@@ -51,6 +58,15 @@ export function SitePickerView({ sites, active, onPick, note }: SitePickerViewPr
               ))}
             </optgroup>
           ))}
+          {candidates.length > 0 ? (
+            <optgroup label="Candidate regions">
+              {candidates.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </optgroup>
+          ) : null}
         </select>
       </label>
       <p className="door-site-note">
@@ -67,6 +83,11 @@ export function SitePicker() {
   // Only a list from a finished request can be picked from; a reload or a failed request
   // never leaves the previous list selectable.
   const list = sites.status === 'success' ? sites.data : [];
+  const loaded = useStore(recommendStore, (s) => s.candidates);
+  useEffect(() => {
+    if (recommendStore.getState().candidatesStatus === 'idle') void recommendStore.loadCandidates();
+  }, []);
+  const candidates = candidateOptions(list, loaded?.candidates ?? []);
   const note =
     sites.status === 'error'
       ? `Sites could not be loaded: ${describeError(sites.error)}`
@@ -78,9 +99,10 @@ export function SitePicker() {
   return (
     <SitePickerView
       sites={list}
+      candidates={candidates}
       active={active}
       note={note}
-      onPick={(site) => applyPick(scenarioStore, site, list, Date.now())}
+      onPick={(site) => applyPick(scenarioStore, site, [...list, ...candidates], Date.now())}
     />
   );
 }
