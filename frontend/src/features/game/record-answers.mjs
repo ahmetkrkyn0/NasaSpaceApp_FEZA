@@ -38,11 +38,14 @@ for (const level of content.levels) {
     if (!response.ok) throw new Error(`${level.id} ${utc(start)}: HTTP ${response.status} ${await response.text()}`);
     const body = await response.json();
     const { sunlit_fraction, longest_dark_hours, earth_visible_fraction } = body.metrics;
-    answers[level.id][utc(start).slice(0, 10)] = {
-      metrics: { sunlit_fraction, longest_dark_hours, earth_visible_fraction },
-      validity: body.validity,
-      relay_status: body.relay_status ?? null,
-    };
+    // Compact row, see RecordedRow in game.ts.
+    answers[level.id][utc(start).slice(0, 10)] = [
+      sunlit_fraction,
+      longest_dark_hours,
+      earth_visible_fraction,
+      body.validity,
+      body.relay_status ?? null,
+    ];
   }
   process.stdout.write(`${level.id}: ${Object.keys(answers[level.id]).length} dates\n`);
 }
@@ -56,12 +59,14 @@ try {
 
 const out = {
   _about:
-    'Server answers of /api/events for every date of every game level, recorded by record-answers.mjs. Used in example mode only; live mode asks the server.',
+    'Server answers of /api/events for every date of every game level, recorded by record-answers.mjs. Used in example mode only; live mode asks the server. Each row: [sunlit_fraction, longest_dark_hours, earth_visible_fraction, validity, relay_status].',
   recorded_utc: utc(Date.now()).slice(0, 17) + '00Z',
   server_commit: commit,
   mission_days: content.mission_days,
   mast_height_m: content.mast_height_m,
   answers,
 };
-writeFileSync(here('recorded-answers.json'), `${JSON.stringify(out, null, 2)}\n`);
+// One answer per line: readable diffs without the size of fully indented JSON.
+const text = JSON.stringify(out, null, 2).replace(/\[\n\s+([^\[\]]*?)\n\s+\]/g, (_, inner) => `[${inner.replace(/\n\s+/g, ' ')}]`);
+writeFileSync(here('recorded-answers.json'), `${text}\n`);
 process.stdout.write('wrote recorded-answers.json\n');

@@ -7,7 +7,7 @@ import { eventsExample, sitesExample } from '../../api/examples';
 import { uiStore } from '../../shell/ui-state';
 import { EMPTY_SCENARIO_STATE, scenarioStore } from '../../state/scenario-store';
 import { scenarioDays } from '../../state/scenario-tools';
-import { GameResult, openInPlan, type Attempt } from './index';
+import { GameResult, LevelPicker, openInPlan, type Attempt } from './index';
 import {
   GOALS_NOTE,
   LEVELS,
@@ -19,7 +19,9 @@ import {
   days,
   earthReason,
   land,
+  levelMonths,
   missionScenario,
+  monthOf,
   recordedAnswer,
   resultSentence,
   stars,
@@ -161,9 +163,48 @@ describe('recorded server answers (example mode)', () => {
     expect(earthReason(level('polar-december'), recordedAnswer('polar-december', '2026-12-01')!.metrics)).toBeNull();
   });
 
-  it('Apollo 11: some dates meet all three goals', () => {
+  it('Apollo 11: every month of the year has dates that meet all three goals (PR #78 review)', () => {
     const l = level('equator');
-    expect(allDates('equator').some((d) => stars(checkGoals(l.goals, recordedAnswer('equator', d)!.metrics)) === 3)).toBe(true);
+    for (const m of levelMonths(l)) {
+      const dates = allDates('equator').slice(m.first, m.last + 1);
+      expect(dates.some((d) => stars(checkGoals(l.goals, recordedAnswer('equator', d)!.metrics)) === 3), m.label).toBe(true);
+    }
+  });
+});
+
+describe('wider date range and month choice (PR #78 review)', () => {
+  it("offers a year at Apollo 11 and Chang'e 4, and December 2026 at Mons Mouton", () => {
+    expect(dateCount(level('equator'))).toBe(365);
+    expect(dateCount(level('far-side'))).toBe(365);
+    expect(levelMonths(level('equator')).map((m) => m.label)).toEqual([
+      'December 2026',
+      'January 2027',
+      'February 2027',
+      'March 2027',
+      'April 2027',
+      'May 2027',
+      'June 2027',
+      'July 2027',
+      'August 2027',
+      'September 2027',
+      'October 2027',
+      'November 2027',
+    ]);
+    expect(levelMonths(level('polar-december')).map((m) => [m.label, m.first, m.last])).toEqual([['December 2026', 0, 19]]);
+  });
+
+  it('a month covers its own dates, so the slider moves within one month', () => {
+    const l = level('equator');
+    const feb = levelMonths(l).find((m) => m.key === '2027-02')!;
+    expect([dateAt(l, feb.first), dateAt(l, feb.last)]).toEqual(['2027-02-01', '2027-02-28']);
+    expect(monthOf(l, feb.first + 10).key).toBe('2027-02');
+  });
+
+  it('the level buttons are off while a landing is computed', () => {
+    const idle = renderToStaticMarkup(<LevelPicker levelId="equator" landing={false} onChoose={() => undefined} />);
+    expect(idle).not.toContain('disabled');
+    const busy = renderToStaticMarkup(<LevelPicker levelId="equator" landing onChoose={() => undefined} />);
+    expect(busy.match(/disabled=""/g)).toHaveLength(LEVELS.length);
   });
 });
 

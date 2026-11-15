@@ -59,6 +59,36 @@ export function dateAt(level: GameLevel, index: number): string {
   return new Date(Date.parse(`${level.date_min}T00:00:00Z`) + clamped * DAY_MS).toISOString().slice(0, 10);
 }
 
+export interface LevelMonth {
+  /** `YYYY-MM`. */
+  key: string;
+  /** For example "December 2026". */
+  label: string;
+  /** Date indexes of the month's first and last landing date within the level. */
+  first: number;
+  last: number;
+}
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** The calendar months a level's landing dates fall in, in order. */
+export function levelMonths(level: GameLevel): LevelMonth[] {
+  const months: LevelMonth[] = [];
+  for (let i = 0; i < dateCount(level); i += 1) {
+    const key = dateAt(level, i).slice(0, 7);
+    const last = months[months.length - 1];
+    if (last && last.key === key) last.last = i;
+    else months.push({ key, label: `${MONTH_NAMES[Number(key.slice(5, 7)) - 1]} ${key.slice(0, 4)}`, first: i, last: i });
+  }
+  return months;
+}
+
+/** The month a date index falls in. */
+export function monthOf(level: GameLevel, index: number): LevelMonth {
+  const months = levelMonths(level);
+  return months.find((m) => index >= m.first && index <= m.last) ?? months[0]!;
+}
+
 /** The mission a landing date opens: the level's site, two weeks from the landing, mast as in the level file. */
 export function missionScenario(level: GameLevel, date: string, sites: readonly Pick<Site, 'id' | 'name'>[]): Scenario {
   const site = sites.find((s) => s.id === level.site_id) ?? { id: level.site_id, name: level.site_id };
@@ -82,10 +112,17 @@ export interface GameAnswer {
   origin: 'live' | 'recorded';
 }
 
+/**
+ * One recorded answer, kept compact because two levels span a year:
+ * `[sunlit_fraction, longest_dark_hours, earth_visible_fraction, validity, relay_status]`.
+ */
+export type RecordedRow = [number | null, number | null, number | null, Validity, RelayStatus | null];
+
 interface RecordedFile {
   recorded_utc: string;
   server_commit: string | null;
-  answers: Record<string, Record<string, Omit<GameAnswer, 'origin'>>>;
+  /** Level id, then landing date `YYYY-MM-DD`. */
+  answers: Record<string, Record<string, RecordedRow>>;
 }
 
 const RECORDED = recorded as unknown as RecordedFile;
@@ -93,8 +130,10 @@ export const RECORDED_UTC = RECORDED.recorded_utc;
 
 /** The stored server answer for a level and date, or `null` when none was recorded. */
 export function recordedAnswer(levelId: string, date: string): GameAnswer | null {
-  const answer = RECORDED.answers[levelId]?.[date];
-  return answer ? { ...answer, origin: 'recorded' } : null;
+  const row = RECORDED.answers[levelId]?.[date];
+  if (!row) return null;
+  const [sunlit_fraction, longest_dark_hours, earth_visible_fraction, validity, relay_status] = row;
+  return { metrics: { sunlit_fraction, longest_dark_hours, earth_visible_fraction }, validity, relay_status, origin: 'recorded' };
 }
 
 /**
