@@ -3,22 +3,26 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, type LatLon, type Vec3 } from './coords';
 
-export interface GlobeSite {
+export interface GlobePlace {
   id: string;
   name: string;
   lat_deg: number;
   lon_deg: number;
+  /** Catalogue site (round dot) or candidate region (square). */
+  kind: 'site' | 'candidate';
+  /** Position in the last recommendation, 1 first; absent when not ranked. */
+  rank?: number;
 }
 
 export interface GlobeViewProps {
-  sites: readonly GlobeSite[];
+  places: readonly GlobePlace[];
   selectedId: string | null;
   onPick: (id: string) => void;
   /** Unit vector to the Sun from the server's sub-solar point; `null` gives even light. */
   sun: Vec3 | null;
   /** Server's sub-Earth point, marked separately; `null` hides the mark. */
   subEarth: LatLon | null;
-  /** Start the camera centred on this point (the selected site). */
+  /** Start the camera centred on this point (the selected place). */
   focus: LatLon | null;
 }
 
@@ -30,17 +34,50 @@ function token(name: string, fallback: string): THREE.Color {
 
 const v3 = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
 
+/** The Moon's surface is drawn neutral grey in both themes; the marks follow the theme tokens. */
+const SURFACE = 'silver';
+
+/** Current theme (`<html data-theme>`), so a theme switch rebuilds the scene with its colours. */
+function useThemeKey(): string {
+  const read = () => (typeof document === 'undefined' ? '' : document.documentElement.getAttribute('data-theme') ?? 'dark');
+  const [key, setKey] = useState(read);
+  useEffect(() => {
+    if (typeof MutationObserver === 'undefined') return;
+    const observer = new MutationObserver(() => setKey(read()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+  return key;
+}
+
+interface Live {
+  sunLight: THREE.DirectionalLight;
+  ambient: THREE.AmbientLight;
+  ring: THREE.Mesh;
+  render: () => void;
+}
+
+/** Ambient light when the Sun direction is known (night side stays readable) and when it is not. */
+const AMBIENT_WITH_SUN = 0.12;
+const AMBIENT_EVEN = 1.6;
+
 /**
  * WebGL view of the globe. Kept in its own module so that three.js is only loaded when the 3D
- * view is opened. It draws; it computes nothing about the Sun or Earth.
+ * view is opened. It draws; it computes nothing about the Sun or Earth. The scene is built
+ * once per place list, selection and focus; the light and the sub-Earth ring are then moved in
+ * place, so playing the timeline neither rebuilds the scene nor resets the camera.
  */
-export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, focus }: GlobeViewProps) {
+export default function GlobeView({ places, selectedId, onPick, sun, subEarth, focus }: GlobeViewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const nearRef = useRef<HTMLSpanElement>(null);
   const farRef = useRef<HTMLSpanElement>(null);
+  const liveRef = useRef<Live | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
   const pickRef = useRef(onPick);
   pickRef.current = onPick;
+  const theme = useThemeKey();
+  const lightRef = useRef({ sun, subEarth });
+  lightRef.current = { sun, subEarth };
 
   useEffect(() => {
     const host = hostRef.current;
@@ -59,60 +96,52 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    const start = focus ? v3(latLonToVector(focus, 4)) : new THREE.Vector3(0, 0, 4);
-    camera.position.copy(start);
+    camera.position.copy(focus ? v3(latLonToVector(focus, 4)) : new THREE.Vector3(0, 0, 4));
     camera.lookAt(0, 0, 0);
 
-    // Globe: plain grey surface; lit from the server's Sun direction, or evenly when there is none.
     const globe = new THREE.Mesh(
       new THREE.SphereGeometry(1, 96, 64),
-      new THREE.MeshStandardMaterial({ color: token('--text-3', 'grey'), roughness: 1, metalness: 0 }),
+      new THREE.MeshStandardMaterial({ color: new THREE.Color(SURFACE), roughness: 1, metalness: 0 }),
     );
     scene.add(globe);
-    if (sun) {
-      scene.add(new THREE.AmbientLight(0xffffff, 0.08));
-      const light = new THREE.DirectionalLight(0xffffff, 2.2);
-      light.position.copy(v3(sun).multiplyScalar(10));
-      scene.add(light);
-    } else {
-      scene.add(new THREE.AmbientLight(0xffffff, 1.6));
-    }
+    const ambient = new THREE.AmbientLight(0xffffff, AMBIENT_EVEN);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 0);
+    scene.add(ambient, sunLight);
 
-    // Graticule every 30 degrees, just above the surface.
     const gridMaterial = new THREE.LineBasicMaterial({ color: token('--line-button', 'grey'), transparent: true, opacity: 0.6 });
     for (const line of graticule(30)) {
-      const geometry = new THREE.BufferGeometry().setFromPoints(line.map((p) => v3(latLonToVector(p, 1.002))));
-      scene.add(new THREE.Line(geometry, gridMaterial));
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(line.map((p) => v3(latLonToVector(p, 1.002)))), gridMaterial));
     }
 
-    // Site markers; the selected one is larger and in the accent colour.
+    // Sites are dots, candidate regions are squares; the selected place is larger and accented.
     const markers: THREE.Mesh[] = [];
     const siteColour = token('--text', 'white');
+    const candidateColour = token('--mint', 'green');
     const selectedColour = token('--lavender-bright', 'violet');
-    for (const site of sites) {
-      const selected = site.id === selectedId;
+    for (const place of places) {
+      const selected = place.id === selectedId;
+      const topRanked = place.rank !== undefined && place.rank <= 3;
+      const size = selected ? 0.03 : topRanked ? 0.024 : 0.016;
+      const geometry = place.kind === 'site' ? new THREE.SphereGeometry(size, 16, 12) : new THREE.BoxGeometry(size * 1.6, size * 1.6, size * 1.6);
       const marker = new THREE.Mesh(
-        new THREE.SphereGeometry(selected ? 0.03 : 0.018, 16, 12),
-        new THREE.MeshBasicMaterial({ color: selected ? selectedColour : siteColour }),
+        geometry,
+        new THREE.MeshBasicMaterial({ color: selected ? selectedColour : place.kind === 'site' ? siteColour : candidateColour }),
       );
-      marker.position.copy(v3(latLonToVector(site, 1.01)));
-      marker.userData.siteId = site.id;
-      marker.userData.name = site.name;
+      const p = v3(latLonToVector(place, 1.01));
+      marker.position.copy(p);
+      marker.lookAt(p.clone().multiplyScalar(2));
+      marker.userData.placeId = place.id;
       scene.add(marker);
       markers.push(marker);
     }
 
-    // Sub-Earth point: a ring, so it reads apart from the site dots without colour.
-    if (subEarth) {
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.035, 0.05, 32),
-        new THREE.MeshBasicMaterial({ color: token('--cyan', 'cyan'), side: THREE.DoubleSide }),
-      );
-      const p = v3(latLonToVector(subEarth, 1.012));
-      ring.position.copy(p);
-      ring.lookAt(p.clone().multiplyScalar(2));
-      scene.add(ring);
-    }
+    // Sub-Earth point: a ring, so it reads apart from the place markers without colour.
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.035, 0.05, 32),
+      new THREE.MeshBasicMaterial({ color: token('--cyan', 'cyan'), side: THREE.DoubleSide }),
+    );
+    ring.visible = false;
+    scene.add(ring);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
@@ -131,12 +160,9 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
       el.style.top = `${((1 - projected.y) / 2) * h}px`;
     };
 
-    let frame = 0;
     const render = () => {
-      const w = host.clientWidth;
-      const h = host.clientHeight;
-      placeLabel(nearRef.current, nearPoint, w, h);
-      placeLabel(farRef.current, farPoint, w, h);
+      placeLabel(nearRef.current, nearPoint, host.clientWidth, host.clientHeight);
+      placeLabel(farRef.current, farPoint, host.clientWidth, host.clientHeight);
       renderer.render(scene, camera);
     };
     const resize = () => {
@@ -147,6 +173,7 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
       camera.updateProjectionMatrix();
       render();
     };
+    let frame = 0;
     const loop = () => {
       frame = requestAnimationFrame(loop);
       if (controls.update()) render();
@@ -154,22 +181,25 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
     controls.addEventListener('change', render);
     const observer = new ResizeObserver(resize);
     observer.observe(host);
+
+    liveRef.current = { sunLight, ambient, ring, render };
+    applyLight(liveRef.current, lightRef.current.sun, lightRef.current.subEarth);
     resize();
     if (controls.enableDamping) loop();
 
-    // Click on a site marker selects that site.
     const ray = new THREE.Raycaster();
     const onClick = (event: MouseEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       const ndc = new THREE.Vector2(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
       ray.setFromCamera(ndc, camera);
       const hit = ray.intersectObjects([globe, ...markers])[0];
-      const id = hit?.object.userData.siteId as string | undefined;
+      const id = hit?.object.userData.placeId as string | undefined;
       if (id) pickRef.current(id);
     };
     renderer.domElement.addEventListener('click', onClick);
 
     return () => {
+      liveRef.current = null;
       cancelAnimationFrame(frame);
       observer.disconnect();
       renderer.domElement.removeEventListener('click', onClick);
@@ -184,8 +214,12 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
       renderer.dispose();
       host.removeChild(renderer.domElement);
     };
-    // A new site list, selection or server answer rebuilds the scene.
-  }, [sites, selectedId, sun, subEarth, focus]);
+  }, [places, selectedId, focus, theme]);
+
+  // The selected moment moves only the light and the ring.
+  useEffect(() => {
+    if (liveRef.current) applyLight(liveRef.current, sun, subEarth);
+  }, [sun, subEarth]);
 
   if (failed) return <p className="globe-note" role="alert">{failed}</p>;
   return (
@@ -198,4 +232,24 @@ export default function GlobeView({ sites, selectedId, onPick, sun, subEarth, fo
       </span>
     </div>
   );
+}
+
+function applyLight(live: Live, sun: Vec3 | null, subEarth: LatLon | null) {
+  if (sun) {
+    live.sunLight.position.copy(v3(sun).multiplyScalar(10));
+    live.sunLight.intensity = 2.2;
+    live.ambient.intensity = AMBIENT_WITH_SUN;
+  } else {
+    live.sunLight.intensity = 0;
+    live.ambient.intensity = AMBIENT_EVEN;
+  }
+  if (subEarth) {
+    const p = v3(latLonToVector(subEarth, 1.012));
+    live.ring.position.copy(p);
+    live.ring.lookAt(p.clone().multiplyScalar(2));
+    live.ring.visible = true;
+  } else {
+    live.ring.visible = false;
+  }
+  live.render();
 }

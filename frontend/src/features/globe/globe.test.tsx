@@ -2,9 +2,15 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { sitesExample } from '../../api/examples';
+import { bodySeriesExample, sitesExample } from '../../api/examples';
+import type { CandidateList, RecommendResponse, Scenario } from '../../api/types';
+import { EMPTY_RECOMMEND_STATE } from '../../state/recommend-store';
+import { windowOf } from '../timeline/data';
+import { BODY_SERIES_STEP_S, bodySeriesRequest, lightAt } from './light';
 import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, sunDirection, vectorToLatLon } from './coords';
-import GlobePanel, { LIGHTING_NOTE, MoonGlobe, NO_LIGHTING_NOTE, NO_LIGHT } from './index';
+import GlobePanel, { LIGHTING_NOTE, MoonGlobe, NO_LIGHTING_NOTE, NO_LIGHT, globePlaces, withPlace } from './index';
+
+const places = globePlaces(sitesExample, EMPTY_RECOMMEND_STATE);
 
 const close = (a: number, b: number) => expect(a).toBeCloseTo(b, 9);
 
@@ -76,7 +82,7 @@ describe('globe panel', () => {
 
   it('says when the computed light is missing and offers a keyboard site list', () => {
     const html = renderToStaticMarkup(
-      <MoonGlobe sites={sitesExample} selectedId="mons-mouton-im2-target" onPick={() => undefined} light={NO_LIGHT} />,
+      <MoonGlobe places={places} selectedId="mons-mouton-im2-target" onPick={() => undefined} light={NO_LIGHT} />,
     );
     expect(html).toContain(NO_LIGHTING_NOTE);
     expect(html).toContain('<select');
@@ -86,13 +92,71 @@ describe('globe panel', () => {
   it('shows the lighting note and sub-Earth legend when the server gave both points', () => {
     const html = renderToStaticMarkup(
       <MoonGlobe
-        sites={sitesExample}
+        places={places}
         selectedId={null}
         onPick={() => undefined}
-        light={{ subSolar: { lat_deg: -1.2, lon_deg: 45.3 }, subEarth: { lat_deg: 3.1, lon_deg: -4.2 } }}
+        light={{ subSolar: { lat_deg: -1.2, lon_deg: 45.3 }, subEarth: { lat_deg: 3.1, lon_deg: -4.2 }, utc: '2026-12-05T00:00:00Z', validity: 'DERIVED' }}
       />,
     );
     expect(html).toContain(LIGHTING_NOTE);
     expect(html).toContain('sub-Earth point');
+    expect(html).toContain('2026-12-05 00:00 UTC');
+    expect(html).toContain('Derived');
+  });
+});
+
+const scenario = (start_utc: string, end_utc: string): Scenario => ({
+  scenario_id: 's',
+  label: 'x',
+  site_id: 'mons-mouton-im2-target',
+  lat_deg: null,
+  lon_deg: null,
+  start_utc,
+  end_utc,
+  mast_height_m: null,
+  panel_profile_id: 'vertical_tracking',
+});
+
+describe('body series for the globe', () => {
+  it('asks once per scenario, hourly, capped at the two-month limit', () => {
+    const month = bodySeriesRequest(windowOf(scenario('2026-12-01T00:00:00Z', '2026-12-31T00:00:00Z'))!);
+    expect(month).toEqual({ start_utc: '2026-12-01T00:00:00Z', end_utc: '2026-12-31T00:00:00Z', step_s: BODY_SERIES_STEP_S });
+    const long = bodySeriesRequest(windowOf(scenario('2026-12-01T00:00:00Z', '2027-04-01T00:00:00Z'))!);
+    expect(long?.end_utc).toBe('2027-01-30T00:00:00Z');
+  });
+
+  it('takes the sample nearest the selected moment, without interpolating', () => {
+    const at = lightAt(bodySeriesExample, Date.parse('2026-12-05T13:00:00Z'));
+    expect(at?.utc).toBe('2026-12-05T12:00:00Z');
+    expect(at?.subSolar).toEqual({ lat_deg: -1.453422, lon_deg: -134.715023 });
+    expect(at?.subEarth).toEqual({ lat_deg: 6.209004, lon_deg: 5.627314 });
+    expect(at?.outside).toBe(false);
+    expect(lightAt(bodySeriesExample, Date.parse('2026-12-20T00:00:00Z'))?.outside).toBe(true);
+    expect(lightAt(null, 0)).toBeNull();
+  });
+});
+
+describe('places on the globe', () => {
+  const candidates: CandidateList = {
+    region: 'mons-mouton',
+    method: { window_m: 200, slope_limit_deg: 12, min_separation_km: 2, source: 'x' },
+    candidates: [
+      { id: 'cand-01', name: 'Candidate 1', lat_deg: -85, lon_deg: 30, elevation_m: 0, mean_slope_deg: 3, max_slope_deg: 6, slope_std_deg: 1, safe_cell_fraction: 0.9, psr_fraction: 0, distance_to_psr_km: 3, has_terrain_horizon: true, validity: 'DERIVED' },
+    ],
+    validity: 'DERIVED',
+  };
+  const ranked = { ranked: [{ site_id: 'cand-01', eliminated: false }, { site_id: 'apollo-11', eliminated: true }] } as unknown as RecommendResponse;
+
+  it('adds candidate regions as their own kind and ranks only non-eliminated places', () => {
+    const list = globePlaces(sitesExample, { ...EMPTY_RECOMMEND_STATE, candidates, ranked });
+    const cand = list.find((p) => p.id === 'cand-01');
+    expect(cand).toMatchObject({ kind: 'candidate', rank: 1 });
+    expect(list.find((p) => p.id === 'apollo-11')?.rank).toBeUndefined();
+    expect(list.filter((p) => p.kind === 'site')).toHaveLength(sitesExample.length);
+  });
+
+  it('moves the scenario to a picked place, candidates included', () => {
+    const next = withPlace(scenario('2026-12-01T00:00:00Z', '2026-12-31T00:00:00Z'), { id: 'cand-01', name: 'Candidate 1', lat_deg: -85, lon_deg: 30, kind: 'candidate' });
+    expect([next.site_id, next.lat_deg, next.lon_deg, next.label, next.start_utc]).toEqual(['cand-01', null, null, 'Candidate 1', '2026-12-01T00:00:00Z']);
   });
 });
