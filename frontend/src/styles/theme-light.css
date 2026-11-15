@@ -1,0 +1,70 @@
+/* Light theme (issue #92). The design export has no light theme: these values are the team's
+   addition and live here, not in frontend-migrate/design-export/tokens.css, which stays as
+   exported. Only colour variables that tokens.css defines are redefined; nothing else changes.
+   The dark theme is the default and is untouched: without data-theme="light" on <html> none of
+   this applies. Contrast of every text and data colour is checked by theme-light.test.ts. */
+
+:root[data-theme='light'] {
+  /* Native controls (select, date input, scrollbars) follow the light theme. The dark theme sets
+     nothing here, so it renders exactly as before. */
+  color-scheme: light;
+
+  /* Ground: page, rail/panel, card, card inset, raised. */
+  --void: #e9edf3;
+  --bg-surface: #f3f5f9;
+  --bg-card: #ffffff;
+  --bg-inset: #f6f7fa;
+  --bg-raised: #ffffff;
+
+  /* Lines. --line-button carries meaning (control edges, horizon line): 3:1 or more. */
+  --line: #d3d9e3;
+  --line-card: #c9d0dc;
+  --line-inner: #dce1e9;
+  --line-button: #69738a;
+  --line-accent: #b7aee6;
+  --line-accent-hover: #6a5cc4;
+
+  /* Text steps, darkest to lightest; every step clears 4.5:1 on every ground. */
+  --text: #11151d;
+  --text-2: #262d3a;
+  --text-3: #414a5c;
+  --text-muted: #4b5466;
+  --text-muted-2: #4f586a;
+  --text-dim: #4f586a;
+  --text-dim-2: #4f586a;
+  --text-dimmest: #545d70;
+
+  /* Accents. Used as text in labels and links, so they clear 4.5:1 too. */
+  --lavender: #5a49c2;
+  --lavender-bright: #4736ad;
+  --mint: #0b7a57;
+  --mint-text: #08694b;
+  --cyan: #08708a;
+  --cyan-text: #065f75;
+  --coral: #b03f25;
+  --coral-text: #9c341c;
+
+  /* Risk ramp, same order and hues as the dark theme, darkened for a light ground. */
+  --risk-low: #1d5fa8;
+  --risk-med: #7d6400;
+  --risk-high: #9a4f1a;
+  --risk-crit: #c0271b;
+
+  --surface-high: #e1e6ee;
+  --surface-highest: #d5dce7;
+  --secondary: #4c5d80;
+
+  /* Hatched bands on a light ground. */
+  --terminator-dim: rgba(125, 100, 0, 0.16);
+  --umbra-dim: rgba(8, 112, 138, 0.16);
+
+  /* The permanent shadow mask is drawn over the grey elevation image, which is the same in both
+     themes, so it keeps its dark-theme colour (map images are not themed, issue #92). */
+  --umbra: #4fd8f0;
+
+  /* Floating panels and shadows. */
+  --glass: rgba(243, 245, 249, 0.94);
+  --glass-strong: rgba(243, 245, 249, 0.97);
+  --shadow-pop: 0 12px 28px rgba(17, 21, 29, 0.16);
+  --shadow-float: 0 20px 46px rgba(17, 21, 29, 0.2);
+}

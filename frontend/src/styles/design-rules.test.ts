@@ -29,7 +29,10 @@ describe('design rules', () => {
   it('writes no colour literal: hex, rgb, hsl or named colours come from tokens', () => {
     const offenders: string[] = [];
     for (const file of sources) {
-      const text = stripComments(readFileSync(file, 'utf8'));
+      let text = stripComments(readFileSync(file, 'utf8'));
+      // theme-light.css is itself a token file (issue #92): it may give values, but only in
+      // custom property declarations. A colour written anywhere else in it still fails here.
+      if (file.endsWith('theme-light.css')) text = text.replace(/^\s*--[a-z0-9-]+\s*:[^;]*;/gm, '');
       const matches = text.match(/#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(/g) ?? [];
       // Element ids such as #root are not colours.
       const colours = matches.filter((m) => !/^#root$/.test(m));

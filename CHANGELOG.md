@@ -8,6 +8,10 @@ The Space Apps submission is released as `v1.0.0`.
 
 ## [Unreleased]
 
+### Added
+
+- Light theme, switched from the top bar and remembered in the browser; the dark theme stays the default and is unchanged. Text and data colours are tested for contrast (4.5:1 and 3:1).
+
 ## [1.0.0] - 2026-11-15
 
 First release, submitted to the NASA Space Apps Challenge 2026.
