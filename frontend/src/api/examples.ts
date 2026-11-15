@@ -12,6 +12,12 @@
  * read the repository's `data/examples/` folder.
  */
 
+import bodySeriesJson from '../../../data/examples/body-series.json';
+import candidatesJson from '../../../data/examples/candidates.json';
+import earthLinkRelayJson from '../../../data/examples/earth-link-relay.json';
+import earthLinkJson from '../../../data/examples/earth-link.json';
+import groundStationsJson from '../../../data/examples/ground-stations.json';
+import recommendJson from '../../../data/examples/recommend.json';
 import commWindowRelayJson from '../../../data/examples/comm-window-relay.json';
 import commWindowJson from '../../../data/examples/comm-window.json';
 import compareJson from '../../../data/examples/compare.json';
@@ -32,7 +38,11 @@ import {
   EVENT_TYPES,
   EVIDENCE_LEVELS,
   HORIZON_METHODS,
+  LAYER_REGIONS,
+  LINK_MODES,
   PANEL_TYPES,
+  PSR_PREFERENCES,
+  RECOMMEND_METRICS,
   RELAY_STATUSES,
   SITE_CATEGORIES,
   SITE_STATUSES,
@@ -41,14 +51,19 @@ import {
   VALIDITY_VALUES,
   WINDOW_KINDS,
   type ApiErrorBody,
+  type BodySeries,
+  type CandidateList,
   type CommWindow,
   type CompareResponse,
+  type EarthLink,
   type EventList,
+  type GroundStation,
   type Health,
   type HorizonProfile,
   type NowStatus,
   type PanelProfile,
   type PowerSeries,
+  type RecommendResponse,
   type ReferenceMission,
   type Site,
   type SkySeries,
@@ -116,6 +131,12 @@ export const referenceMissionsExample = typed<ReferenceMission[]>()(referenceMis
 export const panelProfilesExample = typed<PanelProfile[]>()(panelProfilesJson);
 export const errorExample = typed<ApiErrorBody>()(errorJson);
 export const validationExample = typed<ValidationReport>()(validationJson);
+export const bodySeriesExample = typed<BodySeries>()(bodySeriesJson);
+export const groundStationsExample = typed<GroundStation[]>()(groundStationsJson);
+export const earthLinkExample = typed<EarthLink>()(earthLinkJson);
+export const earthLinkRelayExample = typed<EarthLink>()(earthLinkRelayJson);
+export const candidatesExample = typed<CandidateList>()(candidatesJson);
+export const recommendExample = typed<RecommendResponse>()(recommendJson);
 
 /** Every example by its file name in `data/examples/`. */
 export const EXAMPLES = {
@@ -134,6 +155,12 @@ export const EXAMPLES = {
   'panel-profiles.json': panelProfilesExample,
   'error.json': errorExample,
   'validation.json': validationExample,
+  'body-series.json': bodySeriesExample,
+  'ground-stations.json': groundStationsExample,
+  'earth-link.json': earthLinkExample,
+  'earth-link-relay.json': earthLinkRelayExample,
+  'candidates.json': candidatesExample,
+  'recommend.json': recommendExample,
 } as const;
 
 export type ExampleFile = keyof typeof EXAMPLES;
@@ -156,6 +183,9 @@ const ALLOWED: Record<string, readonly string[]> = {
   relay_status: RELAY_STATUSES,
   evidence: EVIDENCE_LEVELS,
   type: [...EVENT_TYPES, ...PANEL_TYPES],
+  mode: LINK_MODES,
+  region: LAYER_REGIONS,
+  psr_preference: PSR_PREFERENCES,
 };
 
 /**
@@ -168,9 +198,15 @@ const VALIDATION_ALLOWED: Record<string, readonly string[]> = {
   kind: VALIDATION_KINDS,
 };
 
+/** In candidates.json `method` is the search method object (#97, section 4.3), not a horizon method. */
+const { method: _horizonMethod, ...CANDIDATES_ALLOWED } = ALLOWED;
+
 /** Value sets per example file, where a file differs from `ALLOWED`. */
 const FILE_ALLOWED: Partial<Record<string, Record<string, readonly string[]>>> = {
   'validation.json': VALIDATION_ALLOWED,
+  // `metric` here names a score component; in compare.json it names a comparison metric.
+  'recommend.json': { ...ALLOWED, metric: RECOMMEND_METRICS },
+  'candidates.json': CANDIDATES_ALLOWED,
 };
 
 const UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;

@@ -4,9 +4,13 @@ import { EXAMPLES, eventsEclipseExample, eventsExample, findExampleProblems, fin
 describe('example responses', () => {
   it('has one file per endpoint plus the eclipse, relay and error examples', () => {
     // 12 endpoints of client.ts minus getLayer (synthetic grid), plus /api/validation (F3-D1),
-    // plus events-eclipse, comm-window-relay and error.
-    expect(Object.keys(EXAMPLES)).toHaveLength(15);
+    // plus events-eclipse, comm-window-relay and error; then the five plan 2 endpoints (#108)
+    // and their earth-link-relay example.
+    expect(Object.keys(EXAMPLES)).toHaveLength(21);
     expect(Object.keys(EXAMPLES)).toContain('validation.json');
+    for (const f of ['body-series.json', 'ground-stations.json', 'earth-link.json', 'earth-link-relay.json', 'candidates.json', 'recommend.json']) {
+      expect(Object.keys(EXAMPLES)).toContain(f);
+    }
   });
 
   it('passes the run-time contract check: value sets, UTC strings, snake_case names', () => {

@@ -34,6 +34,12 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `validation.json` | `GET /api/validation` | `backend/scripts/run_validation.py` koşusu | Sunucu [`data/validation_report.json`](../validation_report.json) dosyasını olduğu gibi döndürür; bu dosya onun kopyasıdır. Biçim: [ADR-0004](../../docs/adr/0004-api-uc-noktalari.md), `/api/validation`. Rapor yenilenince bu kopya da güncellenmeli | – |
 | `panel-profiles.json` | `GET /api/panel-profiles` | Dört panel tipi | – (değerler [guc-degerlendirmesi.md](../../docs/design/guc-degerlendirmesi.md), bölüm 8'deki varsayılanlar; hepsi `SYNTHETIC`) | – |
 | `error.json` | Her uç noktanın hata gövdesi | HTTP 404 | – ([ADR-0004](../../docs/adr/0004-api-uc-noktalari.md), "Hata yanıtı") | – |
+| `body-series.json` | `GET /api/body-series` | Plan 2 (#97, bölüm 4.1), iki örnek an | – | – |
+| `ground-stations.json` | `GET /api/ground-stations` | Üç DSN kompleksinin ana anteni (DSS-14, DSS-63, DSS-43) | Koordinat ve yükseklik: NASA/JPL DSN 810-005, modül 301, Tablo 5 ([dogrulama/veri-kaynaklari.md](../../docs/research/dogrulama/veri-kaynaklari.md), No 46; [efemeris-ve-yer-istasyonlari.md](../../docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 60) | Boylamlar doğuya 0–360'tan −180–180'e çevrildi |
+| `earth-link.json` | `GET /api/earth-link` | Mons Mouton test sahası, Aralık 2026, üç `mode` değerinin hepsi | `relay_needed` pencerelerinin uçları T2b'deki Dünya batış ve doğuş anları ([efemeris-ve-yer-istasyonlari.md](../../docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 42) | – |
+| `earth-link-relay.json` | `GET /api/earth-link` | Chang'e 4 sahası, bütün dönem `relay_needed` | – | – |
+| `candidates.json` | `GET /api/candidates` | `mons-mouton` bölgesi, üç aday | `method.slope_limit_deg` 12: dayanağı olan tek eşik ([dogrulama/gorev-araclari.md](../../docs/research/dogrulama/gorev-araclari.md), No 89) | – |
+| `recommend.json` | `POST /api/recommend` | Üç aday ve Mons Mouton hedefi; biri eğim sınırıyla elenmiş | – | – |
 
 ## Yer tutucular
 
@@ -54,6 +60,11 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `reference-missions.json` | `facts` | Chandrayaan-3'te `[]` | Dosya [`data/reference_missions.json`](../reference_missions.json) ile birebir aynı; olgular ve kaynakları oradan. Kaynak adı olmayan olgu yazılmadı |
 | `reference-missions.json` | `facts[].evidence` | `official` | Kod adları (`official`, `preliminary`, `commentary`) tasarım belgesindeki üç kanıt düzeyinden alındı; sözleşmede tanımlı değil |
 | `sites.json` | `elevation_m`; `landing_utc` (SLIM ve Blue Ghost 1 dışında) | `null` | Katalogda doğrulanmış değer yok; `data/sites.json` ile aynı |
+| `body-series.json` | `samples` içindeki bütün sayılar | #97'deki örnek değerler | Sunucu (#98) gelmedi; `main`'e girince canlı yanıttan yenilenecek |
+| `earth-link.json` | `stations[].in_view_fraction`, `stations[].windows`, `direct` ve `no_station` pencereleri, `min_station_elevation_deg` | Örnek değerler | Sunucu (#99) gelmedi. Yalnızca `relay_needed` uçları doğrulanmış anlardır |
+| `earth-link-relay.json` | `stations[]`, dönem | Örnek değerler | Sunucu (#99) gelmedi; dönemin bütünüyle `relay_needed` olması Chang'e 4 sahasında Dünya'nın ufkun altında kalmasına dayanır ([aciklanabilirlik.md](../../docs/research/dogrulama/aciklanabilirlik.md), No 14) |
+| `candidates.json` | `candidates[]` içindeki konum, yükseklik, eğim, oran ve uzaklıklar | Örnek değerler | Sunucu (#103) gelmedi; adaylar henüz yükseklik haritasından çıkarılmadı |
+| `recommend.json` | `score`, `components[].value`, `normalized` | Örnek değerler | Sunucu (#100) gelmedi; puan hesabı sunucunun işi |
 
 ## Sözleşmede açık kalanlar
 

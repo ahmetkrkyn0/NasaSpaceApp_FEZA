@@ -1,0 +1,22 @@
+{
+  "frame": "MOON_ME",
+  "samples": [
+    {
+      "utc": "2026-12-05T00:00:00Z",
+      "sub_solar_lat_deg": -1.2,
+      "sub_solar_lon_deg": 45.3,
+      "sub_earth_lat_deg": 3.1,
+      "sub_earth_lon_deg": -4.2,
+      "earth_distance_km": 384400.0
+    },
+    {
+      "utc": "2026-12-05T06:00:00Z",
+      "sub_solar_lat_deg": -1.2,
+      "sub_solar_lon_deg": 42.3,
+      "sub_earth_lat_deg": 3.0,
+      "sub_earth_lon_deg": -4.3,
+      "earth_distance_km": 384500.0
+    }
+  ],
+  "validity": "DERIVED"
+}

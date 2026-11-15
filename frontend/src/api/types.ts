@@ -442,6 +442,179 @@ export interface ReferenceMission {
 }
 
 // ---------------------------------------------------------------------------
+// Plan 2 endpoints (issue #97, section 4): body positions, ground stations and Earth link,
+// candidate regions, site recommendation. Field names follow #97 exactly.
+// ---------------------------------------------------------------------------
+
+/** Sub-solar and sub-Earth points on the Moon at one instant (`MOON_ME`, ADR-0002). */
+export interface BodySample {
+  utc: UtcString;
+  sub_solar_lat_deg: number;
+  sub_solar_lon_deg: number;
+  sub_earth_lat_deg: number;
+  sub_earth_lon_deg: number;
+  earth_distance_km: number;
+}
+
+/** `GET /api/body-series`. */
+export interface BodySeries {
+  frame: string;
+  samples: BodySample[];
+  validity: Validity;
+}
+
+/** `GET /api/ground-stations`: one Earth station; coordinates are given with their source. */
+export interface GroundStation {
+  id: string;
+  name: string;
+  lat_deg: number;
+  lon_deg: number;
+  elevation_m: number;
+  source: SourceRef;
+  validity: Validity;
+}
+
+/**
+ * `direct`: Earth is in view from the site and at least one station sees the Moon.
+ * `no_station`: Earth is in view, but no station sees the Moon.
+ * `relay_needed`: Earth is not in view from the site. No relay satellite is modelled.
+ */
+export const LINK_MODES = ['direct', 'no_station', 'relay_needed'] as const;
+export type LinkMode = (typeof LINK_MODES)[number];
+
+export interface TimeWindow {
+  start_utc: UtcString;
+  end_utc: UtcString;
+}
+
+export interface StationLink {
+  id: string;
+  name: string;
+  /** Share of the period in which the station sees the Moon. */
+  in_view_fraction: number;
+  windows: TimeWindow[];
+}
+
+export interface LinkWindow extends TimeWindow {
+  mode: LinkMode;
+  station_ids: string[];
+}
+
+/** `GET /api/earth-link`. */
+export interface EarthLink {
+  min_station_elevation_deg: number;
+  stations: StationLink[];
+  link_windows: LinkWindow[];
+  assumptions: string[];
+  validity: Validity;
+}
+
+/** How the candidate regions were found (`GET /api/candidates`). */
+export interface CandidateMethod {
+  window_m: number;
+  slope_limit_deg: number;
+  min_separation_km: number;
+  source: string;
+}
+
+/** A candidate region. Its id (`cand-NN`) is a valid `site_id` on every location endpoint. */
+export interface Candidate {
+  id: string;
+  name: string;
+  lat_deg: number;
+  lon_deg: number;
+  elevation_m: number;
+  mean_slope_deg: number;
+  max_slope_deg: number;
+  slope_std_deg: number;
+  safe_cell_fraction: number;
+  psr_fraction: number;
+  distance_to_psr_km: number;
+  has_terrain_horizon: boolean;
+  validity: Validity;
+}
+
+/** `GET /api/candidates`. */
+export interface CandidateList {
+  region: LayerRegion;
+  method: CandidateMethod;
+  candidates: Candidate[];
+  validity: Validity;
+}
+
+export const PSR_PREFERENCES = ['near', 'far'] as const;
+export type PsrPreference = (typeof PSR_PREFERENCES)[number];
+
+export interface RecommendWeights {
+  sunlit: number;
+  dark: number;
+  earth: number;
+  slope: number;
+  roughness: number;
+  psr_distance: number;
+}
+
+export interface RecommendLimits {
+  max_slope_deg: number;
+}
+
+/** `POST /api/recommend` body. */
+export interface RecommendRequest {
+  region: LayerRegion;
+  start_utc: UtcString;
+  end_utc: UtcString;
+  mast_height_m: number;
+  weights: RecommendWeights;
+  limits: RecommendLimits;
+  psr_preference: PsrPreference;
+  include_catalogue_sites: boolean;
+}
+
+/** Measures a recommendation score is built from (#97, section 4.4). */
+export const RECOMMEND_METRICS = [
+  'sunlit_fraction',
+  'longest_dark_hours',
+  'earth_visible_fraction',
+  'mean_slope_deg',
+  'slope_std_deg',
+  'distance_to_psr_km',
+] as const;
+export type RecommendMetric = (typeof RECOMMEND_METRICS)[number];
+
+export interface ScoreComponent {
+  metric: RecommendMetric;
+  value: number | null;
+  unit: string;
+  /** 0 to 1, as the server scaled it. */
+  normalized: number | null;
+  weight: number;
+  validity: Validity;
+}
+
+export interface RankedSite {
+  site_id: string;
+  name: string;
+  lat_deg: number;
+  lon_deg: number;
+  /** `null` for an eliminated site. */
+  score: number | null;
+  eliminated: boolean;
+  /** Limits that eliminated the site, for example `max_slope_deg`. */
+  eliminated_by: string[];
+  components: ScoreComponent[];
+  validity: Validity;
+}
+
+/** `POST /api/recommend` answer, in the server's order. */
+export interface RecommendResponse {
+  ranked: RankedSite[];
+  weights: RecommendWeights;
+  limits: RecommendLimits;
+  assumptions: string[];
+  validity: Validity;
+}
+
+// ---------------------------------------------------------------------------
 // Validation report (`/api/validation`), ADR-0004 "/api/validation"
 // ---------------------------------------------------------------------------
 
