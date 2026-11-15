@@ -1,6 +1,8 @@
 import content from '../../content/scenarios.json';
 import { recordingIndex } from '../../api/recorded';
-import type { Scenario } from '../../api/types';
+import { getEvents, getPower, postCompare } from '../../api/client';
+import { MIN_COMPARE_SCENARIOS, type CompareMetrics, type Scenario } from '../../api/types';
+import { eventsRequest, powerRequest } from '../../state/scenario-tools';
 import { scenarioStore, type ScenarioStore } from '../../state/scenario-store';
 import { uiStore, type Door, type UiStore } from '../../shell/ui-state';
 
@@ -38,4 +40,33 @@ export function openResearchScenario(preset: ResearchScenario, store: ScenarioSt
   store.replaceState(researchState(preset));
   ui.setDoor(preset.door);
   ui.setTab(preset.sites.length > 1 ? 'compare' : 'sky');
+}
+
+export interface PresetRow {
+  scenario: Scenario;
+  metrics: CompareMetrics;
+}
+
+export interface PresetApi {
+  postCompare: typeof postCompare;
+  getEvents: typeof getEvents;
+  getPower: typeof getPower;
+}
+
+const API: PresetApi = { postCompare, getEvents, getPower };
+
+/**
+ * Metrics for a preset. Two or more sites go through `/api/compare`; a single site does not,
+ * since the server asks for at least two scenarios there (HTTP 422, #140). Its metrics come
+ * from `/api/events` and `/api/power`, the same answers the compare endpoint is built from.
+ */
+export async function presetAnswer(scenarios: readonly Scenario[], options: { signal?: AbortSignal } = {}, api: PresetApi = API): Promise<PresetRow[]> {
+  if (scenarios.length >= MIN_COMPARE_SCENARIOS) {
+    const response = await api.postCompare({ scenarios: [...scenarios] }, options);
+    return response.scenarios.map((r) => ({ scenario: r.scenario, metrics: r.metrics }));
+  }
+  const scenario = scenarios[0];
+  if (!scenario) return [];
+  const [events, power] = await Promise.all([api.getEvents(eventsRequest(scenario), options), api.getPower(powerRequest(scenario), options)]);
+  return [{ scenario, metrics: { ...events.metrics, mean_power_w: power.summary.mean_power_w } }];
 }

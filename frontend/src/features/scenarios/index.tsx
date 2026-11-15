@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { postCompare } from '../../api/client';
 import { displayWithUnit, COMPARE_METRICS, sameQuestion } from '../../api/compare-metrics';
 import { recordingIndex } from '../../api/recorded';
 import { getDataMode } from '../../api/config';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { PanelHeader, AsyncBlock } from '../setup/shared';
-import { RESEARCH_SCENARIOS, openResearchScenario, researchState, type ResearchScenario } from './scenarios';
+import { RESEARCH_SCENARIOS, openResearchScenario, presetAnswer, researchState, type ResearchScenario } from './scenarios';
 
 function ResearchResult({ preset }: { preset: ResearchScenario }) {
   const state = researchState(preset);
   const scenarios = state.compare.length ? state.compare : [state.active];
   const mode = getDataMode();
-  const answer = useAsync((signal) => postCompare({ scenarios }, { signal }), [preset.id, mode]);
+  const answer = useAsync((signal) => presetAnswer(scenarios, { signal }), [preset.id, mode]);
   return (
     <AsyncBlock result={answer}>
       {(data) => (
@@ -21,7 +20,7 @@ function ResearchResult({ preset }: { preset: ResearchScenario }) {
             <caption>{mode === 'examples' ? 'Recorded server answers' : 'Live server answers'} for this preset</caption>
             <thead><tr><th scope="col">Metric</th>{scenarios.map((s) => <th scope="col" key={s.scenario_id}>{s.label}</th>)}</tr></thead>
             <tbody>{COMPARE_METRICS.map((metric) => (
-              <tr key={metric.key}><th scope="row">{metric.label}</th>{data.scenarios.map((r) => <td className="d-num" key={r.scenario.scenario_id}>{displayWithUnit(metric, r.metrics[metric.key])}</td>)}</tr>
+              <tr key={metric.key}><th scope="row">{metric.label}</th>{data.map((r) => <td className="d-num" key={r.scenario.scenario_id}>{displayWithUnit(metric, r.metrics[metric.key])}</td>)}</tr>
             ))}</tbody>
           </table>
         </div>
