@@ -67,6 +67,7 @@ The product, this README, the project page text and the presentation are in Engl
 - Candidate regions picked from the 20 m slope and permanent shadow maps of Mons Mouton, each with a terrain horizon
 - Site recommendation: choose weights, a slope limit and a permanent shadow preference, and the candidate regions and catalogue sites of the region are ranked, every score shown with its components; the score ranks sites, it does not certify a landing site
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
+- Role pages at their own addresses: `#/start` offers the three roles as cards, and `#/public`, `#/educator` and `#/engineer` each give a one-page overview that opens the matching door. They show recorded example answers for December 2026, labelled as recorded, not live results
 - A validity label on every result; assumed values (flat horizon, panel profiles) are marked as such
 - Dark theme by default and an optional light theme from the top bar, with contrast checked by tests
 - Example mode without a server: recorded answers of the live server for every catalogue site and candidate region in December 2026; any other choice shows a general example with a note that it does not match the selection
