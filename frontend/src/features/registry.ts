@@ -11,6 +11,7 @@ import MissionsPanel from './missions';
 import PowerPanel from './power';
 import RecommendPanel from './recommend';
 import ScenePanel from './scene';
+import ScenariosPanel from './scenarios';
 import SetupPanel from './setup';
 import SkyPanel from './sky';
 import TasksPanel from './tasks';
@@ -52,6 +53,7 @@ const ALL_DOORS: readonly Door[] = ['explore', 'classroom', 'plan'];
  * panel by editing only its own folder (docs/PLAN.md, 3.1 rule 4 and 3.2).
  */
 export const PANELS: readonly PanelEntry[] = [
+  { id: 'scenarios', title: 'Research scenarios', slot: 'leftRail', modes: ['plan'], doors: ALL_DOORS, component: ScenariosPanel },
   { id: 'setup', title: 'Scenario setup', slot: 'leftRail', modes: ['plan'], doors: ['plan'], component: SetupPanel },
   { id: 'recommend', title: 'Site recommendation', slot: 'leftRail', modes: ['plan'], doors: ['plan'], component: RecommendPanel },
   { id: 'missions', title: 'Past missions', slot: 'leftRail', modes: ['plan'], doors: ['plan', 'classroom'], component: MissionsPanel },

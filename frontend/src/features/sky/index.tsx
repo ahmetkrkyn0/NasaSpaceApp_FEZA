@@ -2,6 +2,7 @@ import { describeError } from '../timeline/describe-error';
 import { eventsWindow, useEvents, useScenario, useSkyData } from '../timeline/data';
 import { activeEclipse, eclipseSpans } from '../timeline/eclipse';
 import { SkyStrip } from './SkyStrip';
+import { ExampleDataNote } from '../../api/ExampleDataNote';
 
 /** Sky tab: the horizon strip for the active scenario at the selected moment. */
 export default function SkyPanel() {
@@ -15,6 +16,8 @@ export default function SkyPanel() {
   return (
     <section className="sky-panel" aria-label="Sky view">
       <h2 className="panel-kicker">Sky view</h2>
+      <ExampleDataNote value={sky.data?.series} fallbackOnly />
+      <ExampleDataNote value={sky.data?.horizon} fallbackOnly />
       {!active || selectedMs === null ? (
         <p className="sky-note">Choose a site and a date range to see the Sun and Earth over the horizon.</p>
       ) : sky.status === 'error' ? (

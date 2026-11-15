@@ -1,5 +1,48 @@
 # Örnek yanıtlar
 
+## Sahaya göre kaydedilmiş yanıtlar (#111)
+
+`recorded/` katalogdaki 10 sahanın ve 12 adayın canlı sunucudan alınmış
+yanıtlarını içerir. Dönem 1–31 Aralık 2026 UTC, direk 2 m, Dünya ölçütü
+`center`, panel `vertical_tracking` şeklindedir. Bölge yanıtları
+`recorded/region/` içindedir. Toplam 180 JSON dosyası **3.528.231 bayttır**.
+
+```powershell
+python backend/scripts/record_examples.py --base-url http://127.0.0.1:8000
+```
+
+Kayıt için SPICE çekirdekleri yüklenmiş sunucu gerekir. Kaydın hangi sunucu
+commit'inden geldiği `--main-sha` ile verilebilir (varsayılan `origin/main`).
+Her dosya `recorded_utc`, `main_sha`, `server_version`, uç nokta, parametreler
+ve değişmeden saklanan `response` alanlarını taşır. `index.json` küçük
+katalogdur; yanıt dosyaları Vite tarafından ayrı parçalar halinde, istek
+geldiğinde yüklenir. İlk açılış paketine yanıt serileri eklenmez.
+
+Gökyüzü ve cisim yönleri 6 saatlik adımlarla kaydedilmiştir; arayüz dönen
+serinin gerçek adımını kullanır. Olaylar, iletişim pencereleri ve güç özeti
+sunucunun kendi çözünürlüğündedir. `now` ve `comm-window` kayıtları yalnızca
+1 Aralık 00:00 UTC anını yanıtlar; başka bir an için gök hesabı türetilmez.
+
+Arayüz saha, dönem, direk, ölçüt ve panel parametrelerini eşleştirir.
+Eşleşme yoksa aşağıda açıklanan genel örnek korunur. Sonucun yanında
+**Example data** notu örneğin gerçek sahasını ve dönemini belirtir;
+Explore özetinde genel örneğin sayısı seçili sahanın adı altında gösterilmez.
+Sayaç, gökyüzü ve sonuç panelleri de eşleşmeyen örneklerin kaynağını belirtir.
+
+Beş hazır araştırma senaryosu `frontend/src/content/scenarios.json` içindedir
+ve aynı kayıtları paylaşır; `scenarios/` altında veri tekrarlanmaz. Her kapıdan
+açılabilir, mevcut 2B gökyüzü görünümünü ve senaryonun bütün parametrelerini
+yükler. İkili örnekler karşılaştırma listesine de eklenir. Bunlar tarihî
+görevlerin uçuş koşullarını yeniden kurmaz; aynı gelecek dönemdeki saha
+çalışmalarıdır. Panel özellikleri varsayımdır; kaza nedeni çıkarımı yapılmaz.
+
+Tekrarlanabilirlik denetimi için `--recorded-utc` ve `--main-sha` aynı
+değerlerle ikinci bir çıkış klasörüne verilir. Aynı sunucudaki iki canlı
+koşuda 180 dosyanın tamamı bayt bayt aynı çıkmıştır. Yanıt tipleri backend
+modelleriyle, senaryo/URL akışı frontend testleriyle denetlenir.
+
+## Genel örnekler
+
 Her uç nokta için bir örnek yanıt. Arayüz, sunucu hazır olmadan bu dosyalarla çalışır ([PLAN.md](../../docs/PLAN.md), bölüm 3.1, kural 5). Sunucu testleri de yanıtlarının alan adlarını bu dosyalarla karşılaştırır.
 
 - **Biçim:** [ADR-0003](../../docs/adr/0003-veri-sozlesmesi.md) ve [ADR-0004](../../docs/adr/0004-api-uc-noktalari.md).

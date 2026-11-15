@@ -9,6 +9,7 @@ import { readScenarioParams, writeScenarioParams } from '../state/url-sync';
 import { EMPTY_SCENARIO_STATE, createScenarioStore } from '../state/scenario-store';
 import { getBodySeries, getCandidates, getEarthLink, getEvents, getGroundStations, postRecommend } from './client';
 import { configureApi, resetApiConfig } from './config';
+import { loadRecording } from './recorded';
 import {
   bodySeriesExample,
   candidatesExample,
@@ -87,13 +88,13 @@ describe('client: example mode', () => {
     expect(await getBodySeries({ utc: '2026-12-05T00:00:00Z' })).toEqual(bodySeriesExample);
     expect(await getGroundStations()).toEqual(groundStationsExample);
     expect(await getEarthLink({ site_id: 'mons-mouton-im2-target', start_utc: '2026-12-01T00:00:00Z', end_utc: '2026-12-31T00:00:00Z' })).toEqual(
-      earthLinkExample,
+      (await loadRecording('earth-link', { site_id: 'mons-mouton-im2-target', start_utc: '2026-12-01T00:00:00Z', end_utc: '2026-12-31T00:00:00Z' }))?.response,
     );
     expect(await getEarthLink({ site_id: 'change-4', start_utc: '2019-01-03T02:26:00Z', end_utc: '2019-02-02T02:26:00Z' })).toEqual(
       earthLinkRelayExample,
     );
-    expect(await getCandidates()).toEqual(candidatesExample);
-    expect(await postRecommend(REQUEST)).toEqual(recommendExample);
+    expect(await getCandidates()).toEqual((await loadRecording('candidates', { region: 'mons-mouton' }))?.response);
+    expect(await postRecommend(REQUEST)).toEqual((await loadRecording('recommend', { ...REQUEST }))?.response);
   });
 
   it('a candidate id works as a site id: in the scenario, the address bar and the data layer', async () => {

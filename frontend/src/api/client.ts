@@ -7,7 +7,6 @@
  * as they are (docs/PLAN.md, section 4.1, rule 2).
  */
 
-import { exampleCompareResponse } from './compare-metrics';
 import { getApiConfig } from './config';
 import { ApiError, errorFromResponse, errorFromThrown } from './errors';
 import {
@@ -33,6 +32,8 @@ import {
   skySeriesExample,
 } from './examples';
 import { decodeLayer, syntheticLayer } from './layers';
+import { recordedOrExample } from './recorded';
+import { recordedComparison } from './recorded-compare';
 import {
   MAX_COMPARE_SCENARIOS,
   type CommWindow,
@@ -168,41 +169,41 @@ export function getSites(params: { category?: SiteCategory } = {}, options?: Req
 }
 
 export function getHorizon(params: HorizonParams, options?: RequestOptions): Promise<HorizonProfile> {
-  return isLive() ? getJson('/horizon', params, options) : fromExample(horizonExample, options);
+  return isLive() ? getJson('/horizon', params, options) : recordedOrExample('horizon', params, horizonExample, options?.signal);
 }
 
 export function getSkySeries(params: SkySeriesParams, options?: RequestOptions): Promise<SkySeries> {
-  return isLive() ? getJson('/sky-series', params, options) : fromExample(skySeriesExample, options);
+  return isLive() ? getJson('/sky-series', params, options) : recordedOrExample('sky-series', params, skySeriesExample, options?.signal);
 }
 
-/** Example mode answers the Apollo 11 site with the eclipse example, every other site with the Earth events example. */
+/** Prefer a matching site recording; otherwise retain the documented generic examples. */
 export function getEvents(params: EventsParams, options?: RequestOptions): Promise<EventList> {
   if (isLive()) return getJson('/events', params, options);
   const eclipse = 'site_id' in params && params.site_id === 'apollo-11';
-  return fromExample(eclipse ? eventsEclipseExample : eventsExample, options);
+  return recordedOrExample('events', params, eclipse ? eventsEclipseExample : eventsExample, options?.signal);
 }
 
 export function getNow(params: NowParams, options?: RequestOptions): Promise<NowStatus> {
-  return isLive() ? getJson('/now', params, options) : fromExample(nowExample, options);
+  return isLive() ? getJson('/now', params, options) : recordedOrExample('now', params, nowExample, options?.signal);
 }
 
-/** Example mode answers the Chang'e 4 site with the relay example, every other site with the Mons Mouton example. */
+/** Instant recordings match their UTC exactly; fallback answers retain their source identity. */
 export function getCommWindow(params: CommWindowParams, options?: RequestOptions): Promise<CommWindow> {
   if (isLive()) return getJson('/comm-window', params, options);
   const relay = 'site_id' in params && params.site_id === 'change-4';
-  return fromExample(relay ? commWindowRelayExample : commWindowExample, options);
+  return recordedOrExample('comm-window', params, relay ? commWindowRelayExample : commWindowExample, options?.signal);
 }
 
 export function getPower(params: PowerParams, options?: RequestOptions): Promise<PowerSeries> {
-  return isLive() ? getJson('/power', params, options) : fromExample(powerExample, options);
+  return isLive() ? getJson('/power', params, options) : recordedOrExample('power', params, powerExample, options?.signal);
 }
 
 /**
  * At most four scenarios. Both modes answer five or more with the server's
  * `too_many_scenarios` error (HTTP 422), so the interface sees the same failure either way.
  *
- * Example mode answers for the scenarios actually sent: a scenario that matches one in
- * `compare.json` gets its metrics, any other gets `null` metrics (compare-metrics.ts).
+ * Example mode uses matched event/power recordings, then `compare.json`; questions
+ * answered by neither source get `null` metrics (compare-metrics.ts).
  */
 export function postCompare(body: CompareRequest, options?: RequestOptions): Promise<CompareResponse> {
   if (isLive()) return postJson('/compare', body, options);
@@ -211,7 +212,7 @@ export function postCompare(body: CompareRequest, options?: RequestOptions): Pro
       new ApiError('too_many_scenarios', `At most ${MAX_COMPARE_SCENARIOS} scenarios can be compared.`, 422),
     );
   }
-  return fromExample(exampleCompareResponse(body.scenarios, compareExample), options);
+  return recordedComparison(body.scenarios, compareExample, options?.signal);
 }
 
 export function getReferenceMissions(options?: RequestOptions): Promise<ReferenceMission[]> {
@@ -224,7 +225,7 @@ export function getPanelProfiles(options?: RequestOptions): Promise<PanelProfile
 
 /** Sub-solar and sub-Earth points over a period or at an instant (`/api/body-series`). */
 export function getBodySeries(params: BodySeriesParams, options?: RequestOptions): Promise<BodySeries> {
-  return isLive() ? getJson('/body-series', params, options) : fromExample(bodySeriesExample, options);
+  return isLive() ? getJson('/body-series', params, options) : recordedOrExample('body-series', params, bodySeriesExample, options?.signal);
 }
 
 /** The Earth stations whose view of the Moon the link is computed for (`/api/ground-stations`). */
@@ -239,17 +240,17 @@ export function getGroundStations(options?: RequestOptions): Promise<GroundStati
 export function getEarthLink(params: EarthLinkParams, options?: RequestOptions): Promise<EarthLink> {
   if (isLive()) return getJson('/earth-link', params, options);
   const relay = 'site_id' in params && params.site_id === 'change-4';
-  return fromExample(relay ? earthLinkRelayExample : earthLinkExample, options);
+  return recordedOrExample('earth-link', params, relay ? earthLinkRelayExample : earthLinkExample, options?.signal);
 }
 
 /** Candidate regions found in the elevation maps (`/api/candidates`). */
 export function getCandidates(params: CandidatesParams = {}, options?: RequestOptions): Promise<CandidateList> {
-  return isLive() ? getJson('/candidates', params, options) : fromExample(candidatesExample, options);
+  return isLive() ? getJson('/candidates', params, options) : recordedOrExample('candidates', params, candidatesExample, options?.signal);
 }
 
 /** Ranked candidate regions and catalogue sites for the user's weights (`POST /api/recommend`). */
 export function postRecommend(body: RecommendRequest, options?: RequestOptions): Promise<RecommendResponse> {
-  return isLive() ? postJson('/recommend', body, options) : fromExample(recommendExample, options);
+  return isLive() ? postJson('/recommend', body, options) : recordedOrExample('recommend', { ...body }, recommendExample, options?.signal);
 }
 
 /** The stored validation report (ADR-0004, "/api/validation"); the server does not rerun the tests. */
