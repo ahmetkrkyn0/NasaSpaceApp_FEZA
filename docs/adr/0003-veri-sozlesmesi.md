@@ -107,6 +107,35 @@ Her örnek:
 
 Noktalar Ay'ın merkezinden, `LT+S` düzeltmesiyle hesaplanır (ADR-0002, madde 11): o anda Ay'dan bakınca Güneş ve Dünya'nın göründüğü yön. 1737,4 km kürede alt nokta, cismin yönünün yüzeyi kestiği noktadır. Güneş altı noktası JPL Horizons ile 0,0002 derece içinde tutuyor. Dünya altı noktası en çok 0,006 derece farklı, çünkü Horizons `ObsSub` değerini yıldız sapınımı (aberration) düzeltmesi olmadan veriyor; aynı ayarla SPICE, Horizons'ı 0,0001 derece içinde tutuyor (`backend/tests/core/test_sub_points.py`).
 
+### Aday bölgeler (`Candidates`)
+
+Bir harita bölgesinin yükseklik haritalarından çıkarılan aday bölgeler ([#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97), bölüm 4.3; [#103](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/103)). `backend/scripts/make_candidates.py` üretir, `data/candidates.json` olarak depoda durur. Adaylar "candidate region" diye anılır; iniş güvenliği garantisi değildir.
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `region` | metin | Bölge kimliği (`mons-mouton`) |
+| `method` | nesne | `window_m`, `stride_m`, `slope_limit_deg`, `slope_limit_source`, `min_separation_km`, `max_candidates`, `assumed` (dayanağı olmayan, "Assumed" sayılan alanların adları), `source`, `note` (yöntem ve modellenmeyenler: kaya ve 20 m'den küçük krater) |
+| `candidates` | dizi | Her eleman bir aday ya da bölgedeki bir katalog sahası (aşağıda) |
+| `validity` | metin | Her zaman `DERIVED` |
+
+Her eleman:
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `id` | metin | Aday için `cand-NN`, katalog sahası için `Site.id`. Aday kimliği konum alan bütün uç noktalarda `site_id` olarak geçer |
+| `kind` | metin | `candidate` ya da `catalogue` |
+| `name` | metin | `Candidate N` ya da saha adı |
+| `lat_deg`, `lon_deg` | sayı | Pencere merkezi (katalog sahasında saha konumu) |
+| `elevation_m` | sayı | Penceredeki ortalama yükseklik (1737,4 km küreye göre) |
+| `mean_slope_deg`, `max_slope_deg`, `slope_std_deg` | sayı | Penceredeki 20 m hücrelerin eğim ortalaması, en büyüğü, standart sapması |
+| `safe_cell_fraction` | sayı | Eğimi `slope_limit_deg` ya da altında ve kalıcı gölgede olmayan hücrelerin oranı |
+| `psr_fraction` | sayı | Kalıcı gölgedeki hücrelerin oranı |
+| `distance_to_psr_km` | sayı ya da `null` | Merkezden bölgedeki en yakın kalıcı gölge hücresine uzaklık; bölgede kalıcı gölge yoksa `null` |
+| `has_terrain_horizon` | mantıksal | `data/horizons/<id>_2m.json` ve `_10m.json` var mı |
+| `validity` | metin | Her zaman `DERIVED` |
+
+Seçim: merkezi kalıcı gölgede olmayan ve ortalama eğimi sınırı aşmayan pencereler, önce `safe_cell_fraction` büyükten küçüğe, sonra `mean_slope_deg` küçükten büyüğe sıralanır; birbirine `min_separation_km` uzaklıktan yakın olanlar atlanır. Dayanağı olan tek eşik eğim 12°'dir ([dogrulama/gorev-araclari.md](../research/dogrulama/gorev-araclari.md), No 89).
+
 ### Olaylar, pencereler ve ölçüler (`EventList`)
 
 | Alan | Tip | Açıklama |
@@ -199,6 +228,7 @@ Ekstra uç noktaların yanıt yapıları (saha puanı, yaklaşma profili, zemin 
 |---|---|
 | `data/sites.json` | `Site` dizisi |
 | `data/horizons/<site_id>_<yükseklik>m.json` | Önceden hesaplanmış `HorizonProfile` |
+| `data/candidates.json` | `Candidates` (aday bölgeler; ufukları `data/horizons/cand-NN_<yükseklik>m.json`) |
 | `data/panel_profiles.json` | `PanelProfile` dizisi |
 | `data/reference_missions.json` | Geçmiş görev kayıtları ([gecmis-gorev-vakalari.md](../design/gecmis-gorev-vakalari.md)) |
 
@@ -226,3 +256,4 @@ Yapılacaklar:
 
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `NowStatus` yapısına `night_hours` eklendi (`UC-05`, gecenin uzunluğu). `Scenario` ve `PowerSeries` yapılarına `fixed_azimuth_deg` eklendi (`UC-06`, dik sabit panelde kullanıcının seçtiği yön). `Scenario` yapısına isteğe bağlı `earth_criterion` eklendi (`UC-07`). `utc_earliest` ve `utc_latest` alanlarının ilk sürümde nasıl bulunduğu yazıldı (`UC-10`; [PLAN.md](../PLAN.md), bölüm 12, karar 4).
 - 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `BodySeries` yapısı eklendi (`GET /api/body-series`; Güneş altı ve Dünya altı noktası, Dünya uzaklığı). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.1 ile aynı; örnek dosya `data/examples/body-series.json`.
+- 15 Kasım 2026, [#103](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/103): `Candidates` yapısı eklendi (`GET /api/candidates`, `data/candidates.json`). Alanlar #97 bölüm 4.3 ile aynı; ek olarak `kind` (#97 eki) ve `method` içinde `stride_m`, `slope_limit_source`, `max_candidates`, `assumed`, `note`. Örnek dosya `data/examples/candidates.json` ve arayüz tipi bu alanları #109 ile alır. Aday kimlikleri (`cand-NN`) `site_id` olarak çözülür; `/api/sites` yalnızca katalog sahalarını döndürür.
