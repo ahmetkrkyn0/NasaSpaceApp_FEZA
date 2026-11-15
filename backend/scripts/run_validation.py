@@ -48,9 +48,11 @@ DEFAULT_MARKDOWN = REPO_ROOT / "docs" / "validation-report.md"
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
 T6_CACHE = REPO_ROOT / "data" / "raw" / "validation" / "t6_avgvisib.json"
 POWER_TEST = BACKEND_DIR / "tests" / "core" / "test_power.py"
+SUB_POINTS_TEST = BACKEND_DIR / "tests" / "core" / "test_sub_points.py"
+CANDIDATES_SCRIPT = BACKEND_DIR / "scripts" / "make_candidates.py"
 
 STATUSES = ("pass", "warn", "fail", "skipped", "info")
-TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7")
+TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9")
 
 CONDITIONS = {
     "T1": "Six past landings at the landing instant; zero height, flat horizon (sphere)",
@@ -68,6 +70,14 @@ CONDITIONS = {
         "NASA PGDA 69 average solar visibility map (120 m/px, 18.6-year average)"
     ),
     "T7": "Apollo 11 and Mons Mouton sites, first sunrise of Dec 2026; horizon moved by one arcminute",
+    "T8": (
+        "Sub-solar and sub-Earth points and Earth distance from GET /api/body-series at four "
+        "instants (2025-03-06 to 2027-02-20), against JPL Horizons observer tables"
+    ),
+    "T9": (
+        "Candidate regions of mons-mouton (data/candidates.json): limits of the selection and "
+        "regeneration from the 20 m layers"
+    ),
 }
 """Test conditions of docs/PLAN.md, 4.2; a vector may override with ``condition``."""
 
@@ -469,6 +479,162 @@ def t6_row(
     return row
 
 
+# ---------- T8: sub-points against JPL Horizons (#98, #104) ----------
+
+T8_SOURCE = "backend/tests/core/test_sub_points.py (JPL Horizons, queried 15 Nov 2026)"
+AU_KM = 149_597_870.7
+
+
+def load_sub_points_test() -> Any:
+    """The #98 reference test module: ``HORIZONS_CASES`` and the tolerances."""
+
+    _ensure_backend_path()
+    spec = importlib.util.spec_from_file_location("t8_sub_points_test", SUB_POINTS_TEST)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def t8_rows(fetch: Fetch, load: Callable[[], Any] = load_sub_points_test) -> list[dict]:
+    """One row per quantity and instant, measured through ``/api/body-series``.
+
+    Expected values and tolerances are the reference test's own (0.01 deg per
+    angle, 1 km for the distance); the reason for each is in that module."""
+
+    try:
+        test = load()
+    except Exception as exc:  # noqa: BLE001
+        return [_row("T8", "T8-sub-points", "Sub-solar and sub-Earth points", "deg", T8_SOURCE,
+                     note=f"Reference test could not be loaded: {exc}")]
+    quantities = (
+        ("sub-earth-lon", "sub_earth_lon_deg", 1, "deg", test.ANGLE_TOL_DEG, "angle"),
+        ("sub-earth-lat", "sub_earth_lat_deg", 2, "deg", test.ANGLE_TOL_DEG, "number"),
+        ("sub-solar-lon", "sub_solar_lon_deg", 3, "deg", test.ANGLE_TOL_DEG, "angle"),
+        ("sub-solar-lat", "sub_solar_lat_deg", 4, "deg", test.ANGLE_TOL_DEG, "number"),
+        ("earth-distance", "earth_distance_km", 5, "km", test.DISTANCE_TOL_KM, "number"),
+    )
+    lon_note = "Horizons longitudes run 0 to 360 east; the difference is wrapped to (-180, 180]."
+    rows = []
+    for case in test.HORIZONS_CASES:
+        utc = case[0]
+        status, body = fetch("/api/body-series", {"utc": utc})
+        for slug, field, index, unit, tol, kind in quantities:
+            expected = case[index] * AU_KM if slug == "earth-distance" else case[index]
+            row = _row(
+                "T8", f"T8-{utc[:10]}-{slug}", f"{utc}: {field}", unit, T8_SOURCE,
+                expected=round(expected, 6), threshold=tol, endpoint="/api/body-series",
+                note=lon_note if kind == "angle" else None,
+            )
+            if status != 200:
+                row["note"] = f"HTTP {status}"
+                if status == 404:
+                    row["status"] = "skipped"
+                rows.append(row)
+                continue
+            try:
+                measured = float(body["samples"][0][field])
+            except (KeyError, IndexError, TypeError, ValueError) as exc:
+                row["note"] = f"no {field} in response: {exc}"
+                rows.append(row)
+                continue
+            diff = difference(measured, expected, kind)
+            row["measured"] = round(measured, 6)
+            row["diff"] = round(diff, 6)
+            row["status"] = "pass" if abs(diff) <= tol + 1e-9 else "fail"
+            rows.append(row)
+    return rows
+
+
+# ---------- T9: candidate regions (#103, #104) ----------
+
+T9_SOURCE = "docs/research/dogrulama/gorev-araclari.md, No 89 (slope limit); #103 (method)"
+
+
+def load_candidates_script() -> Any:
+    _ensure_backend_path()
+    scripts = str(CANDIDATES_SCRIPT.parent)
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    spec = importlib.util.spec_from_file_location("t9_make_candidates", CANDIDATES_SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _ranged(row_id: str, title: str, unit: str, value: float, low: float | None,
+            high: float | None, note: str | None = None) -> dict:
+    row = _row("T9", row_id, title, unit, T9_SOURCE, endpoint="/api/candidates",
+               expected_range=[low, high], note=note)
+    row["measured"] = round(float(value), 6)
+    inside = (low is None or value >= low - 1e-9) and (high is None or value <= high + 1e-9)
+    row["status"] = "pass" if inside else "fail"
+    return row
+
+
+def t9_rows(data_dir: Path = REPO_ROOT / "data",
+            load_script: Callable[[], Any] = load_candidates_script) -> list[dict]:
+    """Limits of every stored candidate region and regeneration of the file."""
+
+    _ensure_backend_path()
+    try:
+        from app.terrain import candidates as cd
+        from app.terrain.layers import bundled_layers_dir, layer_exists, layers_dir, load_layer
+
+        stored = cd.load_candidates(data_dir)
+    except Exception as exc:  # noqa: BLE001
+        return [_row("T9", "T9-candidates", "Candidate regions", "1", T9_SOURCE,
+                     note=f"data/candidates.json could not be read: {exc}")]
+    cands = [e for e in stored["candidates"] if e.get("kind") == "candidate"]
+    limit = float(stored["method"]["slope_limit_deg"])
+    sep_km = float(stored["method"]["min_separation_km"])
+    rows = [_ranged("T9-max-mean-slope", "Largest mean slope of a candidate region", "deg",
+                    max(e["mean_slope_deg"] for e in cands), None, limit)]
+
+    raw = layers_dir(data_dir)
+    full = layer_exists(raw, stored["region"], "psr")
+    psr = load_layer(raw if full else bundled_layers_dir(data_dir), stored["region"], "psr")
+    grid = cd.Grid(psr.values, psr.values, psr.values, psr.meta.x_min, psr.meta.y_max,
+                   psr.meta.resolution_m)
+    shadowed = sum(1 for e in cands if psr.values[grid.xy_cell(*cd.site_xy(e))] >= 0.5)
+    rows.append(_ranged(
+        "T9-centres-in-shadow", "Candidate region centres in permanent shadow", "count",
+        shadowed, 0, 0,
+        note=None if full else "Checked on the bundled 40 m psr layer (cell fraction >= 0.5).",
+    ))
+
+    xy = [cd.site_xy(e) for e in cands]
+    closest = min(
+        (((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5 / 1000.0
+         for i, a in enumerate(xy) for b in xy[i + 1:]),
+        default=float("inf"),
+    )
+    rows.append(_ranged("T9-min-separation", "Closest pair of candidate regions", "km",
+                        closest, sep_km - 0.001, None,
+                        note="Coordinates are rounded to 1e-5 deg (about 1 m)."))
+
+    row = _row("T9", "T9-regenerated", "data/candidates.json regenerated from the 20 m layers",
+               "fields", T9_SOURCE, expected=0, threshold=0.5,
+               note="Count of fields that differ after make_candidates.build().")
+    if not full:
+        row["status"] = "skipped"
+        row["note"] = "Full resolution layers not built (python backend/scripts/make_layers.py)."
+    else:
+        try:
+            fresh = load_script().build(data_dir, stored["region"])
+            diffs = abs(len(fresh["candidates"]) - len(stored["candidates"]))
+            diffs += sum(1 for a, b in zip(fresh["candidates"], stored["candidates"])
+                         for k in set(a) | set(b) if a.get(k) != b.get(k))
+            diffs += sum(1 for k in set(fresh["method"]) | set(stored["method"])
+                         if fresh["method"].get(k) != stored["method"].get(k))
+            row["measured"] = diffs
+            row["diff"] = diffs
+            row["status"] = "pass" if diffs == 0 else "fail"
+        except Exception as exc:  # noqa: BLE001
+            row["note"] = f"Regeneration failed: {exc}"
+    rows.append(row)
+    return rows
+
+
 def run(vectors: list[dict], fetch: Fetch, extra_rows: list[dict] | None = None) -> dict:
     rows = [evaluate(vector, fetch) for vector in vectors] + list(extra_rows or [])
     order = {test: i for i, test in enumerate(TEST_ORDER)}
@@ -492,6 +658,8 @@ TEST_HEADINGS = {
     "T5": "T5: An eclipse at the Apollo 11 site",
     "T6": "T6: Comparison with the NASA average illumination map (approximate)",
     "T7": "T7: Event time sensitivity to the horizon",
+    "T8": "T8: Sub-solar and sub-Earth points (JPL Horizons)",
+    "T9": "T9: Candidate regions",
 }
 
 
@@ -575,6 +743,8 @@ def main(argv: list[str] | None = None) -> int:
     extra = [] if args.no_t3 else t3_rows()
     if not args.no_t6:
         extra.append(t6_row())
+    extra += t8_rows(fetch)
+    extra += t9_rows()
     report = run(vectors, fetch, extra)
     report["target"] = "in-process" if args.in_process else args.base_url
     args.out.parent.mkdir(parents=True, exist_ok=True)

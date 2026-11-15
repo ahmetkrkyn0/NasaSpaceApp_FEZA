@@ -13,7 +13,7 @@ ROW_FIELDS = (
     "id", "test", "title", "condition", "kind", "expected", "measured", "diff",
     "threshold", "unit", "status", "source", "endpoint", "note",
 )
-REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7"}
+REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9"}
 
 
 @pytest.fixture
@@ -79,3 +79,20 @@ def test_api_without_report_is_503(monkeypatch, tmp_path):
     r = _client(monkeypatch, tmp_path).get("/api/validation")
     assert r.status_code == 503
     assert r.json()["error"]["code"] == "data_unavailable"
+
+
+def test_t8_rows_follow_the_horizons_reference(report):
+    rows = [row for row in report["rows"] if row["test"] == "T8"]
+    assert len(rows) == 20  # four instants, five quantities
+    for row in rows:
+        assert row["endpoint"] == "/api/body-series"
+        assert row["threshold"] == (1.0 if row["unit"] == "km" else 0.01)
+        assert "test_sub_points.py" in row["source"]
+
+
+def test_t9_rows_check_the_candidate_limits(report):
+    rows = {row["id"]: row for row in report["rows"] if row["test"] == "T9"}
+    assert set(rows) == {"T9-max-mean-slope", "T9-centres-in-shadow", "T9-min-separation",
+                         "T9-regenerated"}
+    assert rows["T9-max-mean-slope"]["expected_range"] == [None, 12.0]
+    assert rows["T9-centres-in-shadow"]["expected_range"] == [0, 0]
