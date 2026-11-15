@@ -59,6 +59,7 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 - Map layers around the south pole: hillshade, elevation, slope, permanently shadowed regions
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
 - A validity label on every result; assumed values (flat horizon, panel profiles) are marked as such
+- Dark theme by default and an optional light theme from the top bar, with contrast checked by tests
 - Pre-rendered Unity illustrations of the three kinds of landing terrain and the Deep Space Network ground stations, always labelled "Illustration" ([credits](frontend/public/media/CREDITS.md))
 
 ## Tech Stack
