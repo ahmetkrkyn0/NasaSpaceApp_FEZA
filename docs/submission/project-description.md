@@ -123,6 +123,30 @@ The repository README states the same in its "Use of AI tools" section.
 
 ## NASA Data
 
+Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add New Link" for each). Every address is the full URL.
+
+| Link Text | Link Url |
+|---|---|
+| NASA NAIF SPICE generic kernels (DE440 ephemeris, Moon orientation, leap seconds, body constants) | https://naif.jpl.nasa.gov/pub/naif/generic_kernels/ |
+| NASA GSFC PGDA Product 90: LOLA south pole height, slope, hillshade and permanent shadow maps | https://pgda.gsfc.nasa.gov/products/90 |
+| NASA GSFC PGDA Product 69: LOLA south pole average visibility map | https://pgda.gsfc.nasa.gov/products/69 |
+| JPL Horizons ephemeris system (reference values for validation) | https://ssd.jpl.nasa.gov/horizons/ |
+| NASA/JPL DSN Telecommunications Link Design Handbook 810-005, Module 301 (ground station coordinates) | https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf |
+| NASA NSSDC Lunar Artifact and Impact Table (landing site coordinates) | https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html |
+| LRO Camera (LROC): Chandrayaan-3 landing site | https://www.lroc.asu.edu/images/1314 |
+| LRO Camera (LROC): IM-2 Athena landing site | https://www.lroc.asu.edu/images/1408 |
+| LRO Camera (LROC): IM-2 intended landing site on Mons Mouton | https://www.lroc.asu.edu/images/1401 |
+| NASA TN D-6850, Apollo Experience Report: Lunar Module Landing Gear Subsystem (12° landing slope limit) | https://ntrs.nasa.gov/citations/19720018253 |
+| NASA Scientific Visualization Studio: CGI Moon Kit (3D Moon surface image) | https://svs.gsfc.nasa.gov/4720 |
+| NASA Earth Observatory: Blue Marble Next Generation with topography and bathymetry (Earth image) | https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/ |
+| NASA Scientific Visualization Studio: Black Marble 2016 (Earth night image in an illustration) | https://svs.gsfc.nasa.gov/30876 |
+| NASA Science: Deep Space Network 70 Meter Antenna 3D Model (ground station illustrations) | https://science.nasa.gov/resource/deep-space-network-70-meter-antenna-3d-model/ |
+| NASA Science 3D Resources: TDRS satellite model (Earth globe illustration) | https://science.nasa.gov/3d-resources/ |
+
+The last three are used only in the pre-rendered illustrations, never in a calculation; details are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
+
+What each source is used for:
+
 | Data | What it is used for | Source |
 |---|---|---|
 | SPICE kernels from NASA NAIF: `de440s.bsp` (planetary ephemeris DE440), `moon_pa_de440_200625.bpc` and `moon_de440_250416.tf` (Moon orientation and `MOON_ME` frame), `pck00011.tpc` (body sizes), `naif0012.tls` (leap seconds); about 45.8 MB in total | Sun and Earth position and apparent size at every site and time; sub-solar and sub-Earth points on the Moon and the light of the 3D Moon; Earth's rotation for the ground stations and the sub-lunar and sub-solar points on the Earth | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
@@ -133,7 +157,7 @@ The repository README states the same in its "Use of AI tools" section.
 | NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P | Coordinates of the Goldstone (DSS 14), Madrid (DSS 63) and Canberra (DSS 43) antennas | <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
 | NASA SVS 4720 "CGI Moon Kit" colour map (LROC colour mosaic, LOLA albedo at the poles) | Surface image of the 3D Moon and the space view, for orientation only; not used in any calculation | <https://svs.gsfc.nasa.gov/4720> |
 | NASA Blue Marble Next Generation, April 2004, with topography and bathymetry | Earth's surface in the space view, for orientation only | <https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/> |
-| Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605) | Slope limit of the candidate regions and the default limit of the score | [gorev-araclari.md, row 89](../research/dogrulama/gorev-araclari.md) |
+| Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605) | Slope limit of the candidate regions and the default limit of the score | <https://ntrs.nasa.gov/citations/19720018253>; verified in [gorev-araclari.md, row 89](../research/dogrulama/gorev-araclari.md) |
 | NASA NSSDC lunar artifact table | Coordinates of Apollo 11, Chang'e 4, Chang'e 6, SLIM, IM-1 and Blue Ghost 1 | <https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html> |
 | LRO Camera (LROC) site releases | Coordinates of Chandrayaan-3, the IM-2 Athena landing point and the IM-2 target point on Mons Mouton | <https://www.lroc.asu.edu/images/1314>, <https://www.lroc.asu.edu/images/1408>, <https://www.lroc.asu.edu/images/1401> |
 
