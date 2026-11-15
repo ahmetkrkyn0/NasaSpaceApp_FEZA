@@ -1,0 +1,87 @@
+/* Surface view (issue #80): a bounded illustration block, so it never pushes the horizon strip
+   off screen. The "Illustration" tag is its own style, not a validity badge. */
+
+.scene-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scene-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.scene-tag {
+  padding: 2px 8px;
+  border: 1px solid var(--text-3);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+}
+
+.scene-figure {
+  margin: 0;
+}
+
+.scene-media {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--bg-inset);
+}
+
+.scene-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.scene-view {
+  padding: 2px 8px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  cursor: pointer;
+}
+
+.scene-view.is-active {
+  background: var(--line-accent);
+  color: var(--lavender-bright);
+}
+
+.scene-type {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.scene-type-name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.scene-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+.scene-note-strong {
+  color: var(--text-2);
+}
+
+.scene-note a {
+  color: var(--text-2);
+}
