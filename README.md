@@ -45,6 +45,8 @@ This project turns ephemeris and terrain data into a simple tool for mission pla
 
 Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceappschallenge.org/) 2026. The challenge text is in [docs/challenge/lunar-landing-site-navigator.md](docs/challenge/lunar-landing-site-navigator.md). The project page text is in [docs/submission/project-description.md](docs/submission/project-description.md).
 
+The product, this README, the project page text and the presentation are in English. The working notes under `docs/` (plan, research, team set-up, decision records) are the team's internal records and are in Turkish.
+
 ## Features
 
 - Ten catalogue sites (past landings and the IM-2 target on Mons Mouton), twelve candidate regions on Mons Mouton, or any custom latitude and longitude
@@ -305,7 +307,7 @@ All are compatible with this project's Apache 2.0 licence.
 
 The images and short loops in [`frontend/public/media/`](frontend/public/media/) are offline Unreal Engine renders, shown in the interface as labelled illustrations, not as the product's calculation. They cover Moon surface scenes, the three Deep Space Network ground stations and an Earth globe. The lander in the surface scenes is the team's own Athena model ([`shipmodel/`](shipmodel/README.md), no third-party parts).
 
-Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
+Who prepared each image group, the other tools used, and the source and licence of every texture and model are kept in one place, [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md). The Deep Space Network antenna in the station images is NASA's "Deep Space Network 70 Meter Antenna 3D Model" (NASA VTAD); no NASA insignia or logo appears in the images.
 
 ## Use of AI Tools
 
@@ -314,7 +316,7 @@ The NASA Space Apps rules ask teams to say where and how AI tools were used.
 - **Code and documents:** most source code, tests and documentation were written with AI coding assistants: Claude (Anthropic) through Claude Code, one session per team member. Each task was defined in a GitHub issue with its scope and acceptance criteria. A separate Claude session coordinated the tasks and reviewed the pull requests (a few after they were merged); OpenAI Codex was used for code review on most code changes. Team members merged the pull requests by hand. The rules the agents follow are in [AGENTS.md](AGENTS.md).
 - **Research:** the notes in [docs/research/](docs/research/) were drafted with AI assistance. Each claim the product relies on was checked against its source and labelled in [docs/research/dogrulama/](docs/research/dogrulama/); only verified values are used.
 - **Images:** three AI-generated (Grok) rover concept images, `public/assets/grok-*.jpg`, appear in one research note. They are not part of the product or the demo.
-- **Illustration media:** the images in `frontend/public/media/` were rendered in Unreal Engine 5.8. Who prepared them and any other tools used in making them, AI tools included, are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md); that credit information is being completed.
+- **Illustration media:** the images and loops in `frontend/public/media/` were rendered in Unreal Engine 5.8 from NASA imagery, CC0 assets and the team's own models and scripts. No image-generating AI tool was used for any of them. Who prepared them and every tool and source are recorded in [`frontend/public/media/CREDITS.md`](frontend/public/media/CREDITS.md).
 - **Data:** no data is AI-generated. Positions come from SPICE, terrain from LOLA, reference values from JPL Horizons and published sources.
 
 ## Contributing
