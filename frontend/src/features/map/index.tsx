@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getLayer, getSites } from '../../api/client';
 import { getDataMode } from '../../api/config';
 import { isApiError } from '../../api/errors';
 import { LAYER_REGIONS, type LayerName, type Scenario, type Site } from '../../api/types';
-import { useAsync } from '../../lib/hooks';
+import { useAsync, useStore } from '../../lib/hooks';
+import { recommendStore, type RecommendState } from '../../state/recommend-store';
 import { scenarioStore } from '../../state/scenario-store';
 import { describeError } from '../timeline/describe-error';
 import { useScenario } from '../timeline/data';
-import { MoonGlobeContainer } from '../globe';
-import { MapView, type LayerStatus, type MapViewMode } from './MapView';
+import { MoonGlobeContainer, globePlaces, withPlace } from '../globe';
+import { MapView, type LayerStatus, type MapCandidate, type MapViewMode } from './MapView';
 import { normalizeLongitude, type GeoPoint } from './projection';
 
 /** Scenario with its location moved to a custom point; dates and panel are kept. */
@@ -21,6 +22,15 @@ export function withCustomPoint(active: Scenario, point: GeoPoint): Scenario {
 /** Scenario with its location moved to a catalogue site. */
 export function withSite(active: Scenario, site: Site): Scenario {
   return { ...active, site_id: site.id, lat_deg: null, lon_deg: null, label: site.name };
+}
+
+const NO_SITES: readonly Site[] = [];
+
+/** Candidate regions of the recommend store with their rank; catalogue sites are drawn as sites. */
+export function mapCandidates(sites: readonly Site[], recommend: RecommendState): MapCandidate[] {
+  return globePlaces(sites, recommend)
+    .filter((p) => p.kind === 'candidate')
+    .map(({ id, name, lat_deg, lon_deg, rank }) => (rank !== undefined ? { id, name, lat_deg, lon_deg, rank } : { id, name, lat_deg, lon_deg }));
 }
 
 /** The server has no such layer: HTTP 503 or the `data_unavailable` code (ADR-0004, "Hata kodları"). */
@@ -39,6 +49,12 @@ export default function MapPanel() {
   const mode = getDataMode();
 
   const sites = useAsync((signal) => getSites({}, { signal }), [mode]).state;
+  const recommend = useStore(recommendStore, (s) => s);
+  useEffect(() => {
+    if (recommendStore.getState().candidatesStatus === 'idle') void recommendStore.loadCandidates();
+  }, []);
+  const siteList = sites.status === 'success' ? sites.data : NO_SITES;
+  const candidates = useMemo(() => mapCandidates(siteList, recommend), [siteList, recommend]);
   const regionOpen = view === 'region';
   // The permanent shadow layer is asked for as soon as the region view opens, so a missing
   // layer (503) shows as a disabled option before anyone picks it. The answer is reused when
@@ -88,6 +104,10 @@ export default function MapPanel() {
     if (active) scenarioStore.setScenario(withSite(active, site));
   };
 
+  const onPickCandidate = (candidate: MapCandidate) => {
+    if (active) scenarioStore.setScenario(withPlace(active, { ...candidate, kind: 'candidate' }));
+  };
+
   const switcher = (
     <span className="map-group map-dimension" role="group" aria-label="Map or globe">
       {(['2d', '3d'] as const).map((d) => (
@@ -121,6 +141,11 @@ export default function MapPanel() {
           Sites could not be loaded: {describeError(sites.error)}
         </p>
       ) : null}
+      {recommend.candidatesStatus === 'error' ? (
+        <p className="map-note" role="status">
+          Candidate regions could not be loaded: {describeError(recommend.candidatesError)}
+        </p>
+      ) : null}
       <MapView
         view={view}
         onView={setView}
@@ -133,6 +158,8 @@ export default function MapPanel() {
         psrAvailable={psrAvailable}
         onPickPoint={onPickPoint}
         onPickSite={onPickSite}
+        candidates={candidates}
+        onPickCandidate={onPickCandidate}
       />
       {!active ? (
         <p className="map-note">
