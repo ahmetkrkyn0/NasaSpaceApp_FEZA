@@ -81,7 +81,7 @@ export type LayerParams = { region: LayerRegion };
 /** A period with a step in seconds, or a single instant (#97, section 4.1). */
 export type BodySeriesParams = { start_utc: UtcString; end_utc: UtcString; step_s: number } | { utc: UtcString };
 export type EarthLinkParams = LocationParams &
-  WithMast & { start_utc: UtcString; end_utc: UtcString; min_station_elevation_deg?: number };
+  WithMast & { start_utc: UtcString; end_utc: UtcString; min_station_elevation_deg?: number; earth_criterion?: Criterion };
 export type CandidatesParams = { region?: LayerRegion };
 
 type Query = Record<string, string | number | boolean | undefined | null>;

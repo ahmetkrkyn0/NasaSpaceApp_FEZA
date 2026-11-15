@@ -52,11 +52,12 @@ describe('ground station section', () => {
     expect(closed).not.toContain('Illustration');
   });
 
-  it('when open, shows the Illustration label and says no station is computed', () => {
+  it('when open, shows the Illustration label and says the pictures are not the computed station view', () => {
     const open = renderToStaticMarkup(<GroundStations initiallyOpen />);
     expect(open).toContain('>Illustration</span>');
-    expect(open).toContain('not for a particular station');
-    expect(open).toContain('does not compute which station can see the Moon');
+    // Since #110 the station view is computed (station cards); the pictures stay illustrations.
+    expect(open).toContain('These pictures are illustrations, not data');
+    expect(open).toContain('for the Moon&#x27;s centre rather than for the site');
     // Every picture is lazy and comes from the media folder.
     const imgs = open.match(/<img [^>]*>/g) ?? [];
     expect(imgs).toHaveLength(GROUND_STATIONS.length + 1);
@@ -80,7 +81,7 @@ describe('ground station section', () => {
     });
     const html = renderToStaticMarkup(<CommsPanel />);
     scenarioStore.setScenario(null);
-    const order = ['When does Earth count as visible?', 'Now', 'Over the period', 'Direct link also needs a ground station', 'Who listens on Earth'];
+    const order = ['When does Earth count as visible?', 'Now', 'Over the period', 'Link to Earth', 'Who listens on Earth'];
     const at = order.map((text) => html.indexOf(text));
     expect(at.every((i) => i >= 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);
