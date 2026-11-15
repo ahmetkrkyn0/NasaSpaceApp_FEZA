@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import vectors from '../../../../data/examples/projection_vectors.json';
 import { sitesExample } from '../../api/examples';
 import { syntheticLayer } from '../../api/layers';
-import type { Scenario } from '../../api/types';
-import { withCustomPoint, withSite } from './index';
+import type { CandidateList, RecommendResponse, Scenario } from '../../api/types';
+import { EMPTY_RECOMMEND_STATE } from '../../state/recommend-store';
+import { mapCandidates, withCustomPoint, withSite } from './index';
 import { MapView, type MapViewProps } from './MapView';
 import { MOON_RADIUS_M, forwardSouthPolar, inverseSouthPolar, normalizeLongitude } from './projection';
 import { greyLevel, layerPixels } from './raster';
@@ -121,5 +122,92 @@ describe('layer raster', () => {
     const pixels = layerPixels(grid, 'elevation');
     expect(pixels[3]).toBe(255);
     expect(pixels[pixels.length - 1]).toBe(0);
+  });
+});
+
+describe('candidate regions on the map', () => {
+  const method = {
+    window_m: 200,
+    stride_m: 100,
+    slope_limit_deg: 12,
+    slope_limit_source: 'x',
+    min_separation_km: 2,
+    max_candidates: 10,
+    assumed: [],
+    source: 'x',
+    note: 'x',
+  };
+  const candidate = (id: string, lat_deg: number, lon_deg: number) => ({
+    id,
+    kind: 'candidate' as const,
+    name: `Candidate ${id}`,
+    lat_deg,
+    lon_deg,
+    elevation_m: 0,
+    mean_slope_deg: 3,
+    max_slope_deg: 6,
+    slope_std_deg: 1,
+    safe_cell_fraction: 0.9,
+    psr_fraction: 0,
+    distance_to_psr_km: 3,
+    has_terrain_horizon: true,
+    validity: 'DERIVED' as const,
+  });
+  const list: CandidateList = {
+    region: 'mons-mouton',
+    method,
+    candidates: [
+      candidate('cand-01', -85, 30),
+      candidate('cand-02', -84.5, 32),
+      { ...candidate(sitesExample[0]!.id, 0, 0), kind: 'catalogue' as const },
+    ],
+    validity: 'DERIVED',
+  };
+  const ranked = {
+    ranked: [
+      { site_id: 'cand-02', eliminated: false },
+      { site_id: 'cand-01', eliminated: true },
+    ],
+  } as unknown as RecommendResponse;
+
+  it('takes only candidate regions, ranked by the last recommendation', () => {
+    const marks = mapCandidates(sitesExample, { ...EMPTY_RECOMMEND_STATE, candidates: list, ranked });
+    expect(marks).toEqual([
+      { id: 'cand-01', name: 'Candidate cand-01', lat_deg: -85, lon_deg: 30 },
+      { id: 'cand-02', name: 'Candidate cand-02', lat_deg: -84.5, lon_deg: 32, rank: 1 },
+    ]);
+    expect(mapCandidates(sitesExample, EMPTY_RECOMMEND_STATE)).toEqual([]);
+  });
+
+  it('draws them as squares at their latitude and longitude, top ranks larger', () => {
+    const html = render({
+      candidates: [
+        { id: 'cand-01', name: 'Candidate 1', lat_deg: -85, lon_deg: 30 },
+        { id: 'cand-02', name: 'Candidate 2', lat_deg: -84.5, lon_deg: 32, rank: 1 },
+      ],
+      activeSiteId: 'cand-01',
+    });
+    // Overview: 4 SVG units per degree, half side 6.4 (8 for the top three).
+    expect(html).toContain('<rect x="113.6" y="333.6" width="12.8" height="12.8"');
+    expect(html).toContain('<rect x="120" y="330" width="16" height="16"');
+    expect(html).toContain('class="map-candidate is-active"');
+    expect(html).toContain('class="map-candidate is-top"');
+    expect(html).toContain('Candidate 2, candidate region, rank 1 in the last recommendation');
+    expect(html).toContain('Candidate region (larger: top three of the last recommendation)');
+  });
+
+  it('places them with the south polar projection in the region view', () => {
+    const c = { id: 'cand-01', name: 'Candidate 1', lat_deg: -85, lon_deg: 30 };
+    const html = render({ view: 'region', layer: { kind: 'none' }, candidates: [c] });
+    const p = forwardSouthPolar(c.lat_deg, c.lon_deg);
+    const rect = /<g class="map-candidate"[^>]*><title>[^<]*<\/title><rect x="([^"]+)" y="([^"]+)" width="([^"]+)"/.exec(html);
+    expect(rect).not.toBeNull();
+    const half = Number(rect![3]) / 2;
+    expect(Number(rect![1]) + half).toBeCloseTo(p.x_m, 6);
+    expect(Number(rect![2]) + half).toBeCloseTo(-p.y_m, 6);
+  });
+
+  it('shows no candidate legend without candidates', () => {
+    expect(render({})).not.toContain('Candidate region');
   });
 });

@@ -129,6 +129,26 @@
   stroke-width: 2;
 }
 
+.map-candidate rect {
+  fill: var(--mint);
+  stroke: var(--bg-surface);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+
+.map-candidate.is-active rect {
+  fill: var(--lavender-bright);
+  stroke: var(--lavender);
+  stroke-width: 3;
+}
+
+.map-candidate:focus-visible rect,
+.map-candidate:hover rect {
+  stroke: var(--lavender-bright);
+  stroke-width: 2;
+}
+
 .map-point {
   fill: none;
   stroke: var(--mint);
@@ -169,6 +189,11 @@
 .map-key-active::before {
   background: var(--lavender-bright);
   box-shadow: 0 0 0 2px var(--lavender);
+}
+
+.map-key-candidate::before {
+  background: var(--mint);
+  border-radius: 0;
 }
 
 .map-key-point::before {

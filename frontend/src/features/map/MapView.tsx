@@ -24,6 +24,16 @@ export type LayerStatus =
   | { kind: 'ready'; grid: LayerGrid }
   | { kind: 'unavailable'; message: string };
 
+/** Candidate landing region from `/api/candidates`, with its place in the last recommendation. */
+export interface MapCandidate {
+  id: string;
+  name: string;
+  lat_deg: number;
+  lon_deg: number;
+  /** Position in the last recommendation, 1 first; absent when not ranked. */
+  rank?: number;
+}
+
 export interface MapViewProps {
   view: MapViewMode;
   onView: (view: MapViewMode) => void;
@@ -42,7 +52,13 @@ export interface MapViewProps {
   psrAvailable?: boolean;
   onPickPoint: (point: GeoPoint) => void;
   onPickSite: (site: Site) => void;
+  /** Candidate regions, drawn as squares. Default none. */
+  candidates?: readonly MapCandidate[];
+  onPickCandidate?: (candidate: MapCandidate) => void;
 }
+
+/** Candidates ranked this high or better get a larger square, as on the 3D Moon. */
+const TOP_RANK = 3;
 
 /** Click position in SVG user units. */
 function svgPoint(event: ReactMouseEvent<SVGSVGElement>): { x: number; y: number } | null {
@@ -110,6 +126,48 @@ function SiteMarker({
   );
 }
 
+function CandidateMarker({
+  candidate,
+  cx,
+  cy,
+  r,
+  active,
+  onPick,
+}: {
+  candidate: MapCandidate;
+  cx: number;
+  cy: number;
+  r: number;
+  active: boolean;
+  onPick: (candidate: MapCandidate) => void;
+}) {
+  const top = candidate.rank !== undefined && candidate.rank <= TOP_RANK;
+  const half = top ? r * 1.25 : r;
+  const ranked = candidate.rank !== undefined ? `, rank ${candidate.rank} in the last recommendation` : '';
+  const label = `${candidate.name}, candidate region${ranked}, ${candidate.lat_deg.toFixed(4)}°, ${candidate.lon_deg.toFixed(4)}°`;
+  return (
+    <g
+      className={`map-candidate${top ? ' is-top' : ''}${active ? ' is-active' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onPick(candidate);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onPick(candidate);
+        }
+      }}
+    >
+      <title>{label}</title>
+      <rect x={cx - half} y={cy - half} width={half * 2} height={half * 2} />
+    </g>
+  );
+}
+
 /**
  * 2-D map with two views. Overview: sites on a latitude and longitude grid. Region: the
  * `mons-mouton` layers in the south polar projection, with the same sites; a click there is
@@ -118,6 +176,8 @@ function SiteMarker({
 export function MapView(props: MapViewProps) {
   const { view, onView, sites, activeSiteId, point, layerName, onLayerName, layer, onPickPoint, onPickSite } = props;
   const psrAvailable = props.psrAvailable ?? true;
+  const candidates = props.candidates ?? [];
+  const onPickCandidate = props.onPickCandidate ?? (() => undefined);
   const image = useMemo(
     () => (layer.kind === 'ready' && layer.grid.bounds && layerName ? layerImage(layer.grid, layerName) : null),
     [layer, layerName],
@@ -211,6 +271,17 @@ export function MapView(props: MapViewProps) {
             onPick={onPickSite}
           />
         ))}
+        {candidates.map((c) => (
+          <CandidateMarker
+            key={c.id}
+            candidate={c}
+            cx={c.lon_deg * K}
+            cy={-c.lat_deg * K}
+            r={1.6 * K}
+            active={c.id === activeSiteId}
+            onPick={onPickCandidate}
+          />
+        ))}
         {point ? <circle className="map-point" cx={point.lon_deg * K} cy={-point.lat_deg * K} r={2.2 * K} /> : null}
       </svg>
     );
@@ -272,6 +343,20 @@ export function MapView(props: MapViewProps) {
             />
           );
         })}
+        {candidates.map((c) => {
+          const p = project(c.lat_deg, c.lon_deg);
+          return (
+            <CandidateMarker
+              key={c.id}
+              candidate={c}
+              cx={p.x_m}
+              cy={-p.y_m}
+              r={r * 0.75}
+              active={c.id === activeSiteId}
+              onPick={onPickCandidate}
+            />
+          );
+        })}
         {point
           ? (() => {
               const p = project(point.lat_deg, point.lon_deg);
@@ -291,6 +376,13 @@ export function MapView(props: MapViewProps) {
         <span className="map-key map-key-site">Site</span>
         <span className="map-key map-key-active">Selected site</span>
         <span className="map-key map-key-point">Custom point</span>
+        {candidates.length > 0 ? (
+          <span className="map-key map-key-candidate">
+            {candidates.some((c) => c.rank !== undefined && c.rank <= TOP_RANK)
+              ? 'Candidate region (larger: top three of the last recommendation)'
+              : 'Candidate region'}
+          </span>
+        ) : null}
         {view === 'region' && layer.kind === 'ready' && layerName ? (
           <span className="map-legend-layer">
             {LAYER_TEXT[layerName].label}
