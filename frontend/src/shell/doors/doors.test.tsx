@@ -35,7 +35,7 @@ describe('door arrangement', () => {
   it.each(['explore', 'classroom'] as Door[])('places each panel the registry gives %s exactly once and nothing else', (door) => {
     const filter = { door, mode: 'plan' as const };
     const a = arrangeDoor(filter);
-    const placed = [...a.left, ...a.stage, ...a.head, ...a.bottom, ...a.side].map((p) => p.id).sort();
+    const placed = [...a.left, ...a.stage, ...a.head, ...a.aside, ...a.bottom, ...a.side].map((p) => p.id).sort();
     const registered = (['leftRail', 'center', 'canvasOverlay', 'rightRail', 'bottomDock'] as const)
       .flatMap((slot) => ids(selectPanels(slot, filter)))
       .sort();

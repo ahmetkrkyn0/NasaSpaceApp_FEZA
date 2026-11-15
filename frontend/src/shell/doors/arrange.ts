@@ -15,10 +15,15 @@ export const STAGE_PANEL_IDS: readonly string[] = ['sky'];
 export interface DoorArrangement {
   /** Side column: guided tasks, past missions, the game. */
   left: PanelEntry[];
-  /** Main stage, wide: the horizon strip, plus any centre panel the door has. */
+  /** Main stage, wide: the horizon strip. */
   stage: PanelEntry[];
-  /** Shown next to the one-sentence result: the countdown. */
+  /** Column beside the stage: the countdown. */
   head: PanelEntry[];
+  /**
+   * Centre panels of the door (the Surface view illustration), placed in the column beside the
+   * stage under the countdown, so their height never pushes the horizon strip off screen.
+   */
+  aside: PanelEntry[];
   /** Strip under the stage: the timeline. */
   bottom: PanelEntry[];
   /** Right column: result panels that are not on the stage. */
@@ -30,8 +35,9 @@ export function arrangeDoor(filter: PanelFilter): DoorArrangement {
   const onStage = (entry: PanelEntry) => STAGE_PANEL_IDS.includes(entry.id);
   return {
     left: selectPanels('leftRail', filter),
-    stage: [...selectPanels('center', filter), ...rail.filter(onStage)],
+    stage: rail.filter(onStage),
     head: selectPanels('canvasOverlay', filter),
+    aside: selectPanels('center', filter),
     bottom: selectPanels('bottomDock', filter),
     side: rail.filter((entry) => !onStage(entry)),
   };
