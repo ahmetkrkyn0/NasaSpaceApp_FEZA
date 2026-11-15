@@ -7,6 +7,7 @@ import { scenarioStore } from '../../state/scenario-store';
 import { commWindowRequest, eventsRequest, momentIn } from '../../state/scenario-tools';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { RelayLabel } from './relay';
+import { GroundStations } from './stations';
 import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, useRequest } from '../setup/shared';
 
 /**
@@ -181,6 +182,7 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
       <p className="d-muted">
         Direct link also needs a ground station that sees the Moon; that layer is not part of this release.
       </p>
+      <GroundStations />
     </section>
   );
 }
