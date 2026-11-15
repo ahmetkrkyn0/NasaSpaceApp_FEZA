@@ -1,12 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
+import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import { bodySeriesExample, sitesExample } from '../../api/examples';
 import type { CandidateList, RecommendResponse, Scenario } from '../../api/types';
 import { EMPTY_RECOMMEND_STATE } from '../../state/recommend-store';
 import { windowOf } from '../timeline/data';
 import { BODY_SERIES_STEP_S, bodySeriesRequest, lightAt } from './light';
+import { MOON_TEXTURE_URL, SURFACE_IMAGE_NOTE, TEXTURE_ROTATION_Y } from './texture';
 import { FAR_SIDE_CENTRE, NEAR_SIDE_CENTRE, graticule, latLonToVector, sunDirection, vectorToLatLon } from './coords';
 import GlobePanel, { LIGHTING_NOTE, MoonGlobe, NO_LIGHTING_NOTE, NO_LIGHT, globePlaces, withPlace } from './index';
 
@@ -53,6 +55,38 @@ describe('globe coordinates', () => {
   it('draws parallels and meridians every 30°', () => {
     // Five parallels between the poles and twelve meridians.
     expect(graticule(30)).toHaveLength(5 + 12);
+  });
+});
+
+describe('surface image', () => {
+  it('lines the image up with the globe coordinates', () => {
+    // The image is equirectangular and centred on 0°: u = 0 is -180°, v = 1 is the north pole.
+    const sphere = new THREE.SphereGeometry(1, 96, 64);
+    sphere.applyMatrix4(new THREE.Matrix4().makeRotationY(TEXTURE_ROTATION_Y));
+    const pos = sphere.getAttribute('position');
+    const uv = sphere.getAttribute('uv');
+    let checked = 0;
+    for (let i = 0; i < pos.count; i += 37) {
+      const lat = (uv.getY(i) - 0.5) * 180;
+      if (Math.abs(lat) > 89) continue; // longitude is undefined at the poles
+      const lon = uv.getX(i) * 360 - 180;
+      const at = vectorToLatLon({ x: pos.getX(i), y: pos.getY(i), z: pos.getZ(i) });
+      // Positions are stored as float32, so agreement is to about 1e-5 degrees.
+      expect(Math.abs(at.lat_deg - lat)).toBeLessThan(1e-4);
+      const dLon = ((at.lon_deg - lon + 540) % 360) - 180;
+      expect(Math.abs(dLon)).toBeLessThan(1e-4);
+      checked += 1;
+    }
+    expect(checked).toBeGreaterThan(100);
+  });
+
+  it('is a file in the public media folder, credited, and labelled as not used in calculations', () => {
+    const file = MOON_TEXTURE_URL.replace(/^.*media\//, '');
+    expect(() => readFileSync(fileURLToPath(new URL(`../../../public/media/${file}`, import.meta.url)))).not.toThrow();
+    const credits = readFileSync(fileURLToPath(new URL('../../../public/media/CREDITS.md', import.meta.url)), 'utf8');
+    expect(credits).toContain(file);
+    expect(credits).toContain('SVS 4720');
+    expect(SURFACE_IMAGE_NOTE).toContain('not used in any calculation');
   });
 });
 
