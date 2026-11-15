@@ -23,6 +23,12 @@ import {
   powerExample,
   referenceMissionsExample,
   validationExample,
+  bodySeriesExample,
+  groundStationsExample,
+  earthLinkExample,
+  earthLinkRelayExample,
+  candidatesExample,
+  recommendExample,
   sitesExample,
   skySeriesExample,
 } from './examples';
@@ -45,6 +51,12 @@ import {
   type PowerSeries,
   type ReferenceMission,
   type ValidationReport,
+  type BodySeries,
+  type CandidateList,
+  type EarthLink,
+  type GroundStation,
+  type RecommendRequest,
+  type RecommendResponse,
   type Site,
   type SiteCategory,
   type SkySeries,
@@ -66,6 +78,11 @@ export type CommWindowParams = NowParams;
 export type PowerParams = LocationParams &
   WithMast & { start_utc: UtcString; end_utc: UtcString; panel_profile_id: string; fixed_azimuth_deg?: number };
 export type LayerParams = { region: LayerRegion };
+/** A period with a step in seconds, or a single instant (#97, section 4.1). */
+export type BodySeriesParams = { start_utc: UtcString; end_utc: UtcString; step_s: number } | { utc: UtcString };
+export type EarthLinkParams = LocationParams &
+  WithMast & { start_utc: UtcString; end_utc: UtcString; min_station_elevation_deg?: number };
+export type CandidatesParams = { region?: LayerRegion };
 
 type Query = Record<string, string | number | boolean | undefined | null>;
 
@@ -203,6 +220,36 @@ export function getReferenceMissions(options?: RequestOptions): Promise<Referenc
 
 export function getPanelProfiles(options?: RequestOptions): Promise<PanelProfile[]> {
   return isLive() ? getJson('/panel-profiles', {}, options) : fromExample(panelProfilesExample, options);
+}
+
+/** Sub-solar and sub-Earth points over a period or at an instant (`/api/body-series`). */
+export function getBodySeries(params: BodySeriesParams, options?: RequestOptions): Promise<BodySeries> {
+  return isLive() ? getJson('/body-series', params, options) : fromExample(bodySeriesExample, options);
+}
+
+/** The Earth stations whose view of the Moon the link is computed for (`/api/ground-stations`). */
+export function getGroundStations(options?: RequestOptions): Promise<GroundStation[]> {
+  return isLive() ? getJson('/ground-stations', {}, options) : fromExample(groundStationsExample, options);
+}
+
+/**
+ * Link windows of a site: direct, no station, or relay needed (`/api/earth-link`). Example mode
+ * answers the far-side Chang'e 4 site with the whole-period relay example.
+ */
+export function getEarthLink(params: EarthLinkParams, options?: RequestOptions): Promise<EarthLink> {
+  if (isLive()) return getJson('/earth-link', params, options);
+  const relay = 'site_id' in params && params.site_id === 'change-4';
+  return fromExample(relay ? earthLinkRelayExample : earthLinkExample, options);
+}
+
+/** Candidate regions found in the elevation maps (`/api/candidates`). */
+export function getCandidates(params: CandidatesParams = {}, options?: RequestOptions): Promise<CandidateList> {
+  return isLive() ? getJson('/candidates', params, options) : fromExample(candidatesExample, options);
+}
+
+/** Ranked candidate regions and catalogue sites for the user's weights (`POST /api/recommend`). */
+export function postRecommend(body: RecommendRequest, options?: RequestOptions): Promise<RecommendResponse> {
+  return isLive() ? postJson('/recommend', body, options) : fromExample(recommendExample, options);
 }
 
 /** The stored validation report (ADR-0004, "/api/validation"); the server does not rerun the tests. */

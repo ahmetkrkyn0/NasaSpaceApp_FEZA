@@ -1,0 +1,263 @@
+{
+  "ranked": [
+    {
+      "site_id": "cand-01",
+      "name": "Candidate 1",
+      "lat_deg": -84.8,
+      "lon_deg": 29.2,
+      "score": 71,
+      "eliminated": false,
+      "eliminated_by": [],
+      "components": [
+        {
+          "metric": "sunlit_fraction",
+          "value": 0.57,
+          "unit": "1",
+          "normalized": 0.57,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "longest_dark_hours",
+          "value": 120.0,
+          "unit": "h",
+          "normalized": 0.667,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "earth_visible_fraction",
+          "value": 0.83,
+          "unit": "1",
+          "normalized": 0.83,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "mean_slope_deg",
+          "value": 4.2,
+          "unit": "deg",
+          "normalized": 0.65,
+          "weight": 1.0,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "slope_std_deg",
+          "value": 1.6,
+          "unit": "deg",
+          "normalized": 0.733,
+          "weight": 0.5,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "distance_to_psr_km",
+          "value": 3.1,
+          "unit": "km",
+          "normalized": null,
+          "weight": 0.0,
+          "validity": "SYNTHETIC"
+        }
+      ],
+      "validity": "SYNTHETIC"
+    },
+    {
+      "site_id": "mons-mouton-im2-target",
+      "name": "Mons Mouton (IM-2 target point)",
+      "lat_deg": -84.78,
+      "lon_deg": 29.13,
+      "score": 64,
+      "eliminated": false,
+      "eliminated_by": [],
+      "components": [
+        {
+          "metric": "sunlit_fraction",
+          "value": 0.52,
+          "unit": "1",
+          "normalized": 0.52,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "longest_dark_hours",
+          "value": 330.0,
+          "unit": "h",
+          "normalized": 0.083,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "earth_visible_fraction",
+          "value": 0.83,
+          "unit": "1",
+          "normalized": 0.83,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "mean_slope_deg",
+          "value": 5.1,
+          "unit": "deg",
+          "normalized": 0.575,
+          "weight": 1.0,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "slope_std_deg",
+          "value": 2.0,
+          "unit": "deg",
+          "normalized": 0.667,
+          "weight": 0.5,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "distance_to_psr_km",
+          "value": 2.8,
+          "unit": "km",
+          "normalized": null,
+          "weight": 0.0,
+          "validity": "SYNTHETIC"
+        }
+      ],
+      "validity": "SYNTHETIC"
+    },
+    {
+      "site_id": "cand-02",
+      "name": "Candidate 2",
+      "lat_deg": -84.75,
+      "lon_deg": 28.9,
+      "score": 58,
+      "eliminated": false,
+      "eliminated_by": [],
+      "components": [
+        {
+          "metric": "sunlit_fraction",
+          "value": 0.49,
+          "unit": "1",
+          "normalized": 0.49,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "longest_dark_hours",
+          "value": 180.0,
+          "unit": "h",
+          "normalized": 0.5,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "earth_visible_fraction",
+          "value": 0.79,
+          "unit": "1",
+          "normalized": 0.79,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "mean_slope_deg",
+          "value": 6.8,
+          "unit": "deg",
+          "normalized": 0.433,
+          "weight": 1.0,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "slope_std_deg",
+          "value": 2.4,
+          "unit": "deg",
+          "normalized": 0.6,
+          "weight": 0.5,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "distance_to_psr_km",
+          "value": 1.4,
+          "unit": "km",
+          "normalized": null,
+          "weight": 0.0,
+          "validity": "SYNTHETIC"
+        }
+      ],
+      "validity": "SYNTHETIC"
+    },
+    {
+      "site_id": "cand-03",
+      "name": "Candidate 3",
+      "lat_deg": -84.83,
+      "lon_deg": 29.6,
+      "score": null,
+      "eliminated": true,
+      "eliminated_by": [
+        "max_slope_deg"
+      ],
+      "components": [
+        {
+          "metric": "sunlit_fraction",
+          "value": 0.55,
+          "unit": "1",
+          "normalized": 0.55,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "longest_dark_hours",
+          "value": 140.0,
+          "unit": "h",
+          "normalized": 0.611,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "earth_visible_fraction",
+          "value": 0.8,
+          "unit": "1",
+          "normalized": 0.8,
+          "weight": 1.0,
+          "validity": "DERIVED"
+        },
+        {
+          "metric": "mean_slope_deg",
+          "value": 9.5,
+          "unit": "deg",
+          "normalized": 0.208,
+          "weight": 1.0,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "slope_std_deg",
+          "value": 3.1,
+          "unit": "deg",
+          "normalized": 0.483,
+          "weight": 0.5,
+          "validity": "MEASURED"
+        },
+        {
+          "metric": "distance_to_psr_km",
+          "value": 2.2,
+          "unit": "km",
+          "normalized": null,
+          "weight": 0.0,
+          "validity": "SYNTHETIC"
+        }
+      ],
+      "validity": "SYNTHETIC"
+    }
+  ],
+  "weights": {
+    "sunlit": 1.0,
+    "dark": 1.0,
+    "earth": 1.0,
+    "slope": 1.0,
+    "roughness": 0.5,
+    "psr_distance": 0.0
+  },
+  "limits": {
+    "max_slope_deg": 12.0
+  },
+  "assumptions": [
+    "Weights are the user's choice; the score ranks, it does not certify a landing site.",
+    "Rocks and craters smaller than the 20 m map cells are not in the data.",
+    "Thresholds other than the 12 degree slope limit are assumed."
+  ],
+  "validity": "SYNTHETIC"
+}

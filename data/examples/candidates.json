@@ -1,0 +1,57 @@
+{
+  "region": "mons-mouton",
+  "method": {
+    "window_m": 200,
+    "slope_limit_deg": 12.0,
+    "min_separation_km": 2.0,
+    "source": "PGDA 90 LDEM/LDSM/LPSR 20 m"
+  },
+  "candidates": [
+    {
+      "id": "cand-01",
+      "name": "Candidate 1",
+      "lat_deg": -84.8,
+      "lon_deg": 29.2,
+      "elevation_m": 4800.0,
+      "mean_slope_deg": 4.2,
+      "max_slope_deg": 9.8,
+      "slope_std_deg": 1.6,
+      "safe_cell_fraction": 0.92,
+      "psr_fraction": 0.0,
+      "distance_to_psr_km": 3.1,
+      "has_terrain_horizon": true,
+      "validity": "DERIVED"
+    },
+    {
+      "id": "cand-02",
+      "name": "Candidate 2",
+      "lat_deg": -84.75,
+      "lon_deg": 28.9,
+      "elevation_m": 4650.0,
+      "mean_slope_deg": 6.8,
+      "max_slope_deg": 11.5,
+      "slope_std_deg": 2.4,
+      "safe_cell_fraction": 0.81,
+      "psr_fraction": 0.02,
+      "distance_to_psr_km": 1.4,
+      "has_terrain_horizon": true,
+      "validity": "DERIVED"
+    },
+    {
+      "id": "cand-03",
+      "name": "Candidate 3",
+      "lat_deg": -84.83,
+      "lon_deg": 29.6,
+      "elevation_m": 4720.0,
+      "mean_slope_deg": 9.5,
+      "max_slope_deg": 14.2,
+      "slope_std_deg": 3.1,
+      "safe_cell_fraction": 0.64,
+      "psr_fraction": 0.0,
+      "distance_to_psr_km": 2.2,
+      "has_terrain_horizon": true,
+      "validity": "DERIVED"
+    }
+  ],
+  "validity": "DERIVED"
+}
