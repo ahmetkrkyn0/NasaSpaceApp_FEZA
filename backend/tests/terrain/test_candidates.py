@@ -85,35 +85,20 @@ def stored():
     return json.loads((REPO_DATA / "candidates.json").read_text(encoding="utf-8"))
 
 
-# Fields of this PR that the example and the frontend type get in #109 (#97, 4.3 addendum:
-# ``kind``; ADR-0003 "Candidates": the method fields). Drop this once #109 is merged.
-PENDING_IN_109 = {
-    "method": {"stride_m", "slope_limit_source", "max_candidates", "assumed", "note"},
-    "candidate": {"kind"},
-}
-
-
-def _without_pending(data):
-    out = {**data, "method": {k: v for k, v in data["method"].items()
-                              if k not in PENDING_IN_109["method"]}}
-    out["candidates"] = [{k: v for k, v in e.items() if k not in PENDING_IN_109["candidate"]}
-                         for e in data["candidates"]]
-    return out
-
-
-def _example_has_pending():
-    from tests.contract import load_example
-
-    return "kind" in load_example("candidates")["candidates"][0]
+# ``method`` fields of this PR (ADR-0003, "Candidates") that the example and the frontend type
+# do not carry yet (#109 added ``kind`` only). Each one is stripped only while the example lacks
+# it, so the comparison becomes exact as soon as the example catches up.
+PENDING_METHOD_FIELDS = {"stride_m", "slope_limit_source", "max_candidates", "assumed", "note"}
 
 
 def test_stored_file_shape(stored):
-    if _example_has_pending():
-        assert_matches_example(stored, "candidates")
-    else:
-        assert_matches_example(_without_pending(stored), "candidates")
-        assert PENDING_IN_109["method"] <= set(stored["method"])
-        assert all("kind" in e for e in stored["candidates"])
+    from tests.contract import load_example
+
+    example_method = set(load_example("candidates")["method"])
+    pending = PENDING_METHOD_FIELDS - example_method
+    assert pending <= set(stored["method"])
+    compared = {**stored, "method": {k: v for k, v in stored["method"].items() if k not in pending}}
+    assert_matches_example(compared, "candidates")
     assert stored["region"] == "mons-mouton" and stored["validity"] == "DERIVED"
     method = stored["method"]
     assert method["slope_limit_deg"] == 12.0
