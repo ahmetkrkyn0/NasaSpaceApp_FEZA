@@ -512,9 +512,17 @@ export interface EarthLink {
 /** How the candidate regions were found (`GET /api/candidates`). */
 export interface CandidateMethod {
   window_m: number;
+  /** Step of the sliding window. */
+  stride_m: number;
   slope_limit_deg: number;
+  /** Where the slope limit comes from. */
+  slope_limit_source: string;
   min_separation_km: number;
+  max_candidates: number;
+  /** Names of the method fields that are assumptions, shown as "Assumed". */
+  assumed: string[];
   source: string;
+  note: string;
 }
 
 /** `candidate`: a region found in the elevation maps. `catalogue`: a catalogue site listed with them (#97, 4.3). */

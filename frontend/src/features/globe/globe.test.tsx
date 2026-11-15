@@ -139,7 +139,17 @@ describe('body series for the globe', () => {
 describe('places on the globe', () => {
   const candidates: CandidateList = {
     region: 'mons-mouton',
-    method: { window_m: 200, slope_limit_deg: 12, min_separation_km: 2, source: 'x' },
+    method: {
+      window_m: 200,
+      stride_m: 100,
+      slope_limit_deg: 12,
+      slope_limit_source: 'x',
+      min_separation_km: 2,
+      max_candidates: 10,
+      assumed: [],
+      source: 'x',
+      note: 'x',
+    },
     candidates: [
       { id: 'cand-01', kind: 'candidate', name: 'Candidate 1', lat_deg: -85, lon_deg: 30, elevation_m: 0, mean_slope_deg: 3, max_slope_deg: 6, slope_std_deg: 1, safe_cell_fraction: 0.9, psr_fraction: 0, distance_to_psr_km: 3, has_terrain_horizon: true, validity: 'DERIVED' },
     ],

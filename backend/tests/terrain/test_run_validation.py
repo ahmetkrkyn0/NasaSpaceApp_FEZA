@@ -200,3 +200,50 @@ def test_missing_event_without_requires_fails():
         unit="min",
     )
     assert rv.evaluate(v, _const(200, body))["status"] == "fail"
+
+
+class _SubPoints:
+    ANGLE_TOL_DEG = 0.01
+    DISTANCE_TOL_KM = 1.0
+    HORIZONS_CASES = [("2026-12-05T00:00:00Z", 5.966154, 5.929357, 231.377145, -1.455001, 0.00263691477836)]
+
+
+def _body(**over):
+    sample = {"sub_earth_lon_deg": 5.966, "sub_earth_lat_deg": 5.929, "sub_solar_lon_deg": -128.6228,
+              "sub_solar_lat_deg": -1.455, "earth_distance_km": 0.00263691477836 * rv.AU_KM + 0.4}
+    sample.update(over)
+    return {"samples": [sample]}
+
+
+def test_t8_rows_wrap_longitudes_and_use_the_test_tolerances():
+    rows = rv.t8_rows(_const(200, _body()), load=lambda: _SubPoints)
+    assert [r["status"] for r in rows] == ["pass"] * 5
+    lon = next(r for r in rows if r["id"].endswith("sub-solar-lon"))
+    assert abs(lon["diff"]) < 0.001  # -128.62 against 231.38 east
+    rows = rv.t8_rows(_const(200, _body(sub_earth_lat_deg=5.95)), load=lambda: _SubPoints)
+    assert next(r for r in rows if r["id"].endswith("sub-earth-lat"))["status"] == "fail"
+
+
+def test_t8_missing_endpoint_is_skipped():
+    rows = rv.t8_rows(_const(404, None), load=lambda: _SubPoints)
+    assert {r["status"] for r in rows} == {"skipped"}
+
+
+def test_t9_rows_on_the_repository_data():
+    rows = rv.t9_rows()
+    assert {r["status"] for r in rows} <= {"pass", "skipped"}
+    assert len(rows) == 4
+
+
+def test_t9_slope_above_the_limit_fails(tmp_path):
+    import json
+    import shutil
+
+    data = Path(__file__).resolve().parents[3] / "data"
+    shutil.copytree(data / "layers", tmp_path / "layers")
+    stored = json.loads((data / "candidates.json").read_text(encoding="utf-8"))
+    stored["candidates"][0]["mean_slope_deg"] = 12.5
+    (tmp_path / "candidates.json").write_text(json.dumps(stored), encoding="utf-8")
+    rows = {r["id"]: r for r in rv.t9_rows(tmp_path)}
+    assert rows["T9-max-mean-slope"]["status"] == "fail"
+    assert rows["T9-regenerated"]["status"] == "skipped"  # no full resolution layers in tmp_path

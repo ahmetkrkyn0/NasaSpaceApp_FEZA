@@ -8,6 +8,7 @@ import { commWindowRequest, eventsRequest, momentIn } from '../../state/scenario
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { RelayLabel } from './relay';
 import { GroundStations } from './stations';
+import { EarthLinkView } from '../link';
 import { AsyncBlock, ExampleNote, Field, Fields, NeedsScenario, PanelHeader, useRequest } from '../setup/shared';
 
 /**
@@ -179,9 +180,7 @@ function CommsForScenario({ scenario }: { scenario: Scenario }) {
         <h3 className="d-section-title">Over the period</h3>
         <AsyncBlock result={events}>{(data) => <WindowsBlock events={data} />}</AsyncBlock>
       </div>
-      <p className="d-muted">
-        Direct link also needs a ground station that sees the Moon; that layer is not part of this release.
-      </p>
+      <EarthLinkView scenario={scenario} utc={utc} full />
       <GroundStations />
     </section>
   );

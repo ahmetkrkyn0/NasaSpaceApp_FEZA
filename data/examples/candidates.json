@@ -1,10 +1,20 @@
 {
   "region": "mons-mouton",
   "method": {
-    "window_m": 200,
+    "window_m": 200.0,
+    "stride_m": 100.0,
     "slope_limit_deg": 12.0,
+    "slope_limit_source": "SP-2013-605, 'up to an equivalent slope of 12 degrees' (dogrulama/gorev-araclari.md, No 89)",
     "min_separation_km": 2.0,
-    "source": "PGDA 90 LDEM/LDSM/LPSR 20 m"
+    "max_candidates": 12,
+    "assumed": [
+      "window_m",
+      "stride_m",
+      "min_separation_km",
+      "max_candidates"
+    ],
+    "source": "PGDA 90 LDEM/LDSM/LPSR 20 m",
+    "note": "Candidate regions are windows of the 20 m height maps ranked by safe cell fraction, then by lower mean slope; a safe cell has slope at most slope_limit_deg and is not permanently shadowed, and a window qualifies when its centre is not permanently shadowed and its mean slope is within the limit. They are not certified landing sites. Boulders and craters smaller than the 20 m grid are not in the data (not modelled)."
   },
   "candidates": [
     {

@@ -1,0 +1,170 @@
+/* Earth link view (issue #110). Colours from tokens; colour never carries the state alone:
+   direct is solid, no station is dashed, relay needed is hatched. */
+
+.link-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link-state-direct {
+  border-color: var(--mint-text);
+}
+
+.link-state-no_station {
+  border-color: var(--risk-med);
+  border-style: dashed;
+}
+
+.link-state-relay_needed {
+  border-color: var(--risk-high);
+  border-style: dashed;
+}
+
+/* Diagram */
+
+.link-diagram {
+  margin: 0;
+}
+
+.link-diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+}
+
+.link-moon {
+  fill: var(--surface-high);
+  stroke: var(--line-button);
+}
+
+.link-earth {
+  fill: var(--bg-inset);
+  stroke: var(--cyan);
+  stroke-width: 1.5;
+}
+
+.link-site {
+  fill: var(--lavender);
+}
+
+.link-label {
+  fill: var(--text-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+}
+
+.link-station circle {
+  fill: var(--bg-card);
+  stroke: var(--line-button);
+  stroke-width: 1.5;
+}
+
+.link-station-on circle {
+  fill: var(--mint-text);
+  stroke: var(--mint-text);
+}
+
+.link-path {
+  fill: none;
+  stroke-width: 2;
+}
+
+.link-path-direct {
+  stroke: var(--mint-text);
+}
+
+.link-path-blocked {
+  stroke: var(--risk-med);
+  stroke-dasharray: 6 4;
+}
+
+.link-path-relay {
+  stroke: var(--risk-high);
+  stroke-dasharray: 2 4;
+}
+
+.link-relay-sat {
+  fill: var(--bg-card);
+  stroke: var(--risk-high);
+}
+
+/* Band */
+
+.link-band {
+  position: relative;
+  height: 14px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.link-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.link-seg-direct {
+  background: var(--mint-text);
+}
+
+.link-seg-no-station {
+  background: repeating-linear-gradient(90deg, var(--risk-med) 0 4px, transparent 4px 7px);
+}
+
+.link-seg-relay {
+  background: repeating-linear-gradient(45deg, var(--risk-high) 0 2px, transparent 2px 6px);
+}
+
+.link-marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+}
+
+.link-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 4px 0 0;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.link-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.link-swatch {
+  position: static;
+  display: inline-block;
+  width: 18px;
+  height: 10px;
+  border: 1px solid var(--line-button);
+}
+
+/* Station cards */
+
+.link-stations {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link-card-on {
+  border-color: var(--mint-text);
+}
+
+.link-now {
+  color: var(--mint-text);
+  font-size: var(--fs-small);
+}

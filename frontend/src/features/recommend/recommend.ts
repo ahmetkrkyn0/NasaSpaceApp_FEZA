@@ -157,12 +157,45 @@ export async function runRanking(
   form: RecommendForm,
   post: (body: RecommendRequest) => Promise<RecommendResponse>,
   store: Pick<RecommendStore, 'setRanked'>,
-): Promise<{ ok: true } | { ok: false; error: unknown }> {
-  const request = buildRequest(active, form);
-  try {
-    store.setRanked(await post(request), request);
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, error };
-  }
+): Promise<RankingResult> {
+  return createRanker(post, store)(active, form);
+}
+
+export type RankingResult = { ok: true } | { ok: false; error: unknown } | { ok: false; stale: true };
+
+/**
+ * A ranking runner with a request counter, as the candidate load has (PR #116 review): when the
+ * user ranks again before an answer arrives, only the newest answer is stored; an older one that
+ * arrives later is dropped and reported as `stale`.
+ */
+export function createRanker(
+  post: (body: RecommendRequest) => Promise<RecommendResponse>,
+  store: Pick<RecommendStore, 'setRanked'>,
+): (active: Scenario, form: RecommendForm) => Promise<RankingResult> {
+  let latest = 0;
+  return async (active, form) => {
+    latest += 1;
+    const mine = latest;
+    const request = buildRequest(active, form);
+    try {
+      const response = await post(request);
+      if (mine !== latest) return { ok: false, stale: true };
+      store.setRanked(response, request);
+      return { ok: true };
+    } catch (error) {
+      if (mine !== latest) return { ok: false, stale: true };
+      return { ok: false, error };
+    }
+  };
+}
+
+/**
+ * Whether a ranking was made for another period or mast than the active scenario (PR #116
+ * review): its scores then belong to that request, not to what the setup shows now.
+ */
+export function rankingIsStale(request: RecommendRequest | null, active: Scenario | null): boolean {
+  if (!request || !active) return false;
+  return (
+    request.start_utc !== active.start_utc || request.end_utc !== active.end_utc || request.mast_height_m !== (active.mast_height_m ?? 2)
+  );
 }
