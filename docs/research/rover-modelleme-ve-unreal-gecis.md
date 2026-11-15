@@ -2,7 +2,7 @@
 
 Blender'da modellenen bir rover'ın Unreal Engine 5'e aktarılıp Ay koşullarında çalışan bir dijital ikize dönüştürülmesi üzerine araştırma notları. Cesium for Unreal ile LOLA DEM tabanlı arazi entegrasyonunu da kapsar.
 
-> Not: Bu belgedeki literatür değerleri ve rover özellikleri kullanılmadan önce birincil kaynaklardan teyit edilmelidir. Belgedeki üç temsili görsel yapay zekâ (Grok) ile üretilmişti ve filigran taşımıyordu; 15 Kasım 2026'da depodan kaldırıldı (#146).
+> Not: Bu belgedeki literatür değerleri ve rover özellikleri kullanılmadan önce birincil kaynaklardan teyit edilmelidir. Görseller Grok ile üretilmiştir ve temsilidir.
 
 ## İçindekiler
 
@@ -74,9 +74,15 @@ FBX bir **taşıma formatıdır**: modelin görünüşünü ve parça yapısın�
 
 Tek parça, katı bir model. Kendi içinde hiçbir kısmı hareket etmez; ancak bütün olarak taşınıp döndürülebilir. Kaya, iniş modülü gövdesi, bina gibi nesneler için kullanılır.
 
+![Static mesh rover](../../public/assets/grok-static-mesh-rover.jpg)
+
 ### Skeletal Mesh
 
 İçinde görünmez bir **iskelet** taşıyan model. İskelet, **bone** (kemik) denen eklemlerden oluşur. Mesh'in her parçası bir bone'a bağlıdır; bone dönünce ona bağlı geometri de döner. Rover'da tekerlek bone'u dönünce tekerlek döner, rocker bone'u eğilince kol eğilir. **Rover bu türde olmalı.**
+
+![Skeletal mesh rover](../../public/assets/grok-skeletal-mesh-v2.jpg)
+
+*Yarı saydam gövdenin içinde mavi bone iskeleti. Eklemlerdeki oklar, bu noktaların bağımsız dönebildiğini gösterir.*
 
 ### Root bone ve hiyerarşi
 
@@ -265,6 +271,10 @@ Dijital ikizin özü bu iki tablonun kesişimidir. Yeni rover eklemek için bir 
 ---
 
 ## 6. Rocker-bogie süspansiyon
+
+![Rocker-bogie rover](../../public/assets/grok-rocker-bogie-render.jpg)
+
+*Ön tekerlek kayanın üstüne çıkmışken diğer tekerlekler yerde kalıyor ve gövde dengede duruyor.*
 
 ### Nedir, nereden çıktı?
 
