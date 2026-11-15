@@ -4,7 +4,7 @@ import './stations.css';
 
 /**
  * "Who listens on Earth" (issue #81): a folding section of the Earth link panel with three
- * Deep Space Network complexes. The pictures are illustrations rendered with Unity, and every
+ * Deep Space Network complexes. The pictures are illustrations rendered with Unreal Engine, and every
  * fact in the text comes from NASA's Deep Space Network page. The product computes Earth
  * visibility from the landing site for Earth's disk, not for a particular station, and the
  * section says so.
