@@ -14,7 +14,7 @@ Lunar Landing Site Navigator
 
 ## High-Level Project Summary
 
-Lunar Landing Site Navigator lets you pick a landing site and a date on the Moon and see, in one screen, where the Sun and Earth sit above the local horizon, how long sunlight and direct-to-Earth contact last, and how much power a solar panel would collect. Several site and date scenarios can be compared side by side, so a schedule slip or a moved landing point can be judged in minutes instead of by working through several expert tools.
+Lunar Landing Site Navigator lets you pick a landing site and a date on the Moon and see, in one screen, where the Sun and Earth sit above the local horizon, how long sunlight and direct-to-Earth contact last, and how much power a solar panel would collect. Several site and date scenarios can be compared side by side, so a schedule slip or a moved landing point can be judged in minutes instead of by working through several expert tools. On Mons Mouton it also picks candidate regions from NASA's slope and shadow maps and ranks them with weights the user chooses, showing every part of the score, and it shows when the Deep Space Network can see the Moon and when a lander would need a relay.
 
 It addresses the challenge directly: curated and custom sites, free choice of dates, Sun and Earth positions against a real terrain horizon at the south pole, time to sunset and Earthset, power and communication windows, a timeline and a comparison table. It matters because near the lunar south pole the Sun stays close to the horizon, so a small change in place or date can decide whether a mission has power and a link to Earth. The tool makes that sensitivity visible and explains why it happens, for mission planners, educators and the public alike.
 
@@ -27,9 +27,12 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 - **Events and windows:** sunrise, sunset, earthrise and earthset are searched to the second, with a sensitivity range that shows how much each event moves when the horizon is one arcminute higher or lower. Sunlit and dark windows, Earth-visible and Earth-hidden windows, and a live countdown to the next change.
 - **Power:** hourly power for four panel set-ups (flat, fixed vertical, vertical tracking, two-axis), with mean power, energy, sunlit share and longest dark period.
 - **Communication:** whether Earth is above the horizon now and for how long; a "relay required" label where Earth never rises in the chosen period.
+- **Earth link view:** when each Deep Space Network complex (Goldstone, Madrid, Canberra) sees the Moon, and a band over the period that marks a direct link, no station in view, or "relay needed" when Earth is below the site's horizon. A schematic shows the state at the selected moment; engineers get the station shares and assumptions, the public and classroom a short summary.
 - **Eclipses:** times when Earth passes in front of the Sun as seen from the site, with the share of the Sun covered, and the drop they cause in panel power.
 - **Comparison:** two to four scenarios side by side, with the best value per metric and "why" cards that change one input at a time to show which input caused a difference.
-- **Map layers:** hillshade, elevation, slope and permanently shadowed regions around the south pole.
+- **Map layers:** hillshade, elevation, slope and permanently shadowed regions around the south pole. The Mons Mouton layers ship with the repository at 40 m, so the map works on a fresh copy.
+- **Candidate regions:** twelve 200 m regions on Mons Mouton picked from the 20 m slope and permanent shadow maps: mean slope within 12°, centre outside permanent shadow, at least 2 km apart. Each has a terrain horizon at 2 m and 10 m masts and can be used like any catalogue site. They are called candidate regions, not safe landing sites.
+- **Site recommendation:** the user sets weights for sunlit time, the longest dark period, Earth in view, slope, roughness and distance to permanent shadow, a slope limit and a permanent shadow preference. The candidate regions and the catalogue sites of the region are ranked for the active period and mast; every score is shown with its components and validity labels, and sites whose steepest slope is over the limit are listed apart with the reason. A ranked site can become the scenario, or the top three can go to the comparison.
 - **Three entry points on one engine:** Plan (engineers), Explore (public) and Classroom (educators) share the same site, date and time.
 - **Trust labels:** every result carries a validity label. Results computed with a flat horizon are marked as assumed ("terrain not included"); panel profiles are marked as assumptions.
 - **Illustrations:** pre-rendered images and short loops made with Unity illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not computed data: the Sun, shadows, stars and lander in them were placed by hand, and the computed Sun and Earth positions are in the horizon strip. Credits are in [`frontend/public/media/CREDITS.md`](../../frontend/public/media/CREDITS.md).
@@ -39,12 +42,14 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 A Python server does all the computation; the web interface only shows the server's numbers.
 
 1. **Sun and Earth positions** come from NASA NAIF's SPICE toolkit (through SpiceyPy) with the DE440 planetary ephemeris and the Moon's high-accuracy orientation (`MOON_ME` frame). Positions are computed from the site itself, not from the Moon's centre, with light-time and stellar aberration corrections.
-2. **Horizon:** for the four catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3), a terrain horizon was precomputed from NASA LOLA height maps (PGDA product 90) by casting 720 rays out to 150 km, for panel masts of 2 m and 10 m. Elsewhere a flat horizon on a 1737.4 km sphere is used and labelled as such.
+2. **Horizon:** for the four catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3) and the twelve candidate regions, a terrain horizon was precomputed from NASA LOLA height maps (PGDA product 90) by casting 720 rays out to 150 km, for panel masts of 2 m and 10 m. Elsewhere a flat horizon on a 1737.4 km sphere is used and labelled as such.
 3. **Events** are found on a coarse time grid and refined by bisection with a fresh SPICE position at every step, down to one second, treating the Sun and Earth as disks.
 4. **Power** is efficiency × area × 1361 W/m² scaled for the Sun's distance × the panel's angle to the Sun × the visible part of the Sun's disk (above the horizon and not covered by Earth).
-5. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
+5. **Ground stations and link:** the Moon's elevation at the three Deep Space Network complexes (coordinates from the DSN handbook 810-005) is found the same way as the site events. A direct link needs Earth above the site's horizon and the Moon above one station's minimum elevation (10° by default, an assumption).
+6. **Candidate regions and score:** a 200 m window slides over the 20 m maps in 100 m steps; windows are ranked by their share of cells with slope within 12° outside permanent shadow. The score is the weighted mean of six measures, each scaled to 0 to 1, shown from 0 to 100; the method is in [saha-puani.md](../design/saha-puani.md).
+7. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
 
-The validation report ([`data/validation_report.json`](../../data/validation_report.json)) has 45 passing reference checks, no failures, and one approximate comparison:
+The validation report ([`data/validation_report.json`](../../data/validation_report.json)) has 69 passing reference checks, no failures, and one approximate comparison ([readable report](../validation-report.md)):
 
 | Test | What is checked | Result |
 |---|---|---|
@@ -55,6 +60,8 @@ The validation report ([`data/validation_report.json`](../../data/validation_rep
 | T5 | Apollo 11 site, 20 and 21 February 2027: Earth covers the Sun from 22:09 to 00:36 UTC, at most 34.3% | within 2 minutes and 0.5 percentage points |
 | T6 (approximate) | Sunlit share at Mons Mouton: this product 44.98%, NASA's 18.6-year average map 46.46% | reported, not scored: the map averages 18.6 years over a 120 m cell, this run one year at one point |
 | T7 | Sunrise shift for a one-arcminute horizon change: 1.98 minutes at Apollo 11, 23.1 minutes at Mons Mouton | passes |
+| T8 | Sub-solar and sub-Earth points and Earth distance at four instants (2025 to 2027) against JPL Horizons | all 20 pass; largest angle difference 0.0056° (limit 0.01°), largest distance difference 0.0035 km (limit 1 km) |
+| T9 | Candidate regions: largest mean slope 1.19° (limit 12°), no centre in permanent shadow, closest pair 2.15 km apart (at least 2 km), regenerated from the 20 m maps with no field changed | all 4 pass |
 
 T7 is the core of the "why small changes matter" story: the same tiny horizon change moves sunrise about twelve times more at the south pole than near the equator, because the Sun climbs so slowly there.
 
@@ -80,10 +87,13 @@ A quick first-look tool that mission teams, students and the public can open in 
 
 ### Known limits
 
-- **Terrain horizon only at four sites.** The terrain horizon exists only for the catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3), at 2 m and 10 m masts. Every other site, every custom coordinate and every other mast height uses a flat horizon and is labelled "Assumed, terrain not included".
+- **Terrain horizon only at four sites and the candidate regions.** The terrain horizon exists only for the catalogue sites inside the south polar height maps (Mons Mouton, IM-2 Athena, IM-1 Odysseus, Chandrayaan-3) and the twelve candidate regions on Mons Mouton, at 2 m and 10 m masts. Every other site, every custom coordinate and every other mast height uses a flat horizon and is labelled "Assumed, terrain not included".
 - **Panel profiles are assumptions.** Area, efficiency and mounting are generic values, not a real spacecraft's design, and are labelled as such.
 - **Accident causes are not computed.** For past missions the tool measures the environment (Sun and Earth angles, light, contact). Causes of failures are quoted only from official sources, with an evidence label.
-- **Relay satellites are not modelled.** The relay label only says that Earth is not in line of sight.
+- **Relay satellites are not modelled.** The relay label and the link view's "relay needed" only say that Earth is not in line of sight; the relay in the link schematic is a drawing labelled "Illustration".
+- **The score is not a landing safety guarantee.** It ranks sites for the weights the user chose; other weights give another order. The 12° slope limit is the Apollo lunar module's landing limit (SP-2013-605); every other threshold is an assumption and is marked as one.
+- **No rocks or small craters.** Candidate regions and their scores come from 20 m maps; boulders and craters smaller than a cell are not in the data.
+- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, and Earth's rotation uses the `IAU_EARTH` model; the 10° minimum station elevation is an assumption.
 - **Eclipses** treat Earth as a sharp disk (no atmosphere) and the Sun as uniformly bright, so the covered share is an area ratio.
 - **The terrain horizon is compared with NASA's map only approximately** (T6 above); it is not presented as validated.
 - **Illustrations are not computed.** The Sun, Earth, shadows, stars and lander in the Unity images were placed by hand. An image shows a kind of terrain, not the ground at the chosen site, and the lander is the team's Athena model shown upright for scale, whatever happened to the mission that landed there. There is no live 3D view of a site.
@@ -105,11 +115,13 @@ The repository README states the same in its "Use of AI tools" section.
 
 | Data | What it is used for | Source |
 |---|---|---|
-| SPICE kernels from NASA NAIF: `de440s.bsp` (planetary ephemeris DE440), `moon_pa_de440_200625.bpc` and `moon_de440_250416.tf` (Moon orientation and `MOON_ME` frame), `pck00011.tpc` (body sizes), `naif0012.tls` (leap seconds); about 45.8 MB in total | Sun and Earth position and apparent size at every site and time | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
-| LOLA height maps, PGDA product 90: `LDEM_80S_20MPP_ADJ` (20 m, 80° S to the pole) and `LDEM_60S_60MPP_ADJ` (60 m, 60° S to the pole) | Terrain horizon profiles of the four south polar sites; elevation map layer | <https://pgda.gsfc.nasa.gov/products/90> |
-| PGDA product 90 derived maps: hillshade (`LDEM_80S_20MPP_ADJ_HILL`), slope (`LDSM_80S_20MPP_ADJ`), permanently shadowed regions (`LPSR_80S_20MPP_ADJ`) | Map layers | <https://pgda.gsfc.nasa.gov/products/90> |
+| SPICE kernels from NASA NAIF: `de440s.bsp` (planetary ephemeris DE440), `moon_pa_de440_200625.bpc` and `moon_de440_250416.tf` (Moon orientation and `MOON_ME` frame), `pck00011.tpc` (body sizes), `naif0012.tls` (leap seconds); about 45.8 MB in total | Sun and Earth position and apparent size at every site and time; sub-solar and sub-Earth points; Earth's rotation for the ground stations | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
+| LOLA height maps, PGDA product 90: `LDEM_80S_20MPP_ADJ` (20 m, 80° S to the pole) and `LDEM_60S_60MPP_ADJ` (60 m, 60° S to the pole) | Terrain horizon profiles of the four south polar sites and the twelve candidate regions; elevation map layer | <https://pgda.gsfc.nasa.gov/products/90> |
+| PGDA product 90 derived maps: hillshade (`LDEM_80S_20MPP_ADJ_HILL`), slope (`LDSM_80S_20MPP_ADJ`), permanently shadowed regions (`LPSR_80S_20MPP_ADJ`) | Map layers; candidate regions and their slope and permanent shadow values | <https://pgda.gsfc.nasa.gov/products/90> |
 | LOLA average visibility map `AVGVISIB_75S_120M_201608` (PGDA product 69) | Approximate comparison of the sunlit share (T6), validation only | <https://pgda.gsfc.nasa.gov/products/69> |
-| JPL Horizons | Reference values for the tests (T1, T2, T5); never called by the running product | <https://ssd.jpl.nasa.gov/horizons/> |
+| JPL Horizons | Reference values for the tests (T1, T2, T5, T8); never called by the running product | <https://ssd.jpl.nasa.gov/horizons/> |
+| NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P | Coordinates of the Goldstone (DSS 14), Madrid (DSS 63) and Canberra (DSS 43) antennas | <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
+| Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605) | Slope limit of the candidate regions and the default limit of the score | [gorev-araclari.md, row 89](../research/dogrulama/gorev-araclari.md) |
 | NASA NSSDC lunar artifact table | Coordinates of Apollo 11, Chang'e 4, Chang'e 6, SLIM, IM-1 and Blue Ghost 1 | <https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html> |
 | LRO Camera (LROC) site releases | Coordinates of Chandrayaan-3, the IM-2 Athena landing point and the IM-2 target point on Mons Mouton | <https://www.lroc.asu.edu/images/1314>, <https://www.lroc.asu.edu/images/1408>, <https://www.lroc.asu.edu/images/1401> |
 
