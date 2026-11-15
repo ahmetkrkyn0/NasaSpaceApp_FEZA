@@ -194,3 +194,10 @@
   color: var(--text-dim);
   font-size: var(--fs-small);
 }
+
+/* Right-aligned, like the map toolbar, so the countdown overlay at the top left never covers it. */
+.map-dimension {
+  display: flex;
+  width: fit-content;
+  margin: 0 0 8px auto;
+}

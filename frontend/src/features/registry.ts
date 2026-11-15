@@ -3,6 +3,7 @@ import type { Door, Mode, RailTab } from '../shell/ui-state';
 import CommsPanel from './comms';
 import ComparePanel from './compare';
 import GamePanel from './game';
+import GlobePanel from './globe';
 import HudPanel from './hud';
 import MapPanel from './map';
 import MissionsPanel from './missions';
@@ -55,6 +56,7 @@ export const PANELS: readonly PanelEntry[] = [
   { id: 'game', title: 'Landing window game', slot: 'leftRail', modes: null, doors: ['explore'], component: GamePanel },
   { id: 'map', title: 'Map', slot: 'center', modes: null, doors: ['plan'], component: MapPanel },
   { id: 'scene', title: 'Surface view', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: ScenePanel },
+  { id: 'globe', title: '3D Moon', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: GlobePanel },
   { id: 'hud', title: 'Countdown', slot: 'canvasOverlay', modes: null, doors: ALL_DOORS, component: HudPanel },
   { id: 'sky', title: 'Sky view', slot: 'rightRail', tab: 'sky', modes: ['analyze'], doors: ALL_DOORS, component: SkyPanel },
   { id: 'power', title: 'Power', slot: 'rightRail', tab: 'power', modes: ['analyze'], doors: ['plan'], component: PowerPanel },

@@ -7,6 +7,7 @@ import { useAsync } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { describeError } from '../timeline/describe-error';
 import { useScenario } from '../timeline/data';
+import { MoonGlobeContainer } from '../globe';
 import { MapView, type LayerStatus, type MapViewMode } from './MapView';
 import { normalizeLongitude, type GeoPoint } from './projection';
 
@@ -31,6 +32,8 @@ export function layerMissing(error: unknown): boolean {
 export default function MapPanel() {
   const { active } = useScenario();
   const [view, setView] = useState<MapViewMode>('overview');
+  // 2D map or 3D Moon; local to the panel, so it never changes the scenario in the address bar.
+  const [dimension, setDimension] = useState<'2d' | '3d'>('2d');
   const [layerName, setLayerName] = useState<LayerName | null>('hillshade');
   const [picked, setPicked] = useState<GeoPoint | null>(null);
   const mode = getDataMode();
@@ -85,8 +88,34 @@ export default function MapPanel() {
     if (active) scenarioStore.setScenario(withSite(active, site));
   };
 
+  const switcher = (
+    <span className="map-group map-dimension" role="group" aria-label="Map or globe">
+      {(['2d', '3d'] as const).map((d) => (
+        <button
+          key={d}
+          type="button"
+          className={`map-button${d === dimension ? ' is-active' : ''}`}
+          aria-pressed={d === dimension}
+          onClick={() => setDimension(d)}
+        >
+          {d === '2d' ? '2D map' : '3D Moon'}
+        </button>
+      ))}
+    </span>
+  );
+
+  if (dimension === '3d') {
+    return (
+      <section className="map-panel" aria-label="3D Moon">
+        {switcher}
+        <MoonGlobeContainer />
+      </section>
+    );
+  }
+
   return (
     <section className="map-panel" aria-label="Map">
+      {switcher}
       {sites.status === 'error' ? (
         <p className="map-note" role="alert">
           Sites could not be loaded: {describeError(sites.error)}

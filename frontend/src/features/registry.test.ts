@@ -10,7 +10,7 @@ const PLAN_PANELS = [
   'sky', 'timeline', 'hud', 'map',
   'setup', 'power', 'comms', 'compare',
   'why', 'missions', 'tasks', 'validation', 'game',
-  'scene',
+  'scene', 'globe',
 ];
 
 describe('panel registry', () => {
