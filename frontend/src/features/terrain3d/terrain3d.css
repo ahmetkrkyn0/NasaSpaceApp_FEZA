@@ -123,3 +123,33 @@
   pointer-events: none;
   white-space: nowrap;
 }
+
+/* Scale bar at the bottom left of the canvas: its width is the labelled ground length. */
+.terrain-scale {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  display: none;
+  box-sizing: border-box;
+  padding-bottom: 2px;
+  border: 1px solid var(--text-2);
+  border-top: 0;
+  color: var(--text-2);
+  font-family: var(--font-data);
+  font-size: var(--fs-small);
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.terrain-readout {
+  flex: none;
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.terrain-readout-label {
+  color: var(--text-dim);
+}

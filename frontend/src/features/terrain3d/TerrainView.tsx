@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { ScenePoint, TerrainMesh } from './geometry';
+import { scaleBar } from './readout';
 
 /** A site or candidate region already placed on the mesh (scene kilometres). */
 export interface TerrainMark {
@@ -52,6 +53,8 @@ export interface TerrainViewProps {
   eye_km: number;
   rays: readonly TerrainRay[];
   camera: TerrainCamera;
+  /** The surface point under the cursor (scene kilometres), or `null` when it leaves the surface. */
+  onHover?: (point: { x: number; z: number } | null) => void;
 }
 
 function token(name: string, fallback: string): THREE.Color {
@@ -90,10 +93,13 @@ const GLOW_SCALE = 5;
  * built once per mesh; new colours, marks, sky or rays are changed in place, so playing the
  * timeline does not reset the camera.
  */
-export default function TerrainView({ mesh, colours, marks, selectedId, onPick, sky, site, eye_km, rays, camera }: TerrainViewProps) {
+export default function TerrainView({ mesh, colours, marks, selectedId, onPick, sky, site, eye_km, rays, camera, onHover }: TerrainViewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const sunLabel = useRef<HTMLSpanElement>(null);
   const earthLabel = useRef<HTMLSpanElement>(null);
+  const scaleRef = useRef<HTMLSpanElement>(null);
+  const hoverRef = useRef(onHover);
+  hoverRef.current = onHover;
   const liveRef = useRef<Live | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
   const pickRef = useRef(onPick);
@@ -181,13 +187,31 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
       skyGroup.updateMatrixWorld(true);
       placeLabel(sunLabel.current, sunBall);
       placeLabel(earthLabel.current, earthBall);
+      drawScale();
       renderer.render(scene, cam);
+    };
+    let standing = false;
+    // Ground length of a pixel at the point the camera turns about; hidden in the standing view,
+    // where near and far ground share the screen.
+    const drawScale = () => {
+      const el = scaleRef.current;
+      if (!el) return;
+      const distance = cam.position.distanceTo(controls.target);
+      const kmPerPx = mesh.mapped ? (2 * distance * Math.tan((cam.fov * DEG) / 2)) / Math.max(1, host.clientHeight) : 0;
+      const bar = standing ? null : scaleBar(kmPerPx);
+      if (!bar) {
+        el.style.display = 'none';
+        return;
+      }
+      el.style.display = 'block';
+      el.style.width = `${bar.px}px`;
+      el.textContent = bar.label;
     };
 
     const moveCamera = (mode: TerrainCameraMode) => {
       const now = propsRef.current;
       // The marks and the Sun arrow are sized for the overview; from eye height they would fill the view.
-      const standing = mode === 'stand' && now.site !== null;
+      standing = mode === 'stand' && now.site !== null;
       markGroup.visible = !standing;
       arrowHolder.visible = !standing;
       if (mode === 'stand' && now.site) {
@@ -251,7 +275,33 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
     };
     renderer.domElement.addEventListener('click', onClick);
 
+    // Cursor readout: at most one ray per frame.
+    let hoverFrame = 0;
+    let lastMove: PointerEvent | null = null;
+    const hover = () => {
+      hoverFrame = 0;
+      const event = lastMove;
+      if (!event || !hoverRef.current) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      ray.setFromCamera(new THREE.Vector2(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1), cam);
+      const hit = ray.intersectObject(surface)[0];
+      hoverRef.current(hit ? { x: hit.point.x, z: hit.point.z } : null);
+    };
+    const onMove = (event: PointerEvent) => {
+      lastMove = event;
+      if (hoverFrame === 0) hoverFrame = requestAnimationFrame(hover);
+    };
+    const onLeave = () => {
+      lastMove = null;
+      hoverRef.current?.(null);
+    };
+    renderer.domElement.addEventListener('pointermove', onMove);
+    renderer.domElement.addEventListener('pointerleave', onLeave);
+
     return () => {
+      cancelAnimationFrame(hoverFrame);
+      renderer.domElement.removeEventListener('pointermove', onMove);
+      renderer.domElement.removeEventListener('pointerleave', onLeave);
       observer.disconnect();
       renderer.domElement.removeEventListener('click', onClick);
       controls.dispose();
@@ -304,6 +354,7 @@ export default function TerrainView({ mesh, colours, marks, selectedId, onPick, 
       <span className="terrain-sky-label" ref={earthLabel}>
         Earth
       </span>
+      <span className="terrain-scale" ref={scaleRef} />
     </div>
   );
 }

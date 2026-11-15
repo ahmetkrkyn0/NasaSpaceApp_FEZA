@@ -40,6 +40,7 @@ import {
   type Visibility,
 } from './shadow';
 import type { TerrainCamera, TerrainMark, TerrainRay, TerrainSky } from './TerrainView';
+import { cursorReadout, readoutText } from './readout';
 import { useVisibilityMaps } from './use-visibility';
 import './terrain3d.css';
 
@@ -137,6 +138,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
   const [light, setLight] = useState(true);
   const [earthMask, setEarthMask] = useState(false);
   const [camera, setCamera] = useState<TerrainCamera>({ mode: 'overview', request: 0 });
+  const [hover, setHover] = useState<{ x: number; z: number } | null>(null);
   const webgl = useMemo(hasWebGL, []);
   const region = LAYER_REGIONS[0];
   // The standing view shows the horizon as it is, so it is drawn without exaggeration.
@@ -270,6 +272,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
   const earthAgreement = earthMask && siteEarth && picked ? agreementText('Earth', siteEarth.fraction, picked.earth.visible_fraction) : null;
   const darkShare = light && maps.sun ? hiddenShare(maps.sun) : null;
   const noLinkShare = earthMask && maps.earth ? hiddenShare(maps.earth) : null;
+  const readout = hover && mesh && heightGrid ? cursorReadout(heightGrid, mesh, hover.x, hover.z, light ? maps.sun : null) : null;
   const toggle = (label: string, on: boolean, set: (v: boolean) => void) => (
     <button type="button" className={`map-button${on ? ' is-active' : ''}`} aria-pressed={on} onClick={() => set(!on)}>
       {label}
@@ -337,6 +340,7 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
             eye_km={eye_m * KM_PER_M}
             rays={rays}
             camera={camera}
+            onHover={setHover}
           />
         </Suspense>
       ) : (
@@ -345,6 +349,10 @@ export default function TerrainPanel({ places, selectedId, onPick }: TerrainPane
       {colour.status === 'error' ? (
         <p className="terrain-note" role="status">{missingText(colour.error, `The ${LAYER_TEXT[surface].label.toLowerCase()} layer`)} Elevation grey is shown instead.</p>
       ) : null}
+      <p className="terrain-readout" aria-live="off">
+        <span className="terrain-readout-label">Under the cursor</span>{' '}
+        <span className="terrain-data">{readout ? readoutText(readout) : mesh?.mapped ? 'move over the surface' : 'not available for this grid'}</span>
+      </p>
       <ul className="terrain-notes">
         {light && !sunBody ? <li>{NO_SUN_NOTE}</li> : null}
         {picked && sample ? (
