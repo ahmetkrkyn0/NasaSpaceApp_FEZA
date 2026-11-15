@@ -48,6 +48,7 @@ NASA's Artemis program and commercial landers of the CLPS program, such as IM-2 
 - **Works without the server:** in example mode the interface shows answers recorded from the live server for every catalogue site and candidate region in December 2026 (2 m mast, vertical tracking panel). Example mode does not compute anything; any other choice shows a general example with a note that it does not match the selection.
 - **Trust labels:** every result carries a validity label. Results computed with a flat horizon are marked as assumed ("terrain not included"); panel profiles are marked as assumptions.
 - **Illustrations:** pre-rendered images and short loops made with Unreal Engine illustrate three kinds of landing terrain (mare plain, cratered highland, mountain massif) and a deep-space antenna for each of the three Deep Space Network sites. They always carry an "Illustration" label. They are pictures, not the product's calculation: the Sun, shadows, stars and lander in them belong to each scene's own recorded moment (Sun and Earth directions from JPL DE421), not to the chosen site and moment, and the computed Sun and Earth positions are in the horizon strip. Credits are in frontend/public/media/CREDITS.md.
+- **Opening screen:** NASA's own animation of the Moon's near and far side phases (NASA Scientific Visualization Studio, ID 14992) plays behind the product name, labelled "Illustration" as an artist's concept; viewers who ask for reduced motion see a still frame.
 
 ### How it works
 
@@ -167,6 +168,7 @@ Entries for the form's "Link Text" and "Link Url" fields, one link per row ("Add
 | NASA NTRS 20240009717: Navigation Doppler Lidar (past mission facts) | https://ntrs.nasa.gov/citations/20240009717 |
 | NASA Scientific Visualization Studio: CGI Moon Kit (3D Moon surface image) | https://svs.gsfc.nasa.gov/4720 |
 | NASA Earth Observatory: Blue Marble Next Generation with topography and bathymetry (Earth image) | https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/ |
+| NASA Scientific Visualization Studio: Lunar Near and Far Side Phases (opening screen animation) | https://svs.gsfc.nasa.gov/14992/ |
 | NASA Scientific Visualization Studio: Black Marble 2016 (Earth night image in an illustration) | https://svs.gsfc.nasa.gov/30876 |
 | NASA Science: Deep Space Network 70 Meter Antenna 3D Model (ground station illustrations) | https://science.nasa.gov/resource/deep-space-network-70-meter-antenna-3d-model/ |
 | NASA Science 3D Resources: TDRS satellite model (Earth globe illustration) | https://science.nasa.gov/3d-resources/ |
@@ -183,6 +185,7 @@ What each source is used for:
 - **NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P**: Coordinates of the Goldstone (DSS 14), Madrid (DSS 63) and Canberra (DSS 43) antennas. Source: <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf>
 - **NASA SVS 4720 "CGI Moon Kit" colour map (LROC colour mosaic, LOLA albedo at the poles)**: Surface image of the 3D Moon and the space view, for orientation only; not used in any calculation. Source: <https://svs.gsfc.nasa.gov/4720>
 - **NASA Blue Marble Next Generation, April 2004, with topography and bathymetry**: Earth's surface in the space view, for orientation only. Source: <https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry/>
+- **NASA SVS 14992 "Lunar Near and Far Side Phases" animation**: Background of the opening screen, labelled as an illustration (an artist's concept); not used in any calculation. Source: <https://svs.gsfc.nasa.gov/14992/>
 - **Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605)**: Slope limit of the candidate regions and the default limit of the score. Source: <https://ntrs.nasa.gov/citations/19720018253>; verified in docs/research/dogrulama/gorev-araclari.md, row 89
 - **NASA NSSDC lunar artifact table**: Coordinates of Apollo 11, Chang'e 4, Chang'e 6, SLIM, IM-1 and Blue Ghost 1. Source: <https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html>
 - **LRO Camera (LROC) site releases**: Coordinates of Chandrayaan-3, the IM-2 Athena landing point and the IM-2 target point on Mons Mouton. Source: <https://www.lroc.asu.edu/images/1314>, <https://www.lroc.asu.edu/images/1408>, <https://www.lroc.asu.edu/images/1401>
