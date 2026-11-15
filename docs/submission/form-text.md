@@ -7,7 +7,7 @@ The text has no tables. Paths such as `data/validation_report.json` name files i
 ## Before submitting
 
 - Project Demonstration: the full address of the seven-slide PDF. Project: the full address of the repository. Open both in a private window, signed out.
-- NASA Data: 18 rows. Space Agency Partner and Other Data: 38 rows; the first one points into the repository and works once it is public. Both lists are at the end of this file.
+- NASA Data: 18 rows. Space Agency Partner and Other Data: 37 rows. Both lists are at the end of this file.
 - Use of Super Intelligence: tick only the boxes that are true for the team. "Ideation or Brainstorming" stays ticked only if an AI tool was used to come up with ideas.
 - Add at least four images to Project Details: the horizon strip, the Earth–Moon scene, the recommendation panel and the role start page. An Unreal Engine image must show the word "Illustration".
 - "Save Progress" makes the page public. Paste the corrected Summary before saving.
@@ -130,7 +130,6 @@ One row per line: Link Text, then Link Url.
 
 One row per line: Link Text, then Link Url.
 
-- LunaPath interface design export by team member Berke Kuş (earlier work, used with permission: colour and size tokens, motion styles, icon set): https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/blob/main/frontend-migrate/DESIGN.md
 - Canadian Space Agency: From Apollo to Artemis, the evolution of crewed lunar missions (Apollo 11 information card): https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/from-apollo-to-artemis-the-evolution-of-crewed-lunar-missions.asp
 - JAXA press release, 25 January 2024: SLIM landing results (past mission facts): https://global.jaxa.jp/press/2024/01/file/jaxa_doc01_20240125_e.pdf
 - JAXA press release, 26 August 2024: SLIM mission end (past mission facts): https://global.jaxa.jp/press/2024/08/20240826-1_e.html
