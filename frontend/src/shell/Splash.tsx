@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { BrandMark, PRODUCT_NAME, PRODUCT_TAGLINE } from './BrandMark';
-import { SplashBackdrop, SplashBackdropCaption } from './SplashBackdrop';
+import { SplashBackdrop, SplashBackdropCaption, useDarkWhileMounted } from './SplashBackdrop';
 
 /** Opening screen with the product name. Enter or the button opens the console. */
 export function Splash({ onEnter }: { onEnter: () => void }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  useDarkWhileMounted();
 
   useEffect(() => {
     buttonRef.current?.focus();

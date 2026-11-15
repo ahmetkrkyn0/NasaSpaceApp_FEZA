@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { applyTheme, themeStore, type Theme } from './theme';
 
 /**
  * Background of the opening screen: NASA Scientific Visualization Studio animation 14992,
@@ -46,4 +47,23 @@ export function SplashBackdropCaption() {
       <span className="splash-backdrop-label">Illustration</span> {BACKDROP_CAPTION}
     </p>
   );
+}
+
+type ThemeRoot = Pick<HTMLElement, 'setAttribute' | 'removeAttribute'>;
+
+/**
+ * The opening screen is dark in both themes, so the NASA animation shows as made (Göktuğ, PR #151).
+ * It only lifts the theme attribute while the screen is shown and puts the saved theme back when it
+ * closes; the saved choice itself never changes, and the console follows it as before.
+ */
+export function holdDarkTheme(getTheme: () => Theme, root?: ThemeRoot | null): () => void {
+  applyTheme('dark', root);
+  return () => applyTheme(getTheme(), root);
+}
+
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+/** Keeps the page dark while the opening screen is mounted, before the first paint. */
+export function useDarkWhileMounted() {
+  useIsomorphicLayoutEffect(() => holdDarkTheme(() => themeStore.getState().theme), []);
 }

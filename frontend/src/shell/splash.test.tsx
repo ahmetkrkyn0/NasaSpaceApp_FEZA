@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { Splash } from './Splash';
-import { BACKDROP_CAPTION, BACKDROP_POSTER_URL, BACKDROP_VIDEO_URL, prefersReducedMotion } from './SplashBackdrop';
+import { BACKDROP_CAPTION, BACKDROP_POSTER_URL, BACKDROP_VIDEO_URL, holdDarkTheme, prefersReducedMotion } from './SplashBackdrop';
 
 const publicFile = (url: string) => fileURLToPath(new URL(`../../public/${url.replace(/^\//, '')}`, import.meta.url));
 const credits = readFileSync(fileURLToPath(new URL('../../public/media/CREDITS.md', import.meta.url)), 'utf8');
@@ -34,5 +34,32 @@ describe('opening screen background', () => {
     expect(credits).toContain('backdrop/moon-phases-near-far-1080.mp4');
     expect(credits).toContain('https://svs.gsfc.nasa.gov/14992/');
     expect(credits).toContain('no NASA endorsement is implied');
+  });
+});
+
+describe('opening screen theme', () => {
+  function fakeRoot() {
+    const attrs = new Map<string, string>();
+    return {
+      attrs,
+      setAttribute: (k: string, v: string) => void attrs.set(k, v),
+      removeAttribute: (k: string) => void attrs.delete(k),
+    };
+  }
+
+  it('is dark in the light theme too, and gives the saved theme back when it closes', () => {
+    const root = fakeRoot();
+    root.setAttribute('data-theme', 'light');
+    const release = holdDarkTheme(() => 'light', root);
+    expect(root.attrs.has('data-theme')).toBe(false);
+    release();
+    expect(root.attrs.get('data-theme')).toBe('light');
+  });
+
+  it('leaves the dark theme as it is', () => {
+    const root = fakeRoot();
+    const release = holdDarkTheme(() => 'dark', root);
+    release();
+    expect(root.attrs.has('data-theme')).toBe(false);
   });
 });

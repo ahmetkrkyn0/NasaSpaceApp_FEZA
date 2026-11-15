@@ -453,7 +453,7 @@
   position: absolute;
   inset: 0;
   background: var(--void);
-  opacity: 0.68;
+  opacity: 0.6;
 }
 
 .splash-content {
