@@ -135,7 +135,7 @@ Bu adlar plan boyunca sabittir. Değiştirmek sözleşme değişikliğidir.
 | SPICE dosyalarını indirme | `python backend/scripts/download_kernels.py` |
 | Sunucuyu çalıştırma | `python -m uvicorn app.main:app --app-dir backend --port 8000 --reload` |
 | Sunucu testleri | `python -m pytest backend` |
-| Arayüz kurulumu | `npm --prefix frontend install` |
+| Arayüz kurulumu | `npm ci --prefix frontend` |
 | Arayüzü çalıştırma | `npm --prefix frontend run dev` |
 | Arayüz denetimi | `npm --prefix frontend run typecheck` ve `npm --prefix frontend run test` |
 | Arayüz derlemesi | `npm --prefix frontend run build` |
@@ -359,7 +359,7 @@ Amaç: dört hattın birbirini beklemeden ilerleyebileceği zemini kurmak. Bu fa
 
 **Kabul ölçütleri**
 
-1. `npm --prefix frontend install`, `run typecheck`, `run test` ve `run build` hatasız biter.
+1. `npm ci --prefix frontend`, `run typecheck`, `run test` ve `run build` hatasız biter.
 2. `npm --prefix frontend run dev` ile açılan sayfada üst çubuk, iki kip düğmesi, dört sekme, alt bölme ve durum şeridi görünür; kip ve sekme değişimi çalışır.
 3. Kapı anahtarı üç değer arasında geçer ve seçim adres çubuğunda `door` parametresi olarak saklanır; sayfa yenilenince korunur.
 4. Panel kaydında 3.2 tablosundaki on üç panelin hepsi vardır; her biri yer tutucu metniyle açılır. Explore kapısında yalnızca Explore'a kayıtlı paneller, Classroom kapısında yalnızca Classroom'a kayıtlı paneller görünür.

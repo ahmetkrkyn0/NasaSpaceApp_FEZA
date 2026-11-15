@@ -46,7 +46,7 @@ gh pr create --title "feat(scope): summary" --body-file <filled PR template>
 | SPICE kernels      | `python backend/scripts/download_kernels.py` |
 | Run backend        | `python -m uvicorn app.main:app --app-dir backend --port 8000 --reload` |
 | Test backend       | `python -m pytest backend` |
-| Install (frontend) | `npm --prefix frontend install` |
+| Install (frontend) | `npm ci --prefix frontend` |
 | Run frontend       | `npm --prefix frontend run dev` |
 | Check frontend     | `npm --prefix frontend run typecheck` and `npm --prefix frontend run test` |
 | Build frontend     | `npm --prefix frontend run build` |
