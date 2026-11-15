@@ -23,7 +23,7 @@ describe('door arrangement', () => {
     // keep their places.
     expect(ids(a.stage)).toEqual(['sky']);
     expect(ids(a.head)).toEqual(['hud']);
-    expect(ids(a.side).slice(-2)).toEqual(['scene', 'globe']);
+    expect(ids(a.side).slice(-3)).toEqual(['scene', 'globe', 'space']);
     expect(ids(a.head)).toEqual(['hud']);
     expect(ids(a.bottom)).toEqual(['timeline']);
     expect(ids(a.side)).not.toContain('sky');
@@ -34,7 +34,7 @@ describe('door arrangement', () => {
     expect(ids(a.left)).toContain('tasks');
     expect(ids(a.stage)).toEqual(['sky']);
     expect(ids(a.head)).toEqual(['hud']);
-    expect(ids(a.side).slice(-2)).toEqual(['scene', 'globe']);
+    expect(ids(a.side).slice(-3)).toEqual(['scene', 'globe', 'space']);
     expect(ids(a.bottom)).toEqual(['timeline']);
   });
 

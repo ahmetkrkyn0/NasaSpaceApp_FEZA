@@ -1,0 +1,169 @@
+/* Space scene (issue #123). Colours come from the theme tokens, in CSS and in the WebGL view. */
+
+.space-panel,
+.space-door-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* In the map panel the scene fills the stage: the canvas takes the height the notes leave. */
+.map-panel .space-panel {
+  flex: 1;
+  min-height: 0;
+}
+
+.space-panel > :not(.space-canvas) {
+  flex: none;
+}
+
+.space-door-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Right-aligned, so the countdown overlay of the Plan door never covers the camera buttons. */
+.space-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.space-group {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.space-button,
+.space-toggle {
+  padding: 2px 8px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  cursor: pointer;
+}
+
+.space-button.is-active {
+  border-color: var(--lavender);
+  color: var(--lavender-bright);
+}
+
+.space-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.space-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+.space-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+  border: 1px solid var(--line-card);
+  border-radius: var(--radius);
+  background: var(--void);
+  overflow: hidden;
+}
+
+.map-panel .space-canvas {
+  flex: 1 1 0;
+  min-height: 180px;
+  max-height: none;
+  aspect-ratio: auto;
+}
+
+.space-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.space-label {
+  position: absolute;
+  display: none;
+  transform: translate(-50%, -50%);
+  padding: 1px 6px;
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  pointer-events: none;
+}
+
+.space-label-relay {
+  color: var(--coral-text);
+}
+
+.space-scale {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.space-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: var(--fs-small);
+}
+
+.space-mode {
+  font-family: var(--font-label);
+}
+
+.space-light {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.space-note {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+}
+
+.space-data {
+  font-family: var(--font-data);
+  color: var(--text-2);
+}
+
+.space-tag {
+  padding: 0 6px;
+  border: 1px dashed var(--coral);
+  border-radius: var(--radius);
+  color: var(--coral-text);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+}
+
+.space-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}

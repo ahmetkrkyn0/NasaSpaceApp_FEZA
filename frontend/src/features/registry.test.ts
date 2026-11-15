@@ -6,12 +6,13 @@ import { DOORS, MODES } from '../shell/ui-state';
 import { PANELS, RAIL_TAB_META, enabledTabs, selectPanels } from './registry';
 
 // The thirteen panel folders of docs/PLAN.md, section 3.2, plus the Surface view of issue #80,
-// the 3D Moon of issue #105, the site recommendation of issue #109 and the Earth link summary of issue #110.
+// the 3D Moon of issue #105, the site recommendation of issue #109, the Earth link summary of issue #110
+// and the space scene of issue #123.
 const PLAN_PANELS = [
   'sky', 'timeline', 'hud', 'map',
   'setup', 'power', 'comms', 'compare',
   'why', 'missions', 'tasks', 'validation', 'game',
-  'scene', 'globe',
+  'scene', 'globe', 'space',
   'recommend',
   'link',
   'scenarios',
