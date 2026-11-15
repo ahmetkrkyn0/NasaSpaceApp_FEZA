@@ -13,7 +13,7 @@ ROW_FIELDS = (
     "id", "test", "title", "condition", "kind", "expected", "measured", "diff",
     "threshold", "unit", "status", "source", "endpoint", "note",
 )
-REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9"}
+REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10"}
 
 
 @pytest.fixture
@@ -96,3 +96,12 @@ def test_t9_rows_check_the_candidate_limits(report):
                          "T9-regenerated"}
     assert rows["T9-max-mean-slope"]["expected_range"] == [None, 12.0]
     assert rows["T9-centres-in-shadow"]["expected_range"] == [0, 0]
+
+
+def test_t10_rows_follow_the_earth_sub_points_reference(report):
+    rows = [row for row in report["rows"] if row["test"] == "T10"]
+    assert len(rows) == 16  # four instants, two points, latitude and longitude
+    for row in rows:
+        assert row["endpoint"] == "/api/body-series"
+        assert row["threshold"] == (0.1 if row["id"].endswith("-lon") else 0.01)
+        assert "test_earth_sub_points.py" in row["source"]

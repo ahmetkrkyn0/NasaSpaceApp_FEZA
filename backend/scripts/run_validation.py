@@ -49,10 +49,11 @@ DEFAULT_BASE_URL = "http://127.0.0.1:8000"
 T6_CACHE = REPO_ROOT / "data" / "raw" / "validation" / "t6_avgvisib.json"
 POWER_TEST = BACKEND_DIR / "tests" / "core" / "test_power.py"
 SUB_POINTS_TEST = BACKEND_DIR / "tests" / "core" / "test_sub_points.py"
+EARTH_SUB_POINTS_TEST = BACKEND_DIR / "tests" / "core" / "test_earth_sub_points.py"
 CANDIDATES_SCRIPT = BACKEND_DIR / "scripts" / "make_candidates.py"
 
 STATUSES = ("pass", "warn", "fail", "skipped", "info")
-TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9")
+TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10")
 
 CONDITIONS = {
     "T1": "Six past landings at the landing instant; zero height, flat horizon (sphere)",
@@ -77,6 +78,10 @@ CONDITIONS = {
     "T9": (
         "Candidate regions of mons-mouton (data/candidates.json): limits of the selection and "
         "regeneration from the 20 m layers"
+    ),
+    "T10": (
+        "Earth-fixed (IAU_EARTH) sub-lunar and sub-solar points from GET /api/body-series at four "
+        "instants, against JPL Horizons (target Earth, observer Moon centre)"
     ),
 }
 """Test conditions of docs/PLAN.md, 4.2; a vector may override with ``condition``."""
@@ -545,6 +550,69 @@ def t8_rows(fetch: Fetch, load: Callable[[], Any] = load_sub_points_test) -> lis
     return rows
 
 
+# ---------- T10: Earth-fixed sub-points against JPL Horizons (#122) ----------
+
+T10_SOURCE = "backend/tests/core/test_earth_sub_points.py (JPL Horizons, queried 15 Nov 2026)"
+T10_NOTE = (
+    "IAU_EARTH rotation model (no nutation, no UT1): longitudes within 0.1 deg as for the #99 "
+    "station elevations. Horizons latitudes are planetodetic; the expected value is converted "
+    "to planetocentric."
+)
+
+
+def load_earth_sub_points_test() -> Any:
+    _ensure_backend_path()
+    spec = importlib.util.spec_from_file_location("t10_earth_sub_points_test", EARTH_SUB_POINTS_TEST)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def t10_rows(fetch: Fetch, load: Callable[[], Any] = load_earth_sub_points_test) -> list[dict]:
+    """One row per quantity and instant, measured through ``/api/body-series``."""
+
+    try:
+        test = load()
+    except Exception as exc:  # noqa: BLE001
+        return [_row("T10", "T10-earth-sub-points", "Earth-fixed sub-points", "deg", T10_SOURCE,
+                     note=f"Reference test could not be loaded: {exc}")]
+    quantities = (
+        ("sub-lunar-lon", "earth_sub_lunar_lon_deg", 1, test.TOL_DEG, "angle"),
+        ("sub-lunar-lat", "earth_sub_lunar_lat_deg", 2, test.LAT_TOL_DEG, "lat"),
+        ("sub-solar-lon", "earth_sub_solar_lon_deg", 3, test.TOL_DEG, "angle"),
+        ("sub-solar-lat", "earth_sub_solar_lat_deg", 4, test.LAT_TOL_DEG, "lat"),
+    )
+    rows = []
+    for case in test.HORIZONS_CASES:
+        utc = case[0]
+        status, body = fetch("/api/body-series", {"utc": utc})
+        for slug, field, index, tol, kind in quantities:
+            expected = test.planetocentric(case[index]) if kind == "lat" else case[index]
+            row = _row(
+                "T10", f"T10-{utc[:10]}-{slug}", f"{utc}: {field}", "deg", T10_SOURCE,
+                expected=round(expected, 6), threshold=tol, endpoint="/api/body-series",
+                note=T10_NOTE,
+            )
+            if status != 200:
+                row["note"] = f"HTTP {status}"
+                if status == 404:
+                    row["status"] = "skipped"
+                rows.append(row)
+                continue
+            try:
+                measured = float(body["samples"][0][field])
+            except (KeyError, IndexError, TypeError, ValueError) as exc:
+                row["note"] = f"no {field} in response: {exc}"
+                rows.append(row)
+                continue
+            diff = difference(measured, expected, "angle" if kind == "angle" else "number")
+            row["measured"] = round(measured, 6)
+            row["diff"] = round(diff, 6)
+            row["status"] = "pass" if abs(diff) <= tol + 1e-9 else "fail"
+            rows.append(row)
+    return rows
+
+
 # ---------- T9: candidate regions (#103, #104) ----------
 
 T9_SOURCE = "docs/research/dogrulama/gorev-araclari.md, No 89 (slope limit); #103 (method)"
@@ -660,6 +728,7 @@ TEST_HEADINGS = {
     "T7": "T7: Event time sensitivity to the horizon",
     "T8": "T8: Sub-solar and sub-Earth points (JPL Horizons)",
     "T9": "T9: Candidate regions",
+    "T10": "T10: Points below the Moon and the Sun on the Earth (JPL Horizons)",
 }
 
 
@@ -745,6 +814,7 @@ def main(argv: list[str] | None = None) -> int:
         extra.append(t6_row())
     extra += t8_rows(fetch)
     extra += t9_rows()
+    extra += t10_rows(fetch)
     report = run(vectors, fetch, extra)
     report["target"] = "in-process" if args.in_process else args.base_url
     args.out.parent.mkdir(parents=True, exist_ok=True)
