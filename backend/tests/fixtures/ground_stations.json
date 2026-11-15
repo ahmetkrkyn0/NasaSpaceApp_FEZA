@@ -1,0 +1,38 @@
+[
+  {
+    "id": "dsn-goldstone",
+    "name": "Goldstone",
+    "lat_deg": 35.425901,
+    "lon_deg": -116.889538,
+    "elevation_m": 1001.39,
+    "source": {
+      "label": "NASA/JPL DSN 810-005, module 301, Rev. P, Table 5: DSS 14 (70 m), WGS 84 ellipsoid height",
+      "url": "https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf"
+    },
+    "validity": "MEASURED"
+  },
+  {
+    "id": "dsn-madrid",
+    "name": "Madrid",
+    "lat_deg": 40.43121,
+    "lon_deg": -4.248009,
+    "elevation_m": 864.816,
+    "source": {
+      "label": "NASA/JPL DSN 810-005, module 301, Rev. P, Table 5: DSS 63 (70 m), WGS 84 ellipsoid height",
+      "url": "https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf"
+    },
+    "validity": "MEASURED"
+  },
+  {
+    "id": "dsn-canberra",
+    "name": "Canberra",
+    "lat_deg": -35.402424,
+    "lon_deg": 148.981267,
+    "elevation_m": 688.867,
+    "source": {
+      "label": "NASA/JPL DSN 810-005, module 301, Rev. P, Table 5: DSS 43 (70 m), WGS 84 ellipsoid height",
+      "url": "https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf"
+    },
+    "validity": "MEASURED"
+  }
+]

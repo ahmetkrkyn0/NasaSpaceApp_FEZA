@@ -136,6 +136,37 @@ Her eleman:
 
 Seçim: merkezi kalıcı gölgede olmayan ve ortalama eğimi sınırı aşmayan pencereler, önce `safe_cell_fraction` büyükten küçüğe, sonra `mean_slope_deg` küçükten büyüğe sıralanır; birbirine `min_separation_km` uzaklıktan yakın olanlar atlanır. Dayanağı olan tek eşik eğim 12°'dir ([dogrulama/gorev-araclari.md](../research/dogrulama/gorev-araclari.md), No 89).
 
+### Yer istasyonu (`GroundStation`) ve Dünya bağlantısı (`EarthLink`)
+
+Dünya tarafındaki görüş için ([#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97), bölüm 4.2). `/api/ground-stations` yanıtı `GroundStation` dizisidir; kayıtlar `data/ground_stations.json` dosyasından olduğu gibi gelir.
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `id`, `name` | metin | `dsn-goldstone`, `dsn-madrid`, `dsn-canberra` |
+| `lat_deg`, `lon_deg` | sayı | WGS 84 jeodezik enlem ve boylam. Boylam eksi 180 ile artı 180 arası |
+| `elevation_m` | sayı | WGS 84 elipsoidi üstündeki yükseklik (deniz seviyesi değil) |
+| `source` | nesne | `label` ve `url`: koordinatın resmî kaynağı |
+| `validity` | metin | `MEASURED` |
+
+Her kompleks için 70 m anten alınır: DSS 14, DSS 63 ve DSS 43, DSN 810-005, modül 301, Rev. P, Tablo 5. Kaynağı gösterilemeyen koordinat dosyaya yazılmaz.
+
+`/api/earth-link` yanıtı (`EarthLink`):
+
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `min_station_elevation_deg` | sayı | İstasyonun Ay'ı görmüş sayılması için en düşük yükseklik açısı. Varsayılan 10, "Assumed" (aşağıda) |
+| `stations` | dizi | Her istasyon: `id`, `name`, `in_view_fraction` (aralığın Ay'ın eşiğin üstünde olduğu payı, 0 ile 1 arası), `windows` (`start_utc`, `end_utc`) |
+| `link_windows` | dizi | `start_utc`, `end_utc`, `mode`, `station_ids` |
+| `assumptions` | metin dizisi | Modelin varsayımları ve sınırları, İngilizce; hiçbir zaman boş değil |
+| `validity` | metin | `DERIVED` ile ufuk profilinin etiketinden düşük olanı; düz ufukta `SYNTHETIC` |
+
+- `mode` değerleri: `direct` (sahadan Dünya görünüyor ve en az bir istasyon Ay'ı görüyor), `relay_needed` (sahadan Dünya görünmüyor), `no_station` (Dünya görünüyor ama hiçbir istasyon Ay'ı görmüyor). Röle uydusu modellenmez; `relay_needed` yalnızca doğrudan görüşün olmadığını söyler.
+- `link_windows` aralığı boşluksuz ve çakışmasız kaplar: ilk pencere `start_utc`'de başlar, son pencere `end_utc`'de biter, her pencerenin sonu bir sonrakinin başıdır. Art arda gelen aynı kipteki parçalar birleştirilir, yani komşu iki pencerenin kipi hiçbir zaman aynı değildir. `direct` penceresinin `station_ids` alanı pencere boyunca Ay'ı gören bütün istasyonları ilk görünme sırasıyla verir; öteki iki kipte boş dizidir.
+- Sahadan Dünya görünürlüğü `EventList` ile aynı hesaptır (aynı ufuk, aynı `earth_criterion`).
+- İstasyon pencereleri `EventList` olayları gibi aranarak bulunur: 10 dakikalık ızgara, sonra her adımda yeni SPICE konumuyla ikiye bölme, bir saniyeye kadar. Izgara adımından kısa bir geçiş kaçabilir. Pencereler sorgu uçlarında kesilir.
+- İstasyondan Ay yüksekliği Ay'ın merkezi için hesaplanır, sahanın kendisi için değil (fark Dünya'dan bakınca en çok yaklaşık 0,26 derece). Dünya yönelimi çekirdek setindeki `IAU_EARTH` modelidir: nütasyon ve UT1 düzeltmesi yok. JPL Horizons ile fark 36 anda en çok 0,071 derece; aynı hesap ITRF93 yönelimiyle Horizons'ı 0,0001 derece içinde tutuyor. 0,07 derecelik dönme hatası yaklaşık 17 saniyedir, pencere uçları bir dakikadan çok daha az kayar (`backend/tests/core/test_stations.py`). Atmosfer kırılması yok.
+- Eşik dayanağı: DSN 810-005, modül 301, anten için mekanik sınırı yaklaşık 6 derece, gönderim (uplink) için en düşük açıyı 10,1 derece veriyor ([dogrulama/efemeris-ve-yer-istasyonlari.md](../research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 61). Varsayılan 10 derece bu iki değerden doğrudan gelmediği için "Assumed" olarak yazılır; istekte başka değer verilirse `assumptions` bunu söyler.
+
 ### Olaylar, pencereler ve ölçüler (`EventList`)
 
 | Alan | Tip | Açıklama |
@@ -231,6 +262,7 @@ Ekstra uç noktaların yanıt yapıları (saha puanı, yaklaşma profili, zemin 
 | `data/candidates.json` | `Candidates` (aday bölgeler; ufukları `data/horizons/cand-NN_<yükseklik>m.json`) |
 | `data/panel_profiles.json` | `PanelProfile` dizisi |
 | `data/reference_missions.json` | Geçmiş görev kayıtları ([gecmis-gorev-vakalari.md](../design/gecmis-gorev-vakalari.md)) |
+| `data/ground_stations.json` | `GroundStation` dizisi (DSN kompleksleri, koordinat kaynaklarıyla) |
 
 720 sayılık bir ufuk profili birkaç kilobayt tutar; depoya konabilir. Yükseklik haritaları ve SPICE dosyaları depoya konmaz.
 
@@ -257,3 +289,4 @@ Yapılacaklar:
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `NowStatus` yapısına `night_hours` eklendi (`UC-05`, gecenin uzunluğu). `Scenario` ve `PowerSeries` yapılarına `fixed_azimuth_deg` eklendi (`UC-06`, dik sabit panelde kullanıcının seçtiği yön). `Scenario` yapısına isteğe bağlı `earth_criterion` eklendi (`UC-07`). `utc_earliest` ve `utc_latest` alanlarının ilk sürümde nasıl bulunduğu yazıldı (`UC-10`; [PLAN.md](../PLAN.md), bölüm 12, karar 4).
 - 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `BodySeries` yapısı eklendi (`GET /api/body-series`; Güneş altı ve Dünya altı noktası, Dünya uzaklığı). Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.1 ile aynı; örnek dosya `data/examples/body-series.json`.
 - 15 Kasım 2026, [#103](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/103): `Candidates` yapısı eklendi (`GET /api/candidates`, `data/candidates.json`). Alanlar #97 bölüm 4.3 ile aynı; ek olarak `kind` (#97 eki) ve `method` içinde `stride_m`, `slope_limit_source`, `max_candidates`, `assumed`, `note`. Örnek dosya `data/examples/candidates.json` ve arayüz tipi bu alanları #109 ile alır. Aday kimlikleri (`cand-NN`) `site_id` olarak çözülür; `/api/sites` yalnızca katalog sahalarını döndürür.
+- 15 Kasım 2026, [#99](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/99): `GroundStation` ve `EarthLink` yapıları eklendi (`GET /api/ground-stations`, `GET /api/earth-link`); `data/ground_stations.json` depoda tutulan dosyalara eklendi. Alan adları [#97](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/97) bölüm 4.2 ile aynı; örnek dosyalar `data/examples/earth-link.json` ve `data/examples/ground-stations.json` ([#108](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/108)). `link_windows` kaplama ve birleştirme kuralı, `station_ids` sırası ve varsayılan eşik yazıldı.
