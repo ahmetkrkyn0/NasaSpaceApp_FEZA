@@ -73,7 +73,7 @@ export function sceneFor(active: Scenario | null, media: SceneMedia = SCENE_MEDI
 
 /** Always shown next to an illustration (issue #80, item 5). */
 export const ILLUSTRATION_NOTE =
-  "Shows the terrain type, not this site's real surface. The Sun, shadows, stars and lander are not computed; computed positions are in the horizon strip.";
+  "Shows the terrain type, not this site's real surface. The Sun, shadows, stars and lander belong to the scene's own recorded moment, not the product's calculation for this site and time; computed positions are in the horizon strip.";
 
 export const LANDER_NOTE =
   "The lander is the team's Athena model, shown upright for scale. It does not show how a mission here ended.";

@@ -24,7 +24,7 @@ First release, submitted to the NASA Space Apps Challenge 2026.
 - Web interface (React, TypeScript, Vite): scenario set-up, horizon strip, timeline with playback, countdown, map, power, comms and comparison panels; Plan, Explore and Classroom entry points; "why" cards with one-input counterfactuals; event markers for eclipses.
 - Example payload for every endpoint and contract tests against them.
 - IM-2 Athena lander 3D model built by a Blender script.
-- Illustration media: pre-rendered Unity images of three kinds of lunar terrain and of the Deep Space Network ground stations, labelled as illustrations in the interface, with credits in `frontend/public/media/CREDITS.md`.
+- Illustration media: pre-rendered Unreal Engine images of three kinds of lunar terrain and of the Deep Space Network ground stations, labelled as illustrations in the interface, with credits in `frontend/public/media/CREDITS.md`.
 - Light theme, switched from the top bar and remembered in the browser; the dark theme stays the default and is unchanged. Text and data colours are tested for contrast (4.5:1 and 3:1).
 - Project page text, README with set-up, data sources, licences and the AI use statement.
 - Repository setup: licence, contribution guidelines, agent instructions, PR and issue templates, PR checks.
