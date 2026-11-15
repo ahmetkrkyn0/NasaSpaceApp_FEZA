@@ -120,6 +120,8 @@ Ekran görüntüleri: `node shots.mjs .feza/deck/20261114-234156` (Playwright, c
 
 2026-11-15 (#83): slayt 5'in görseli, Surface view panelinin göründüğü canlı Explore ekranıyla değiştirildi (`node shot-scene.mjs`, Playwright, canlı sunucu, 1520 × 1040 CSS px; ufuk şeridi, sonuç cümlesi, zaman çizelgesi bantları ve illüstrasyon görseli yüklendikten sonra). Alt yazı ve C açıklaması görselin hesaplanmamış bir illüstrasyon olduğunu söyler. Yeni rakam eklenmedi; defter değişmedi. Doğrulama yeniden çalıştırıldı: S1–S16 OK (S5 60), 7 PDF sayfası, fontlar gömülü.
 
+2026-11-15 (#90, #91 sonrası): Surface view sağ sütuna taşındığı için slayt 5'in görseli aynı komutla (`node shot-scene.mjs`, canlı sunucu, 1520 × 1040 CSS px) yeniden alındı; C işareti panelin yeni yerine kaydırıldı. Metin ve rakam değişmedi.
+
 ## 6 Sayfa başına konuşma notları
 
 | Sayfa | Not |
