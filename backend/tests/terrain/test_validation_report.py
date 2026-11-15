@@ -13,7 +13,7 @@ ROW_FIELDS = (
     "id", "test", "title", "condition", "kind", "expected", "measured", "diff",
     "threshold", "unit", "status", "source", "endpoint", "note",
 )
-REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10"}
+REFERENCE_TESTS = {"T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11"}
 
 
 @pytest.fixture
@@ -105,3 +105,11 @@ def test_t10_rows_follow_the_earth_sub_points_reference(report):
         assert row["endpoint"] == "/api/body-series"
         assert row["threshold"] == (0.1 if row["id"].endswith("-lon") else 0.01)
         assert "test_earth_sub_points.py" in row["source"]
+
+
+def test_t11_rows_check_the_recommendation(report):
+    rows = {row["id"]: row for row in report["rows"] if row["test"] == "T11"}
+    assert {"T11-score-recomputed", "T11-elimination", "T11-order", "T11-single-weight",
+            "T11-events-agree"} <= set(rows)
+    for row in rows.values():
+        assert row["endpoint"] == "/api/recommend"

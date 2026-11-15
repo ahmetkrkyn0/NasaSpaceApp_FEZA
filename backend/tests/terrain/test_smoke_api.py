@@ -30,7 +30,8 @@ def test_plan_covers_sites_candidates_layers_and_compare():
     requests = smoke.plan(_caller())
     labels = [r[0] for r in requests]
     assert {f"layers/{n}" for n in smoke.LAYERS} <= set(labels)
-    assert "compare" in labels
+    assert {"compare", "recommend", "ground-stations"} <= set(labels)
+    assert labels.count("earth-link") == 3
     located = {r[3]["site_id"] for r in requests if r[3] and "site_id" in r[3]}
     assert located == {"a", "b", "cand-01"}  # catalogue entries of candidates.json are not repeated
     assert labels.count("events") == 3

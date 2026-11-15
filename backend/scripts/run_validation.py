@@ -53,7 +53,7 @@ EARTH_SUB_POINTS_TEST = BACKEND_DIR / "tests" / "core" / "test_earth_sub_points.
 CANDIDATES_SCRIPT = BACKEND_DIR / "scripts" / "make_candidates.py"
 
 STATUSES = ("pass", "warn", "fail", "skipped", "info")
-TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10")
+TEST_ORDER = ("T1", "T2a", "T2b", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11")
 
 CONDITIONS = {
     "T1": "Six past landings at the landing instant; zero height, flat horizon (sphere)",
@@ -82,6 +82,10 @@ CONDITIONS = {
     "T10": (
         "Earth-fixed (IAU_EARTH) sub-lunar and sub-solar points from GET /api/body-series at four "
         "instants, against JPL Horizons (target Earth, observer Moon centre)"
+    ),
+    "T11": (
+        "POST /api/recommend for mons-mouton, 1 to 15 Dec 2026, 2 m mast, the plan's default "
+        "weights; again with a 3 deg slope limit and with the sunlit weight alone"
     ),
 }
 """Test conditions of docs/PLAN.md, 4.2; a vector may override with ``condition``."""
@@ -130,6 +134,36 @@ def http_fetcher(base_url: str, timeout_s: float = 120.0) -> Fetch:
             return exc.code, _json_or_none(exc.read())
 
     return fetch
+
+
+def http_poster(base_url: str, timeout_s: float = 300.0) -> Callable[[str, dict], tuple[int, Any]]:
+    def post(endpoint: str, body: dict) -> tuple[int, Any]:
+        request = urllib.request.Request(
+            f"{base_url.rstrip('/')}{endpoint}", data=json.dumps(body).encode("utf-8"), method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout_s) as response:
+                return response.status, _json_or_none(response.read())
+        except urllib.error.HTTPError as exc:
+            return exc.code, _json_or_none(exc.read())
+
+    return post
+
+
+def in_process_poster() -> Callable[[str, dict], tuple[int, Any]]:
+    sys.path.insert(0, str(BACKEND_DIR))
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    client = TestClient(create_app())
+
+    def post(endpoint: str, body: dict) -> tuple[int, Any]:
+        response = client.post(endpoint, json=body)
+        return response.status_code, _json_or_none(response.content)
+
+    return post
 
 
 def in_process_fetcher() -> Fetch:
@@ -613,6 +647,137 @@ def t10_rows(fetch: Fetch, load: Callable[[], Any] = load_earth_sub_points_test)
     return rows
 
 
+# ---------- T11: recommendation consistency (#100, #104) ----------
+
+T11_SOURCE = "docs/design/saha-puani.md, 4 (score); #100 (POST /api/recommend)"
+T11_REQUEST = {
+    "region": "mons-mouton",
+    "start_utc": "2026-12-01T00:00:00Z",
+    "end_utc": "2026-12-15T00:00:00Z",
+    "mast_height_m": 2,
+    "weights": {"sunlit": 1.0, "dark": 1.0, "earth": 1.0, "slope": 1.0, "roughness": 0.5,
+                "psr_distance": 0.0},
+    "limits": {"max_slope_deg": 12.0},
+    "psr_preference": "far",
+    "include_catalogue_sites": True,
+}
+T11_TIGHT_SLOPE_DEG = 3.0
+"""A limit below some sites' steepest slope, so the elimination rule is exercised."""
+
+
+def _count_row(row_id: str, title: str, value: float, high: float = 0.0, note: str | None = None,
+               unit: str = "count") -> dict:
+    row = _row("T11", row_id, title, unit, T11_SOURCE, endpoint="/api/recommend",
+               expected_range=[0, high], note=note)
+    row["measured"] = round(float(value), 6)
+    row["status"] = "pass" if 0 <= value <= high + 1e-9 else "fail"
+    return row
+
+
+def _order_violations(ranked: list[dict]) -> int:
+    """Scored sites must come first, by score from highest; eliminated sites last."""
+
+    bad, seen_dropped, last = 0, False, float("inf")
+    for site in ranked:
+        if site["eliminated"]:
+            seen_dropped = True
+            bad += site["score"] is not None
+            continue
+        bad += seen_dropped or site["score"] is None or site["score"] > last + 1e-9
+        last = site["score"] if site["score"] is not None else last
+    return bad
+
+
+def t11_rows(fetch: Fetch, post: Callable[[str, dict], tuple[int, Any]] | None) -> list[dict]:
+    """Checks on the recommendation answer that do not repeat its code."""
+
+    def failed(note: str, status: str = "fail") -> list[dict]:
+        row = _row("T11", "T11-recommend", "Recommendation", "1", T11_SOURCE,
+                   endpoint="/api/recommend", note=note)
+        row["status"] = status
+        return [row]
+
+    if post is None:
+        return failed("No POST client for this run.", "skipped")
+    status, body = post("/api/recommend", T11_REQUEST)
+    if status == 404 and not (isinstance(body, dict) and "error" in body):
+        return failed("endpoint /api/recommend is not available yet", "skipped")
+    if status != 200:
+        return failed(f"HTTP {status}")
+    tight_status, tight = post("/api/recommend", {**T11_REQUEST,
+                                                  "limits": {"max_slope_deg": T11_TIGHT_SLOPE_DEG}})
+    cstatus, cands = fetch("/api/candidates", {"region": T11_REQUEST["region"]})
+    if tight_status != 200 or cstatus != 200:
+        return failed(f"HTTP {tight_status} (tight limit) / {cstatus} (candidates)")
+    max_slope = {e["id"]: e["max_slope_deg"] for e in cands["candidates"]}
+
+    rows = []
+    worst = 0.0
+    for site in body["ranked"]:
+        if site["score"] is None:
+            continue
+        parts = site["components"]
+        total = sum(p["weight"] for p in parts)
+        again = 100.0 * sum(p["weight"] * (p["normalized"] or 0.0) for p in parts) / total
+        worst = max(worst, abs(round(again, 1) - site["score"]))
+    rows.append(_count_row(
+        "T11-score-recomputed", "Largest difference between a score and its components' weighted mean",
+        worst, 0.05, note="Score = 100 x sum(weight x normalized) / sum(weight), rounded to 0.1.",
+        unit="points"))
+
+    def wrong_elimination(answer: dict, limit: float) -> int:
+        return sum(
+            1 for s in answer["ranked"]
+            if s["eliminated"] != (max_slope.get(s["site_id"]) is None or max_slope[s["site_id"]] > limit)
+            or (s["eliminated"] != (s["score"] is None))
+        )
+
+    eliminated_tight = sum(1 for s in tight["ranked"] if s["eliminated"])
+    rows.append(_count_row(
+        "T11-elimination", "Sites whose elimination disagrees with their steepest slope (12 and "
+        f"{T11_TIGHT_SLOPE_DEG:g} deg limits)",
+        wrong_elimination(body, 12.0) + wrong_elimination(tight, T11_TIGHT_SLOPE_DEG),
+        note=f"The {T11_TIGHT_SLOPE_DEG:g} deg limit eliminates {eliminated_tight} of "
+             f"{len(tight['ranked'])} sites; max_slope_deg from /api/candidates.",
+    ))
+    rows.append(_count_row(
+        "T11-order", "Ranking order violations (score descending, eliminated sites last)",
+        _order_violations(body["ranked"]) + _order_violations(tight["ranked"]),
+    ))
+
+    sstatus, single = post("/api/recommend", {**T11_REQUEST, "weights": {
+        "sunlit": 1.0, "dark": 0.0, "earth": 0.0, "slope": 0.0, "roughness": 0.0, "psr_distance": 0.0}})
+    if sstatus == 200:
+        values = [next(p["value"] for p in s["components"] if p["metric"] == "sunlit_fraction")
+                  for s in single["ranked"] if not s["eliminated"]]
+        rows.append(_count_row(
+            "T11-single-weight", "With only the sunlit weight, sites out of sunlit-fraction order",
+            sum(1 for a, b in zip(values, values[1:]) if b > a + 1e-9),
+        ))
+
+    first = next((s for s in body["ranked"] if not s["eliminated"]), None)
+    if first is not None:
+        estatus, ev = fetch("/api/events", {
+            "site_id": first["site_id"], "mast_height_m": T11_REQUEST["mast_height_m"],
+            "start_utc": T11_REQUEST["start_utc"], "end_utc": T11_REQUEST["end_utc"],
+            "earth_criterion": "center",
+        })
+        row = _row("T11", "T11-events-agree", f"{first['site_id']}: sunlit fraction, recommend against /api/events",
+                   "1", T11_SOURCE, endpoint="/api/recommend", threshold=0.0001,
+                   note="Same site, period, mast height and Earth criterion (centre).")
+        if estatus == 200:
+            expected = float(ev["metrics"]["sunlit_fraction"])
+            measured = next(p["value"] for p in first["components"] if p["metric"] == "sunlit_fraction")
+            row["expected"] = round(expected, 6)
+            row["measured"] = round(float(measured), 6)
+            row["diff"] = round(float(measured) - expected, 6)
+            row["status"] = "pass" if abs(row["diff"]) <= 0.0001 + 1e-9 else "fail"
+        else:
+            row["note"] = f"/api/events HTTP {estatus}"
+        rows.append(row)
+    return rows
+
+
 # ---------- T9: candidate regions (#103, #104) ----------
 
 T9_SOURCE = "docs/research/dogrulama/gorev-araclari.md, No 89 (slope limit); #103 (method)"
@@ -729,6 +894,7 @@ TEST_HEADINGS = {
     "T8": "T8: Sub-solar and sub-Earth points (JPL Horizons)",
     "T9": "T9: Candidate regions",
     "T10": "T10: Points below the Moon and the Sun on the Earth (JPL Horizons)",
+    "T11": "T11: Recommendation consistency",
 }
 
 
@@ -815,6 +981,7 @@ def main(argv: list[str] | None = None) -> int:
     extra += t8_rows(fetch)
     extra += t9_rows()
     extra += t10_rows(fetch)
+    extra += t11_rows(fetch, in_process_poster() if args.in_process else http_poster(args.base_url))
     report = run(vectors, fetch, extra)
     report["target"] = "in-process" if args.in_process else args.base_url
     args.out.parent.mkdir(parents=True, exist_ok=True)
