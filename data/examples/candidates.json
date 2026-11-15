@@ -9,6 +9,7 @@
   "candidates": [
     {
       "id": "cand-01",
+      "kind": "candidate",
       "name": "Candidate 1",
       "lat_deg": -84.8,
       "lon_deg": 29.2,
@@ -24,6 +25,7 @@
     },
     {
       "id": "cand-02",
+      "kind": "candidate",
       "name": "Candidate 2",
       "lat_deg": -84.75,
       "lon_deg": 28.9,
@@ -39,6 +41,7 @@
     },
     {
       "id": "cand-03",
+      "kind": "candidate",
       "name": "Candidate 3",
       "lat_deg": -84.83,
       "lon_deg": 29.6,
@@ -49,6 +52,22 @@
       "safe_cell_fraction": 0.64,
       "psr_fraction": 0.0,
       "distance_to_psr_km": 2.2,
+      "has_terrain_horizon": true,
+      "validity": "DERIVED"
+    },
+    {
+      "id": "mons-mouton-im2-target",
+      "kind": "catalogue",
+      "name": "Mons Mouton (IM-2 target point)",
+      "lat_deg": -84.78,
+      "lon_deg": 29.13,
+      "elevation_m": 4700.0,
+      "mean_slope_deg": 5.1,
+      "max_slope_deg": 10.4,
+      "slope_std_deg": 2.0,
+      "safe_cell_fraction": 0.88,
+      "psr_fraction": 0.0,
+      "distance_to_psr_km": 2.8,
       "has_terrain_horizon": true,
       "validity": "DERIVED"
     }
