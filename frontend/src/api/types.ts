@@ -454,12 +454,22 @@ export interface BodySample {
   sub_earth_lat_deg: number;
   sub_earth_lon_deg: number;
   earth_distance_km: number;
+  /** Earth-fixed (`IAU_EARTH`) point below the Moon: planetocentric latitude, east longitude. */
+  earth_sub_lunar_lat_deg: number;
+  earth_sub_lunar_lon_deg: number;
+  /** Earth-fixed (`IAU_EARTH`) point below the Sun: planetocentric latitude, east longitude. */
+  earth_sub_solar_lat_deg: number;
+  earth_sub_solar_lon_deg: number;
 }
 
 /** `GET /api/body-series`. */
 export interface BodySeries {
   frame: string;
+  /** Frame of the `earth_sub_*` fields, always `IAU_EARTH`. */
+  earth_frame: string;
   samples: BodySample[];
+  /** Model limits of the Earth-fixed points. */
+  assumptions: string[];
   validity: Validity;
 }
 

@@ -1,5 +1,6 @@
 {
   "frame": "MOON_ME",
+  "earth_frame": "IAU_EARTH",
   "samples": [
     {
       "utc": "2026-12-05T00:00:00Z",
@@ -7,7 +8,11 @@
       "sub_solar_lon_deg": -128.623039,
       "sub_earth_lat_deg": 5.928983,
       "sub_earth_lon_deg": 5.961902,
-      "earth_distance_km": 394476.834
+      "earth_distance_km": 394476.834,
+      "earth_sub_lunar_lat_deg": -14.84087,
+      "earth_sub_lunar_lon_deg": 130.237967,
+      "earth_sub_solar_lat_deg": -22.335489,
+      "earth_sub_solar_lon_deg": 177.687978
     },
     {
       "utc": "2026-12-05T12:00:00Z",
@@ -15,7 +20,11 @@
       "sub_solar_lon_deg": -134.715023,
       "sub_earth_lat_deg": 6.209004,
       "sub_earth_lon_deg": 5.627314,
-      "earth_distance_km": 396205.324
+      "earth_distance_km": 396205.324,
+      "earth_sub_lunar_lat_deg": -17.251436,
+      "earth_sub_lunar_lon_deg": -44.281554,
+      "earth_sub_solar_lat_deg": -22.398943,
+      "earth_sub_solar_lon_deg": -2.260381
     },
     {
       "utc": "2026-12-06T00:00:00Z",
@@ -23,8 +32,16 @@
       "sub_solar_lon_deg": -140.807991,
       "sub_earth_lat_deg": 6.413678,
       "sub_earth_lon_deg": 5.252477,
-      "earth_distance_km": 397801.508
+      "earth_distance_km": 397801.508,
+      "earth_sub_lunar_lat_deg": -19.464805,
+      "earth_sub_lunar_lon_deg": 141.305649,
+      "earth_sub_solar_lat_deg": -22.460581,
+      "earth_sub_solar_lon_deg": 177.791841
     }
+  ],
+  "assumptions": [
+    "Earth-fixed points use the IAU_EARTH rotation model (no nutation, no UT1 correction): their longitudes are within 0.1 degrees of JPL Horizons, the same limit as the station elevations of /api/earth-link.",
+    "Earth-fixed latitudes are planetocentric (the direction from the Earth's centre), not geodetic; the two differ by up to 0.19 degrees."
   ],
   "validity": "DERIVED"
 }

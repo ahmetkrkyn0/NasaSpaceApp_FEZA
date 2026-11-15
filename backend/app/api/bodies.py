@@ -1,4 +1,5 @@
-"""``GET /api/body-series``: sub-solar and sub-Earth points on the Moon over time."""
+"""``GET /api/body-series``: sub-solar and sub-Earth points on the Moon over time,
+and the points below the Moon and below the Sun on the Earth (``IAU_EARTH``)."""
 
 from __future__ import annotations
 
@@ -18,6 +19,14 @@ MAX_HOURS = 24 * 60
 MAX_SAMPLES = 10_000
 ANGLE_DECIMALS = 6
 DISTANCE_DECIMALS = 3
+
+ASSUMPTIONS = [
+    "Earth-fixed points use the IAU_EARTH rotation model (no nutation, no UT1 correction): their "
+    "longitudes are within 0.1 degrees of JPL Horizons, the same limit as the station elevations "
+    "of /api/earth-link.",
+    "Earth-fixed latitudes are planetocentric (the direction from the Earth's centre), not "
+    "geodetic; the two differ by up to 0.19 degrees.",
+]
 
 
 def _sample_times(start: datetime, end: datetime, step_s: int) -> list[datetime]:
@@ -97,7 +106,17 @@ def body_series(
             sub_earth_lat_deg=round(point.sub_earth_lat_deg, ANGLE_DECIMALS),
             sub_earth_lon_deg=round(point.sub_earth_lon_deg, ANGLE_DECIMALS),
             earth_distance_km=round(point.earth_distance_km, DISTANCE_DECIMALS),
+            earth_sub_lunar_lat_deg=round(point.earth_sub_lunar_lat_deg, ANGLE_DECIMALS),
+            earth_sub_lunar_lon_deg=round(point.earth_sub_lunar_lon_deg, ANGLE_DECIMALS),
+            earth_sub_solar_lat_deg=round(point.earth_sub_solar_lat_deg, ANGLE_DECIMALS),
+            earth_sub_solar_lon_deg=round(point.earth_sub_solar_lon_deg, ANGLE_DECIMALS),
         )
         for moment, point in zip(times, points)
     ]
-    return BodySeries(frame="MOON_ME", samples=samples, validity="DERIVED")
+    return BodySeries(
+        frame="MOON_ME",
+        earth_frame="IAU_EARTH",
+        samples=samples,
+        assumptions=list(ASSUMPTIONS),
+        validity="DERIVED",
+    )
