@@ -110,6 +110,9 @@
 
 .door-stage-hud {
   grid-area: hud;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .door-stage-hud > .panel-host {

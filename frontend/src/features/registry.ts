@@ -7,6 +7,7 @@ import HudPanel from './hud';
 import MapPanel from './map';
 import MissionsPanel from './missions';
 import PowerPanel from './power';
+import ScenePanel from './scene';
 import SetupPanel from './setup';
 import SkyPanel from './sky';
 import TasksPanel from './tasks';
@@ -53,6 +54,7 @@ export const PANELS: readonly PanelEntry[] = [
   { id: 'tasks', title: 'Guided tasks', slot: 'leftRail', modes: null, doors: ['classroom'], component: TasksPanel },
   { id: 'game', title: 'Landing window game', slot: 'leftRail', modes: null, doors: ['explore'], component: GamePanel },
   { id: 'map', title: 'Map', slot: 'center', modes: null, doors: ['plan'], component: MapPanel },
+  { id: 'scene', title: 'Surface view', slot: 'center', modes: null, doors: ['explore', 'classroom'], component: ScenePanel },
   { id: 'hud', title: 'Countdown', slot: 'canvasOverlay', modes: null, doors: ALL_DOORS, component: HudPanel },
   { id: 'sky', title: 'Sky view', slot: 'rightRail', tab: 'sky', modes: ['analyze'], doors: ALL_DOORS, component: SkyPanel },
   { id: 'power', title: 'Power', slot: 'rightRail', tab: 'power', modes: ['analyze'], doors: ['plan'], component: PowerPanel },

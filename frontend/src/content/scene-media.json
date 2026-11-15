@@ -1,0 +1,97 @@
+{
+  "scenes": {
+    "moon-plains": {
+      "title": "Mare plain",
+      "description": "Flat, dark lava plain with scattered small craters.",
+      "poster": "scenes/moon-plains/poster.jpg",
+      "loop": "scenes/moon-plains/orbit.mp4",
+      "views": [
+        { "id": "overview", "label": "From above", "file": "scenes/moon-plains/overview.jpg" },
+        { "id": "ground", "label": "Ground level", "file": "scenes/moon-plains/ground.jpg" },
+        { "id": "lander", "label": "With lander", "file": "scenes/moon-plains/lander.jpg" }
+      ]
+    },
+    "moon-craters": {
+      "title": "Cratered highland",
+      "description": "Older ground marked by many overlapping craters.",
+      "poster": "scenes/moon-craters/poster.jpg",
+      "loop": "scenes/moon-craters/orbit.mp4",
+      "views": [
+        { "id": "overview", "label": "From above", "file": "scenes/moon-craters/overview.jpg" },
+        { "id": "ground", "label": "Ground level", "file": "scenes/moon-craters/ground.jpg" },
+        { "id": "lander", "label": "With lander", "file": "scenes/moon-craters/lander.jpg" }
+      ]
+    },
+    "moon-ridges": {
+      "title": "Mountain massif",
+      "description": "Raised, rolling ground with ridges on the skyline.",
+      "poster": "scenes/moon-ridges/poster.jpg",
+      "loop": "scenes/moon-ridges/orbit.mp4",
+      "views": [
+        { "id": "overview", "label": "From above", "file": "scenes/moon-ridges/overview.jpg" },
+        { "id": "ground", "label": "Ground level", "file": "scenes/moon-ridges/ground.jpg" },
+        { "id": "lander", "label": "With lander", "file": "scenes/moon-ridges/lander.jpg" }
+      ]
+    }
+  },
+  "sites": [
+    {
+      "site_id": "blue-ghost-1",
+      "scene": "moon-plains",
+      "basis": "NASA: landed near Mons Latreille within Mare Crisium, a mare plain.",
+      "source_label": "NASA, 2 March 2025 (verified in docs/research/dogrulama/aciklanabilirlik.md, No 38)",
+      "source_url": "docs/research/dogrulama/aciklanabilirlik.md"
+    },
+    {
+      "site_id": "chandrayaan-3",
+      "scene": "moon-craters",
+      "basis": "The primary landing site lies between the craters Manzinus U and Boguslawsky M, on highland-type ground.",
+      "source_label": "Durga Prasad et al. 2023, MNRAS Letters 526, L116",
+      "source_url": "https://academic.oup.com/mnrasl/article/526/1/L116/7236874"
+    },
+    {
+      "site_id": "mons-mouton-im2-target",
+      "scene": "moon-ridges",
+      "basis": "Planned IM-2 target point on Mons Mouton, a flat-topped mountain near the south pole.",
+      "source_label": "Mons Mouton (verified in docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md, No 85)",
+      "source_url": "https://en.wikipedia.org/wiki/Mons_Mouton"
+    },
+    {
+      "site_id": "im2-athena",
+      "scene": "moon-ridges",
+      "basis": "Athena came to rest in a small crater near its target point on Mons Mouton.",
+      "source_label": "LROC, IM-2 Athena landing site, 10 March 2025",
+      "source_url": "https://lroc.im-ldi.com/images/1408"
+    },
+    {
+      "site_id": "apollo-11",
+      "scene": null,
+      "reason": "The landing region is named only in a research note that is not verified yet."
+    },
+    {
+      "site_id": "im1-odysseus",
+      "scene": null,
+      "reason": "The landing region is named only in a research note that is not verified yet."
+    },
+    {
+      "site_id": "change-4",
+      "scene": null,
+      "reason": "The official record names the crater it landed in, not the terrain type."
+    },
+    {
+      "site_id": "change-6",
+      "scene": null,
+      "reason": "No sourced record of the terrain type yet."
+    },
+    {
+      "site_id": "slim",
+      "scene": null,
+      "reason": "No sourced record of the terrain type yet."
+    },
+    {
+      "site_id": "hakuto-r-m2",
+      "scene": null,
+      "reason": "An impact point with no sourced record of the terrain type yet."
+    }
+  ]
+}

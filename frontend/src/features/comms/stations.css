@@ -1,0 +1,51 @@
+/* Ground station illustration (issue #81). */
+
+.d-stations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.d-stations-label {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+}
+
+/* Always visible while the section is open: these pictures are not computed data. */
+.d-illustration {
+  display: inline-flex;
+  padding: 0 6px;
+  border: 1px dashed currentColor;
+  border-radius: var(--radius);
+  color: var(--lavender);
+  font-family: var(--font-label);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+}
+
+.d-stations img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.d-stations-globe {
+  margin: 0;
+}
+
+.d-stations-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.d-station {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

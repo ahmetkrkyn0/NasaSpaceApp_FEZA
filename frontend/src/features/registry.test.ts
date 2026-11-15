@@ -5,15 +5,16 @@ import { hasIcon } from '../ui/Icon';
 import { DOORS, MODES } from '../shell/ui-state';
 import { PANELS, RAIL_TAB_META, enabledTabs, selectPanels } from './registry';
 
-// The thirteen panel folders of docs/PLAN.md, section 3.2.
+// The thirteen panel folders of docs/PLAN.md, section 3.2, plus the Surface view of issue #80.
 const PLAN_PANELS = [
   'sky', 'timeline', 'hud', 'map',
   'setup', 'power', 'comms', 'compare',
   'why', 'missions', 'tasks', 'validation', 'game',
+  'scene',
 ];
 
 describe('panel registry', () => {
-  it('lists the thirteen panels of the plan, once each', () => {
+  it('lists the panels of the plan and issue #80, once each', () => {
     const ids = PANELS.map((p) => p.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect([...ids].sort()).toEqual([...PLAN_PANELS].sort());
