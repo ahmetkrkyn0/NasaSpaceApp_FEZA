@@ -4,7 +4,7 @@ Text for the NASA Space Apps 2026 project page, one section per form field (subm
 
 Every number below either comes from the product's own validation run (data/validation_report.json, produced by `python backend/scripts/run_validation.py`) or from a row marked "doğrulandı" (verified) in the docs/research/dogrulama/ tables. The source is named next to each number.
 
-Fields that are not text (demo link, final project link) are filled by the team when the links exist; they are not part of this file. The text has no tables and no links into the repository, so it can be pasted into the form as it is: files are named by their path in the repository, and every link points to a public page.
+This is the full reference text. The shorter version that is pasted into the form is [form-text.md](form-text.md); the Summary is the same in both. Fields that are not text (demo link, final project link) are filled by the team when the links exist; they are not part of this file. The text has no tables and no links into the repository, so it can be pasted into the form as it is: files are named by their path in the repository, and every link points to a public page.
 
 ---
 
@@ -14,11 +14,11 @@ Lunar Landing Site Navigator
 
 ## High-Level Project Summary
 
-At the lunar south pole the Sun never climbs high: in December 2026 it reaches only 6.47° at Mons Mouton, and Earth is out of sight 27.7% of the month. A small change in landing site or date can decide whether a lander has power and a link home. Lunar Landing Site Navigator makes that visible in one screen.
+At the lunar south pole the Sun never climbs high: in December 2026 it reaches only 6.47° at Mons Mouton, and Earth drops out of sight for about five days at a time. A small change in landing site or date can decide whether a lander has power and a link home. Lunar Landing Site Navigator makes that visible in one screen.
 
-Pick a site and a date to see the Sun and Earth against the real terrain horizon, how long sunlight and direct-to-Earth contact last, and how much power a solar panel collects. Compare up to four scenarios side by side, so a slipped launch or a moved landing point is judged in minutes, not across several expert tools. On Mons Mouton it finds candidate regions in NASA's slope and shadow maps, ranks them with user-chosen weights and shows every part of the score, and it tells when a Deep Space Network station can see the Moon and when a relay is needed. Answers appear on a 2D map, a textured 3D Moon, a 3D terrain view and an Earth–Moon scene.
+Pick a site and a date to see the Sun and Earth against the horizon (the real terrain horizon at the south polar sites), how long sunlight and direct-to-Earth contact last, and how much power a solar panel collects. Compare up to four scenarios side by side, so a slipped launch or a moved landing point is judged in minutes, not across several expert tools. On Mons Mouton it finds candidate regions in NASA's slope and shadow maps, ranks them with user-chosen weights and shows every part of the score, and it tells when a Deep Space Network station can see the Moon and when a relay is needed. Answers appear on a 2D map, a textured 3D Moon, a 3D terrain view and an Earth–Moon scene.
 
-It covers every goal of the challenge: curated and custom sites, any date, time to sunset and Earthset, power and communication windows, a timeline and a comparison. Every number is computed from NASA data (SPICE, LOLA, DSN), carries a reliability label and is checked against JPL Horizons. One engine serves mission planners, teachers and the public.
+It covers every goal of the challenge: curated and custom sites, any date, time to sunset and Earthset, power and communication windows, a timeline and a comparison. Sun and Earth positions are computed from NASA data (SPICE, LOLA) and checked against JPL Horizons; every result carries a label that says whether it is derived or assumed. One engine serves mission planners, teachers and the public.
 
 ## Detailed Project Description
 
@@ -68,7 +68,7 @@ A Python server does all the computation, so every view shows the same numbers; 
 The validation report (data/validation_report.json in the repository, readable version docs/validation-report.md) has 113 passing reference checks, no failures, and one approximate comparison (final run on 15 November 2026):
 
 - **T1:** Sun and Earth azimuth and elevation at six past landings against JPL Horizons. Result: all 15 within 0.01°; largest difference 0.0049°.
-- **T2a, T2b:** Mons Mouton, December 2026: highest Sun 6.47°, Earth set 3 Dec 10:03 UTC, rise 11 Dec 04:41 UTC, set 30 Dec 11:02 UTC, Earth hidden 27.7% of the month. Result: all within 0.01°, 2 minutes and 0.5 percentage points.
+- **T2a, T2b:** Mons Mouton test point, December 2026, flat-horizon test case at zero height: highest Sun 6.47°, Earth set 3 Dec 10:03 UTC, rise 11 Dec 04:41 UTC, set 30 Dec 11:02 UTC, Earth hidden 27.7% of the month. Result: all within 0.01°, 2 minutes and 0.5 percentage points.
 - **T3:** Mean panel power per m² at Mons Mouton, December 2026, flat horizon: tracking panel 768.8 W, fixed vertical 423.4 W, flat 54.3 W. Result: all within 0.5%.
 - **T4:** Horizon dip for a mast: 0.087° at 2 m, 0.194° at 10 m. Result: within 0.001°.
 - **T5:** Apollo 11 site, 20 and 21 February 2027: Earth covers the Sun from 22:09 to 00:36 UTC, at most 34.3%. Result: within 2 minutes and 0.5 percentage points.
