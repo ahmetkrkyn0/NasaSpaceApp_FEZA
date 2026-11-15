@@ -112,6 +112,55 @@ REGIONS: dict[str, Region] = {
 is the ``mons-mouton-im2-target`` record of ``data/sites.json``."""
 
 
+@dataclass(frozen=True)
+class WideRegion:
+    """A wide elevation-only region, stored block-averaged.
+
+    It gives the terrain around the detailed regions for views that zoom out
+    and for shadows cast from far away. Only ``elevation`` exists for it."""
+
+    id: str
+    lat_deg: float
+    lon_deg: float
+    half_size_m: float
+    product: str
+    url: str
+    factor: int
+    description: str
+
+
+WIDE_REGIONS: dict[str, WideRegion] = {
+    "south-pole-cap": WideRegion(
+        id="south-pole-cap",
+        lat_deg=-90.0,
+        lon_deg=0.0,
+        # 80 S is 304 km from the pole on the map: 2 R tan(5 deg).
+        half_size_m=304_000.0,
+        product="PGDA 90 LDEM_80S_80MPP_ADJ",
+        url=f"{PGDA90_BASE_URL}/LDEM_80S_80MPP_ADJ.TIF",
+        factor=4,
+        description=(
+            "Height above the 1737.4 km reference sphere from 80 S to the pole, "
+            "block means of the LOLA 80 m map."
+        ),
+    ),
+}
+"""Wide regions: the whole map of the 80 m product, stored at 320 m."""
+
+WIDE_LAYER_NAME = "elevation"
+
+
+def find_wide_layer(data_dir: Path, region: str) -> "Layer":
+    """Load the elevation of a wide region: the copy under ``data/raw/layers``
+    when present, else the one under ``data/layers``. Raises
+    ``FileNotFoundError`` when neither exists."""
+
+    for directory in layer_dirs(data_dir):
+        if layer_exists(directory, region, WIDE_LAYER_NAME):
+            return load_layer(directory, region, WIDE_LAYER_NAME)
+    raise FileNotFoundError(f"elevation of region {region} is not available")
+
+
 @dataclass
 class LayerMeta:
     """Description of a stored layer grid (the ``.json`` file)."""

@@ -12,7 +12,14 @@ from fastapi.responses import Response
 
 from app.errors import DataUnavailable, InvalidParameter
 from app.settings import get_settings
-from app.terrain.layers import LAYER_NAMES, REGIONS, find_layer
+from app.terrain.layers import (
+    LAYER_NAMES,
+    REGIONS,
+    WIDE_LAYER_NAME,
+    WIDE_REGIONS,
+    find_layer,
+    find_wide_layer,
+)
 
 router = APIRouter(tags=["terrain"])
 
@@ -36,13 +43,20 @@ def layer(
         )
     if format not in FORMATS:
         raise InvalidParameter(f"Invalid parameter 'format': must be 'f32', got '{format}'.")
-    if region not in REGIONS:
+    if region not in REGIONS and region not in WIDE_REGIONS:
+        known = ", ".join((*REGIONS, *WIDE_REGIONS))
         raise InvalidParameter(
-            f"Invalid parameter 'region': must be one of {', '.join(REGIONS)}, got '{region}'."
+            f"Invalid parameter 'region': must be one of {known}, got '{region}'."
+        )
+    wide = region in WIDE_REGIONS
+    if wide and name != WIDE_LAYER_NAME:
+        raise InvalidParameter(
+            f"Invalid parameter 'name': region '{region}' has only '{WIDE_LAYER_NAME}', got '{name}'."
         )
 
     try:
-        grid = find_layer(get_settings().data_dir, region, name)
+        data_dir = get_settings().data_dir
+        grid = find_wide_layer(data_dir, region) if wide else find_layer(data_dir, region, name)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         raise DataUnavailable(f"Layer '{name}' for region '{region}' is not available.") from exc
 

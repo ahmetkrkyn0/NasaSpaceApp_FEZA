@@ -332,3 +332,51 @@ def test_health_reports_missing_layers(monkeypatch, tmp_path):
     from app.main import create_app
 
     assert TestClient(create_app()).get("/api/health").json()["layers_available"] is False
+
+
+def _wide_client(monkeypatch, tmp_path, store=True):
+    from app.terrain.layers import WIDE_REGIONS
+
+    region = WIDE_REGIONS["south-pole-cap"]
+    if store:
+        meta = LayerMeta(
+            name="elevation", region=region.id, rows=ROWS, cols=COLS,
+            x_min=-640.0, y_min=-480.0, x_max=640.0, y_max=480.0, resolution_m=320.0,
+            unit="m", product=region.product, url=region.url, validity="DERIVED", downsample=4,
+        )
+        save_layer(layers_dir(tmp_path), meta, _values())
+    monkeypatch.setenv("FEZA_DATA_DIR", str(tmp_path))
+    from app.main import create_app
+
+    return TestClient(create_app())
+
+
+def test_wide_region_covers_the_80_s_cap_of_the_80_m_map():
+    from app.terrain.layers import REGIONS, WIDE_REGIONS
+
+    cap = WIDE_REGIONS["south-pole-cap"]
+    # 80 S on the south polar map: 2 R tan(5 deg) from the pole.
+    assert abs(cap.half_size_m - 2 * 1_737_400 * np.tan(np.radians(5))) < 100
+    assert cap.url.endswith("LDEM_80S_80MPP_ADJ.TIF")
+    assert cap.factor * 80 == 320
+    # The detailed regions, which candidates and the recommendation use, stay as they were.
+    assert list(REGIONS) == ["mons-mouton"]
+
+
+def test_wide_region_serves_only_elevation(monkeypatch, tmp_path):
+    client = _wide_client(monkeypatch, tmp_path)
+    r = client.get("/api/layers/elevation", params={"region": "south-pole-cap"})
+    assert r.status_code == 200
+    assert r.headers["X-Layer-Resolution-M"] == "320"
+    assert r.headers["X-Layer-Bounds"] == "-640,-480,640,480"
+    assert r.headers["X-Layer-Validity"] == "DERIVED"
+    assert len(r.content) == ROWS * COLS * 4
+    bad = client.get("/api/layers/slope", params={"region": "south-pole-cap"})
+    assert bad.status_code == 422
+    assert "has only 'elevation'" in bad.json()["error"]["message"]
+
+
+def test_wide_region_missing_is_503_and_unknown_region_is_422(monkeypatch, tmp_path):
+    client = _wide_client(monkeypatch, tmp_path, store=False)
+    assert client.get("/api/layers/elevation", params={"region": "south-pole-cap"}).status_code == 503
+    assert client.get("/api/layers/elevation", params={"region": "nowhere"}).status_code == 422

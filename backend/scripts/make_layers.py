@@ -14,6 +14,7 @@ Usage:
     python backend/scripts/make_layers.py
     python backend/scripts/make_layers.py --region mons-mouton --layers elevation slope
     python backend/scripts/make_layers.py --bundle          # factor 2: 40 m, 1 MB per layer
+    python backend/scripts/make_layers.py --region south-pole-cap   # 80 S to the pole at 320 m
 """
 
 from __future__ import annotations
@@ -36,6 +37,9 @@ from app.terrain.layers import (  # noqa: E402
     LAYER_TITLES,
     LAYER_UNITS,
     REGIONS,
+    WIDE_LAYER_NAME,
+    WIDE_REGIONS,
+    Layer,
     LayerMeta,
     bundled_layers_dir,
     downsample_layer,
@@ -89,6 +93,55 @@ def make_region(region_id: str, names: list[str], out_dir: Path) -> None:
         )
 
 
+def make_wide_region(region_id: str, out_dir: Path) -> None:
+    """Read the whole map of a wide region and store its block means."""
+
+    region = WIDE_REGIONS[region_id]
+    x, y = latlon_to_xy(region.lat_deg, region.lon_deg)
+    t0 = time.perf_counter()
+    window = read_window(region.url, float(x), float(y), region.half_size_m)
+    rows, cols = window.data.shape
+    full = Layer(
+        meta=LayerMeta(
+            name=WIDE_LAYER_NAME,
+            region=region.id,
+            rows=rows,
+            cols=cols,
+            x_min=window.x_min,
+            y_min=window.y_min,
+            x_max=window.x_max,
+            y_max=window.y_max,
+            resolution_m=window.resolution_m,
+            unit=LAYER_UNITS[WIDE_LAYER_NAME],
+            product=region.product,
+            url=region.url,
+            validity="MEASURED",
+            title=LAYER_TITLES[WIDE_LAYER_NAME],
+            description=region.description,
+        ),
+        values=window.data.astype(np.float32),
+    )
+    small = downsample_layer(full, region.factor)
+    save_layer(out_dir, small.meta, small.values)
+    m = small.meta
+    finite = small.values[np.isfinite(small.values)]
+    print(
+        f"{region.id}/{m.name}: read {rows} x {cols} at {window.resolution_m:g} m, "
+        f"stored {m.rows} x {m.cols} at {m.resolution_m:g} m "
+        f"({small.values.nbytes / 1e6:.1f} MB), "
+        f"range {finite.min():.2f} .. {finite.max():.2f} m, "
+        f"nodata {small.values.size - finite.size}, {time.perf_counter() - t0:.1f} s"
+    )
+
+
+def bundle_wide_region(region_id: str, raw_dir: Path, out_dir: Path) -> None:
+    """Copy a wide region to data/layers as stored; it is already block-averaged."""
+
+    layer = load_layer(raw_dir, region_id, WIDE_LAYER_NAME)
+    save_layer(out_dir, layer.meta, layer.values)
+    print(f"{region_id}/{WIDE_LAYER_NAME}: {layer.values.nbytes / 1e6:.2f} MB in {out_dir}")
+
+
 def bundle_region(region_id: str, names: list[str], raw_dir: Path, out_dir: Path,
                   factor: int) -> None:
     total = 0
@@ -105,7 +158,10 @@ def bundle_region(region_id: str, names: list[str], raw_dir: Path, out_dir: Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--region", nargs="+", default=list(REGIONS), choices=list(REGIONS))
+    parser.add_argument(
+        "--region", nargs="+", default=list(REGIONS), choices=[*REGIONS, *WIDE_REGIONS],
+        help="wide regions (south-pole-cap) hold elevation only, stored as block means",
+    )
     parser.add_argument(
         "--layers", nargs="+", default=DEFAULT_LAYERS, choices=list(LAYER_SOURCES)
     )
@@ -123,11 +179,17 @@ def main() -> None:
             parser.error("--bundle writes all four layers; drop --layers")
         out_dir = args.out_dir or bundled_layers_dir(data_dir)
         for region_id in args.region:
-            bundle_region(region_id, args.layers, layers_dir(data_dir), out_dir, args.factor)
+            if region_id in WIDE_REGIONS:
+                bundle_wide_region(region_id, layers_dir(data_dir), out_dir)
+            else:
+                bundle_region(region_id, args.layers, layers_dir(data_dir), out_dir, args.factor)
         return
     out_dir = args.out_dir or layers_dir(data_dir)
     for region_id in args.region:
-        make_region(region_id, args.layers, out_dir)
+        if region_id in WIDE_REGIONS:
+            make_wide_region(region_id, out_dir)
+        else:
+            make_region(region_id, args.layers, out_dir)
 
 
 if __name__ == "__main__":
