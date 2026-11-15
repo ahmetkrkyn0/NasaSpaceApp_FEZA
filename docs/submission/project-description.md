@@ -31,6 +31,7 @@ It addresses the challenge directly: curated and custom sites, free choice of da
 - **Eclipses:** times when Earth passes in front of the Sun as seen from the site, with the share of the Sun covered, and the drop they cause in panel power.
 - **Comparison:** two to four scenarios side by side, with the best value per metric and "why" cards that change one input at a time to show which input caused a difference.
 - **Map layers:** hillshade, elevation, slope and permanently shadowed regions around the south pole. The Mons Mouton layers ship with the repository at 40 m, so the map works on a fresh copy.
+- **3D Moon:** the map can switch to a globe (also a panel in Explore and Classroom) that shows the catalogue sites and candidate regions, with the top three of the last recommendation marked larger. It is lit from the Sun direction the server computes for the selected moment, and the point where Earth is overhead is marked. The globe is drawn with three.js and only loaded when the 3D view opens.
 - **Candidate regions:** twelve 200 m regions on Mons Mouton picked from the 20 m slope and permanent shadow maps: mean slope within 12°, centre outside permanent shadow, at least 2 km apart. Each has a terrain horizon at 2 m and 10 m masts and can be used like any catalogue site. They are called candidate regions, not safe landing sites.
 - **Site recommendation:** the user sets weights for sunlit time, the longest dark period, Earth in view, slope, roughness and distance to permanent shadow, a slope limit and a permanent shadow preference. The candidate regions and the catalogue sites of the region are ranked for the active period and mast; every score is shown with its components and validity labels, and sites whose steepest slope is over the limit are listed apart with the reason. A ranked site can become the scenario, or the top three can go to the comparison.
 - **Three entry points on one engine:** Plan (engineers), Explore (public) and Classroom (educators) share the same site, date and time.
@@ -47,9 +48,10 @@ A Python server does all the computation; the web interface only shows the serve
 4. **Power** is efficiency × area × 1361 W/m² scaled for the Sun's distance × the panel's angle to the Sun × the visible part of the Sun's disk (above the horizon and not covered by Earth).
 5. **Ground stations and link:** the Moon's elevation at the three Deep Space Network complexes (coordinates from the DSN handbook 810-005) is found the same way as the site events. A direct link needs Earth above the site's horizon and the Moon above one station's minimum elevation (10° by default, an assumption).
 6. **Candidate regions and score:** a 200 m window slides over the 20 m maps in 100 m steps; windows are ranked by their share of cells with slope within 12° outside permanent shadow. The score is the weighted mean of six measures, each scaled to 0 to 1, shown from 0 to 100; the method is in [saha-puani.md](../design/saha-puani.md).
-7. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
+7. **Sun direction for the globe:** `/api/body-series` gives the sub-solar and sub-Earth points on the Moon (`MOON_ME`) and the sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) over time from the same SPICE kernels; the 3D Moon takes its light from the hourly sample nearest the selected moment and does no ephemeris work of its own.
+8. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
 
-The validation report ([`data/validation_report.json`](../../data/validation_report.json)) has 69 passing reference checks, no failures, and one approximate comparison ([readable report](../validation-report.md)):
+The validation report ([`data/validation_report.json`](../../data/validation_report.json)) has 85 passing reference checks, no failures, and one approximate comparison ([readable report](../validation-report.md)):
 
 | Test | What is checked | Result |
 |---|---|---|
@@ -62,6 +64,7 @@ The validation report ([`data/validation_report.json`](../../data/validation_rep
 | T7 | Sunrise shift for a one-arcminute horizon change: 1.98 minutes at Apollo 11, 23.1 minutes at Mons Mouton | passes |
 | T8 | Sub-solar and sub-Earth points and Earth distance at four instants (2025 to 2027) against JPL Horizons | all 20 pass; largest angle difference 0.0056° (limit 0.01°), largest distance difference 0.0035 km (limit 1 km) |
 | T9 | Candidate regions: largest mean slope 1.19° (limit 12°), no centre in permanent shadow, closest pair 2.15 km apart (at least 2 km), regenerated from the 20 m maps with no field changed | all 4 pass |
+| T10 | Sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) at four instants (2025 to 2027) against JPL Horizons | all 16 pass; largest longitude difference 0.091° (limit 0.1°), largest latitude difference 0.0031° (limit 0.01°) |
 
 T7 is the core of the "why small changes matter" story: the same tiny horizon change moves sunrise about twelve times more at the south pole than near the equator, because the Sun climbs so slowly there.
 
@@ -79,7 +82,7 @@ A quick first-look tool that mission teams, students and the public can open in 
 ### Tools, languages and software
 
 - **Server:** Python 3.11, FastAPI, Uvicorn, SpiceyPy (NASA NAIF SPICE), NumPy, rasterio (GDAL).
-- **Web interface:** React, TypeScript, Vite; tests with Vitest.
+- **Web interface:** React, TypeScript, Vite; three.js for the 3D Moon; tests with Vitest.
 - **Tests:** pytest for the server, Vitest for the interface, and a validation script that runs the reference tests over HTTP.
 - **3D:** a model of the IM-2 Athena lander built from scratch by a Blender script (no third-party meshes or textures).
 - **Illustrations:** Unreal Engine 5.8, for offline renders only; it does not run in the product, which shows the finished images and loops.
@@ -93,10 +96,11 @@ A quick first-look tool that mission teams, students and the public can open in 
 - **Relay satellites are not modelled.** The relay label and the link view's "relay needed" only say that Earth is not in line of sight; the relay in the link schematic is a drawing labelled "Illustration".
 - **The score is not a landing safety guarantee.** It ranks sites for the weights the user chose; other weights give another order. The 12° slope limit is the Apollo lunar module's landing limit (SP-2013-605); every other threshold is an assumption and is marked as one.
 - **No rocks or small craters.** Candidate regions and their scores come from 20 m maps; boulders and craters smaller than a cell are not in the data.
-- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, and Earth's rotation uses the `IAU_EARTH` model; the 10° minimum station elevation is an assumption.
+- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, and Earth's rotation uses the `IAU_EARTH` model (no nutation, no UT1 correction); the 10° minimum station elevation is an assumption. The sub-lunar and sub-solar points on the Earth use the same model, so their longitudes can be off by up to 0.1° (T10).
+- **The 3D Moon is a plain grey sphere.** It has no surface texture yet and no terrain relief; its light comes from the server's Sun direction for the nearest hourly sample, and nothing on it casts shadows.
 - **Eclipses** treat Earth as a sharp disk (no atmosphere) and the Sun as uniformly bright, so the covered share is an area ratio.
 - **The terrain horizon is compared with NASA's map only approximately** (T6 above); it is not presented as validated.
-- **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site, and the lander is the team's Athena model shown upright for scale, whatever happened to the mission that landed there. There is no live 3D view of a site.
+- **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site, and the lander is the team's Athena model shown upright for scale, whatever happened to the mission that landed there. The 3D Moon is a globe of the whole Moon, not a view of the ground at a site.
 
 ## Use of Super Intelligence (SI)
 
@@ -115,11 +119,11 @@ The repository README states the same in its "Use of AI tools" section.
 
 | Data | What it is used for | Source |
 |---|---|---|
-| SPICE kernels from NASA NAIF: `de440s.bsp` (planetary ephemeris DE440), `moon_pa_de440_200625.bpc` and `moon_de440_250416.tf` (Moon orientation and `MOON_ME` frame), `pck00011.tpc` (body sizes), `naif0012.tls` (leap seconds); about 45.8 MB in total | Sun and Earth position and apparent size at every site and time; sub-solar and sub-Earth points; Earth's rotation for the ground stations | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
+| SPICE kernels from NASA NAIF: `de440s.bsp` (planetary ephemeris DE440), `moon_pa_de440_200625.bpc` and `moon_de440_250416.tf` (Moon orientation and `MOON_ME` frame), `pck00011.tpc` (body sizes), `naif0012.tls` (leap seconds); about 45.8 MB in total | Sun and Earth position and apparent size at every site and time; sub-solar and sub-Earth points on the Moon and the light of the 3D Moon; Earth's rotation for the ground stations and the sub-lunar and sub-solar points on the Earth | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/> |
 | LOLA height maps, PGDA product 90: `LDEM_80S_20MPP_ADJ` (20 m, 80° S to the pole) and `LDEM_60S_60MPP_ADJ` (60 m, 60° S to the pole) | Terrain horizon profiles of the four south polar sites and the twelve candidate regions; elevation map layer | <https://pgda.gsfc.nasa.gov/products/90> |
 | PGDA product 90 derived maps: hillshade (`LDEM_80S_20MPP_ADJ_HILL`), slope (`LDSM_80S_20MPP_ADJ`), permanently shadowed regions (`LPSR_80S_20MPP_ADJ`) | Map layers; candidate regions and their slope and permanent shadow values | <https://pgda.gsfc.nasa.gov/products/90> |
 | LOLA average visibility map `AVGVISIB_75S_120M_201608` (PGDA product 69) | Approximate comparison of the sunlit share (T6), validation only | <https://pgda.gsfc.nasa.gov/products/69> |
-| JPL Horizons | Reference values for the tests (T1, T2, T5, T8); never called by the running product | <https://ssd.jpl.nasa.gov/horizons/> |
+| JPL Horizons | Reference values for the tests (T1, T2, T5, T8, T10); never called by the running product | <https://ssd.jpl.nasa.gov/horizons/> |
 | NASA/JPL DSN Telecommunications Link Design Handbook 810-005, module 301, Rev. P | Coordinates of the Goldstone (DSS 14), Madrid (DSS 63) and Canberra (DSS 43) antennas | <https://deepspace.jpl.nasa.gov/dsndocs/810-005/301/301P.pdf> |
 | Apollo lunar module landing slope limit, 12° (TN D-6850, SP-2013-605) | Slope limit of the candidate regions and the default limit of the score | [gorev-araclari.md, row 89](../research/dogrulama/gorev-araclari.md) |
 | NASA NSSDC lunar artifact table | Coordinates of Apollo 11, Chang'e 4, Chang'e 6, SLIM, IM-1 and Blue Ghost 1 | <https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html> |
@@ -141,6 +145,7 @@ The repository README states the same in its "Use of AI tools" section.
   | NumPy | BSD-3-Clause (bundled parts: 0BSD, MIT, Zlib, CC0-1.0) |
   | rasterio | BSD |
   | React, Vite, Vitest | MIT |
+  | three.js | MIT |
   | TypeScript | Apache-2.0 |
 
 - **Interface design:** the layout and visual tokens come from the team's own reference design export (`frontend-migrate/`).
