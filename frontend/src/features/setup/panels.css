@@ -346,3 +346,8 @@
   font-size: var(--fs-micro);
   letter-spacing: var(--track-label);
 }
+
+/* A previous answer while the new one loads: dimmed, and labelled by UPDATING_NOTE above it. */
+.d-stale {
+  opacity: 0.45;
+}

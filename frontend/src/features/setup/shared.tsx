@@ -44,20 +44,26 @@ export function ErrorNote({ error }: { error: unknown }) {
   );
 }
 
+/** Shown above a previous answer while the answer for the new settings loads. */
+export const UPDATING_NOTE = 'Updating for the new settings… The values below are the previous answer.';
+
 /** Loading, error or content for one request. */
-export function AsyncBlock<T>({ result, children }: { result: AsyncResult<T>; children: (data: T) => ReactNode }) {
+export function AsyncBlock<T>({ result, children }: { result: AsyncResult<T> & { current?: boolean }; children: (data: T) => ReactNode }) {
   const { state } = result;
   if (state.status === 'error') return <ErrorNote error={state.error} />;
   if (state.data === undefined) return <p className="d-muted">Loading…</p>;
-  // While a new request runs, the previous answer stays on screen; say that it is being replaced.
-  if (state.status === 'loading') {
+  // A previous answer (still loading, or settled for the previous parameters) stays on screen only
+  // dimmed and labelled, so its numbers never read as the answer for the new title (PR #135 review).
+  if (state.status === 'loading' || result.current === false) {
     return (
       <div aria-busy="true">
         <p className="d-muted" role="status">
-          Updating for the new settings…
+          {UPDATING_NOTE}
         </p>
-        <ExampleDataNote value={state.data} fallbackOnly />
-        {children(state.data)}
+        <div className="d-stale">
+          <ExampleDataNote value={state.data} fallbackOnly />
+          {children(state.data)}
+        </div>
       </div>
     );
   }
