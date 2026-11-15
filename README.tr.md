@@ -185,7 +185,7 @@ Tüm kaynakların, açık kaynak paketlerin ve lisanslarının tam listesi İngi
 
 ## Yapay zekâ araçlarının kullanımı
 
-- **Kod ve belgeler:** kaynak kodun, testlerin ve belgelerin çoğu yapay zekâ kodlama yardımcılarıyla yazıldı: Claude Code üzerinden Claude (Anthropic), her takım üyesi için bir oturum. Her iş kapsamı ve kabul ölçütleriyle bir GitHub issue'sunda tanımlandı ve bir pull request'te incelendi; çoğu kod değişikliği ayrıca OpenAI Codex ile gözden geçirildi.
+- **Kod ve belgeler:** kaynak kodun, testlerin ve belgelerin çoğu yapay zekâ kodlama yardımcılarıyla yazıldı: Claude Code üzerinden Claude (Anthropic), her geliştirici için bir oturum. Her iş kapsamı ve kabul ölçütleriyle bir GitHub issue'sunda tanımlandı ve bir pull request'te incelendi; çoğu kod değişikliği ayrıca OpenAI Codex ile gözden geçirildi.
 - **Araştırma:** [docs/research/](docs/research/) altındaki notların taslakları yapay zekâ yardımıyla yazıldı; ürünün kullandığı her iddia kaynağına karşı denetlendi.
 - **Görseller:** araştırma sırasında Grok ile üretilen üç kavram görseli filigran taşımadığı için depodan kaldırıldı. Üründe ve demoda yapay zekâ ile üretilmiş görsel yoktur.
 - **Veri:** hiçbir veri yapay zekâ ile üretilmedi. Konumlar SPICE'tan, arazi LOLA'dan, referans değerler JPL Horizons ve yayımlanmış kaynaklardan gelir.
