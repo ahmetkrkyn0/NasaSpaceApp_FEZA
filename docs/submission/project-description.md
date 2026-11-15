@@ -63,7 +63,7 @@ A Python server does all the computation, so every view shows the same numbers; 
 8. **No atmosphere, libration included, small changes made visible:** the Moon has no air, so no refraction correction is applied; the horizon is set by the terrain and the edge of the 1737.4 km sphere. Earth's position comes from the Moon's measured orientation (`MOON_ME`, DE440), so libration, Earth's slow wobble in the lunar sky, is part of the calculation. The "why" cards change one input at a time, and every event time carries its one-arcminute sensitivity range.
 9. **Validation:** a script runs the reference tests against the live endpoints and writes a report.
 
-The validation report (data/validation_report.json in the repository, readable version docs/validation-report.md) has 85 passing reference checks, no failures, and one approximate comparison:
+The validation report (data/validation_report.json in the repository, readable version docs/validation-report.md) has 113 passing reference checks, no failures, and one approximate comparison (final run on 15 November 2026):
 
 - **T1:** Sun and Earth azimuth and elevation at six past landings against JPL Horizons. Result: all 15 within 0.01°; largest difference 0.0049°.
 - **T2a, T2b:** Mons Mouton, December 2026: highest Sun 6.47°, Earth set 3 Dec 10:03 UTC, rise 11 Dec 04:41 UTC, set 30 Dec 11:02 UTC, Earth hidden 27.7% of the month. Result: all within 0.01°, 2 minutes and 0.5 percentage points.
@@ -75,6 +75,8 @@ The validation report (data/validation_report.json in the repository, readable v
 - **T8:** Sub-solar and sub-Earth points and Earth distance at four instants (2025 to 2027) against JPL Horizons. Result: all 20 pass; largest angle difference 0.0056° (limit 0.01°), largest distance difference 0.0035 km (limit 1 km).
 - **T9:** Candidate regions: largest mean slope 1.19° (limit 12°), no centre in permanent shadow, closest pair 2.15 km apart (at least 2 km), regenerated from the 20 m maps with no field changed. Result: all 4 pass.
 - **T10:** Sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) at four instants (2025 to 2027) against JPL Horizons. Result: all 16 pass; largest longitude difference 0.091° (limit 0.1°), largest latitude difference 0.0031° (limit 0.01°).
+- **T11:** Site recommendation (Mons Mouton, 1 to 15 December 2026): each score against its components, eliminations at the 12° and 3° slope limits, the ranking order, the ranking with the sunlit weight alone, and a candidate's sunlit share against the events endpoint. Result: all 5 pass; largest score difference 0 points (limit 0.05).
+- **T12:** Moon elevation at the three Deep Space Network stations at 19 instants against JPL Horizons, and the edges of the "relay needed" periods at the Mons Mouton test site against the T2b Earth events. Result: all 23 pass; largest elevation difference 0.071° (limit 0.1°), largest edge difference 0.95 minutes (limit 2), relay share 27.72% against 27.7%.
 
 T7 is the core of the "why small changes matter" story: the same tiny horizon change moves sunrise about twelve times more at the south pole than near the equator, because the Sun climbs so slowly there.
 
