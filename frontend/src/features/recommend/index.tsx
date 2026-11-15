@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { postRecommend } from '../../api/client';
 import { formatDate } from '../../api/format';
 import type { RankedSite, RecommendResponse, Scenario, ScoreComponent } from '../../api/types';
@@ -16,8 +16,9 @@ import {
   WEIGHT_KEYS,
   WEIGHT_LABEL,
   componentText,
+  createRanker,
   eliminatedReason,
-  runRanking,
+  rankingIsStale,
   siteScenario,
   splitRanked,
   topThree,
@@ -47,13 +48,14 @@ function ComponentBar({ c }: { c: ScoreComponent }) {
   );
 }
 
-export function RankedRow({ site, rank, active }: { site: RankedSite; rank: number; active: Scenario | null }) {
+export function RankedRow({ site, rank, active, stale = false }: { site: RankedSite; rank: number; active: Scenario | null; stale?: boolean }) {
   return (
     <li className="d-card rec-row" aria-label={`${rank}. ${site.name}`}>
       <p className="d-card-title">
         <span className="data">{rank}.</span> {site.name}{' '}
         <span className="rec-score">
           score <span className="data">{site.score ?? '—'}</span>
+          {stale ? ' (for the ranked period)' : null}
         </span>{' '}
         <ValidityBadge validity={site.validity} />
       </p>
@@ -69,7 +71,7 @@ export function RankedRow({ site, rank, active }: { site: RankedSite; rank: numb
   );
 }
 
-export function RecommendResults({ response, active }: { response: RecommendResponse; active: Scenario | null }) {
+export function RecommendResults({ response, active, stale = false }: { response: RecommendResponse; active: Scenario | null; stale?: boolean }) {
   const { kept, eliminated } = splitRanked(response);
   const [added, setAdded] = useState<string | null>(null);
   const addTopThree = () => {
@@ -84,7 +86,7 @@ export function RecommendResults({ response, active }: { response: RecommendResp
       {kept.length === 0 ? <p className="d-muted">Every site was eliminated by the limits.</p> : null}
       <ol className="rec-list" aria-label="Ranked sites">
         {kept.map((site, i) => (
-          <RankedRow key={site.site_id} site={site} rank={i + 1} active={active} />
+          <RankedRow key={site.site_id} site={site} rank={i + 1} active={active} stale={stale} />
         ))}
       </ol>
       <div className="d-row">
@@ -176,11 +178,16 @@ export default function RecommendPanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
+  // One runner for the panel's life, so its request counter drops answers that arrive late.
+  const ranker = useMemo(() => createRanker((body) => postRecommend(body), recommendStore), []);
+  const stale = rankingIsStale(rankedRequest, active);
+
   const rank = async () => {
     if (!active) return;
     setBusy(true);
     setError(null);
-    const result = await runRanking(active, form, (body) => postRecommend(body), recommendStore);
+    const result = await ranker(active, form);
+    if ('stale' in result) return;
     if (!result.ok) setError(result.error);
     setBusy(false);
   };
@@ -217,12 +224,13 @@ export default function RecommendPanel() {
       {ranked ? (
         <>
           {rankedRequest ? (
-            <p className="d-muted">
+            <p className={stale ? 'd-note d-note-warn' : 'd-muted'} role={stale ? 'note' : undefined}>
               Ranking for <span className="data">{formatDate(rankedRequest.start_utc)}</span> to{' '}
               <span className="data">{formatDate(rankedRequest.end_utc)}</span>, mast <span className="data">{rankedRequest.mast_height_m} m</span>.
+              {stale ? ' This ranking is for another period or mast than the active scenario; rank again to update it.' : null}
             </p>
           ) : null}
-          <RecommendResults response={ranked} active={active} />
+          <RecommendResults response={ranked} active={active} stale={stale} />
         </>
       ) : null}
     </section>

@@ -62,7 +62,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `sites.json` | `elevation_m`; `landing_utc` (SLIM ve Blue Ghost 1 dışında) | `null` | Katalogda doğrulanmış değer yok; `data/sites.json` ile aynı |
 | `earth-link.json` | `stations[].in_view_fraction`, `stations[].windows`, `direct` ve `no_station` pencereleri, `min_station_elevation_deg` | Örnek değerler | Sunucu (#99) gelmedi. Yalnızca `relay_needed` uçları doğrulanmış anlardır |
 | `earth-link-relay.json` | `stations[]`, dönem | Örnek değerler | Sunucu (#99) gelmedi; dönemin bütünüyle `relay_needed` olması Chang'e 4 sahasında Dünya'nın ufkun altında kalmasına dayanır ([aciklanabilirlik.md](../../docs/research/dogrulama/aciklanabilirlik.md), No 14) |
-| `candidates.json` | `candidates[]` içindeki konum, yükseklik, eğim, oran ve uzaklıklar | Örnek değerler | Sunucu (#103) gelmedi; adaylar henüz yükseklik haritasından çıkarılmadı |
+| `candidates.json` | `candidates[]` içindeki konum, yükseklik, eğim, oran ve uzaklıklar | Örnek değerler | Sunucu (#103) henüz `main`'de değil. `method` nesnesi (#103 CONTRACT: `stride_m`, `slope_limit_source`, `max_candidates`, `assumed`, `note`) #103'ün `data/candidates.json` dosyasından alındı; adaylar o PR girince yenilenecek |
 | `recommend.json` | `score`, `components[].value`, `normalized` | Örnek değerler | Sunucu (#100) gelmedi; puan hesabı sunucunun işi |
 
 ## Sözleşmede açık kalanlar
