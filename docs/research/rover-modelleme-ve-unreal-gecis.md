@@ -74,13 +74,13 @@ FBX bir **taşıma formatıdır**: modelin görünüşünü ve parça yapısın�
 
 Tek parça, katı bir model. Kendi içinde hiçbir kısmı hareket etmez; ancak bütün olarak taşınıp döndürülebilir. Kaya, iniş modülü gövdesi, bina gibi nesneler için kullanılır.
 
-![Static mesh rover](../../public/assets/grok-static-mesh-rover.jpg)
+_(Image removed: an AI-generated concept image of a Static mesh rover, made with Grok during research; removed from the repository because it carried no AI watermark.)_
 
 ### Skeletal Mesh
 
 İçinde görünmez bir **iskelet** taşıyan model. İskelet, **bone** (kemik) denen eklemlerden oluşur. Mesh'in her parçası bir bone'a bağlıdır; bone dönünce ona bağlı geometri de döner. Rover'da tekerlek bone'u dönünce tekerlek döner, rocker bone'u eğilince kol eğilir. **Rover bu türde olmalı.**
 
-![Skeletal mesh rover](../../public/assets/grok-skeletal-mesh-v2.jpg)
+_(Image removed: an AI-generated concept image of a Skeletal mesh rover, made with Grok during research; removed from the repository because it carried no AI watermark.)_
 
 *Yarı saydam gövdenin içinde mavi bone iskeleti. Eklemlerdeki oklar, bu noktaların bağımsız dönebildiğini gösterir.*
 
@@ -272,7 +272,7 @@ Dijital ikizin özü bu iki tablonun kesişimidir. Yeni rover eklemek için bir 
 
 ## 6. Rocker-bogie süspansiyon
 
-![Rocker-bogie rover](../../public/assets/grok-rocker-bogie-render.jpg)
+_(Image removed: an AI-generated concept image of a Rocker-bogie rover, made with Grok during research; removed from the repository because it carried no AI watermark.)_
 
 *Ön tekerlek kayanın üstüne çıkmışken diğer tekerlekler yerde kalıyor ve gövde dengede duruyor.*
 
