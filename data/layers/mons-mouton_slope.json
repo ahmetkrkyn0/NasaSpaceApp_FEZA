@@ -11,7 +11,7 @@
   "unit": "deg",
   "product": "PGDA 90 LDSM_80S_20MPP_ADJ",
   "url": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDSM_80S_20MPP_ADJ.TIF",
-  "validity": "MEASURED",
+  "validity": "DERIVED",
   "downsample": 2,
   "title": "Slope",
   "description": "Surface slope of the LOLA 20 m map.",

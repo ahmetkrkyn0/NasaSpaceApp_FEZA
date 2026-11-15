@@ -11,7 +11,7 @@
   "unit": "1",
   "product": "PGDA 90 LPSR_80S_20MPP_ADJ",
   "url": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LPSR_80S_20MPP_ADJ.TIF",
-  "validity": "MEASURED",
+  "validity": "DERIVED",
   "downsample": 2,
   "title": "Permanent shadow",
   "description": "Areas that receive no direct sunlight over the long term (NASA LOLA 20 m mask): 1 permanently shadowed, 0 not. In the bundled copy each cell is the fraction of its 20 m cells that are permanently shadowed. Shadow only. Ice presence is uncertain.",

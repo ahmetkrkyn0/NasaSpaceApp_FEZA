@@ -200,24 +200,31 @@ def layer_exists(directory: Path, region: str, name: str) -> bool:
     return all(path.is_file() for path in layer_paths(directory, region, name))
 
 
-def find_layer(data_dir: Path, region: str, name: str) -> Layer:
-    """Load ``region``/``name`` from the first folder of ``layer_dirs`` that
-    holds both files. Raises ``FileNotFoundError`` when neither does."""
+def region_layer_dir(data_dir: Path, region: str) -> Path | None:
+    """Folder that serves ``region``: the full resolution folder only when it
+    holds all of the region's layers, else the bundled folder when that does.
+    One folder per region keeps every layer on one grid (ADR-0004)."""
 
     for directory in layer_dirs(data_dir):
-        if layer_exists(directory, region, name):
-            return load_layer(directory, region, name)
-    raise FileNotFoundError(f"layer {region}/{name} is not available")
+        if all(layer_exists(directory, region, name) for name in LAYER_NAMES):
+            return directory
+    return None
+
+
+def find_layer(data_dir: Path, region: str, name: str) -> Layer:
+    """Load ``region``/``name`` from ``region_layer_dir``. Raises
+    ``FileNotFoundError`` when no folder holds the whole region."""
+
+    directory = region_layer_dir(data_dir, region)
+    if directory is None:
+        raise FileNotFoundError(f"layers of region {region} are not available")
+    return load_layer(directory, region, name)
 
 
 def layers_available(data_dir: Path) -> bool:
-    """True when every layer of every region is present in one of the folders."""
+    """True when every region has a folder holding all of its layers."""
 
-    return all(
-        any(layer_exists(d, region, name) for d in layer_dirs(data_dir))
-        for region in REGIONS
-        for name in LAYER_NAMES
-    )
+    return all(region_layer_dir(data_dir, region) is not None for region in REGIONS)
 
 
 def downsample_values(values: np.ndarray, factor: int) -> np.ndarray:
@@ -241,9 +248,9 @@ def downsample_values(values: np.ndarray, factor: int) -> np.ndarray:
 def downsample_layer(layer: Layer, factor: int) -> Layer:
     """Block-averaged copy of a full resolution layer (``DOWNSAMPLE_METHODS``)."""
 
-    if factor < 2:
-        raise ValueError("factor must be at least 2")
     m = layer.meta
+    if not 2 <= factor <= min(m.rows, m.cols):
+        raise ValueError(f"factor must be between 2 and {min(m.rows, m.cols)}, got {factor}")
     values = downsample_values(layer.values, factor)
     rows, cols = values.shape
     finite = layer.values[np.isfinite(layer.values)]
@@ -260,6 +267,8 @@ def downsample_layer(layer: Layer, factor: int) -> Layer:
         "resolution_m": m.resolution_m * factor,
         "downsample": m.downsample * factor,
         "downsample_method": DOWNSAMPLE_METHODS[m.name],
+        # Block means and fractions are the team's own computation.
+        "validity": "DERIVED",
         "source_max": float(finite.max()) if finite.size else None,
         "description": description,
     })

@@ -11,7 +11,7 @@
   "unit": "m",
   "product": "PGDA 90 LDEM_80S_20MPP_ADJ",
   "url": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
-  "validity": "MEASURED",
+  "validity": "DERIVED",
   "downsample": 2,
   "title": "Elevation",
   "description": "Height above the 1737.4 km reference sphere, from the LOLA 20 m map.",

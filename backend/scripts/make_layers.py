@@ -118,6 +118,9 @@ def main() -> None:
 
     data_dir = get_settings().data_dir
     if args.bundle:
+        # All layers of a region share one grid, so the bundle always holds all four.
+        if sorted(args.layers) != sorted(DEFAULT_LAYERS):
+            parser.error("--bundle writes all four layers; drop --layers")
         out_dir = args.out_dir or bundled_layers_dir(data_dir)
         for region_id in args.region:
             bundle_region(region_id, args.layers, layers_dir(data_dir), out_dir, args.factor)
