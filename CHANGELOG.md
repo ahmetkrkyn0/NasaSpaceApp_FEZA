@@ -33,6 +33,7 @@ First release, submitted to the NASA Space Apps Challenge 2026.
 - Web interface: 3D terrain of the Mons Mouton region from the elevation layer (heights exaggerated three times), coloured by hillshade, slope or permanent shadow, lit from the Sun direction at the site, with sites and candidate regions marked and a keyboard place list.
 - Web interface: space view of the Moon and Earth (Plan map view, "Earth and Moon" panel in Explore and Classroom): Earth placed and turned from the server's points, the three DSN stations, the Athena model at the site, the link line or the relay path labelled "Illustration", camera buttons, "Not to scale"; NASA Blue Marble Earth image.
 - Web interface: five research scenarios that load a site, period, mast and door, with their question, observations, recorded answers and sources; the door site picker lists candidate regions.
+- Web interface: role pages at `#/start`, `#/public`, `#/educator` and `#/engineer`: a start page with three role cards and one overview page per role, showing recorded example answers for December 2026 (labelled as recorded) and linking to the matching door of the console.
 - Example mode answers from recorded live server responses for every catalogue site and candidate region in December 2026 (`data/examples/recorded/`), with a note when a choice falls back to a general example.
 - Example payload for every endpoint and contract tests against them.
 - IM-2 Athena lander 3D model built by a Blender script.
