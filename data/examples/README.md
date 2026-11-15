@@ -38,7 +38,7 @@ Bütün açılar yüksekliği sıfır olan küreye göre ve arazisiz hesaplanmı
 | `ground-stations.json` | `GET /api/ground-stations` | Üç DSN kompleksinin ana anteni (DSS-14, DSS-63, DSS-43) | Koordinat ve yükseklik: NASA/JPL DSN 810-005, modül 301, Tablo 5 ([dogrulama/veri-kaynaklari.md](../../docs/research/dogrulama/veri-kaynaklari.md), No 46; [efemeris-ve-yer-istasyonlari.md](../../docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 60) | Boylamlar doğuya 0–360'tan −180–180'e çevrildi |
 | `earth-link.json` | `GET /api/earth-link` | Mons Mouton test sahası, Aralık 2026, üç `mode` değerinin hepsi | `relay_needed` pencerelerinin uçları T2b'deki Dünya batış ve doğuş anları ([efemeris-ve-yer-istasyonlari.md](../../docs/research/dogrulama/efemeris-ve-yer-istasyonlari.md), No 42) | – |
 | `earth-link-relay.json` | `GET /api/earth-link` | Chang'e 4 sahası, bütün dönem `relay_needed` | – | – |
-| `candidates.json` | `GET /api/candidates` | `mons-mouton` bölgesi, üç aday | `method.slope_limit_deg` 12: dayanağı olan tek eşik ([dogrulama/gorev-araclari.md](../../docs/research/dogrulama/gorev-araclari.md), No 89) | – |
+| `candidates.json` | `GET /api/candidates` | `mons-mouton` bölgesi, üç aday (`kind: candidate`) ve bir katalog sahası (`kind: catalogue`, #97 4.3 eki) | `method.slope_limit_deg` 12: dayanağı olan tek eşik ([dogrulama/gorev-araclari.md](../../docs/research/dogrulama/gorev-araclari.md), No 89) | – |
 | `recommend.json` | `POST /api/recommend` | Üç aday ve Mons Mouton hedefi; biri eğim sınırıyla elenmiş | – | – |
 
 ## Yer tutucular

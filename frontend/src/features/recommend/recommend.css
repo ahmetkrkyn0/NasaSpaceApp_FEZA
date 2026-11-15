@@ -1,0 +1,65 @@
+/* Site recommendation (issue #109). Colours come from tokens only. */
+
+.rec-notes {
+  margin: 0;
+  padding: 0;
+}
+
+.rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rec-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rec-score {
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.rec-components {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rec-component {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1.4fr) minmax(3rem, 1fr) auto auto auto;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+}
+
+.rec-component-label {
+  color: var(--text-3);
+}
+
+/* Normalized value 0 to 1, as the server scaled it. */
+.rec-bar {
+  display: block;
+  height: 6px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+}
+
+.rec-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--lavender);
+}
+
+.rec-weight input[type='range'] {
+  width: 100%;
+}

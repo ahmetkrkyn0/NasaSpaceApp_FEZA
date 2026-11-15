@@ -34,6 +34,7 @@ import sitesJson from '../../../data/examples/sites.json';
 import skySeriesJson from '../../../data/examples/sky-series.json';
 import validationJson from '../../../data/examples/validation.json';
 import {
+  CANDIDATE_KINDS,
   CRITERIA,
   EVENT_TYPES,
   EVIDENCE_LEVELS,
@@ -198,8 +199,12 @@ const VALIDATION_ALLOWED: Record<string, readonly string[]> = {
   kind: VALIDATION_KINDS,
 };
 
-/** In candidates.json `method` is the search method object (#97, section 4.3), not a horizon method. */
-const { method: _horizonMethod, ...CANDIDATES_ALLOWED } = ALLOWED;
+/**
+ * In candidates.json `method` is the search method object (#97, section 4.3), not a horizon
+ * method, and `kind` says candidate or catalogue, not a window kind.
+ */
+const { method: _horizonMethod, ...WITHOUT_METHOD } = ALLOWED;
+const CANDIDATES_ALLOWED: Record<string, readonly string[]> = { ...WITHOUT_METHOD, kind: CANDIDATE_KINDS };
 
 /** Value sets per example file, where a file differs from `ALLOWED`. */
 const FILE_ALLOWED: Partial<Record<string, Record<string, readonly string[]>>> = {
