@@ -58,6 +58,7 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 - Eclipses (Earth covering the Sun) and the power drop they cause
 - Side-by-side comparison of two to four scenarios, with "why" cards that change one input at a time
 - Map layers around the south pole: hillshade, elevation, slope, permanently shadowed regions
+- 3D Moon: a globe next to the 2D map with the sites and candidate regions, lit from the Sun direction the server computes for the selected moment and with the sub-Earth point marked
 - Candidate regions picked from the 20 m slope and permanent shadow maps of Mons Mouton, each with a terrain horizon
 - Site recommendation: choose weights, a slope limit and a permanent shadow preference, and the candidate regions and catalogue sites of the region are ranked, every score shown with its components; the score ranks sites, it does not certify a landing site
 - Three entry points on one engine: Plan (engineers), Explore (public), Classroom (educators)
@@ -69,7 +70,7 @@ Built by team **FEZA** for the [NASA Space Apps Challenge](https://www.spaceapps
 
 | Layer | Technology |
 | ----- | ---------- |
-| Web interface | React, TypeScript, Vite ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)) |
+| Web interface | React, TypeScript, Vite ([ADR-0001](docs/adr/0001-uygulama-mimarisi-ve-stack.md)); three.js for the 3D Moon, loaded only when the 3D view opens |
 | Server | Python 3.11+, FastAPI, Uvicorn ([`backend/`](backend/README.md)) |
 | Ephemeris | NASA NAIF SPICE through SpiceyPy (DE440, `MOON_ME` frame); JPL Horizons only for validation |
 | Terrain | LOLA height maps (PGDA product 90) read with rasterio; NumPy for ray casting |
@@ -150,14 +151,15 @@ The API answers under <http://127.0.0.1:8000/api>, for example `/api/health` and
 4. Add scenarios (another site, another date) and open the comparison to see them side by side, with the best value per metric and a "why" card for each difference.
 5. In the Plan door, open **Site recommendation**, set the weights and limits and rank the Mons Mouton sites for the active period and mast; use a ranked site as the scenario or add the top three to the comparison.
 6. Open the **Comms** tab (the **Earth link** panel in Plan, **Talking to Earth** in Explore and Classroom) to see the link windows over the period, which ground stations see the Moon at the selected moment, and when a relay would be needed.
-7. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
+7. Switch the map to **3D Moon** (or open the **3D Moon** panel in Explore and Classroom) to see the sites and candidate regions on a globe lit for the selected moment; drag to turn it and pick a place from the list.
+8. Switch between Plan, Explore and Classroom for the same scenario at a different level of detail.
 
 Main endpoints ([ADR-0004](docs/adr/0004-api-uc-noktalari.md)):
 
 | Endpoint | Returns |
 | -------- | ------- |
 | `/api/sky-series` | Sun and Earth azimuth, elevation, distance and apparent radius over time |
-| `/api/body-series` | Sub-solar and sub-Earth points on the Moon (`MOON_ME`) and the Earth distance over time |
+| `/api/body-series` | Sub-solar and sub-Earth points on the Moon (`MOON_ME`), sub-lunar and sub-solar points on the Earth (`IAU_EARTH`) and the Earth distance over time |
 | `/api/events` | Rise and set events, windows, summary metrics, eclipses and the relay label |
 | `/api/now`, `/api/comm-window` | State at an instant and time to the next change |
 | `/api/power` | Hourly panel power and summary |
@@ -195,7 +197,7 @@ The server tests need the SPICE kernels; run `python backend/scripts/download_ke
 
 `python backend/scripts/run_validation.py --in-process` runs the reference tests of [docs/PLAN.md, 4.2](docs/PLAN.md) against the endpoints without a separate server and writes [`data/validation_report.json`](data/validation_report.json) and [`docs/validation-report.md`](docs/validation-report.md). Without `--in-process` it calls a server on port 8000. The first run also reads one NASA map window over the network for the approximate comparison T6; `--no-t6` skips it.
 
-Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The current run ([`docs/validation-report.md`](docs/validation-report.md)) has 69 passing checks, no failures and one approximate comparison (T6); T8 checks the sub-solar and sub-Earth points against JPL Horizons and T9 the limits of the candidate regions. The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
+Every expected value in the report comes from a row marked verified in [`docs/research/dogrulama/`](docs/research/dogrulama/), and thresholds are never relaxed. The current run ([`docs/validation-report.md`](docs/validation-report.md)) has 85 passing checks, no failures and one approximate comparison (T6); T8 checks the sub-solar and sub-Earth points on the Moon against JPL Horizons, T9 the limits of the candidate regions and T10 the sub-lunar and sub-solar points on the Earth against JPL Horizons. The project page text summarises the tests: [docs/submission/project-description.md](docs/submission/project-description.md).
 
 ## Known Limits
 
@@ -203,18 +205,19 @@ Every expected value in the report comes from a row marked verified in [`docs/re
 - **Panel profiles are assumptions.** Area, efficiency and mounting are generic values, labelled `SYNTHETIC`.
 - **Accident causes are not computed.** Past missions show the measured environment; causes are quoted only from official sources with an evidence label.
 - **Relay satellites are not modelled.** The relay label and the link view's "relay needed" only say that Earth is not in line of sight; the relay drawn in the link schematic is labelled "Illustration".
-- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, with Earth's rotation from the `IAU_EARTH` model (no nutation, no UT1 correction); the 10° minimum station elevation is an assumption.
+- **Station view is simplified.** Ground station visibility is computed for the Moon's centre, not for the site, with Earth's rotation from the `IAU_EARTH` model (no nutation, no UT1 correction); the 10° minimum station elevation is an assumption. The same model gives the sub-lunar and sub-solar points on the Earth in `/api/body-series`, so their longitudes can be off by up to 0.1° (T10).
 - **The score is not a landing safety guarantee.** It ranks sites for the weights the user chose. The 12° slope limit is the Apollo lunar module's landing limit (SP-2013-605, [verified in gorev-araclari.md, row 89](docs/research/dogrulama/gorev-araclari.md)); the other thresholds are assumptions and are marked as such.
 - **No rocks or small craters.** Candidate regions and their scores come from 20 m maps; boulders and craters smaller than a cell are not in the data.
+- **The 3D Moon is a plain grey sphere.** It has no surface texture yet and no terrain relief; its light comes from the server's Sun direction for the nearest hourly sample, and nothing on it casts shadows.
 - **Eclipses** treat Earth as a sharp disk and the Sun as uniformly bright.
 - **Terrain horizon accuracy** is compared with NASA's illumination map only approximately (T6).
-- **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site. There is no live 3D view.
+- **Illustrations are not the product's calculation.** The images were rendered in Unreal Engine for one recorded moment per scene, with the Sun and Earth directions of that moment from JPL DE421; they are not computed for the chosen site and moment, and the terrain is procedural. An image shows a kind of terrain, not the ground at the chosen site.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    User --> UI[Web interface<br/>React + Vite]
+    User --> UI[Web interface<br/>React + Vite, three.js]
     UI -- "/api (JSON)" --> API[FastAPI server]
     API --> Core[Core: ephemeris, events,<br/>power, comm, eclipses,<br/>stations, recommendation]
     API --> Terrain[Terrain: horizon profiles,<br/>map layers, candidates]
@@ -283,6 +286,7 @@ Main open source dependencies and their licences, read from the installed packag
 | NumPy | BSD-3-Clause (bundled parts: 0BSD, MIT, Zlib, CC0-1.0) |
 | rasterio | BSD |
 | React, Vite, Vitest | MIT |
+| three.js | MIT |
 | TypeScript | Apache-2.0 |
 
 All are compatible with this project's Apache 2.0 licence.
