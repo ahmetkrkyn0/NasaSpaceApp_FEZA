@@ -5,7 +5,9 @@ data: the Sun, shadows, stars and lander in them were set in the renders for one
 scene, not by the product's calculation, and the terrain shows a kind of ground, not the chosen site.
 The product's computed Sun and Earth positions are in the horizon strip.
 
-Every field must be filled before submission. `pending` marks a field that is not known yet.
+Every field below is filled. No image-generating AI tool (such as Midjourney, DALL·E, Gemini or Grok)
+was used for any of these images or loops: they are Unreal Engine renders, NASA imagery and team
+FEZA's own models and scripts, as listed below.
 
 ## Moon surface scenes
 
@@ -32,9 +34,9 @@ Files: `stations/dsn-goldstone/`, `stations/dsn-madrid/`, `stations/dsn-canberra
 | Prepared by | Berke Kuş |
 | Tool | Unreal Engine 5.8 (offline renders, same capture as above). Not Unity |
 | Other tools used in production | Python scripts for the terrain and scene building (`tools/make_station_terrain.py`, `make_dsn_data.py`, `ue_build_stations.py`); skyfield with JPL DE421 for the Moon and Sun directions and the Moon's phase at one recorded moment per station; ffmpeg for the loops |
-| Antenna model | "Deep Space Network 70-meter" glTF model (Blender-exported; dish, collector and axes were separated in Unreal and turned about azimuth and elevation pivots so the dish points at the Moon). The file is kept as `data/raw/dsn70/dsn70.glb`. **pending:** the download page and licence were not recorded; whoever downloaded it must confirm the source (the name matches NASA's 70-metre DSN model) before submission |
+| Antenna model | "Deep Space Network 70-meter" glTF model (Blender-exported; dish, collector and axes were separated in Unreal and turned about azimuth and elevation pivots so the dish points at the Moon). Source: NASA Science, "Deep Space Network 70 Meter Antenna 3D Model" (<https://science.nasa.gov/resource/deep-space-network-70-meter-antenna-3d-model/>), prepared by NASA Visualization Technology Applications and Development (VTAD); page dated 22 April 2019, download files dated 9 September 2023; file `DSN_70M.glb` (glTF, 6.21 MB), kept in the Unreal workspace as `data/raw/dsn70/dsn70.glb`; accessed 15 November 2026 |
 | Terrain and textures | Terrain is procedural (synthetic relief with dry washes and hills, `tools/make_station_terrain.py`); only the station coordinates and the Moon and Sun directions are real, the surroundings are not the real site. Ground textures: Poly Haven (CC0, Rob Tuytel): `dry_ground_rocks` (Goldstone), `aerial_grass_rock` (Madrid), `grass_path_3` (Canberra). Plants and rocks: Poly Haven models (CC0): `wild_rooibos_bush`, `searsia_lucida`, `searsia_burchellii`, `namaqualand_boulder_02/05/06`, `namaqualand_rocks_01`, `stone_01`, `island_tree_01/02`, `jacaranda_tree`, `pine_sapling_small`, `shrub_02`, `grass_medium_02`, `grass_bermuda_01`, `rock_07`, `boulder_01` (authors: James Ray Cock, Jenelle van Heerden, Greg Zaal, Rico Cilliers, Rob Tuytel, Dario Barresi). Sky: Unreal SkyAtmosphere. Moon in the sky: NASA SVS 4720 textures |
-| Licence of third-party parts | Poly Haven: CC0. NASA SVS 4720: NASA media usage guidelines. Antenna model: **pending** (see above) |
+| Licence of third-party parts | Poly Haven: CC0. NASA SVS 4720: NASA media usage guidelines. Antenna model: the page states no licence of its own, so the NASA "Images and Media" guidelines apply (<https://www.nasa.gov/nasa-brand-center/images-and-media/>): NASA content, including the texture and polygon data of 3D models, is generally not subject to copyright in the United States and may be used for educational and informational purposes; NASA is credited as the source; no NASA endorsement is implied. No NASA insignia or logo appears in the station images |
 
 ## Earth globe
 
