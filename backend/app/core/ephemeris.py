@@ -45,6 +45,22 @@ class BodyPosition:
     radius_deg: float
 
 
+@dataclass(frozen=True)
+class SubPoints:
+    """Sub-solar and sub-Earth points on the Moon at one instant (``MOON_ME``).
+
+    Seen from the Moon's centre with the ``LT+S`` correction, so the Sun and
+    the Earth are where they appear from the Moon at that instant. On the
+    1737.4 km reference sphere the sub-point is the direction to the body.
+    """
+
+    sub_solar_lat_deg: float
+    sub_solar_lon_deg: float
+    sub_earth_lat_deg: float
+    sub_earth_lon_deg: float
+    earth_distance_km: float
+
+
 def _ensure_loaded_locked(kernel_dir: Path) -> None:
     """Load the kernels from ``kernel_dir``; the caller holds the lock."""
 
@@ -219,14 +235,8 @@ def parse_utc(text: str, name: str = "utc") -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def body_positions(
-    lat_deg: float,
-    lon_deg: float,
-    height_m: float,
-    times: Sequence[datetime],
-    body: Literal["SUN", "EARTH"],
-) -> list[BodyPosition]:
-    """Return the apparent position of ``body`` for every time in ``times``."""
+def _checked_times(times: Sequence[datetime]) -> list[datetime]:
+    """Return ``times`` as UTC datetimes; raise ``DateOutOfRange`` outside the kernels."""
 
     start, end = ephemeris_range()
 
@@ -242,6 +252,59 @@ def body_positions(
                 f"{format_utc(start)} to {format_utc(end)}."
             )
         normalized.append(moment)
+    return normalized
+
+
+def wrap_lon_deg(lon_deg: float) -> float:
+    """Wrap a longitude into [-180, 180) degrees (ADR-0002 rule 3)."""
+
+    return (lon_deg + 180.0) % 360.0 - 180.0
+
+
+def sub_points(times: Sequence[datetime]) -> list[SubPoints]:
+    """Return the sub-solar and sub-Earth points for every time in ``times``."""
+
+    normalized = _checked_times(times)
+
+    with _LOCK:
+        try:
+            return _sub_points_locked(normalized)
+        except SpiceyError as exc:
+            raise _unusable(get_settings().kernel_dir, exc) from None
+
+
+def _sub_points_locked(times: Sequence[datetime]) -> list[SubPoints]:
+    """SPICE part of ``sub_points``; the caller holds the lock."""
+
+    results: list[SubPoints] = []
+    for moment in times:
+        et = spiceypy.str2et(to_spice_utc(moment))
+        sun, _ = spiceypy.spkpos("SUN", et, "MOON_ME", "LT+S", "MOON")
+        earth, _ = spiceypy.spkpos("EARTH", et, "MOON_ME", "LT+S", "MOON")
+        _, sun_lon, sun_lat = spiceypy.reclat(sun)
+        earth_range, earth_lon, earth_lat = spiceypy.reclat(earth)
+        results.append(
+            SubPoints(
+                sub_solar_lat_deg=math.degrees(sun_lat),
+                sub_solar_lon_deg=wrap_lon_deg(math.degrees(sun_lon)),
+                sub_earth_lat_deg=math.degrees(earth_lat),
+                sub_earth_lon_deg=wrap_lon_deg(math.degrees(earth_lon)),
+                earth_distance_km=float(earth_range),
+            )
+        )
+    return results
+
+
+def body_positions(
+    lat_deg: float,
+    lon_deg: float,
+    height_m: float,
+    times: Sequence[datetime],
+    body: Literal["SUN", "EARTH"],
+) -> list[BodyPosition]:
+    """Return the apparent position of ``body`` for every time in ``times``."""
+
+    normalized = _checked_times(times)
 
     with _LOCK:
         try:

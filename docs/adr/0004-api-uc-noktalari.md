@@ -33,6 +33,7 @@ Saha isteyen her uç nokta şu iki biçimden birini kabul eder:
 | GET | `/api/sites` | `category` (isteğe bağlı) | `Site` dizisi | Hazır saha listesi |
 | GET | `/api/horizon` | konum, `mast_height_m` | `HorizonProfile` | Ufuk profili. Hazır sahada dosyadan; özel koordinatta ilk sürümde düz ufuk (`method: sphere`) |
 | GET | `/api/sky-series` | konum, `start_utc`, `hours`, `step_minutes` | `SkySeries` | Güneş ve Dünya'nın zaman içindeki konumu |
+| GET | `/api/body-series` | `utc` ya da `start_utc`, `end_utc`, `step_s` (isteğe bağlı, varsayılan 3600) | `BodySeries` | Ay üzerinde Güneş altı ve Dünya altı noktası, Dünya uzaklığı (`MOON_ME`) |
 | GET | `/api/events` | konum, `start_utc`, `end_utc`, `earth_criterion` | `EventList` | Doğuş ve batış anları, pencereler, özet ölçüler |
 | GET | `/api/now` | konum, `utc`, `earth_criterion` | `NowStatus` | Verilen anda durum ve kalan süreler |
 | GET | `/api/comm-window` | konum, `utc`, `earth_criterion` | `CommWindow` | Dünya ile doğrudan iletişim durumu |
@@ -62,6 +63,7 @@ Ekstra özellikler için uç noktalar, o özellik yapılırsa eklenir: `/api/ecl
 - `hours` en fazla 24 çarpı 60 (iki ay). Daha uzun aralık için `step_minutes` büyütülür.
 - `step_minutes` en az 1.
 - `/api/sky-series` iki ucu da içerir: ilk örnek `start_utc` anındadır, son örnek aralığın sonundadır. `hours` 24 ve `step_minutes` 60 ise 25 örnek döner; `hours` sıfırsa tek örnek döner. Doğrulama testleri tek bir an için bu yolla sorgu yapar ([dogrulama-plani.md](../design/dogrulama-plani.md), bölüm 5).
+- `/api/body-series` ya tek an için yalnızca `utc` alır ya da `start_utc` ve `end_utc` alır; ikisi birlikte verilirse `invalid_parameter`. Aralık iki ucu da içerir (`/api/sky-series` gibi), `end_utc` `start_utc`'den önce olamaz, eşitse tek örnek döner. Aralık en fazla 24 çarpı 60 saat (iki ay), `step_s` en az 60, örnek sayısı en fazla 10 000 (iki ay için en küçük adım 600 s). Ölçülen süre (15 Kasım 2026, tek istek, FastAPI test istemcisi, yukarıdakinden farklı bir makine): 60 gün, 600 s adım, 8641 örnek 0,41 s.
 - `/api/events` ve `/api/power` aralığı (`end_utc` eksi `start_utc`) sıfırdan büyük ve en fazla 24 çarpı 60 saattir (iki ay). `/api/power` saatlik örnek verir ve iki ucu da içerir: 1 Aralık 00:00 ile 1 Ocak 00:00 arası 745 örnektir.
 - `/api/now` ve `/api/comm-window` sonraki değişimi en fazla 720 saat (30 gün) ileride arar. Bulamazsa süre alanları `null`, `search_limited` `true` olur. `/api/now` gece süresini (`night_hours`) de aynı uzunlukta geriye ve ileriye arar.
 - `/api/compare` en az 2, en fazla 4 senaryo alır; `scenario_id` değerleri farklı olmalıdır. Her senaryo `/api/events` ve `/api/power` sınırlarına uyar.
@@ -81,7 +83,7 @@ Hata kodları:
 | HTTP | `code` | Ne zaman |
 |---|---|---|
 | 404 | `site_not_found` | `site_id` listede yok |
-| 422 | `invalid_parameter` | Eksik ya da aralık dışı parametre (enlem, boylam, `mast_height_m`, `step_minutes`) |
+| 422 | `invalid_parameter` | Eksik ya da aralık dışı parametre (enlem, boylam, `mast_height_m`, `step_minutes`, `step_s`) |
 | 422 | `date_out_of_range` | Tarih hesaplanabilen aralığın dışında. `message` geçerli aralığı söyler; aralık `/api/health` yanıtındaki `ephemeris_range` ile aynıdır |
 | 422 | `too_many_scenarios` | `/api/compare` isteğinde 4'ten çok senaryo |
 | 503 | `data_unavailable` | SPICE dosyaları ya da gereken veri dosyası yüklenemedi |
@@ -114,3 +116,4 @@ Yapılacaklar:
 - 14 Kasım 2026, kullanım senaryolarıyla eşleştirme ([use-cases-and-scenarios.md](../product/use-cases-and-scenarios.md), [PLAN.md](../PLAN.md)): `/api/health` yanıtına `ephemeris_range` ve hata kodlarına `date_out_of_range` eklendi (`UC-03`, aralık dışı tarih). `/api/power` isteğine `fixed_azimuth_deg` eklendi (`UC-06`). Harita katmanı adları, `region` değeri ve `X-Layer-Bounds` başlığı tanımlandı (`UC-12`). `/api/validation` (`UC-10`) ve `/api/ground-stations` (`UC-07`) destekleyici uç nokta olarak eklendi. Hata kodları tablosu eklendi. `/api/sky-series` yanıtının iki ucu da içerdiği "Sınırlar" bölümüne yazıldı.
 - 14 Kasım 2026, F2-A ([#37](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/37)): "Sınırlar" bölümüne `/api/events`, `/api/power`, `/api/now`, `/api/comm-window` ve `/api/compare` sınırları ile ölçülen süreler yazıldı; ölçülmemiş sınır varsayımı kaldırıldı.
 - 14 Kasım 2026, F3-B ([#43](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/43)): `/api/validation` biçimi yazıldı. Rapor satırlarına `condition` ve `kind` alanları, `status` değerlerine ve `summary` sayılarına `info` eklendi (T6, yaklaşık karşılaştırma); T3 satırları birim testten yazılır ve `endpoint` `null` olur.
+- 15 Kasım 2026, [#98](https://github.com/ahmetkrkyn0/NasaSpaceApp_FEZA/issues/98): `GET /api/body-series` uç noktası tabloya, sınırları "Sınırlar" bölümüne eklendi; `step_s` hata kodları tablosuna yazıldı.
