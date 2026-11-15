@@ -12,11 +12,12 @@ import {
   RECORDED_UTC,
   checkGoals,
   dateAt,
-  dateCount,
   earthReason,
   goalLines,
   land,
+  levelMonths,
   missionScenario,
+  monthOf,
   resultSentence,
   stars,
   type GameAnswer,
@@ -124,6 +125,19 @@ export function AttemptList({ attempts }: { attempts: readonly Attempt[] }) {
   );
 }
 
+/** Level buttons; off while a landing is computed, so an answer never arrives under another level (PR #78 review). */
+export function LevelPicker({ levelId, landing, onChoose }: { levelId: string; landing: boolean; onChoose: (id: string) => void }) {
+  return (
+    <div className="d-choice" role="group" aria-label="Level">
+      {LEVELS.map((l) => (
+        <button key={l.id} type="button" className="d-choice-option" aria-pressed={l.id === levelId} disabled={landing} onClick={() => onChoose(l.id)}>
+          {l.title}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function GamePanel() {
   const sitesResult = useAsync((signal) => getSites({}, { signal }), []);
   const sites = sitesResult.state.data ?? [];
@@ -135,6 +149,9 @@ export default function GamePanel() {
   const [result, setResult] = useState<Attempt | null>(null);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const date = dateAt(level, index);
+  // A level that spans many months is browsed a month at a time: the slider covers one month.
+  const months = levelMonths(level);
+  const month = monthOf(level, index);
 
   const chooseLevel = (id: string) => {
     setLevelId(id);
@@ -160,23 +177,37 @@ export default function GamePanel() {
   return (
     <section className="d-panel" aria-label="Landing window game">
       <PanelHeader title="Can you pick the landing date?" />
-      <div className="d-choice" role="group" aria-label="Level">
-        {LEVELS.map((l) => (
-          <button key={l.id} type="button" className="d-choice-option" aria-pressed={l.id === levelId} onClick={() => chooseLevel(l.id)}>
-            {l.title}
-          </button>
-        ))}
-      </div>
+      <LevelPicker levelId={levelId} landing={landing} onChoose={chooseLevel} />
       <p>{level.intro}</p>
       {result ? (
         <GameResult attempt={result} onRetry={() => setResult(null)} onOpenPlan={() => openInPlan(result, sites)} />
       ) : (
         <div className="d-section">
+          {months.length > 1 ? (
+            <label className="d-control">
+              <span className="d-control-label">Month</span>
+              <select className="d-select" value={month.key} disabled={landing} onChange={(e) => setIndex(months.find((m) => m.key === e.target.value)!.first)}>
+                {months.map((m) => (
+                  <option key={m.key} value={m.key}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label className="d-control">
             <span className="d-control-label">
               Landing date: <span className="data">{date}</span> · mission of {MISSION_DAYS} days
             </span>
-            <input type="range" min={0} max={dateCount(level) - 1} step={1} value={index} onChange={(e) => setIndex(Number(e.target.value))} />
+            <input
+              type="range"
+              min={month.first}
+              max={month.last}
+              step={1}
+              value={index}
+              disabled={landing}
+              onChange={(e) => setIndex(Number(e.target.value))}
+            />
           </label>
           <div className="d-row">
             <button type="button" className="d-button d-button-primary" disabled={landing} onClick={() => void onLand()}>

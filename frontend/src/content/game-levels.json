@@ -5,13 +5,13 @@
   "levels": [
     {
       "id": "equator",
-      "title": "Apollo 11, December 2026",
+      "title": "Apollo 11, any month",
       "site_id": "apollo-11",
       "date_min": "2026-12-01",
-      "date_max": "2026-12-30",
+      "date_max": "2027-11-30",
       "intro": "A site near the equator, where Apollo 11 landed. Pick a landing date that gives your two-week mission enough daylight and short nights.",
       "goals": { "sunlit_fraction_min": 0.5, "longest_dark_hours_max": 72, "earth_visible_fraction_min": 0.7 },
-      "calibration": "Live server, 14 November 2026 (UTC), 2 m mast (flat horizon at this site): all three goals hold for landings on 12 to 18 December; Earth is in view the whole time on every date."
+      "calibration": "Live server, 15 November 2026 (UTC), 2 m mast (flat horizon at this site), every landing date from 1 December 2026 to 30 November 2027: all three goals hold on seven dates in every month (12 to 18 December 2026, for example); Earth is in view the whole time on every date."
     },
     {
       "id": "polar-december",
@@ -26,13 +26,13 @@
     },
     {
       "id": "far-side",
-      "title": "Chang'e 4, December 2026",
+      "title": "Chang'e 4, any month",
       "site_id": "change-4",
       "date_min": "2026-12-01",
-      "date_max": "2026-12-30",
+      "date_max": "2027-11-30",
       "intro": "This site is on the far side of the Moon. Can you find a date when your lander can talk to Earth?",
       "goals": { "sunlit_fraction_min": 0.5, "longest_dark_hours_max": 72, "earth_visible_fraction_min": 0.7 },
-      "calibration": "Live server, 14 November 2026 (UTC), 2 m mast (flat horizon at this site): Earth is in view zero percent of the time on every date; the Sun goals hold for landings on 1 to 4 and 29 to 30 December.",
+      "calibration": "Live server, 15 November 2026 (UTC), 2 m mast (flat horizon at this site), every landing date from 1 December 2026 to 30 November 2027: Earth is in view zero percent of the time on every date, so the Earth goal never holds; the Sun goals hold on some dates in every month (1 to 4 December 2026, for example). The server reports relay status unknown, because a two-week mission is shorter than the month its relay rule needs.",
       "never_earth": {
         "text": "Earth never rose above the horizon during your mission. This site is on the far side: when it was checked for a whole year, Earth stayed below the horizon all the time. A lander here needs a relay satellite to talk to Earth.",
         "source": { "label": "JPL Horizons, Chang'e 4 site", "file": "docs/research/dogrulama/aciklanabilirlik.md", "row": "14" }
