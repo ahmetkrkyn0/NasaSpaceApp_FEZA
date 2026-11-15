@@ -16,7 +16,7 @@ Files: `scenes/moon-craters/`, `scenes/moon-plains/`, `scenes/moon-ridges/`
 
 | Item | Value |
 | --- | --- |
-| Prepared by | Berke Kuş |
+| Prepared by | Berke Kuş, team FEZA |
 | Tool | Unreal Engine 5.8 (offline renders: 1920 x 1080 editor screenshots downscaled to 1280 px, loops encoded with ffmpeg). Not Unity. Unreal is not used at run time |
 | Other tools used in production | Python scripts (NumPy, SciPy, Pillow) for the terrain, textures and scene building, kept in `tools/` of the Unreal workspace (`make_procedural_landscape.py`, `make_site_detail.py`, `make_ground_textures.py`, `ue_build_landscapes.py`); skyfield with JPL DE421 for the Sun and Earth directions at one recorded moment per scene; ffmpeg for the loops. Blender only for the Athena model (team FEZA's) |
 | Lander model | Team FEZA's Athena (IM-2) model, built from scratch in Blender by `shipmodel/tools/athena_build.py`; no third-party meshes or textures (`shipmodel/README.md`). Shown upright for scale. The file loaded in Unreal is byte-identical to `shipmodel/export/athena_lander.glb` (MD5 `ec0f9fffe8d317d18a84ccaa478f6de0`) |
@@ -31,7 +31,7 @@ Files: `stations/dsn-goldstone/`, `stations/dsn-madrid/`, `stations/dsn-canberra
 
 | Item | Value |
 | --- | --- |
-| Prepared by | Berke Kuş |
+| Prepared by | Berke Kuş, team FEZA |
 | Tool | Unreal Engine 5.8 (offline renders, same capture as above). Not Unity |
 | Other tools used in production | Python scripts for the terrain and scene building (`tools/make_station_terrain.py`, `make_dsn_data.py`, `ue_build_stations.py`); skyfield with JPL DE421 for the Moon and Sun directions and the Moon's phase at one recorded moment per station; ffmpeg for the loops |
 | Antenna model | "Deep Space Network 70-meter" glTF model (Blender-exported; dish, collector and axes were separated in Unreal and turned about azimuth and elevation pivots so the dish points at the Moon). Source: NASA Science, "Deep Space Network 70 Meter Antenna 3D Model" (<https://science.nasa.gov/resource/deep-space-network-70-meter-antenna-3d-model/>), prepared by NASA Visualization Technology Applications and Development (VTAD); page dated 22 April 2019, download files dated 9 September 2023; file `DSN_70M.glb` (glTF, 6.21 MB), kept in the Unreal workspace as `data/raw/dsn70/dsn70.glb`; accessed 15 November 2026 |
@@ -44,7 +44,7 @@ File: `stations/earth-globe/overview.jpg`.
 
 | Item | Value |
 | --- | --- |
-| Prepared by | Berke Kuş |
+| Prepared by | Berke Kuş, team FEZA |
 | Tool | Unreal Engine 5.8 (offline render). Not Unity |
 | Other tools used in production | Python scripts (`tools/ue_build_orbit.py`, `make_stars_clouds.py`, `make_sphere.py`); ffmpeg for the loops |
 | Earth and Moon textures | Earth day: NASA Blue Marble Next Generation (April 2004, topography and bathymetry). Earth night: NASA Black Marble 2016 (SVS 30876). Moon: NASA SVS 4720 CGI Moon Kit (LROC colour map; normal map built from the LOLA elevation map). Clouds and stars: procedural (`tools/make_stars_clouds.py`), not real weather or a real star catalogue |
