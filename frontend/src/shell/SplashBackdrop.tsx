@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { applyTheme, themeStore, type Theme } from './theme';
 
 /**
@@ -22,21 +22,53 @@ export function prefersReducedMotion(): boolean {
  */
 export function SplashBackdrop() {
   const [play, setPlay] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     if (prefersReducedMotion()) return;
     const id = window.requestAnimationFrame(() => setPlay(true));
     return () => window.cancelAnimationFrame(id);
   }, []);
 
+  const toggle = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (paused) void video.play().catch(() => undefined);
+    else video.pause();
+    setPaused(!paused);
+  };
+
   return (
-    <div className="splash-backdrop" aria-hidden="true">
-      {play ? (
-        <video className="splash-backdrop-media" src={BACKDROP_VIDEO_URL} poster={BACKDROP_POSTER_URL} autoPlay muted loop playsInline preload="auto" />
-      ) : (
-        <img className="splash-backdrop-media" src={BACKDROP_POSTER_URL} alt="" />
-      )}
-      <div className="splash-backdrop-shade" />
-    </div>
+    <>
+      <div className="splash-backdrop" aria-hidden="true">
+        {play ? (
+          <video
+            ref={videoRef}
+            className="splash-backdrop-media"
+            src={BACKDROP_VIDEO_URL}
+            poster={BACKDROP_POSTER_URL}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+          />
+        ) : (
+          <img className="splash-backdrop-media" src={BACKDROP_POSTER_URL} alt="" />
+        )}
+        <div className="splash-backdrop-shade" />
+      </div>
+      {play ? <BackdropPauseButton paused={paused} onToggle={toggle} /> : null}
+    </>
+  );
+}
+
+/** Stops or restarts the moving background (WCAG 2.2.2: moving content can be paused). */
+export function BackdropPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () => void }) {
+  return (
+    <button type="button" className="splash-backdrop-toggle" aria-pressed={paused} onClick={onToggle}>
+      {paused ? 'Play background' : 'Pause background'}
+    </button>
   );
 }
 

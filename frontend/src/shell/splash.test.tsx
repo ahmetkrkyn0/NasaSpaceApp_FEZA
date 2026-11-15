@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { Splash } from './Splash';
-import { BACKDROP_CAPTION, BACKDROP_POSTER_URL, BACKDROP_VIDEO_URL, holdDarkTheme, prefersReducedMotion } from './SplashBackdrop';
+import { BACKDROP_CAPTION, BACKDROP_POSTER_URL, BACKDROP_VIDEO_URL, BackdropPauseButton, holdDarkTheme, prefersReducedMotion } from './SplashBackdrop';
 
 const publicFile = (url: string) => fileURLToPath(new URL(`../../public/${url.replace(/^\//, '')}`, import.meta.url));
 const credits = readFileSync(fileURLToPath(new URL('../../public/media/CREDITS.md', import.meta.url)), 'utf8');
@@ -61,5 +61,21 @@ describe('opening screen theme', () => {
     const release = holdDarkTheme(() => 'dark', root);
     release();
     expect(root.attrs.has('data-theme')).toBe(false);
+  });
+});
+
+describe('pausing the background', () => {
+  it('offers a keyboard button that says what it does and whether the video is paused', () => {
+    const playing = renderToStaticMarkup(<BackdropPauseButton paused={false} onToggle={() => undefined} />);
+    expect(playing).toContain('<button type="button"');
+    expect(playing).toContain('aria-pressed="false"');
+    expect(playing).toContain('Pause background');
+    const paused = renderToStaticMarkup(<BackdropPauseButton paused onToggle={() => undefined} />);
+    expect(paused).toContain('aria-pressed="true"');
+    expect(paused).toContain('Play background');
+  });
+
+  it('shows no button while only the still poster is drawn (first paint, reduced motion)', () => {
+    expect(renderToStaticMarkup(<Splash onEnter={() => undefined} />)).not.toContain('background</button>');
   });
 });

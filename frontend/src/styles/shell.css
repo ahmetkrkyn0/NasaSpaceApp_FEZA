@@ -478,3 +478,18 @@
   border-radius: var(--radius);
   color: var(--text-2);
 }
+
+/* Pauses the moving background; it sits above the shade, out of the way of the main button. */
+.splash-backdrop-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-button);
+  border-radius: var(--radius);
+  background: var(--void);
+  color: var(--text-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-micro);
+  cursor: pointer;
+}
