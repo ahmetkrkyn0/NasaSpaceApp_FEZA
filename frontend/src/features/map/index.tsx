@@ -144,7 +144,7 @@ export default function MapPanel() {
           );
         })}
       </span>
-      {!terrain.enabled && terrain.reason ? <p className="map-note">3D terrain: {terrain.reason}</p> : null}
+      {!terrain.enabled && terrain.reason ? <p className="map-note map-dimension-note">3D terrain: {terrain.reason}</p> : null}
     </>
   );
 
@@ -187,12 +187,12 @@ export default function MapPanel() {
     <section className="map-panel" aria-label="Map">
       {switcher}
       {sites.status === 'error' ? (
-        <p className="map-note" role="alert">
+        <p className="map-note map-dimension-note" role="alert">
           Sites could not be loaded: {describeError(sites.error)}
         </p>
       ) : null}
       {recommend.candidatesStatus === 'error' ? (
-        <p className="map-note" role="status">
+        <p className="map-note map-dimension-note" role="status">
           Candidate regions could not be loaded: {describeError(recommend.candidatesError)}
         </p>
       ) : null}

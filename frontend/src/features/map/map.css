@@ -226,3 +226,10 @@
   width: fit-content;
   margin: 0 0 8px auto;
 }
+
+/* Notes right under the view switcher sit on the right too, clear of the countdown overlay. */
+.map-dimension-note {
+  max-width: 60%;
+  margin-left: auto;
+  text-align: right;
+}
