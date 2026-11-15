@@ -1,0 +1,20 @@
+{
+  "name": "elevation",
+  "region": "mons-mouton",
+  "rows": 500,
+  "cols": 500,
+  "x_min": 67100.0,
+  "y_min": 128380.0,
+  "x_max": 87100.0,
+  "y_max": 148380.0,
+  "resolution_m": 40.0,
+  "unit": "m",
+  "product": "PGDA 90 LDEM_80S_20MPP_ADJ",
+  "url": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_20MPP_ADJ.TIF",
+  "validity": "MEASURED",
+  "downsample": 2,
+  "title": "Elevation",
+  "description": "Height above the 1737.4 km reference sphere, from the LOLA 20 m map.",
+  "downsample_method": "mean",
+  "source_max": 6219.47412109375
+}

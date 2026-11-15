@@ -493,6 +493,7 @@ export interface Health {
   ok: boolean;
   kernels_loaded: boolean;
   dem_available: boolean;
+  layers_available?: boolean;
   /** Dates the server can compute; outside it the server answers `date_out_of_range`. */
   ephemeris_range: { start_utc: UtcString | null; end_utc: UtcString | null };
 }

@@ -1,7 +1,10 @@
 """Map layers: stored grids for a region, served as raw float32 arrays.
 
 ``backend/scripts/make_layers.py`` reads one window per layer from the PGDA 90
-maps and writes two files per layer under ``data/raw/layers/``:
+maps and writes two files per layer under ``data/raw/layers/`` (full
+resolution, not committed); ``--bundle`` writes a block-averaged copy under
+``data/layers/`` that ships with the repository. The server reads the full
+resolution copy when it exists and the bundled one otherwise. Each copy has:
 
 - ``<region>_<name>.f32``: row-major little-endian float32, north up, NaN for
   missing cells;
@@ -60,6 +63,23 @@ LAYER_DESCRIPTIONS: dict[str, str] = {
 """Name and description shown with a layer (kalici-golge-katmani.md, 6: the
 ``psr`` text makes no ice claim)."""
 
+DOWNSAMPLE_METHODS: dict[str, str] = {
+    "elevation": "mean",
+    "hillshade": "mean",
+    "slope": "mean",
+    "psr": "fraction",
+}
+"""How a bundled layer combines each block of 20 m cells: ``mean`` is the mean
+of the valid cells; ``fraction`` (``psr``) is the share of permanently
+shadowed cells, so a bundled ``psr`` cell is a value from 0 to 1. A block with
+no valid cell stays NaN. The full resolution maximum is kept in
+``source_max``, since block means lower the peaks (slope above all)."""
+
+BUNDLED_PSR_NOTE = (
+    "In the bundled copy each cell is the fraction of its 20 m cells that are "
+    "permanently shadowed."
+)
+
 LAYER_UNITS: dict[str, str] = {
     "elevation": "m",
     "hillshade": "DN",
@@ -112,6 +132,8 @@ class LayerMeta:
     downsample: int = 1
     title: str = ""
     description: str = ""
+    downsample_method: str | None = None
+    source_max: float | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -157,9 +179,91 @@ def _num(value: float) -> str:
 
 
 def layers_dir(data_dir: Path) -> Path:
-    """``<data_dir>/raw/layers``."""
+    """``<data_dir>/raw/layers``: full resolution copy, built locally."""
 
     return Path(data_dir) / "raw" / "layers"
+
+
+def bundled_layers_dir(data_dir: Path) -> Path:
+    """``<data_dir>/layers``: downsampled copy committed to the repository."""
+
+    return Path(data_dir) / "layers"
+
+
+def layer_dirs(data_dir: Path) -> tuple[Path, Path]:
+    """Folders searched for a layer, in order: full resolution, then bundled."""
+
+    return layers_dir(data_dir), bundled_layers_dir(data_dir)
+
+
+def layer_exists(directory: Path, region: str, name: str) -> bool:
+    return all(path.is_file() for path in layer_paths(directory, region, name))
+
+
+def find_layer(data_dir: Path, region: str, name: str) -> Layer:
+    """Load ``region``/``name`` from the first folder of ``layer_dirs`` that
+    holds both files. Raises ``FileNotFoundError`` when neither does."""
+
+    for directory in layer_dirs(data_dir):
+        if layer_exists(directory, region, name):
+            return load_layer(directory, region, name)
+    raise FileNotFoundError(f"layer {region}/{name} is not available")
+
+
+def layers_available(data_dir: Path) -> bool:
+    """True when every layer of every region is present in one of the folders."""
+
+    return all(
+        any(layer_exists(d, region, name) for d in layer_dirs(data_dir))
+        for region in REGIONS
+        for name in LAYER_NAMES
+    )
+
+
+def downsample_values(values: np.ndarray, factor: int) -> np.ndarray:
+    """Mean of the valid cells in each ``factor`` x ``factor`` block.
+
+    Rows and columns that do not fill a whole block are dropped; a block
+    without a valid cell is NaN. For a 0/1 mask the mean is the fraction of
+    ones, which is the ``fraction`` method."""
+
+    values = np.asarray(values, dtype=np.float64)
+    rows, cols = (values.shape[0] // factor) * factor, (values.shape[1] // factor) * factor
+    blocks = values[:rows, :cols].reshape(rows // factor, factor, cols // factor, factor)
+    valid = np.isfinite(blocks)
+    count = valid.sum(axis=(1, 3))
+    total = np.where(valid, blocks, 0.0).sum(axis=(1, 3))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = np.where(count > 0, total / count, np.nan)
+    return out.astype(np.float32)
+
+
+def downsample_layer(layer: Layer, factor: int) -> Layer:
+    """Block-averaged copy of a full resolution layer (``DOWNSAMPLE_METHODS``)."""
+
+    if factor < 2:
+        raise ValueError("factor must be at least 2")
+    m = layer.meta
+    values = downsample_values(layer.values, factor)
+    rows, cols = values.shape
+    finite = layer.values[np.isfinite(layer.values)]
+    description = m.description
+    if m.name == "psr" and BUNDLED_PSR_NOTE not in description:
+        description = description.replace("Shadow only.", f"{BUNDLED_PSR_NOTE} Shadow only.")
+    meta = LayerMeta.from_dict({
+        **m.to_dict(),
+        "rows": rows,
+        "cols": cols,
+        # The bounds shrink only if a partial block was dropped.
+        "x_max": m.x_min + cols * factor * m.resolution_m,
+        "y_min": m.y_max - rows * factor * m.resolution_m,
+        "resolution_m": m.resolution_m * factor,
+        "downsample": m.downsample * factor,
+        "downsample_method": DOWNSAMPLE_METHODS[m.name],
+        "source_max": float(finite.max()) if finite.size else None,
+        "description": description,
+    })
+    return Layer(meta=meta, values=values)
 
 
 def layer_paths(directory: Path, region: str, name: str) -> tuple[Path, Path]:
