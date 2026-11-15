@@ -20,6 +20,13 @@ describe('ground station content (issue #81)', () => {
     expect(STATIONS_CONTENT.source.url).toMatch(/^https:\/\/www\.nasa\.gov\//);
   });
 
+  it('lists the antennas of a site as NASA does: one 70 m, one 26 m, multiple 34 m (PR #86 review)', () => {
+    const madrid = GROUND_STATIONS.find((s) => s.id === 'dsn-madrid')!;
+    expect(madrid.text).toContain('one huge 230-foot (70-meter) antenna');
+    expect(madrid.text).toContain('one 85-foot (26-meter) antenna');
+    expect(madrid.text).toContain('multiple 112-foot (34-meter) antennas');
+  });
+
   it('every picture it names exists under frontend/public/media/stations/', () => {
     const images = [STATIONS_CONTENT.globe.image, ...GROUND_STATIONS.map((s) => s.image)];
     for (const image of images) {
