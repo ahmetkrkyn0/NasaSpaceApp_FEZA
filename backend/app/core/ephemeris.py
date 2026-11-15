@@ -22,6 +22,13 @@ from app.settings import KERNEL_FILES, get_settings
 MOON_RADIUS_KM = 1737.4
 AU_KM = 149597870.7
 
+WGS84_A_KM = 6378.137
+WGS84_F = 1.0 / 298.257223563
+"""WGS 84 ellipsoid: the datum of the DSN station coordinates (DSN 810-005, 301, Table 5)."""
+
+EARTH_FRAME = "IAU_EARTH"
+"""Earth orientation from the text PCK in the kernel set: no nutation, no UT1 correction."""
+
 EPHEMERIS_INFO = {
     "source": "SPICE DE440",
     "frame": "MOON_ME",
@@ -293,6 +300,49 @@ def _sub_points_locked(times: Sequence[datetime]) -> list[SubPoints]:
             )
         )
     return results
+
+
+def moon_elevations_from_earth(
+    lat_deg: float,
+    lon_deg: float,
+    height_m: float,
+    times: Sequence[datetime],
+) -> list[float]:
+    """Elevation of the Moon's centre seen from a point on Earth, in degrees, for every time.
+
+    The point is geodetic on the WGS 84 ellipsoid; elevation is above the plane
+    normal to the ellipsoid there. The Earth turns with ``IAU_EARTH`` and the
+    Moon's position uses ``LT+S``; no atmospheric refraction.
+    """
+
+    normalized = _checked_times(times)
+
+    with _LOCK:
+        try:
+            return _moon_elevations_locked(lat_deg, lon_deg, height_m, normalized)
+        except SpiceyError as exc:
+            raise _unusable(get_settings().kernel_dir, exc) from None
+
+
+def _moon_elevations_locked(
+    lat_deg: float,
+    lon_deg: float,
+    height_m: float,
+    times: Sequence[datetime],
+) -> list[float]:
+    """SPICE part of ``moon_elevations_from_earth``; the caller holds the lock."""
+
+    station = spiceypy.georec(
+        math.radians(lon_deg), math.radians(lat_deg), height_m / 1000.0, WGS84_A_KM, WGS84_F
+    )
+    elevations: list[float] = []
+    for moment in times:
+        et = spiceypy.str2et(to_spice_utc(moment))
+        state, _light_time = spiceypy.azlcpo(
+            "ELLIPSOID", "MOON", et, "LT+S", False, True, station, "EARTH", EARTH_FRAME
+        )
+        elevations.append(math.degrees(state[2]))
+    return elevations
 
 
 def body_positions(
