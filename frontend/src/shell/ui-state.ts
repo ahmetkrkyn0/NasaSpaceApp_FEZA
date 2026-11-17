@@ -1,4 +1,5 @@
 import type { Store } from '../lib/hooks';
+import { hasComparisonParams } from '../state/url-sync';
 
 export const DOORS = ['explore', 'classroom', 'plan'] as const;
 export type Door = (typeof DOORS)[number];
@@ -67,10 +68,18 @@ const browserUrl: UrlAdapter = {
 
 /**
  * Creates the UI state store. The door is mirrored in the address bar as
- * `?door=`; mode and tab live in memory only.
+ * `?door=`; mode and tab live in memory only. A link that opens the Plan door
+ * with a comparison starts in ANALYZE mode on the Compare tab, so a shared
+ * comparison is visible on arrival; every other link starts in PLAN mode on
+ * the Sky tab.
  */
 export function createUiStore(url: UrlAdapter = browserUrl): UiStore {
-  let state: UiState = { door: parseDoor(url.read().search), mode: 'plan', tab: 'sky' };
+  const search = url.read().search;
+  const door = parseDoor(search);
+  const opensComparison = door === 'plan' && hasComparisonParams(search);
+  let state: UiState = opensComparison
+    ? { door, mode: 'analyze', tab: 'compare' }
+    : { door, mode: 'plan', tab: 'sky' };
   const listeners = new Set<Listener>();
 
   const update = (next: Partial<UiState>) => {
