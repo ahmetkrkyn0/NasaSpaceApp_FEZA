@@ -1,16 +1,23 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 import { getReferenceMissions } from '../../api/client';
+import { configureApi, resetApiConfig } from '../../api/config';
 import { referenceMissionsExample, sitesExample } from '../../api/examples';
+import { recordingIndex } from '../../api/recorded';
 import { EMPTY_SCENARIO_STATE, scenarioStore } from '../../state/scenario-store';
 import { scenarioDays } from '../../state/scenario-tools';
 import { MissionCard, loadDemo } from './index';
-import { ATHENA_CLOSING, EVIDENCE_LABEL, activeMission, demoScenarios, missionScenario } from './missions';
+import { ATHENA_CLOSING, EVIDENCE_LABEL, activeMission, caseRecorded, demoScenarios, missionScenario } from './missions';
 
-afterEach(() => scenarioStore.replaceState(EMPTY_SCENARIO_STATE));
+afterEach(() => {
+  scenarioStore.replaceState(EMPTY_SCENARIO_STATE);
+  resetApiConfig();
+});
 
 const missions = referenceMissionsExample;
 const byId = (id: string) => missions.find((m) => m.id === id)!;
+/** Rendered text without tags, with the apostrophe entity decoded. */
+const text = (html: string) => html.replace(/<[^>]+>/g, '').replaceAll('&#x27;', "'").replace(/\s+/g, ' ');
 
 describe('past missions', () => {
   it('lists the six cases of the design document', async () => {
@@ -61,6 +68,42 @@ describe('past missions', () => {
     expect(slim).not.toContain(ATHENA_CLOSING);
     expect(slim).not.toContain('Load demo');
     expect(ATHENA_CLOSING).toBe('We do not claim to explain why a mission failed. We show how the sky differs between sites and dates.');
+  });
+
+  it('no case is covered by the recordings, which hold one period and mast; a recorded scenario is', () => {
+    for (const mission of missions) expect(caseRecorded(missionScenario(mission, sitesExample)), mission.id).toBe(false);
+    const recorded = {
+      ...missionScenario(byId('slim'), sitesExample),
+      start_utc: recordingIndex.start_utc,
+      end_utc: recordingIndex.end_utc,
+      mast_height_m: recordingIndex.mast_height_m,
+    };
+    expect(caseRecorded(recorded)).toBe(true);
+    expect(caseRecorded({ ...recorded, mast_height_m: 0 })).toBe(false);
+    expect(caseRecorded({ ...recorded, start_utc: '2026-12-02T00:00:00Z' })).toBe(false);
+    expect(caseRecorded({ ...recorded, end_utc: '2026-12-30T00:00:00Z' })).toBe(false);
+    expect(caseRecorded({ ...recorded, site_id: 'unknown' })).toBe(false);
+  });
+
+  it('in example mode a case says it has no recording and that the views show general examples', () => {
+    const note =
+      `Example data has no recorded answer for this case. The case uses ground level (0 m) from the landing moment; ` +
+      `the recordings cover ${recordingIndex.start_utc.slice(0, 10)} to ${recordingIndex.end_utc.slice(0, 10)} at a ` +
+      `${recordingIndex.mast_height_m} m mast. The sky view, countdown and timeline show general examples. ` +
+      'Add ?data=live to the address to compute this case.';
+    for (const id of ['slim', 'chandrayaan-3']) {
+      const html = renderToStaticMarkup(<MissionCard mission={byId(id)} missions={missions} sites={sitesExample} />);
+      expect(text(html)).toContain(note);
+      expect(html).toContain('role="note"');
+      expect(text(html)).not.toContain("product's own result");
+    }
+  });
+
+  it('in live mode a case keeps the product result sentence and no example note', () => {
+    configureApi({ mode: 'live' });
+    const html = renderToStaticMarkup(<MissionCard mission={byId('slim')} missions={missions} sites={sitesExample} />);
+    expect(text(html)).toContain("The sky view shows the product's own result for this moment.");
+    expect(html).not.toContain('Example data has no recorded answer');
   });
 
   it("Chinese missions use the NASA table coordinate and official statements only", () => {

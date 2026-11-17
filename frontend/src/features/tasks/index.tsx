@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { getSites } from '../../api/client';
 import { displayWithUnit } from '../../api/compare-metrics';
+import { getDataMode } from '../../api/config';
+import { recordingIndex } from '../../api/recorded';
 import type { Site } from '../../api/types';
 import { useAsync } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
@@ -80,13 +82,19 @@ function Answer({ task, sites }: { task: GuidedTask; sites: readonly Site[] }) {
   );
 }
 
-function TaskCard({ task, sites }: { task: GuidedTask; sites: readonly Site[] }) {
+export function TaskCard({ task, sites }: { task: GuidedTask; sites: readonly Site[] }) {
   const [revealed, setRevealed] = useState(false);
   return (
     <div className="d-card" aria-label={task.title}>
       <p className="d-card-title">{task.title}</p>
       <p>{task.question}</p>
       <p className="d-hint">Play the timeline and watch the horizon strip, then check your guess.</p>
+      {getDataMode() === 'examples' ? (
+        <p className="d-note d-note-example" role="note">
+          In example mode the table shows the verified example answers for ground level (0 m) where they exist; the sky strip and
+          countdown show general examples because the recordings use a {recordingIndex.mast_height_m} m mast.
+        </p>
+      ) : null}
       {revealed ? (
         <Answer task={task} sites={sites} />
       ) : (

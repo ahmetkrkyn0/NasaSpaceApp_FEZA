@@ -11,6 +11,10 @@ The Space Apps submission is released as `v1.0.0`.
 ### Fixed
 
 - Web interface: the five severity-3 findings of the heuristic evaluation (`docs/design/HEURISTIC_EVAL_lunar-landing-site-navigator.md`). Arrow, Home and End keys move between the right-rail result tabs. The countdown no longer reads every playback step aloud. The "no scenario" prompt no longer shows a button that does nothing in Explore, Classroom and Plan PLAN mode. Recommend shows the example-data note when the recorded answer does not match the request. The landing game keeps keyboard focus on the result and on the Land button.
+- Web interface: findings from preparing the usability evaluation plan.
+  - In example mode, mission cases say that no recorded answer covers them; they use a 0 m mast from the landing moment, while the recordings cover December 2026 at 2 m. Guided tasks say which of their numbers are the verified example answers. (#159)
+  - The role pages' links into the console keep the `?data=` mode. (#160)
+  - A shared comparison link opens the Plan door on the Compare tab. (#161)
 
 ## [1.0.0] - 2026-11-15
 

@@ -1,11 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { configureApi, resetApiConfig } from '../../api/config';
 import { sitesExample } from '../../api/examples';
+import { recordingIndex } from '../../api/recorded';
 import { scenarioDays } from '../../state/scenario-tools';
 import { MAX_DURATION_DAYS } from '../../state/scenario-tools';
-import TasksPanel, { AnswerTable, TaskExplanation } from './index';
+import TasksPanel, { AnswerTable, TaskCard, TaskExplanation } from './index';
 import { GUIDED_TASKS, fetchTaskAnswers, taskScenarios, taskState } from './tasks';
 
 const REPO = new URL('../../../../', import.meta.url);
@@ -105,5 +107,26 @@ describe('guided task state and answer', () => {
     expect(html).toContain('Assumed');
     const text = renderToStaticMarkup(<TaskExplanation task={earth} />);
     for (const s of earth.sources) expect(text).toContain(s.label.replaceAll("'", '&#x27;'));
+  });
+});
+
+describe('guided task example-mode note (#159)', () => {
+  afterEach(resetApiConfig);
+  const task = GUIDED_TASKS[0]!;
+  const note =
+    'In example mode the table shows the verified example answers for ground level (0 m) where they exist; the sky strip and countdown show ' +
+    `general examples because the recordings use a ${recordingIndex.mast_height_m} m mast.`;
+  const text = (html: string) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
+
+  it('an opened task says why the sky strip and countdown show general examples', () => {
+    const html = renderToStaticMarkup(<TaskCard task={task} sites={sitesExample} />);
+    expect(text(html)).toContain(note);
+    expect(html).toContain('role="note"');
+  });
+
+  it('live mode has no example note', () => {
+    configureApi({ mode: 'live' });
+    const html = renderToStaticMarkup(<TaskCard task={task} sites={sitesExample} />);
+    expect(html).not.toContain('In example mode');
   });
 });
