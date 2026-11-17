@@ -35,6 +35,20 @@ describe('role routes', () => {
     expect(liveHref('engineer', '/')).toBe('/?door=plan');
   });
 
+  it('keeps the data mode of the address in the link to the live console', () => {
+    for (const role of ROLES) {
+      expect(liveHref(role, '/', '?data=live')).toBe(`/?door=${ROLE_DOOR[role]}&data=live`);
+      expect(liveHref(role, '/', '')).toBe(`/?door=${ROLE_DOOR[role]}`);
+    }
+    expect(liveHref('public', '/', '?data=examples')).toBe('/?door=explore&data=examples');
+  });
+
+  it('copies no other parameter into the link to the live console', () => {
+    expect(liveHref('public', '/', '?site=apollo-11')).toBe('/?door=explore');
+    expect(liveHref('educator', '/', '?site=apollo-11&data=live&door=plan')).toBe('/?door=classroom&data=live');
+    expect(liveHref('engineer', '/', '?data=nonsense')).toBe('/?door=plan');
+  });
+
   it('leaves the opening screen as it was when the address has no role', () => {
     const html = renderToStaticMarkup(<App />);
     expect(html).toContain('splash-enter');
