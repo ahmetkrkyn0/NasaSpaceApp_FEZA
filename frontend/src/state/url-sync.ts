@@ -156,6 +156,14 @@ export function hasScenarioParams(params: URLSearchParams): boolean {
 }
 
 /**
+ * True when a query string carries at least one readable comparison entry, as a shared
+ * comparison link does. Unreadable `cmp` values do not count, since they load no comparison.
+ */
+export function hasComparisonParams(search: string): boolean {
+  return compareFromParams(new URLSearchParams(search)).length > 0;
+}
+
+/**
  * True when the address bar names an active scenario that could not be read, for example a
  * hand-written link without `panel`. Such keys are kept until the user sets a valid scenario.
  */

@@ -7,6 +7,7 @@
  * the evidence label next to them (PLAN 4.1, rule 8).
  */
 
+import { recordingIndex } from '../../api/recorded';
 import type { EvidenceLevel, ReferenceMission, Scenario, Site } from '../../api/types';
 import { DEFAULT_PANEL_PROFILE_ID, buildScenario } from '../../state/scenario-tools';
 
@@ -51,6 +52,20 @@ export function missionScenario(mission: ReferenceMission, sites: readonly Pick<
       panel_profile_id: DEFAULT_PANEL_PROFILE_ID,
     },
     `${mission.mission}, landing`,
+  );
+}
+
+/**
+ * Whether the recorded server answers (data/examples/recorded/index.json) cover this scenario:
+ * its place is recorded and its period and mast are the recorded ones. Example mode shows a
+ * case's own numbers only then; otherwise the panels fall back to general examples.
+ */
+export function caseRecorded(scenario: Scenario): boolean {
+  return (
+    recordingIndex.places.some((p) => p.id === scenario.site_id) &&
+    Date.parse(scenario.start_utc) === Date.parse(recordingIndex.start_utc) &&
+    Date.parse(scenario.end_utc) === Date.parse(recordingIndex.end_utc) &&
+    scenario.mast_height_m === recordingIndex.mast_height_m
   );
 }
 

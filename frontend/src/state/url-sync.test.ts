@@ -3,6 +3,7 @@ import type { Scenario } from '../api/types';
 import { createScenarioStore, normalizeScenario, type ScenarioState } from './scenario-store';
 import {
   bindScenarioUrl,
+  hasComparisonParams,
   hasUnreadableActiveScenario,
   readScenarioDraft,
   readScenarioParams,
@@ -114,6 +115,24 @@ describe('address bar round trip', () => {
   it('loads at most four comparison scenarios from a link', () => {
     const params = new URLSearchParams(['a', 'b', 'c', 'd', 'e', 'f'].map((id) => ['cmp', JSON.stringify(scenario(id))]));
     expect(readScenarioParams(params).compare.map((s) => s.scenario_id)).toEqual(['a', 'b', 'c', 'd']);
+  });
+});
+
+describe('comparison in a link', () => {
+  it('is recognised in a shared comparison link', () => {
+    const link = writeScenarioParams(FULL_STATE, new URLSearchParams('door=plan'));
+    expect(hasComparisonParams(`?${link.toString()}`)).toBe(true);
+  });
+
+  it('is absent when the link has no comparison parameter', () => {
+    const link = writeScenarioParams({ ...FULL_STATE, compare: [] }, new URLSearchParams('door=plan'));
+    expect(hasComparisonParams(`?${link.toString()}`)).toBe(false);
+    expect(hasComparisonParams('')).toBe(false);
+  });
+
+  it('is absent when every comparison entry is unreadable', () => {
+    const unreadable = JSON.stringify({ ...scenario('b'), panel_profile_id: '' });
+    expect(hasComparisonParams(`?cmp=not-json&cmp=${encodeURIComponent(unreadable)}`)).toBe(false);
   });
 });
 

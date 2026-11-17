@@ -1,3 +1,4 @@
+import { DATA_MODE_PARAM, isDataMode } from '../api/config';
 import type { Door } from '../shell/ui-state';
 
 /**
@@ -35,7 +36,18 @@ export function roleHref(route: RoleRoute): string {
   return `#/${route}`;
 }
 
-/** Address of the live console opened at the role's door. */
-export function liveHref(role: Role, base: string = import.meta.env.BASE_URL): string {
-  return `${base}?door=${ROLE_DOOR[role]}`;
+function currentSearch(): string {
+  return typeof window === 'undefined' ? '' : window.location.search;
+}
+
+/**
+ * Address of the live console opened at the role's door. A data mode chosen in the address bar
+ * (`?data=live` or `?data=examples`) is carried over, so the console keeps the source the visitor
+ * opened the page with; no other parameter is copied.
+ */
+export function liveHref(role: Role, base: string = import.meta.env.BASE_URL, search: string = currentSearch()): string {
+  const params = new URLSearchParams({ door: ROLE_DOOR[role] });
+  const mode = new URLSearchParams(search).get(DATA_MODE_PARAM);
+  if (isDataMode(mode)) params.set(DATA_MODE_PARAM, mode);
+  return `${base}?${params.toString()}`;
 }

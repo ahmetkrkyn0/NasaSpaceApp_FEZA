@@ -1,12 +1,14 @@
 import { getReferenceMissions, getSites } from '../../api/client';
+import { getDataMode } from '../../api/config';
 import { formatDeg, formatUtc } from '../../api/format';
+import { recordingIndex } from '../../api/recorded';
 import type { MissionFact, ReferenceMission, Site } from '../../api/types';
 import { useAsync, useStore } from '../../lib/hooks';
 import { scenarioStore } from '../../state/scenario-store';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import { STATUS_LABEL } from '../setup/form';
 import { AsyncBlock, ExampleNote, Field, Fields, PanelHeader } from '../setup/shared';
-import { ATHENA_CLOSING, ATHENA_ID, EVIDENCE_DESCRIPTION, EVIDENCE_LABEL, activeMission, demoScenarios, missionScenario } from './missions';
+import { ATHENA_CLOSING, ATHENA_ID, EVIDENCE_DESCRIPTION, EVIDENCE_LABEL, activeMission, caseRecorded, demoScenarios, missionScenario } from './missions';
 import './missions.css';
 
 /**
@@ -62,6 +64,7 @@ function FactList({ facts }: { facts: readonly MissionFact[] }) {
 
 export function MissionCard({ mission, missions, sites }: { mission: ReferenceMission; missions: readonly ReferenceMission[]; sites: readonly Site[] }) {
   const { expected } = mission;
+  const scenario = missionScenario(mission, sites);
   return (
     <div className="d-card" aria-label={`${mission.mission} case`}>
       <p className="d-card-title">{mission.mission}</p>
@@ -71,10 +74,22 @@ export function MissionCard({ mission, missions, sites }: { mission: ReferenceMi
         {expected.sun_elevation_deg !== null ? <Field label="Sun at landing, reference" value={formatDeg(expected.sun_elevation_deg)} /> : null}
         {expected.earth_elevation_deg !== null ? <Field label="Earth at landing, reference" value={formatDeg(expected.earth_elevation_deg)} /> : null}
       </Fields>
-      <p className="d-muted">
-        Reference angles were checked against JPL Horizons for a ground-level flat horizon (validation test T1). The sky view shows the
-        product's own result for this moment.
-      </p>
+      {getDataMode() === 'examples' && !caseRecorded(scenario) ? (
+        <>
+          <p className="d-muted">Reference angles were checked against JPL Horizons for a ground-level flat horizon (validation test T1).</p>
+          <p className="d-note d-note-example" role="note">
+            Example data has no recorded answer for this case. The case uses ground level ({scenario.mast_height_m} m) from the landing
+            moment; the recordings cover {recordingIndex.start_utc.slice(0, 10)} to {recordingIndex.end_utc.slice(0, 10)} at a{' '}
+            {recordingIndex.mast_height_m} m mast. The sky view, countdown and timeline show general examples. Add{' '}
+            <span className="data">?data=live</span> to the address to compute this case.
+          </p>
+        </>
+      ) : (
+        <p className="d-muted">
+          Reference angles were checked against JPL Horizons for a ground-level flat horizon (validation test T1). The sky view shows the
+          product's own result for this moment.
+        </p>
+      )}
       <FactList facts={mission.facts} />
       {mission.id === ATHENA_ID ? (
         <>
