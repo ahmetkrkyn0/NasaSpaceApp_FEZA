@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSites } from '../../api/client';
 import { useAsync } from '../../lib/hooks';
 import { uiStore } from '../../shell/ui-state';
@@ -64,8 +64,13 @@ export function GameResult({ attempt, onRetry, onOpenPlan }: { attempt: Attempt;
   const checks = checkGoals(level.goals, answer.metrics);
   const lines = goalLines(level.goals, answer.metrics);
   const reason = earthReason(level, answer.metrics);
+  // The Land button that was focused is gone; focus moves here so the result is read out.
+  const cardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    cardRef.current?.focus();
+  }, []);
   return (
-    <div className="d-card" aria-label="Landing result">
+    <div ref={cardRef} tabIndex={-1} role="group" className="d-card" aria-label="Landing result">
       <p className="d-card-title">
         Landing on <span className="data">{date}</span> <Stars count={stars(checks)} />
       </p>
@@ -148,6 +153,15 @@ export default function GamePanel() {
   const [error, setError] = useState<unknown>(null);
   const [result, setResult] = useState<Attempt | null>(null);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  // "Try another date" removes itself; focus goes back to the Land button it brings back.
+  const landRef = useRef<HTMLButtonElement>(null);
+  const refocusLand = useRef(false);
+  useEffect(() => {
+    if (result === null && refocusLand.current) {
+      refocusLand.current = false;
+      landRef.current?.focus();
+    }
+  }, [result]);
   const date = dateAt(level, index);
   // A level that spans many months is browsed a month at a time: the slider covers one month.
   const months = levelMonths(level);
@@ -180,7 +194,14 @@ export default function GamePanel() {
       <LevelPicker levelId={levelId} landing={landing} onChoose={chooseLevel} />
       <p>{level.intro}</p>
       {result ? (
-        <GameResult attempt={result} onRetry={() => setResult(null)} onOpenPlan={() => openInPlan(result, sites)} />
+        <GameResult
+          attempt={result}
+          onRetry={() => {
+            refocusLand.current = true;
+            setResult(null);
+          }}
+          onOpenPlan={() => openInPlan(result, sites)}
+        />
       ) : (
         <div className="d-section">
           {months.length > 1 ? (
@@ -210,7 +231,7 @@ export default function GamePanel() {
             />
           </label>
           <div className="d-row">
-            <button type="button" className="d-button d-button-primary" disabled={landing} onClick={() => void onLand()}>
+            <button ref={landRef} type="button" className="d-button d-button-primary" disabled={landing} onClick={() => void onLand()}>
               {landing ? 'Landing…' : 'Land'}
             </button>
           </div>

@@ -227,6 +227,11 @@ describe('result screen', () => {
     expect(html).toContain('answer recorded from the server');
   });
 
+  it('the result card can take focus, so the outcome is read out after Land', () => {
+    const html = renderToStaticMarkup(<GameResult attempt={attempt('polar-december', '2026-12-12')} onRetry={() => undefined} onOpenPlan={() => undefined} />);
+    expect(html).toMatch(/<div tabindex="-1" role="group" class="d-card" aria-label="Landing result">/);
+  });
+
   it("explains the failed contact goal at Chang'e 4 with its source", () => {
     const html = renderToStaticMarkup(<GameResult attempt={attempt('far-side', '2026-12-02')} onRetry={() => undefined} onOpenPlan={() => undefined} />);
     expect(html).toContain('Earth never rose above the horizon during your mission');

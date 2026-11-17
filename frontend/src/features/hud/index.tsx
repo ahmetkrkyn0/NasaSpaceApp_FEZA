@@ -10,7 +10,9 @@ export default function HudPanel() {
   const events = useEvents(active);
 
   return (
-    <section className="hud-panel" aria-label="Countdown" aria-live="polite">
+    // No aria-live here: during playback the rows change about twice a second, and a live
+    // region would read every change aloud. Errors still announce through role="alert".
+    <section className="hud-panel" aria-label="Countdown">
       <h2 className="panel-kicker">Countdown</h2>
       {!active || selectedMs === null ? (
         <p className="hud-note">No scenario selected.</p>

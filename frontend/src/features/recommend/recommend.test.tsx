@@ -4,7 +4,7 @@ import { postRecommend } from '../../api/client';
 import { ApiError } from '../../api/errors';
 import { recommendExample } from '../../api/examples';
 import type { RecommendResponse, Scenario } from '../../api/types';
-import { createRecommendStore } from '../../state/recommend-store';
+import { createRecommendStore, recommendStore } from '../../state/recommend-store';
 import { EMPTY_SCENARIO_STATE, createScenarioStore, scenarioStore } from '../../state/scenario-store';
 import { writeScenarioParams } from '../../state/url-sync';
 import { ErrorNote } from '../setup/shared';
@@ -24,7 +24,10 @@ import {
   topThree,
 } from './recommend';
 
-afterEach(() => scenarioStore.replaceState(EMPTY_SCENARIO_STATE));
+afterEach(() => {
+  scenarioStore.replaceState(EMPTY_SCENARIO_STATE);
+  recommendStore.setRanked(null);
+});
 
 const ACTIVE: Scenario = {
   scenario_id: 'a',
@@ -143,6 +146,21 @@ describe('panel', () => {
 
   it('asks for a scenario first when there is none', () => {
     expect(renderToStaticMarkup(<RecommendPanel />)).toContain('No scenario yet');
+  });
+
+  it('says when an example answer does not match the weights asked for (example mode)', async () => {
+    scenarioStore.setScenario({ ...ACTIVE, mast_height_m: 2 });
+    const other = { ...DEFAULT_FORM, weights: { ...DEFAULT_FORM.weights, sunlit: 0.3 } };
+    expect(await runRanking({ ...ACTIVE, mast_height_m: 2 }, other, (body) => postRecommend(body), recommendStore)).toEqual({ ok: true });
+    expect(renderToStaticMarkup(<RecommendPanel />)).toContain('This example does not match the selected site, period or settings.');
+  });
+
+  it('adds no note when the recorded answer matches the request (example mode)', async () => {
+    scenarioStore.setScenario({ ...ACTIVE, mast_height_m: 2 });
+    expect(await runRanking({ ...ACTIVE, mast_height_m: 2 }, DEFAULT_FORM, (body) => postRecommend(body), recommendStore)).toEqual({ ok: true });
+    const html = renderToStaticMarkup(<RecommendPanel />);
+    expect(html).toContain('Ranking for');
+    expect(html).not.toContain('does not match');
   });
 });
 

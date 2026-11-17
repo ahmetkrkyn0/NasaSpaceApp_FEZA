@@ -5,6 +5,7 @@ import type { EventList, NowStatus } from '../../api/types';
 import { HIGH_UNCERTAINTY_RANGE_MINUTES, RANGE_MEANING, eventTimeText, nextEvent } from '../timeline/event-range';
 import { NOT_AVAILABLE, buildCountdown } from './countdown';
 import { HudView } from './HudView';
+import HudPanel from '.';
 
 const NOW_MS = Date.parse(nowExample.utc);
 
@@ -102,5 +103,13 @@ describe('HudView', () => {
     expect(html).toContain('2026-12-06 09:40 – 10:22 UTC');
     expect(html).toContain('range for a one arcminute horizon error');
     expect(html).toContain('high uncertainty');
+  });
+});
+
+describe('HudPanel', () => {
+  it('is not a live region, so playback does not read every new value aloud', () => {
+    const html = renderToStaticMarkup(<HudPanel />);
+    expect(html).toContain('aria-label="Countdown"');
+    expect(html).not.toContain('aria-live');
   });
 });

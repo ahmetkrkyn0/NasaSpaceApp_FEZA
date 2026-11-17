@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { postRecommend } from '../../api/client';
+import { ExampleDataNote } from '../../api/ExampleDataNote';
 import { formatDate } from '../../api/format';
 import type { RankedSite, RecommendResponse, Scenario, ScoreComponent } from '../../api/types';
 import { useStore } from '../../lib/hooks';
@@ -230,6 +231,8 @@ export default function RecommendPanel() {
               {stale ? ' This ranking is for another period or mast than the active scenario; rank again to update it.' : null}
             </p>
           ) : null}
+          {/* An example answer that does not match the request says so (README, example mode). */}
+          <ExampleDataNote value={ranked} fallbackOnly />
           <RecommendResults response={ranked} active={active} stale={stale} />
         </>
       ) : null}
