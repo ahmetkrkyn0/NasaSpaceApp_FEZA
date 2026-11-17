@@ -4,6 +4,28 @@ import { Icon } from '../ui/Icon';
 import { PanelSlot } from './PanelSlot';
 import { uiStore, type RailTab } from './ui-state';
 
+/**
+ * Tab a key moves to, among the enabled tabs only (WAI-ARIA tabs pattern): the arrow keys wrap
+ * around, Home and End go to the ends. Any other key, or no enabled tab, gives `null`.
+ */
+export function nextRailTab(enabled: readonly RailTab[], active: RailTab | undefined, key: string): RailTab | null {
+  const last = enabled.length - 1;
+  if (last < 0) return null;
+  const index = active === undefined ? -1 : enabled.indexOf(active);
+  switch (key) {
+    case 'ArrowRight':
+      return enabled[index < 0 || index === last ? 0 : index + 1] ?? null;
+    case 'ArrowLeft':
+      return enabled[index <= 0 ? last : index - 1] ?? null;
+    case 'Home':
+      return enabled[0] ?? null;
+    case 'End':
+      return enabled[last] ?? null;
+    default:
+      return null;
+  }
+}
+
 /** Tab bar and panel area of the right rail. */
 export function RailTabs() {
   const { door, mode, tab } = useStore(uiStore, (s) => s);
@@ -14,7 +36,18 @@ export function RailTabs() {
 
   return (
     <div className="lp-rail-tabs-host">
-      <div className="lp-rail-tabs" role="tablist" aria-label="Results">
+      <div
+        className="lp-rail-tabs"
+        role="tablist"
+        aria-label="Results"
+        onKeyDown={(event) => {
+          const next = nextRailTab(enabled, active, event.key);
+          if (next === null) return;
+          event.preventDefault();
+          uiStore.setTab(next);
+          document.getElementById(`rail-tab-${next}`)?.focus();
+        }}
+      >
         {RAIL_TAB_META.map((meta) => {
           const isEnabled = enabled.includes(meta.id);
           const isActive = meta.id === active;
@@ -26,7 +59,8 @@ export function RailTabs() {
               role="tab"
               className="lp-rail-tab"
               aria-selected={isActive}
-              aria-controls={`rail-panel-${meta.id}`}
+              // Only the active tab's panel is rendered, so only that tab points to one.
+              aria-controls={isActive ? `rail-panel-${meta.id}` : undefined}
               tabIndex={isActive ? 0 : -1}
               disabled={!isEnabled}
               onClick={() => uiStore.setTab(meta.id)}

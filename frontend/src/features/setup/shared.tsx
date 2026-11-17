@@ -10,7 +10,7 @@ import { isApiError } from '../../api/errors';
 import { formatDate } from '../../api/format';
 import { ExampleDataNote } from '../../api/ExampleDataNote';
 import type { HorizonProfile, LocationParams } from '../../api/types';
-import { useAsync, type AsyncResult, type AsyncState } from '../../lib/hooks';
+import { useAsync, useStore, type AsyncResult, type AsyncState } from '../../lib/hooks';
 import { uiStore } from '../../shell/ui-state';
 import { ValidityBadge } from '../../ui/ValidityBadge';
 import './panels.css';
@@ -116,14 +116,29 @@ export function requestKey(params: unknown): string {
   return JSON.stringify(params);
 }
 
-/** Prompt shown by result panels before a scenario exists. */
+/**
+ * Prompt shown by result panels before a scenario exists. The button switches to PLAN mode, so
+ * it shows only where that changes the view: the Plan door in ANALYZE mode. Explore and
+ * Classroom have no setup panel; their site picker sits at the top of the main view.
+ */
 export function NeedsScenario() {
+  const door = useStore(uiStore, (s) => s.door);
+  const mode = useStore(uiStore, (s) => s.mode);
+  if (door !== 'plan') {
+    return (
+      <div className="d-empty">
+        <p className="d-muted">No scenario yet. Pick a site at the top of the main view.</p>
+      </div>
+    );
+  }
   return (
     <div className="d-empty">
       <p className="d-muted">No scenario yet. Choose a site and dates in the scenario setup.</p>
-      <button type="button" className="d-button" onClick={() => uiStore.setMode('plan')}>
-        Open scenario setup
-      </button>
+      {mode === 'analyze' ? (
+        <button type="button" className="d-button" onClick={() => uiStore.setMode('plan')}>
+          Open scenario setup
+        </button>
+      ) : null}
     </div>
   );
 }

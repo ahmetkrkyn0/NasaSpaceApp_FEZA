@@ -8,6 +8,10 @@ The Space Apps submission is released as `v1.0.0`.
 
 ## [Unreleased]
 
+### Fixed
+
+- Web interface: the five severity-3 findings of the heuristic evaluation (`docs/design/HEURISTIC_EVAL_lunar-landing-site-navigator.md`). Arrow, Home and End keys move between the right-rail result tabs. The countdown no longer reads every playback step aloud. The "no scenario" prompt no longer shows a button that does nothing in Explore, Classroom and Plan PLAN mode. Recommend shows the example-data note when the recorded answer does not match the request. The landing game keeps keyboard focus on the result and on the Land button.
+
 ## [1.0.0] - 2026-11-15
 
 First release, submitted to the NASA Space Apps Challenge 2026.
